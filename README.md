@@ -17,5 +17,11 @@ export PRED_DB=postgresql://<USER>:<PASSWORD>@<HOST>:<PORT>/pred
 
 Load database with prediction data:
 ```
+python predictions.py --wigfile <wigfile> 
+```
+
+Run web server:
+```
 python predictions.py --web
 ```
+Open: <http://localhost:5000>
