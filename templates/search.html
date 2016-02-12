@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h3>Search</h3>
+    <form action="" method="post">
+        <div>
+            <label>Chromosomes:<input type=text name=chroms value="{{chroms}}"></label>
+            <span>(separated by spaces or 'all')</span>
+            <span>{{chroms_error}}</span>
+        </div>
+        <div>
+            <label>Seq from:<input type=text name=start value="{{start}}"></label>
+            <label>through<input type=text name=end value="{{end}}"</label>
+            <span>{{range_error}}</span>
+        </div>
+        <div>
+            <label>Value from:<input type=text name=vstart value="{{vstart}}"></label>
+            <label>through<input type=text name=vend value="{{vend}}"></label>
+            <span>{{vrange_error}}</span>
+        </div>
+        <div>
+            <label>CSV output:<input type="checkbox" name="csv" value="False"></label>
+        </div>
+        <input type=submit value=Search>
+    </form>
+    <div>
+        <h4>Results</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Chromosome</th>
+                    <th>Value</th>
+                    <th>Start</th>
+                    <th>Stop</th>
+
+                </tr>
+            </thead>
+            {% for row in results %}
+            <tr>
+                <td>{{row.chrom}}</td>
+                <td>{{row.value}}</td>
+                <td>{{row.start_range}}</td>
+                <td>{{row.end_range}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</body>
+</html>
