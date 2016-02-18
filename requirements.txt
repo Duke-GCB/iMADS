@@ -1,0 +1,3 @@
+SQLAlchemy==1.0.11
+bx-python==0.7.3
+Flask==0.10.1
