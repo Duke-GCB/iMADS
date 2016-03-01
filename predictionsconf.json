@@ -1,0 +1,52 @@
+{
+  "binding_max_offset": 5000,
+  "download_dir": "/tmp/ucscjpb",
+  "db": {
+    "host": "localhost",
+    "dbname": "pred",
+    "user": "pred_user",
+    "password": "pred_pass"
+  },
+  "genome_data": [
+    {
+      "genome": "hg38",
+      "ftp_files": [
+        "goldenPath/hg38/database/wgEncodeGencodeBasicV23.txt.gz",
+        "goldenPath/hg38/database/wgEncodeGencodeCompV23.txt.gz",
+        "goldenPath/hg38/database/knownGene.txt.gz",
+        "goldenPath/hg38/database/kgXref.txt.gz",
+        "goldenPath/hg38/database/refGene.txt.gz"
+      ],
+      "gene_lists": [
+        {
+          "source_table": "knowngene",
+          "common_name": "genesymbol",
+          "common_lookup_table": "kgxref",
+          "common_lookup_table_field": "kgid"
+        },
+        {
+          "source_table": "refgene",
+          "common_name": "name2"
+        },
+        {
+          "source_table": "wgEncodeGencodeBasicV23",
+          "common_name": "name2"
+        },
+        {
+          "source_table": "wgEncodeGencodeCompV23",
+          "common_name": "name2"
+        }
+      ],
+      "prediction_lists": [
+        {
+          "name":"E2F1",
+          "url":"http://trackhub.genome.duke.edu/tf-dna-binding-predictions/hg38/E2F1-hg38_binding_site_start.bw"
+        },
+        {
+          "name":"E2F4",
+          "url":"http://trackhub.genome.duke.edu/tf-dna-binding-predictions/hg38/E2F4-hg38_binding_site_start.bw"
+        }
+      ]
+    }
+  ]
+}
