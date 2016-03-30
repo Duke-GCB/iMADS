@@ -1,19 +1,19 @@
 """
 Load gene list data from genome.ucsc.edu into a Postgres database.
+increase max_wal_size?
 """
 import os
 import re
 from ftplib import FTP
 import gzip
 import psycopg2
-from urllib.request import urlopen
+import requests
 import subprocess
 import tempfile
-from config import parse_config
+from config import parse_config, CONFIG_FILENAME
 
 UCSC_HOST = 'hgdownload.cse.ucsc.edu'
 DOWNLOAD_CHUNK_SIZE = 16 * 1024
-CONFIG_FILENAME = 'predictionsconf.json'
 
 
 def update_progress(str):
@@ -26,6 +26,7 @@ class PredictionDataSource(object):
         self.url = prediction_settings.url
         self.genome = prediction_settings.genome
         self.update_progress = update_progress
+        self.fix_script = prediction_settings.fix_script
         if not os.path.exists(self.local_dir):
             os.mkdir(self.local_dir)
 
@@ -39,24 +40,22 @@ class PredictionDataSource(object):
         return os.path.join(self.local_dir, self.genome, self.get_url_filename())
 
     def get_local_bed_path(self):
-        bed_filename = re.sub('.bw$', '.bed', self.get_url_filename())
+        pre, ext = os.path.splitext(self.get_url_filename())
+        bed_filename = pre + '.bed'
         return os.path.join(self.local_dir, self.genome, bed_filename)
 
     def download_and_convert(self):
-        local_bigwig_path = self.get_local_bigwig_path()
+        local_filename = self.get_local_bigwig_path()
         self.update_progress('Downloading: ' + self.url)
-        response = urlopen(self.url)
-        with open(local_bigwig_path, 'wb') as outfile:
-            while True:
-                chunk = response.read(DOWNLOAD_CHUNK_SIZE)
-                if chunk:
-                    outfile.write(chunk)
-                else:
-                    break
-        self.update_progress('Converting: ' + local_bigwig_path)
-        ret = subprocess.call(['bigWigToBedGraph', local_bigwig_path, self.get_local_bed_path()])
+        r = requests.get(self.url, stream=True)
+        with open(local_filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=1024):
+                if chunk: # filter out keep-alive new chunks
+                    f.write(chunk)
+        self.update_progress('Converting: ' + local_filename)
+        ret = subprocess.call([self.fix_script, local_filename, self.get_local_bed_path()])
         if ret != 0:
-            raise ValueError("Failed to convert bigwig:" + str(ret))
+            raise ValueError("Failed to convert dat a file:" + str(ret))
 
     def create(self, psql):
         self.update_progress('Loading data source: ' + self.get_local_bed_path())
@@ -66,7 +65,10 @@ class PredictionDataSource(object):
                 while True:
                     line = bedfile.readline()
                     if line:
-                        outfile.write(line.replace("\n", "\t" + self.name + "\n"))
+                        parts = line.split('\t')
+                        included_values = parts[:4]
+                        included_values.append(self.name)
+                        outfile.write('\t'.join(included_values) + '\n')
                     else:
                         break
         os.close(fd)
@@ -174,20 +176,32 @@ class MySQLtoPG(object):
 
 
 class PGCmdLine(object):
-    def __init__(self, db, user, password, update_progress=update_progress):
-        self.db = db
+    def __init__(self, host, dbname, user, password, update_progress=update_progress):
+        self.host = host
+        self.dbname = dbname
         self.user = user
         self.password = password
         self.update_progress = update_progress
+        self.conn = None
+        self.cur = None
+
+    def create_connection(self):
+        self.conn = psycopg2.connect('host=' + self.host +
+                                ' dbname=' + self.dbname +
+                                ' user=' + self.user +
+                                ' password=' + self.password)
+        self.cur = self.conn.cursor()
+
+    def commit_close(self):
+        self.conn.commit()
+        self.cur.close()
+        self.conn.close()
 
     def create_schema(self, schema_name):
         self.update_progress('Creating schema:' + schema_name)
-        conn = psycopg2.connect('dbname=' + self.db + ' user=' + self.user)
-        cur = conn.cursor()
-        cur.execute('CREATE SCHEMA IF NOT EXISTS ' + schema_name)
-        conn.commit()
-        cur.close()
-        conn.close()
+        self.create_connection()
+        self.cur.execute('CREATE SCHEMA IF NOT EXISTS ' + schema_name)
+        self.commit_close()
 
     def create_table(self, table_path):
         """
@@ -196,33 +210,24 @@ class PGCmdLine(object):
         :param schema_path: str path to a postgres format schema file
         """
         self.update_progress('Creating table:' + table_path)
-        conn = psycopg2.connect('dbname=' + self.db + ' user=' + self.user)
-        cur = conn.cursor()
+        self.create_connection()
         with open(table_path, 'r') as infile:
             data = infile.read()
-            cur.execute(data)
-        conn.commit()
-        cur.close()
-        conn.close()
+            self.cur.execute(data)
+        self.commit_close()
 
     def execute(self, sql, params=()):
         self.update_progress('Execute sql:' + sql)
-        conn = psycopg2.connect('dbname=' + self.db + ' user=' + self.user)
-        cur = conn.cursor()
-        cur.execute(sql, params)
-        conn.commit()
-        cur.close()
-        conn.close()
+        self.create_connection()
+        self.cur.execute(sql, params)
+        self.commit_close()
 
     def copy_file_into_db(self, table_name, data_filename, columns=None):
         update_progress('Loading table ' + table_name + ' with data:' + data_filename)
-        conn = psycopg2.connect('dbname=' + self.db + ' user=' + self.user)
-        cur = conn.cursor()
+        self.create_connection()
         with open(data_filename,'r') as infile:
-            cur.copy_from(infile, table_name, columns=columns)
-        conn.commit()
-        cur.close()
-        conn.close()
+            self.cur.copy_from(infile, table_name, columns=columns)
+        self.commit_close()
 
 
 def download_ucsc_files(psql, download_dir, genome, file_list):
@@ -309,10 +314,31 @@ def create_indexes_if_necessary(psql, schema_prefix):
     psql.execute('create index if not exists pred_range_idx on {}.prediction using gist(range);'.format(schema_prefix))
     psql.execute('create index if not exists gene_range_idx on {}.gene using gist(range);'.format(schema_prefix))
     psql.execute('create index if not exists gene_list_chrom on {}.gene(gene_list, chrom);'.format(schema_prefix))
+    #create index pred_model_name_idx on hg38.prediction(model_name)
     psql.execute('ANALYZE {}.gene'.format(schema_prefix))
     psql.execute('ANALYZE {}.prediction'.format(schema_prefix))
 
+
+def create_gene_prediction(psql, schema_prefix):
+    create_sql = """
+        select gene.gene_list, name, common_name, gene.chrom, strand, txstart, txend, prediction.model_name, value,
+               start_range, end_range
+         into {}.gene_prediction
+         from {}.gene
+            inner join {}.prediction
+            on gene.range && prediction.range
+            and gene.chrom = prediction.chrom;
+    """.format(schema_prefix, schema_prefix, schema_prefix)
+    index_sql = """
+      create index if not exists gene_prediction_idx on {}.gene_prediction(model_name, gene_list, name, common_name, chrom));
+    """.format(schema_prefix)
+    psql.execute(create_sql)
+    psql.execute(index_sql)
+
+
 def create_base_tables(psql, schema_prefix):
+    psql.execute("CREATE SCHEMA IF NOT EXISTS {} AUTHORIZATION pred_user;".format(schema_prefix))
+
     sql = """
     create table {}.prediction (
       chrom varchar NOT NULL,
@@ -344,7 +370,7 @@ def create_base_tables(psql, schema_prefix):
 
 def load_database_based_on_config(config):
     dbconfig = config.dbconfig
-    psql = PGCmdLine(dbconfig.dbname, dbconfig.user, dbconfig.password)
+    psql = PGCmdLine(dbconfig.host, dbconfig.dbname, dbconfig.user, dbconfig.password)
     for genome_data in config.genome_data_list:
         genome = genome_data.genomename
         create_base_tables(psql, genome)
@@ -361,6 +387,7 @@ def load_database_based_on_config(config):
         load_prediction_table(psql, prediction_lists)
 
         create_indexes_if_necessary(psql, genome)
+        create_gene_prediction(psql, genome)
         delete_gene_tables(psql, gene_lists)
 
 
@@ -383,4 +410,50 @@ case strand when '+' then
 else
   (txend - 2000) < start_range and (txend + 1000) > end_range
 end
+"""
+
+
+"""
+select * from gene
+    inner join prediction
+    on gene.range && prediction.range
+    and gene.chrom = prediction.chrom
+    where
+    gene.gene_list = 'wgEncodeGencodeBasicV23'
+    and gene.chrom = 'chr1'
+    and prediction.model_name = 'E2F1'
+    and
+    case strand when '+' then
+      (txstart - '200') < start_range and (txstart + '100') > end_range
+    else
+      (txend - '200') < start_range and (txend + '100') > end_range
+    end
+UNION
+select * from gene
+    inner join prediction
+    on gene.range && prediction.range
+    and gene.chrom = prediction.chrom
+    where
+    gene.gene_list = 'wgEncodeGencodeBasicV23'
+    and gene.chrom = 'chr2'
+    and prediction.model_name = 'E2F1'
+    and
+    case strand when '+' then
+      (txstart - '200') < start_range and (txstart + '100') > end_range
+    else
+      (txend - '200') < start_range and (txend + '100') > end_range
+    end
+"""
+
+
+"""
+
+select gene.gene_list, name, common_name, gene.chrom, strand, txstart, txend, prediction.model_name, value, start_range, end_range
+ into big_boy
+ from gene
+    inner join prediction
+    on gene.range && prediction.range
+    and gene.chrom = prediction.chrom;
+
+create index bb_idx1 on big_boy(model_name, gene_list);
 """

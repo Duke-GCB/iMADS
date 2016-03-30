@@ -1,4 +1,4 @@
-import json
+from yaml import load
 
 DEFAULT_DB_HOST = "localhost"
 DEFAULT_DB_NAME = "pred"
@@ -6,11 +6,12 @@ DEFAULT_DB_USER = "pred_user"
 DEFAULT_DB_PASS = "pred_pass"
 DEFAULT_MAX_BINDING_OFFSET = 5000
 
+CONFIG_FILENAME = 'predictionsconf.yaml'
 
 def parse_config(filename):
     config = None
     with open(filename) as data_file:
-        data = json.load(data_file)
+        data = load(data_file)
         dbconfig = DBConfig(data.get('db', {}))
         config = Config(data, dbconfig)
         genome_data_ary = data['genome_data']
@@ -55,11 +56,12 @@ class GenomeData(object):
 
     def _load_gene_lists(self, genome_data_ary):
         for gene_list in genome_data_ary:
+            name = gene_list["name"]
             source_table = gene_list["source_table"]
             common_name = gene_list["common_name"]
             common_lookup_table = gene_list.get("common_lookup_table", None)
             common_lookup_table_field = gene_list.get("common_lookup_table_field", None)
-            gene_info = GeneInfoSettings(self.genomename, source_table, common_name,
+            gene_info = GeneInfoSettings(self.genomename, name, source_table, common_name,
                                  common_lookup_table, common_lookup_table_field)
             self.gene_lists.append(gene_info)
 
@@ -67,13 +69,16 @@ class GenomeData(object):
         for prediction_data in prediction_data_ary:
             name = prediction_data['name']
             url = prediction_data['url']
-            prediction = PredictionSettings(name, self.download_dir, url, self.genomename)
+            fix_script = prediction_data['fix_script']
+            prediction = PredictionSettings(name, self.download_dir, url, self.genomename,
+                                            fix_script)
             self.prediction_lists.append(prediction)
 
 
 class GeneInfoSettings(object):
-    def __init__(self, genome, source_table, common_name, common_lookup_table=None, common_lookup_table_field=None):
+    def __init__(self, genome, name, source_table, common_name, common_lookup_table=None, common_lookup_table_field=None):
         self.genome = genome
+        self.name = name
         self.source_table = source_table
         self.common_name = common_name
         self.common_lookup_table = common_lookup_table
@@ -81,11 +86,12 @@ class GeneInfoSettings(object):
 
 
 class PredictionSettings(object):
-    def __init__(self, name, local_dir, url, genome):
+    def __init__(self, name, local_dir, url, genome, fix_script):
         self.name = name
         self.local_dir = local_dir
         self.url = url
         self.genome = genome
+        self.fix_script = fix_script
 
 """
 g_binding_max_offset = 5000
