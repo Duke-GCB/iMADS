@@ -105,7 +105,7 @@ class SearchScreen extends React.Component {
 
     search_url(search_settings, per_page, page) {
         var url ='/genomes/' + search_settings.genome +
-            '/prediction2?protein=' + search_settings.model +
+            '/prediction?protein=' + search_settings.model +
             '&gene_list=' + search_settings.gene_list +
              '&upstream=' + search_settings.upstream +
             '&downstream='  + search_settings.downstream +

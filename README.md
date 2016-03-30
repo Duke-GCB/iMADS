@@ -33,3 +33,15 @@ So if you want to see the hg38 tables in psql you must first do:
 ```
 SET search_path TO hg38,public;
 ```
+
+
+### Setup to run dev webserver:
+```
+npm install
+webpack --progress --colors --watch
+```
+In another window:
+```
+python predictions.py
+```   
+

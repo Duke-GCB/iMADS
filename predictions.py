@@ -146,7 +146,7 @@ def prediction_search(genome):
                 'name': row[0],
                 'common_name': row[1],
                 'chrom': row[2],
-                'max': row[3],
+                'max': str(row[3]),
                 'start': row[4],
                 'end': row[5],
             }
@@ -154,7 +154,7 @@ def prediction_search(genome):
         next_pages = 0
         if per_page != '':
             offset = int(per_page) * (int(page) - 1)
-            next_pages = count_next_pages(genome, base_sql, base_params, offset, per_page, 5)
+            next_pages = str(count_next_pages(genome, base_sql, base_params, offset, per_page, 5))
         blob = jsonify({
             'predictions': predictions,
             'next_pages': next_pages
@@ -281,7 +281,7 @@ and case strand when '+' then
                 'name': row[0],
                 'common_name': row[1],
                 'chrom': row[2],
-                'max': row[3],
+                'max': str(row[3]),
                 'start': row[4],
                 'end': row[5],
                 'other': row[6],
@@ -293,7 +293,7 @@ and case strand when '+' then
             next_pages = count_next_pages(genome, base_sql, base_params, offset, per_page, 5)
         blob = jsonify({
             'predictions': predictions,
-            'next_pages': next_pages
+            'next_pages': '1'
         })
         r = make_response(blob)
     else:
