@@ -1,3 +1,13 @@
+
+class PredictionQueryNames(object):
+    COMMON_NAME = 'common_name'
+    NAME = 'name'
+    MAX_VALUE = 'max_value'
+    CHROM = 'chrom'
+    STRAND = 'strand'
+    GENE_START = 'gene_start'
+    PRED = 'pred'
+
 class PredictionQueryBuilder(object):
     SET_SCHEMA_SQL = "SET search_path TO %s,public"
     WITH_MAX_PRED_SQL = """with max_prediction_names as (
@@ -55,7 +65,7 @@ class PredictionQueryBuilder(object):
         self.max_value_guess = guess
 
     def join_with_limit(self, parts):
-        if self.limit and self.offset:
+        if self.limit:
             parts.append(self._sql_limit_and_offset())
         return self.join(parts)
 
@@ -67,6 +77,9 @@ class PredictionQueryBuilder(object):
         parts = [self._sql_set_search_path(),
                  self.main_query_func(upstream, downstream)]
         query = "\n".join(parts) + ";"
+        #fixed = query.replace("%s","{}")
+        #fixed_params = ["'{}'".format(param) for param in self.params]
+        #print(fixed.format(*fixed_params))
         return query, self.params
 
     def _sql_set_search_path(self):

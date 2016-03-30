@@ -1,4 +1,4 @@
-from querybuilder import PredictionQueryBuilder
+from querybuilder import PredictionQueryBuilder, PredictionQueryNames
 import psycopg2.extras
 
 
@@ -70,19 +70,31 @@ class PredictionSearch(object):
         self.enable_guess = enable_guess
 
     def get_predictions(self):
+        upstream = self.args.get_upstream()
+        downstream = self.args.get_upstream()
         query, params = self._create_query_and_params()
         cur = self.db.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute(query, params)
         predictions = []
         for row in cur.fetchall():
+            gene_start = int(row[PredictionQueryNames.GENE_START])
+            strand = row[PredictionQueryNames.STRAND]
+            start = None
+            end = None
+            if strand == '+':
+                start = gene_start - upstream
+                end = gene_start + downstream
+            else:
+                start = gene_start - downstream
+                end = gene_start + upstream
             predictions.append({
-                 'name': row[0],
-                 'common_name': row[1],
-                 'chrom': row[2],
-                 'max': row[3],
-                 'start': row[4],
-                 'end': row[5],
-                 'values': row[6],
+                 'name': row[PredictionQueryNames.NAME],
+                 'common_name': row[PredictionQueryNames.COMMON_NAME],
+                 'chrom': row[PredictionQueryNames.CHROM] + " " + strand,
+                 'max': row[PredictionQueryNames.MAX_VALUE],
+                 'start': start,
+                 'end': end,
+                 'values': row[PredictionQueryNames.PRED],
              })
         cur.close()
         return predictions
@@ -90,12 +102,13 @@ class PredictionSearch(object):
     def _create_query_and_params(self):
         builder = PredictionQueryBuilder(self.genome, self.args.get_gene_list(), self.args.get_model_name())
         self._try_set_limit_and_offset(builder)
+        self._try_set_max_sort(builder)
         return builder.make_query_and_params(self.args.get_upstream(), self.args.get_downstream())
 
     def _try_set_limit_and_offset(self, builder):
         page, per_page = self.args.get_page_and_per_page()
         if page and per_page:
-            builder.set_limit_and_offset(per_page, page * (per_page - 1))
+            builder.set_limit_and_offset(per_page, (page - 1) * per_page)
 
     def _try_set_max_sort(self, builder):
         if self.args.get_sort_by_max():

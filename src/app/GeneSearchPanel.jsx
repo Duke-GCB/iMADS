@@ -168,8 +168,7 @@ class GeneSearchPanel extends React.Component {
 
     parseStreamValue(strValue) {
         var value = parseInt(strValue);
-        if (isNaN(value) || value > 5000) {
-            //alert("toast this better:" + value);
+        if (isNaN(value)) {
             return undefined;
         } else {
             return value;

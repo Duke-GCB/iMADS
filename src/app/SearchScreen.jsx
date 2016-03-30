@@ -98,7 +98,7 @@ class SearchScreen extends React.Component {
             });
           }.bind(this),
           error: function(xhr, status, err) {
-            console.error(this.props.url, status, err.toString());
+              console.error(this.props.url, status, err.toString());
           }.bind(this)
         });
     }
@@ -112,6 +112,9 @@ class SearchScreen extends React.Component {
             '&per_page=' + per_page +
             '&page=' + page +
             '&max_prediction_sort=' + search_settings.maxPredictionSort;
+        if (search_settings.maxPredictionSort) {
+            url += "&max_prediction_guess=0.4";
+        }
         return url;
     }
 
