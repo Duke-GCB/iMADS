@@ -68,7 +68,7 @@ class SearchScreen extends React.Component {
         });
       }
 
-    search(search_settings, per_page, page) {
+    search(search_settings, page) {
         /*
         location.hash = '#search_results?' +
             'genome=' + state.genome +
@@ -82,11 +82,11 @@ class SearchScreen extends React.Component {
             //search_results: [],
             search_settings: search_settings,
             page: page,
-            per_page: per_page,
+            per_page: this.props.items_per_page,
         });
         console.log('searching for stuff genome data' + Date.now());
         $.ajax({
-          url: this.search_url(search_settings, per_page, page),
+          url: this.search_url(search_settings, this.props.items_per_page, page),
           type: 'POST',
           dataType: 'json',
           cache: false,
@@ -116,7 +116,7 @@ class SearchScreen extends React.Component {
     }
 
     change_page(page) {
-        this.search(this.state.search_settings, this.state.per_page, page)
+        this.search(this.state.search_settings, page)
     }
 
     edit() {

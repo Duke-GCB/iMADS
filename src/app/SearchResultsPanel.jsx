@@ -30,8 +30,8 @@ class SearchResultsPanel extends React.Component {
         }
     }
 
-    search(search_settings, per_page, page) {
-        this.props.search(search_settings, per_page, page);
+    search(search_settings, page) {
+        this.props.search(search_settings, page);
         this.scrollToTop = true;
     }
 

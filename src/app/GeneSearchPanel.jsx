@@ -181,7 +181,7 @@ class GeneSearchPanel extends React.Component {
     }
 
     onClickSearch() {
-        this.props.search(this.state, 100, 1);
+        this.props.search(this.state, 1);
     }
 
     onClickClearInput() {

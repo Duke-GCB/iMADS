@@ -19,7 +19,7 @@ class App extends React.Component {
     render () {
         return <div>
             <NavBar />
-            <SearchScreen url="/genomes" />
+            <SearchScreen url="/genomes" items_per_page="100"/>
         </div>
     }
 }
