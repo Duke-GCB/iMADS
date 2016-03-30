@@ -142,8 +142,8 @@ class SearchResultsPanel extends React.Component {
                 //aliceBlue = 240,248,255
                 var min = Number.MAX_SAFE_INTEGER;
                 var max = Number.MIN_SAFE_INTEGER;
-                for (var j = 0; j < rowData.other.length; j++) {
-                    var data = rowData.other[j];
+                for (var j = 0; j < rowData.values.length; j++) {
+                    var data = rowData.values[j];
                     min = Math.min(min, data.start);
                     max = Math.max(max, data.start);
                     var start = rowData.start - data.start + search_settings.upstream;

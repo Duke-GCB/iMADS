@@ -1,5 +1,5 @@
 from unittest import TestCase
-from predictions import PredictionQueryBuilder
+from querybuilder import PredictionQueryBuilder
 
 SET_SCHEMA_SQL = PredictionQueryBuilder.SET_SCHEMA_SQL
 WHERE_BASE = PredictionQueryBuilder.WHERE_BASE
@@ -33,15 +33,13 @@ class TestPredictionQueryBuilder(TestCase):
         self.assertEqual(expected_query, query)
         self.assertEqual(['hg38','knowngene','E2F1',upstream, downstream, downstream, upstream], params)
 
-        self.print_query("All", query, params)
-
     def test_sort_by_name_limit(self):
         query_builder = PredictionQueryBuilder('hg38', 'knowngene', 'E2F1')
         upstream = 200
         downstream = 100
         limit = 20
         offset = 10
-        query_builder.set_main_query_func(query_builder.sql_query_by_name)
+        query_builder.set_sort_by_name()
         query_builder.set_limit_and_offset(limit, offset)
         query, params = query_builder.make_query_and_params(upstream, downstream)
         expected_query = self.schema_sql([QUERY_BASE, GROUP_BY_NAME_SQL, ORDER_BY_NAME, LIMIT_OFFSET_SQL])
@@ -52,7 +50,7 @@ class TestPredictionQueryBuilder(TestCase):
         query_builder = PredictionQueryBuilder('hg38', 'knowngene', 'E2F1')
         upstream = 200
         downstream = 100
-        query_builder.set_main_query_func(query_builder.sql_query_by_max)
+        query_builder.set_sort_by_max()
         query, params = query_builder.make_query_and_params(upstream, downstream)
         expected_query = self.schema_sql([WITH_MAX_PRED_SQL,
                                           WHERE_BASE,
@@ -65,7 +63,6 @@ class TestPredictionQueryBuilder(TestCase):
                                           ORDER_BY_MAX_AND_NAME
                                           ])
         expected_params = ['hg38', 'knowngene', 'E2F1', upstream, downstream, downstream, upstream,
-                           # limit and offset
                            'knowngene', 'E2F1', upstream, downstream, downstream, upstream,
                            ]
         self.assertEqual(expected_query, query)
@@ -78,7 +75,7 @@ class TestPredictionQueryBuilder(TestCase):
         limit = 20
         offset = 10
         query_builder.set_limit_and_offset(limit, offset)
-        query_builder.set_main_query_func(query_builder.sql_query_by_max)
+        query_builder.set_sort_by_max()
         query, params = query_builder.make_query_and_params(upstream, downstream)
         expected_query = self.schema_sql([WITH_MAX_PRED_SQL,
                                           WHERE_BASE,
@@ -106,7 +103,7 @@ class TestPredictionQueryBuilder(TestCase):
         offset = 10
         query_builder.set_limit_and_offset(limit, offset)
         query_builder.set_max_value_guess('0.4')
-        query_builder.set_main_query_func(query_builder.sql_query_by_max)
+        query_builder.set_sort_by_max()
         query, params = query_builder.make_query_and_params(upstream, downstream)
         expected_query = self.schema_sql([WITH_MAX_PRED_SQL,
                                           WHERE_BASE,
