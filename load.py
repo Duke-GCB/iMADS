@@ -30,6 +30,12 @@ class PredictionDataSource(object):
         if not os.path.exists(self.local_dir):
             os.mkdir(self.local_dir)
 
+    def get_url(self):
+        return self.url
+
+    def get_description(self):
+        return "Prediction {} {}".format(self.genome, self.name)
+
     def get_url_filename(self):
         return os.path.basename(self.url)
 
@@ -90,6 +96,12 @@ class UCSCDataSource(object):
         self.update_progress = update_progress
         if not os.path.exists(self.local_dir):
             os.mkdir(self.local_dir)
+
+    def get_url(self):
+        return "{}/{}".format(self.ftp_host, self.ftp_path)
+
+    def get_description(self):
+        return "UCSC {} {}".format(self.genome, self.get_ftp_filename().replace(".txt.gz",""))
 
     def get_ftp_dir(self):
         return os.path.dirname(self.ftp_path)
@@ -238,6 +250,8 @@ def download_ucsc_files(psql, download_dir, genome, file_list):
         psql.create_schema(genome)
         psql.create_table(data_file.get_local_schema_path())
         psql.copy_file_into_db(genome + '.' + data_file.get_root_filename(), data_file.get_extracted_path())
+        insert_data_source(psql, data_file.get_url(), data_file.get_description())
+
 
 
 class GeneInfo(object):
@@ -282,9 +296,11 @@ class GeneInfo(object):
             drop_lookup_sql = "drop table {}.{};".format(schema_prefix, self.common_lookup_table)
             psql.execute(drop_lookup_sql)
 
+
 def load_gene_table(psql, gene_lists):
     for gene_list in gene_lists:
         gene_list.create(psql)
+
 
 def delete_gene_tables(psql, gene_lists):
     for gene_list in gene_lists:
@@ -294,6 +310,7 @@ def delete_gene_tables(psql, gene_lists):
 def load_prediction_table(psql, prediction_models):
     for prediction_data_source in prediction_models:
         prediction_data_source.create(psql)
+        insert_data_source(psql, prediction_data_source.get_url(), prediction_data_source.get_description())
 
 
 def fill_gene_ranges(psql, genome, binding_max_offset):
@@ -330,11 +347,14 @@ def create_gene_prediction(psql, schema_prefix):
             and gene.chrom = prediction.chrom;
     """.format(schema_prefix, schema_prefix, schema_prefix)
     index_sql = """
-      create index if not exists gene_prediction_idx on {}.gene_prediction(model_name, gene_list, name, common_name, chrom));
+      create index if not exists gene_prediction_name_idx on {}.gene_prediction(gene_list, model_name, name);
+    """.format(schema_prefix)
+    index_sql2 = """
+      create index if not exists gene_prediction_value_idx on {}.gene_prediction(gene_list, model_name, value DESC);
     """.format(schema_prefix)
     psql.execute(create_sql)
     psql.execute(index_sql)
-
+    psql.execute(index_sql2)
 
 def create_base_tables(psql, schema_prefix):
     psql.execute("CREATE SCHEMA IF NOT EXISTS {} AUTHORIZATION pred_user;".format(schema_prefix))
@@ -367,10 +387,24 @@ def create_base_tables(psql, schema_prefix):
     """.format(schema_prefix, schema_prefix, schema_prefix ,schema_prefix, schema_prefix, schema_prefix)
     psql.execute(sql, ())
 
+def data_source_table(psql):
+    sql = """
+        create table public.data_source (
+          url varchar NOT NULL,
+          description varchar NOT NULL,
+          downloaded timestamp with time zone NOT NULL default current_timestamp,
+          PRIMARY KEY (url)
+        );
+    """
+    psql.execute(sql, ())
+
+def insert_data_source(psql, url, description):
+    psql.execute("insert into public.data_source(url, description) values(%s,%s);", (url, description))
 
 def load_database_based_on_config(config):
     dbconfig = config.dbconfig
     psql = PGCmdLine(dbconfig.host, dbconfig.dbname, dbconfig.user, dbconfig.password)
+    data_source_table(psql)
     for genome_data in config.genome_data_list:
         genome = genome_data.genomename
         create_base_tables(psql, genome)

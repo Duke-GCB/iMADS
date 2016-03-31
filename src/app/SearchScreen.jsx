@@ -69,14 +69,6 @@ class SearchScreen extends React.Component {
       }
 
     search(search_settings, page) {
-        /*
-        location.hash = '#search_results?' +
-            'genome=' + state.genome +
-             '&all=' + state.all +
-            '&upstream=' + state.upstream +
-            '&downstream=' + state.downstream +
-            '&maxPredictionSort=' + state.maxPredictionSort;
-        */
         this.setState({
             editMode: false,
             //search_results: [],

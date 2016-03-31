@@ -5,6 +5,7 @@ import psycopg2.extras
 from flask import Flask, request, render_template, jsonify, g, make_response, redirect, Response
 from config import parse_config, CONFIG_FILENAME
 from predictionsearch import PredictionSearch
+from datasource import DataSources
 
 app = Flask(__name__)
 g_config = parse_config(CONFIG_FILENAME)
@@ -31,9 +32,20 @@ def close_connection(exception):
 
 
 @app.route('/', methods=['GET'])
+@app.route('/datasources', methods=['GET'])
+@app.route('/about', methods=['GET'])
 def root():
-    return redirect("/static/src/index.html", code=302)
+    return render_template('index.html')
 
+
+@app.route('/api/datasources', methods=['GET'])
+def get_api_datasources():
+    data_sources = DataSources(get_db()).get_items()
+    blob = jsonify({'results': data_sources})
+    r = make_response(blob)
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    print("Returning stuff.")
+    return r
 
 @app.route('/genomes', methods=['GET'])
 def get_genome_versions():

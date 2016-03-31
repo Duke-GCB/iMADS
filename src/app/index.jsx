@@ -1,5 +1,9 @@
 import React from 'react'
 import {render} from 'react-dom';
+import { browserHistory, Router, Route } from 'react-router'
+
+import About from './About.jsx'
+import DataSources from './DataSources.jsx'
 import NavBar from './NavBar.jsx'
 import SearchScreen from './SearchScreen.jsx'
 
@@ -13,15 +17,26 @@ injectTapEventPlugin();
 
 class App extends React.Component {
 
-
-
-
     render () {
         return <div>
-            <NavBar />
+            <NavBar selected="/" />
             <SearchScreen url="/genomes" items_per_page="100"/>
         </div>
     }
 }
 
-render(<App/>, document.getElementById('app'));
+//render(<App/>, document.getElementById('app'));
+/*
+render((
+  <Router history={hashHistory}>
+    <Route path="/" component={App}/>
+  </Router>
+), document.getElementById('app'))
+*/
+render((
+  <Router history={browserHistory}>
+      <Route path="/" component={App}/>
+      <Route path="/datasources" component={DataSources}/>
+      <Route path="/about" component={About}/>
+  </Router>
+), document.getElementById('app'))

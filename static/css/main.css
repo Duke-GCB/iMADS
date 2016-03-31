@@ -1,0 +1,30 @@
+
+.std_left_right_margin {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.std_bottom_margin {
+    margin-bottom: 30px;
+}
+/* styles for use with ./table/*.jsx */
+.table_header_cell {
+    padding: 10px;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-family: Roboto, sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.0625em;
+}
+
+.table_cell {
+    padding: 10px;
+    display: inline-block;
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+}
+
+.table_row {
+    border-bottom: 1px solid grey;
+}

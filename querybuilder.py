@@ -106,3 +106,16 @@ class PredictionQueryBuilder(object):
     def _sql_limit_and_offset(self):
         self.params.extend([self.limit, self.offset])
         return self.LIMIT_OFFSET_SQL
+
+
+class DataSourcesQueryNames(object):
+    DESCRIPTION = 'description'
+    DOWNLOADED = 'downloaded'
+    URL = 'url'
+
+
+class DataSourcesQueryBuilder(object):
+    FETCH_DATA_SOURCES_SQL = """select description, downloaded, url from data_source order by downloaded;"""
+
+    def make_query_and_params(self):
+        return self.FETCH_DATA_SOURCES_SQL, []
