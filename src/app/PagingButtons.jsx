@@ -20,7 +20,7 @@ class PagingButtons extends React.Component {
             child = <span className="sr-only">(current)</span>;
         }
         var func = this.onClickPage.bind(this, page_num);
-        return <li {...props} ><a href="#" style={{width: '3em', textAlign: 'center'}} onClick={func}>{page_num} {child}</a></li>;
+        return <li {...props} key={page_num} ><a href="#" style={{width: '3em', textAlign: 'center'}} onClick={func}>{page_num} {child}</a></li>;
     }
 
     make_labeled_button(label, disabled, page_num) {
@@ -29,7 +29,7 @@ class PagingButtons extends React.Component {
             props['className'] = 'disabled';
         }
         var func = this.onClickPage.bind(this, page_num);
-        return <li {...props} ><a href="#" onClick={func}><span>{label}</span></a></li>;
+        return <li {...props} key={label}><a href="#" onClick={func}><span>{label}</span></a></li>;
     }
 
     make_buttons(start_page, current_page, end_page) {

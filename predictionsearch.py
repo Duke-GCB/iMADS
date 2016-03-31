@@ -12,6 +12,7 @@ class SearchArgs(object):
     MAX_PREDICTION_SORT = 'max_prediction_sort'
     MAX_PREDICTION_GUESS = 'max_prediction_guess'
     FORMAT = 'format'
+    INCLUDE_ALL = 'include_all'
 
     def __init__(self, max_stream_val, args):
         self.max_stream_val = max_stream_val
@@ -61,6 +62,12 @@ class SearchArgs(object):
             raise ValueError("You must specify both {} and {}".format(self.PAGE, self.PER_PAGE))
         return None, None
 
+    def get_format(self):
+        return self.args.get(self.FORMAT, 'json')
+
+    def get_include_all(self):
+        return self.args.get(self.INCLUDE_ALL, '') == 'true'
+
 
 class PredictionSearch(object):
     def __init__(self, db, genome, max_stream_val, args, enable_guess=True):
@@ -71,7 +78,7 @@ class PredictionSearch(object):
 
     def get_predictions(self):
         upstream = self.args.get_upstream()
-        downstream = self.args.get_upstream()
+        downstream = self.args.get_downstream()
         query, params = self._create_query_and_params()
         cur = self.db.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute(query, params)
@@ -90,12 +97,13 @@ class PredictionSearch(object):
             predictions.append({
                  'name': row[PredictionQueryNames.NAME],
                  'common_name': row[PredictionQueryNames.COMMON_NAME],
-                 'chrom': row[PredictionQueryNames.CHROM] + " " + strand,
+                 'chrom': row[PredictionQueryNames.CHROM],
                  'max': row[PredictionQueryNames.MAX_VALUE],
                  'start': start,
                  'end': end,
                  'values': row[PredictionQueryNames.PRED],
-             })
+                 'strand': strand,
+            })
         cur.close()
         return predictions
 
@@ -126,3 +134,4 @@ class PredictionSearch(object):
     def get_per_page(self):
         page, per_page = self.args.get_page_and_per_page()
         return per_page
+

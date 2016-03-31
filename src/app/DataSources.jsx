@@ -32,7 +32,7 @@ class DataSources extends React.Component {
     componentDidMount() {
         console.log('fetching datasources data');
         $.ajax({
-          url: '/api/datasources',
+          url: '/api/v1/datasources',
           dataType: 'json',
             type: 'GET',
           cache: false,

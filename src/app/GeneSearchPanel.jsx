@@ -6,9 +6,13 @@ const HEADER_LABEL = '';
 
 class SelectItem extends React.Component {
     render() {
+        var sel = this.props.selected;
+        if (sel === "") {
+            sel = 'ok';
+        }
         return <div>
                     <label>{this.props.title}:</label>
-                        <select className="form-control" value={this.props.selected} onChange={this.props.onChange}>
+                        <select className="form-control" value={sel} onChange={this.props.onChange}>
                             {this.props.options}
                         </select>
                 </div>
@@ -54,8 +58,8 @@ class GeneSearchPanel extends React.Component {
         super(props);
         var genomes = this.props.genome_data;
         var selected_genome = '';
-        var gene_list = [];
-        var models = [];
+        var gene_list = "";
+        var model = "";
         var genome_names = Object.keys(genomes);
         if (this.props.search_settings.genome) {
             var new_settings = this.props.search_settings;
@@ -73,12 +77,12 @@ class GeneSearchPanel extends React.Component {
                 selected_genome = genome_names[0];
                 var genome_data = genomes[selected_genome];
                 gene_list = genome_data.gene_lists[0];
-                models = genome_data.models[0];
+                model = genome_data.models[0];
             }
             this.state = {
                 genome: selected_genome,
                 gene_list: gene_list,
-                model: models,
+                model: model,
                 all: false,
                 upstream: 200,
                 downstream: 200,
@@ -156,6 +160,8 @@ class GeneSearchPanel extends React.Component {
         var value = this.parseStreamValue(e.target.value);
         if (value) {
             this.setState({upstream: value}, this.onClickSearch);
+        } else {
+            alert('Enter value < 5000.');
         }
     }
 
@@ -201,13 +207,13 @@ class GeneSearchPanel extends React.Component {
             for (var i = 0; i < genome_types.length; i++) {
                 var name = genome_types[i];
                 var genome_info = this.props.genome_data[name];
-                assembly_options.push(<option value={name}>{name}</option>);
+                assembly_options.push(<option key={name} value={name}>{name}</option>);
                 if (name === current_genome) {
                     genome_info.models.forEach(function (model) {
-                        protein_options.push(<option value={model}>{model}</option>);
+                        protein_options.push(<option key={model}  value={model}>{model}</option>);
                     });
                     genome_info.gene_lists.forEach(function (gene_list) {
-                        gene_list_options.push(<option value={gene_list}>{gene_list}</option>);
+                        gene_list_options.push(<option key={gene_list}  value={gene_list}>{gene_list}</option>);
                     });
                 }
             }
@@ -216,10 +222,8 @@ class GeneSearchPanel extends React.Component {
                 <h4>Filter</h4>
                 <SelectItem title="Assembly" selected={this.state.genome} options={assembly_options}
                             onChange={this.onChangeGenome}/>
-
                 <SelectItem title="Protein" selected={this.state.model} options={protein_options}
                             onChange={this.onChangeModel}/>
-
                 <SelectItem title="Gene list" selected={this.state.gene_list} options={gene_list_options}
                             onChange={this.onChangeGeneList}/>
                 <StreamInput title="Bases upstream:" value={this.state.upstream} onChange={this.onChangeUpstream}/>

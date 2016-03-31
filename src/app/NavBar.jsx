@@ -23,7 +23,7 @@ class NavBar extends React.Component {
             if (link.to === this.props.selected) {
                 className = "Active";
             }
-            items.push(<li className={className}><Link to={link.to}>{link.label}</Link></li>)
+            items.push(<li key={link.to} className={className}><Link to={link.to}>{link.label}</Link></li>)
         }
         return (
             <nav className="navbar navbar-default">

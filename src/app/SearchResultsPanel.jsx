@@ -3,15 +3,6 @@ import React from 'react';
 import PagingButtons from './PagingButtons.jsx'
 import GeneSearchPanel from './GeneSearchPanel.jsx'
 
-var HEAT_DATA = [{"value" : 0.263, "start" : 778454},
-                 {"value" : 0.317, "start" : 778615},
-                 {"value" : 0.286, "start" : 778640},
-                 {"value" : 0.313, "start" : 778642},
-                 {"value" : 0.335, "start" : 778690},
-                 {"value" : 0.297, "start" : 778797}];
-var heat_strand = '+';
-var HEAT_HIGH = 778626;
-
 class SearchResultsPanel extends React.Component {
     constructor(props) {
         super(props);
@@ -119,37 +110,25 @@ class SearchResultsPanel extends React.Component {
             borderBottom: '1px solid grey'
         };
         var queryResults = this.props.search_results;
-        //var rows = [];
-        var rows2 = [];
+        var rows = [];
         for (var i = 0; i < queryResults.length; i++) {
             var rowData = queryResults[i];
-            /*
-            rows.push(<tr style={rowStyle}>
-                          <td style={smallPadding}>{rowData.common_name}</td>
-                          <td style={smallPadding}>{rowData.name}</td>
-                          <td style={smallPadding}>{rowData.max}</td>
-                          <td style={smallPadding}>{rowData.chrom}</td>
-                          <td style={smallPadding}>{rowData.start}</td>
-                          <td style={smallPadding}>{rowData.end}</td>
-                        </tr>);
-                        */
             var heatMapData = <span></span>;
 
             if (search_settings.all === true) {
-                var heatMapWidth = 100;//(search_settings.upstream + search_settings.downstream) * 2;
+                var heatMapWidth = 100;
                 var heatMapHeight = 18;
                 var rects = [];
-                //aliceBlue = 240,248,255
                 var min = Number.MAX_SAFE_INTEGER;
                 var max = Number.MIN_SAFE_INTEGER;
+                var SCALING_AMT = 0.3;
                 for (var j = 0; j < rowData.values.length; j++) {
                     var data = rowData.values[j];
                     min = Math.min(min, data.start);
                     max = Math.max(max, data.start);
                     var start = rowData.start - data.start + search_settings.upstream;
-                    start = parseInt(start * 0.3);
-                    //FIRST: 36593131
-                    //HIGH:  36594591
+
+                    start = parseInt(start * SCALING_AMT);
                     var red = 255;
                     var green = 0;
                     var blue = 0;
@@ -161,15 +140,11 @@ class SearchResultsPanel extends React.Component {
                     <rect x={start} width={5} height={heatMapHeight} style={{fill:fill}}  />
                     </g>);
                 }
-                console.log('min:' + min);
-                console.log('max:' + max);
-
                 heatMapData = <svg width="200" height="18"  >
                                 {rects}
                             </svg>
-
             }
-            rows2.push(<div style={borderBottom}>
+            rows.push(<div key={i} style={borderBottom}>
 
                           <span style={resultCell}>{rowData.common_name}</span>
                           <span style={resultCell}>{rowData.name}</span>
@@ -187,18 +162,18 @@ class SearchResultsPanel extends React.Component {
         return  <div className="container" style={parentStyle}>
                     <div className="row">
 
-                        <div className="col-md-offset-2 col-md-10" >
+                        <div className="col-md-offset-2 col-sm-offset-2 col-xs-offset-2 col-col-md-10 col-sm-10" >
                             <h3>TF Binding Predictions</h3>
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-md-2"  >
+                        <div className="col-md-2 col-sm-2 col-xs-2"  >
                             <GeneSearchPanel
                                     genome_data={this.props.genome_data}
                                     search={this.search}
                                     search_settings={this.props.search_settings} />
                         </div>
-                        <div className="col-md-10" >
+                        <div className="col-md-10 col-sm-10 col-xs-10" >
                             <div style={{backgroundColor: '#235f9c', color: 'white'}} >
                                   <span style={resultHeaderCell}>Name</span>
                                   <span style={resultHeaderCell}>ID</span>
@@ -209,7 +184,7 @@ class SearchResultsPanel extends React.Component {
                                   {heatMapHeader}
                             </div>
                             <div style={{overflowY: 'auto', height:'calc(100vh - 300px)'}} id="resultsGridContainer">
-                                {rows2}
+                                {rows}
                             </div>
                             <nav>
                                 <PagingButtons start_page={start_page} current_page={this.props.page} end_page={end_page}

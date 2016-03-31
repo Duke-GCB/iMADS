@@ -18,9 +18,9 @@ class PredictionQueryBuilder(object):
  model_name = %s
  and
  case strand when '+' then
-  (txstart - %s) < start_range and (txstart + %s) > start_range
+  (txstart - %s) <= start_range and (txstart + %s) >= start_range
  else
-  (txend - %s) < end_range and (txend + %s) > end_range
+  (txend - %s) <= end_range and (txend + %s) >= end_range
  end"""
     VALUE_GT_SQL = " and value > %s"
     GROUP_BY_NAME_SQL = " group by name"
