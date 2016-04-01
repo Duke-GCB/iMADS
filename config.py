@@ -2,7 +2,6 @@ from yaml import load
 import os
 
 DEFAULT_DB_HOST = "localhost"
-DB_HOST_ENV = "PG_PORT_5432_TCP_ADDR"
 DEFAULT_DB_NAME = "pred"
 DEFAULT_DB_USER = "pred_user"
 DEFAULT_DB_PASS = "pred_pass"
@@ -26,9 +25,6 @@ def parse_config(filename):
 class DBConfig(object):
     def __init__(self, json_db):
         self.host = json_db.get('host', DEFAULT_DB_HOST)
-        pg_env_host = os.environ.get(DB_HOST_ENV, '')
-        if pg_env_host:
-            self.host = pg_env_host
         self.dbname = json_db.get('dbname', DEFAULT_DB_NAME)
         self.user = json_db.get('user', DEFAULT_DB_USER)
         self.password = json_db.get('password', DEFAULT_DB_PASS)
