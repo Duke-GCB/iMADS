@@ -1,0 +1,15 @@
+version: '2'
+services:
+  web:
+    image: jbradley/tfpred
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    command: gunicorn --bind 0.0.0.0:80 predictions:app
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=pred_user 
+      - POSTGRES_PASSWORD=pred_pass 
+      - POSTGRES_DB=pred

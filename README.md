@@ -45,3 +45,14 @@ In another window:
 python predictions.py
 ```   
 
+
+### To rebuild the docker image:
+```
+docker build -t jbradley/tfpred .
+docker push jbradley/tfpred 
+```
+
+### To run the docker image:
+```
+docker-compose up
+```

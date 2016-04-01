@@ -128,9 +128,9 @@ def make_predictions_csv_response(predictions, args):
 
 def get_all_values(prediction, size, args):
     values = [0] * size
-    offset = prediction['start']
+    offset = int(prediction['start'])
     for data in prediction['values']:
-        start = data['start']
+        start = int(data['start'])
         value = data['value']
         idx = start - offset
         values[idx] = value

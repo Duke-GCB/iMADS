@@ -98,9 +98,9 @@ class PredictionSearch(object):
                  'name': row[PredictionQueryNames.NAME],
                  'common_name': row[PredictionQueryNames.COMMON_NAME],
                  'chrom': row[PredictionQueryNames.CHROM],
-                 'max': row[PredictionQueryNames.MAX_VALUE],
-                 'start': start,
-                 'end': end,
+                 'max': str(row[PredictionQueryNames.MAX_VALUE]),
+                 'start': str(start),
+                 'end': str(end),
                  'values': row[PredictionQueryNames.PRED],
                  'strand': strand,
             })
