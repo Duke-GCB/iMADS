@@ -1,132 +1,141 @@
 #!/usr/bin/env python
 from __future__ import print_function
-import os
-import argparse
-from sqlalchemy import Column, String, BigInteger, Numeric
-from bx.wiggle import IntervalReader
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from flask import Flask, request, render_template
-from flask import Response
+import psycopg2
+import psycopg2.extras
+from flask import Flask, request, render_template, jsonify, g, make_response, redirect, Response
+from config import parse_config, CONFIG_FILENAME
+from predictionsearch import PredictionSearch
+from datasource import DataSources
+
 app = Flask(__name__)
-
-Base = declarative_base()
-
-
-class Prediction(Base):
-    __tablename__ = 'prediction'
-    chrom = Column(String(), nullable=False, primary_key=True)
-    start_range = Column(BigInteger(), nullable=False, primary_key=True)
-    end_range = Column(BigInteger(), nullable=False)
-    value = Column(Numeric(), nullable=False)
-
-database_str = os.environ.get('PRED_DB', None)
-if not database_str:
-    database_str = 'sqlite:///pred.db'
-    print("WARNING: PRED_DB environment variable not defined defaulting to sqlite pred.db.")
-engine = create_engine(database_str)
-# Bind the engine to the metadata of the Base class so that the
-# declaratives can be accessed through a DBSession instance
-Base.metadata.bind = engine
-DBSession = sessionmaker(bind=engine)
+g_config = parse_config(CONFIG_FILENAME)
+g_dbconfig = g_config.dbconfig
 
 
-def insert_records_into_db(input_file):
-    cnt = 0
-    with open(input_file, 'r') as infile:
-        session = DBSession()
-        reader = IntervalReader(infile)
-        for chr_data in reader:
-            (chrom, start, end, strand, value) = chr_data
-            prediction = Prediction(chrom=chrom, start_range=start, end_range=end, value=value)
-            session.add(prediction)
-            cnt += 1
-            if cnt % 10000 == 0:
-                print("Cnt:" + str(cnt))
-                session.commit()
-        print('Committing final')
-        session.commit()
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        print("Creating database connection.")
+        db = g._database = create_db_connection(g_dbconfig)
+    return db
 
 
-def read_records(session, chroms, start, end, vstart, vend):
-    chrom_ary = [x for x in chroms.split(" ") if x]
-    query = session.query(Prediction)
-    if chroms != 'all':
-        query = query.filter(Prediction.chrom.in_(chrom_ary))
-    if start:
-        query = query.filter(Prediction.start_range > start)
-    if end:
-        query = query.filter(Prediction.end_range <= end)
-    if vstart:
-        query = query.filter(Prediction.value > vstart)
-    if vend:
-        query = query.filter(Prediction.value <= vend)
-    return query.order_by(Prediction.chrom, Prediction.start_range).all()
+def create_db_connection(config):
+    return psycopg2.connect('host=' + config.host +
+                            ' dbname=' + config.dbname +
+                            ' user=' + config.user +
+                            ' password=' + config.password)
 
 
-def check_chroms(chroms):
-    if not chroms:
-        return 'You must enter a value from chromosomes.'
-    return ''
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        print("Cleanup database connection.")
+        db.close()
 
 
-def check_range(start, end):
-    if start and not start.isnumeric():
-        return 'From must be numeric.'
-    if end and not end.isnumeric():
-        return 'Through must be numeric.'
-    return ''
+@app.route('/', methods=['GET'])
+@app.route('/datasources', methods=['GET'])
+@app.route('/about', methods=['GET'])
+def root():
+    return render_template('index.html')
 
 
-@app.route('/', methods=['GET', 'POST'])
-def search():
-    if request.method == 'POST':
-        chroms = request.form['chroms']
-        start = request.form['start']
-        end = request.form['end']
-        vstart = request.form['vstart']
-        vend = request.form['vend']
-        csv = request.form.get('csv',None)
+@app.route('/api/v1/datasources', methods=['GET'])
+def get_api_datasources():
+    data_sources = DataSources(get_db()).get_items()
+    blob = jsonify({'results': data_sources})
+    r = make_response(blob)
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    print("Returning stuff.")
+    return r
 
-        chroms_error = check_chroms(chroms)
-        range_error = check_range(start, end)
-        vrange_error = ''#check_range(vstart, vend)
-        results = []
-        if not chroms_error and not range_error and not vrange_error:
-            session = DBSession()
-            results = read_records(session, chroms, start, end, vstart, vend)
-            session.close()
-            if csv:
-                return render_csv(results)
-        return render_template('search.html', chroms=chroms, start=start, end=end,
-                               range_error=range_error, chroms_error=chroms_error,
-                               vstart=vstart, vend=vend,
-                               vrange_error=vrange_error,
-                               results=results)
+
+@app.route('/api/v1/genomes', methods=['GET'])
+def get_genome_versions():
+    result = {}
+    for genome_data in g_config.genome_data_list:
+        genome = genome_data.genomename
+        model_names = [model.name for model in genome_data.prediction_lists]
+        gene_list_names = [gene_list.source_table for gene_list in genome_data.gene_lists]
+        result[genome] = {
+            'models': model_names,
+            'gene_lists': gene_list_names,
+        }
+    blob = jsonify({'genomes': result})
+    r = make_response(blob)
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    return r
+
+
+def get_predictions_with_guess(genome, args):
+    search = PredictionSearch(get_db(), genome, g_config.binding_max_offset, args, enable_guess=True)
+    predictions = search.get_predictions()
+    if search.has_max_prediction_guess():  # repeat without guess if we didn't get enough values
+        per_page = search.get_per_page()
+        if per_page:
+            if len(predictions) < per_page:
+                search.enable_guess = False
+                predictions = search.get_predictions()
+    return predictions, search.args
+
+
+@app.route('/api/v1/genomes/<genome>/prediction', methods=['POST','GET'])
+def prediction_search(genome):
+    print("finding predictions.")
+    predictions, args = get_predictions_with_guess(genome, request.args)
+    response_format = args.get_format()
+    if response_format == 'json':
+        r = make_json_response('predictions', predictions)
+    elif response_format == 'tsv' or response_format == 'csv':
+        gen = make_predictions_csv_response(predictions, args)
+        r = Response(gen, mimetype='text/' + response_format)
     else:
-        return render_template('search.html')
+        raise ValueError("Unexpected format:{}".format(response_format))
+
+    return r
 
 
-def render_csv(results):
-    def generate():
-        yield 'Chromosome,Value,Start,End\n'
-        for row in results:
-            list = [row.chrom, str(row.value), str(row.start_range), str(row.end_range)]
-            yield ','.join(list) + '\n'
-    return Response(generate(), mimetype='text/csv')
+def make_json_response(name, obj):
+    blob = jsonify({
+        name: obj,
+    })
+    return make_response(blob)
 
+
+def make_predictions_csv_response(predictions, args):
+    size = args.get_upstream() + args.get_downstream() + 1
+    separator = ','
+    if args.get_format() == 'tsv':
+        separator = '\t'
+    headers = ['Name', 'ID', 'Max', 'Location', 'Start', 'End']
+    if args.get_include_all():
+        headers.extend([str(i) for i in range(1, size + 1)])
+    yield separator.join(headers) + '\n'
+    for prediction in predictions:
+        items = [
+            prediction['common_name'],
+            prediction['name'],
+            str(prediction['max']),
+            prediction['chrom'],
+            str(prediction['start']),
+            str(prediction['end'])]
+        if args.get_include_all():
+            items.extend(get_all_values(prediction, size, args))
+        yield separator.join(items) + '\n'
+
+
+def get_all_values(prediction, size, args):
+    values = [0] * size
+    offset = prediction['start']
+    for data in prediction['values']:
+        start = data['start']
+        value = data['value']
+        idx = start - offset
+        values[idx] = value
+    return [str(val) for val in values]
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Predictions database. Uses PRED_DB for database connection str.')
-    parser.add_argument('--wigfile', help='Add wig file to database.')
-    parser.add_argument('--web', help='Run web server to view wig data.', action="store_true")
-    args = parser.parse_args()
-    if not args.wigfile and not args.web:
-        parser.print_help()
-    else:
-        if args.wigfile:
-            insert_records_into_db(args.wigfile)
-        if args.web:
-            app.debug = True
-            app.run()
+    app.debug = True
+    app.run()
