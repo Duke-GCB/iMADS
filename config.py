@@ -7,14 +7,19 @@ DEFAULT_DB_USER = "pred_user"
 DEFAULT_DB_PASS = "pred_pass"
 DEFAULT_MAX_BINDING_OFFSET = 5000
 
+DB_HOST_ENV = "DB_HOST"
+DB_NAME_ENV = "DB_NAME"
+DB_USER_ENV = "DB_USER"
+DB_PASS_ENV = "DB_PASS"
 
 CONFIG_FILENAME = 'predictionsconf.yaml'
+
 
 def parse_config(filename):
     config = None
     with open(filename) as data_file:
         data = load(data_file)
-        dbconfig = DBConfig(data.get('db', {}))
+        dbconfig = DBConfig()
         config = Config(data, dbconfig)
         genome_data_ary = data['genome_data']
         for genome_data in genome_data_ary:
@@ -24,10 +29,10 @@ def parse_config(filename):
 
 class DBConfig(object):
     def __init__(self, json_db):
-        self.host = json_db.get('host', DEFAULT_DB_HOST)
-        self.dbname = json_db.get('dbname', DEFAULT_DB_NAME)
-        self.user = json_db.get('user', DEFAULT_DB_USER)
-        self.password = json_db.get('password', DEFAULT_DB_PASS)
+        self.host = os.environ.get(DB_HOST_ENV, DEFAULT_DB_HOST)
+        self.dbname = os.environ.get(DB_NAME_ENV, DEFAULT_DB_NAME)
+        self.user = os.environ.get(DB_USER_ENV, DEFAULT_DB_USER)
+        self.password = os.environ.get(DB_PASS_ENV, DEFAULT_DB_PASS)
 
 
 class Config(object):
