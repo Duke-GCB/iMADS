@@ -41,6 +41,8 @@ class SearchScreen extends React.Component {
              search_settings: {},
              current_page: 1,
              next_pages: 0,
+             genome_data_loaded: false,
+             search_data_loaded: false,
          };
          this.search = this.search.bind(this);
          this.edit = this.edit.bind(this);
@@ -57,6 +59,7 @@ class SearchScreen extends React.Component {
           success: function(data) {
             this.setState({
                 genome_data: data.genomes,
+                genome_data_loaded: true,
             });
           }.bind(this),
           error: function(xhr, status, err) {
@@ -72,6 +75,7 @@ class SearchScreen extends React.Component {
             search_settings: search_settings,
             page: page,
             per_page: this.props.items_per_page,
+            search_data_loaded: false,
         });
         $.ajax({
           url: this.search_url(search_settings, this.props.items_per_page, page),
@@ -82,6 +86,7 @@ class SearchScreen extends React.Component {
             this.setState({
                 search_results: data.predictions,
                 next_pages: data.next_pages,
+                search_data_loaded: true,
             });
           }.bind(this),
           error: function(xhr, status, err) {
@@ -121,12 +126,13 @@ class SearchScreen extends React.Component {
         var url ='/api/v1/genomes/' + search_settings.genome +
             '/prediction?protein=' + search_settings.model +
             '&gene_list=' + search_settings.gene_list +
-             '&upstream=' + search_settings.upstream +
+            '&upstream=' + search_settings.upstream +
             '&downstream='  + search_settings.downstream +
             '&include_all=' + search_settings.all +
             '&max_prediction_sort=' + search_settings.maxPredictionSort +
             '&format=' + format;
-        window.location.assign(url);
+        //window.open(url, '_self')
+        return url;
     }
 
     render () {
@@ -145,6 +151,8 @@ class SearchScreen extends React.Component {
                                        change_page={this.change_page}
                                        genome_data={this.state.genome_data}
                                        search={this.search}
+                                       genome_data_loaded={this.state.genome_data_loaded}
+                                       search_data_loaded={this.state.search_data_loaded}
             />
         }
     }

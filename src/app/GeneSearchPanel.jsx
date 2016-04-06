@@ -1,4 +1,5 @@
 import React from 'react';
+import Loader from 'react-loader';
 
 import NavMenuButton from './NavMenuButton.jsx'
 
@@ -18,8 +19,6 @@ class SelectItem extends React.Component {
                 </div>
     }
 }
-
-
 
 class StreamInput extends React.Component {
     render() {
@@ -96,8 +95,7 @@ class GeneSearchPanel extends React.Component {
         this.onChangeUpstream = this.onChangeUpstream.bind(this);
         this.onChangeDownstream = this.onChangeDownstream.bind(this);
         this.onChangeMaxPredictionSort = this.onChangeMaxPredictionSort.bind(this);
-        this.onClickSearch = this.onClickSearch.bind(this);
-        this.onClickClearInput = this.onClickClearInput.bind(this);
+        this.runSearch = this.runSearch.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -105,7 +103,7 @@ class GeneSearchPanel extends React.Component {
             var genomeName = Object.keys(nextProps.genome_data)[0];
             var newState = this.switchGenomeState(nextProps.genome_data, genomeName);
             if (this.state.genome == '') {
-                this.setState(newState, this.onClickSearch);
+                this.setState(newState, this.runSearch);
             }
             else {
                 this.setState(newState);
@@ -129,7 +127,7 @@ class GeneSearchPanel extends React.Component {
 
     onChangeGenome(e) {
         var value = e.target.value;
-        this.setState(this.switchGenomeState(this.props.genome_data, value), this.onClickSearch);
+        this.setState(this.switchGenomeState(this.props.genome_data, value), this.runSearch);
     }
 
     switchGenomeState(genomeData, genomeName) {
@@ -141,11 +139,11 @@ class GeneSearchPanel extends React.Component {
     }
 
     onChangeGeneList(e) {
-        this.setState({gene_list: e.target.value}, this.onClickSearch);
+        this.setState({gene_list: e.target.value}, this.runSearch);
     }
 
     onChangeModel(e) {
-        this.setState({model: e.target.value}, this.onClickSearch);
+        this.setState({model: e.target.value}, this.runSearch);
     }
 
     getGenomeInfo(genomeName) {
@@ -153,13 +151,13 @@ class GeneSearchPanel extends React.Component {
     }
 
     onChangeAll(value) {
-        this.setState({all: value}, this.onClickSearch);
+        this.setState({all: value}, this.runSearch);
     }
 
     onChangeUpstream(e) {
         var value = this.parseStreamValue(e.target.value);
         if (value) {
-            this.setState({upstream: value}, this.onClickSearch);
+            this.setState({upstream: value}, this.runSearch);
         } else {
             alert('Enter value < 5000.');
         }
@@ -168,7 +166,7 @@ class GeneSearchPanel extends React.Component {
     onChangeDownstream(e) {
         var value = this.parseStreamValue(e.target.value);
         if (value) {
-            this.setState({downstream: value}, this.onClickSearch);
+            this.setState({downstream: value}, this.runSearch);
         }
     }
 
@@ -182,15 +180,11 @@ class GeneSearchPanel extends React.Component {
     }
 
     onChangeMaxPredictionSort(value) {
-        this.setState({maxPredictionSort: value}, this.onClickSearch);
+        this.setState({maxPredictionSort: value}, this.runSearch);
     }
 
-    onClickSearch() {
+    runSearch() {
         this.props.search(this.state, 1);
-    }
-
-    onClickClearInput() {
-        console.log("Clear Input!")
     }
 
     render() {
@@ -222,7 +216,7 @@ class GeneSearchPanel extends React.Component {
                 <h4>Filter</h4>
                 <SelectItem title="Assembly" selected={this.state.genome} options={assembly_options}
                             onChange={this.onChangeGenome}/>
-                <SelectItem title="Protein" selected={this.state.model} options={protein_options}
+                <SelectItem title="Protein/Model" selected={this.state.model} options={protein_options}
                             onChange={this.onChangeModel}/>
                 <SelectItem title="Gene list" selected={this.state.gene_list} options={gene_list_options}
                             onChange={this.onChangeGeneList}/>

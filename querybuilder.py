@@ -27,11 +27,11 @@ class PredictionQueryBuilder(object):
     QUERY_BASE = """select
  max(common_name) as common_name,
  name,
- round(max(value),3) max_value,
+ round(max(value),4) max_value,
  max(chrom) as chrom,
  max(strand) as strand,
  max(case strand when '+' then txstart else txend end) as gene_start,
- json_agg(json_build_object('value', value,
+ json_agg(json_build_object('value', round(value, 4),
   'start', (case strand when '+' then start_range else end_range end))) as pred
  from gene_prediction
  """ + WHERE_BASE
