@@ -43,5 +43,24 @@ webpack --progress --colors --watch
 In another window:
 ```
 python predictions.py
-```   
+```
 
+
+### To rebuild the docker image:
+```
+docker build -t jbradley/tfpred .
+docker push jbradley/tfpred 
+```
+
+### To run production via docker-compose:
+Download `docker-compose.yml` and `.env_sample`.
+Rename `.env_sample` to `.env_`
+Change DB_PASS_ENV and POSTGRES_PASSWORD to be whatever password you want.
+Start the database and webserver.
+```
+docker-compose up -d
+```
+Populate the database. (This will take quite a while depending upon predictionsconf.yaml)
+```
+docker-compose run --no-deps --rm web python load.py 
+```

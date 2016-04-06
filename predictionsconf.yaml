@@ -1,10 +1,5 @@
 binding_max_offset: 5000
 download_dir: "/tmp/ucscjpb"
-db:
-  host: "localhost"
-  dbname: "pred"
-  user: "pred_user"
-  password: "pred_pass"
 genome_data:
   -
     genome: "hg19"

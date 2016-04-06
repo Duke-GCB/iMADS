@@ -1,4 +1,5 @@
 import React from 'react';
+import Loader from 'react-loader';
 
 import PagingButtons from './PagingButtons.jsx'
 import GeneSearchPanel from './GeneSearchPanel.jsx'
@@ -137,7 +138,7 @@ class SearchResultsPanel extends React.Component {
                     rects.push(
                     <g>
                         <title>{data.value} @ {data.start}</title>
-                    <rect x={start} width={5} height={heatMapHeight} style={{fill:fill}}  />
+                    <rect x={start} width={3} height={heatMapHeight} style={{fill:fill}}  />
                     </g>);
                 }
                 heatMapData = <svg width="200" height="18"  >
@@ -152,7 +153,7 @@ class SearchResultsPanel extends React.Component {
                           <span style={resultSmallCell}>{rowData.chrom}</span>
                           <span style={resultSmallCell}>{rowData.start}</span>
                           <span style={resultSmallCell}>{rowData.end}</span>
-                          {heatMapData}
+                          <span style={resultSmallCell}>{heatMapData}</span>
                         </div>);
         }
         var smallMargin = { margin: '10px' };
@@ -168,10 +169,14 @@ class SearchResultsPanel extends React.Component {
                     </div>
                     <div className="row">
                         <div className="col-md-2 col-sm-2 col-xs-2"  >
-                            <GeneSearchPanel
-                                    genome_data={this.props.genome_data}
-                                    search={this.search}
-                                    search_settings={this.props.search_settings} />
+
+                                <GeneSearchPanel
+                                        genome_data={this.props.genome_data}
+                                        search={this.search}
+                                        search_settings={this.props.search_settings}
+                                        loaded={this.props.genome_data_loaded}
+                                />
+
                         </div>
                         <div className="col-md-10 col-sm-10 col-xs-10" >
                             <div style={{backgroundColor: '#235f9c', color: 'white'}} >
@@ -184,7 +189,9 @@ class SearchResultsPanel extends React.Component {
                                   {heatMapHeader}
                             </div>
                             <div style={{overflowY: 'auto', height:'calc(100vh - 300px)'}} id="resultsGridContainer">
-                                {rows}
+                                <Loader loaded={this.props.search_data_loaded} >
+                                    {rows}
+                                </Loader>
                             </div>
                             <nav>
                                 <PagingButtons start_page={start_page} current_page={this.props.page} end_page={end_page}
@@ -200,8 +207,8 @@ class SearchResultsPanel extends React.Component {
 
                                       </button>
                                       <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                        <li><a href="#" onClick={this.downloadTabDelimited}>Tab Delimited</a></li>
-                                        <li><a href="#" onClick={this.downloadCsv}>CSV Format</a></li>
+                                        <li><a href={this.props.download_all('tsv')} download>Tab Delimited</a></li>
+                                        <li><a href={this.props.download_all('csv')} download>CSV Format</a></li>
                                       </ul>
                                 </div>
                             </nav>

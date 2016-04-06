@@ -37,6 +37,7 @@ def close_connection(exception):
 
 @app.route('/', methods=['GET'])
 @app.route('/datasources', methods=['GET'])
+@app.route('/models', methods=['GET'])
 @app.route('/about', methods=['GET'])
 def root():
     return render_template('index.html')
@@ -89,8 +90,12 @@ def prediction_search(genome):
     if response_format == 'json':
         r = make_json_response('predictions', predictions)
     elif response_format == 'tsv' or response_format == 'csv':
+        filename = 'prediction_{}_{}.{}'.format(args.get_upstream(), args.get_downstream(), response_format)
+        content_disposition = 'attachment; filename="{}"'.format(filename)
+        headers = {'Content-Disposition': content_disposition}
         gen = make_predictions_csv_response(predictions, args)
-        r = Response(gen, mimetype='text/' + response_format)
+        r = Response(gen, mimetype='application/octet-stream', headers=headers)
+
     else:
         raise ValueError("Unexpected format:{}".format(response_format))
 
@@ -105,13 +110,15 @@ def make_json_response(name, obj):
 
 
 def make_predictions_csv_response(predictions, args):
-    size = args.get_upstream() + args.get_downstream() + 1
+    up = args.get_upstream()
+    down = args.get_downstream()
+    size = up + down + 1
     separator = ','
     if args.get_format() == 'tsv':
         separator = '\t'
     headers = ['Name', 'ID', 'Max', 'Location', 'Start', 'End']
     if args.get_include_all():
-        headers.extend([str(i) for i in range(1, size + 1)])
+        headers.extend([str(i) for i in range(-1*up, down+1)])
     yield separator.join(headers) + '\n'
     for prediction in predictions:
         items = [
@@ -128,9 +135,9 @@ def make_predictions_csv_response(predictions, args):
 
 def get_all_values(prediction, size, args):
     values = [0] * size
-    offset = prediction['start']
+    offset = int(prediction['start'])
     for data in prediction['values']:
-        start = data['start']
+        start = int(data['start'])
         value = data['value']
         idx = start - offset
         values[idx] = value
