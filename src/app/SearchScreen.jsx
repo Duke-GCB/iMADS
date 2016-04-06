@@ -124,6 +124,7 @@ class SearchScreen extends React.Component {
              '&upstream=' + search_settings.upstream +
             '&downstream='  + search_settings.downstream +
             '&include_all=' + search_settings.all +
+            '&max_prediction_sort=' + search_settings.maxPredictionSort +
             '&format=' + format;
         window.location.assign(url);
     }

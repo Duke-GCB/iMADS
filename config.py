@@ -28,7 +28,7 @@ def parse_config(filename):
 
 
 class DBConfig(object):
-    def __init__(self, json_db):
+    def __init__(self):
         self.host = os.environ.get(DB_HOST_ENV, DEFAULT_DB_HOST)
         self.dbname = os.environ.get(DB_NAME_ENV, DEFAULT_DB_NAME)
         self.user = os.environ.get(DB_USER_ENV, DEFAULT_DB_USER)
