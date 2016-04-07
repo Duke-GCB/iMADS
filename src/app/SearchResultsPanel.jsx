@@ -3,6 +3,17 @@ import Loader from 'react-loader';
 
 import PagingButtons from './PagingButtons.jsx'
 import GeneSearchPanel from './GeneSearchPanel.jsx'
+import HeatMap from './HeatMap.jsx'
+
+var HEATMAPDATA = {
+    values: [ {start: 29417, value: 0.2088},
+        {start: 29199, value: 0.6715},
+            {start: 29419, value: 0.2715}],
+    start: 29170,
+    end: 29570,
+    upstream: 200,
+    downstream: 200,
+}
 
 class SearchResultsPanel extends React.Component {
     constructor(props) {
@@ -114,36 +125,16 @@ class SearchResultsPanel extends React.Component {
         var rows = [];
         for (var i = 0; i < queryResults.length; i++) {
             var rowData = queryResults[i];
-            var heatMapData = <span></span>;
-
+            var heatMap = <span></span>;
             if (search_settings.all === true) {
-                var heatMapWidth = 100;
-                var heatMapHeight = 18;
-                var rects = [];
-                var min = Number.MAX_SAFE_INTEGER;
-                var max = Number.MIN_SAFE_INTEGER;
-                var SCALING_AMT = 0.3;
-                for (var j = 0; j < rowData.values.length; j++) {
-                    var data = rowData.values[j];
-                    min = Math.min(min, data.start);
-                    max = Math.max(max, data.start);
-                    var start = rowData.start - data.start + search_settings.upstream;
-
-                    start = parseInt(start * SCALING_AMT);
-                    var red = 255;
-                    var green = 0;
-                    var blue = 0;
-                    var alpha = data.value;
-                    var fill = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
-                    rects.push(
-                    <g>
-                        <title>{data.value} @ {data.start}</title>
-                    <rect x={start} width={3} height={heatMapHeight} style={{fill:fill}}  />
-                    </g>);
-                }
-                heatMapData = <svg width="200" height="18"  >
-                                {rects}
-                            </svg>
+                var heatMapValues = {
+                    values: rowData.values,
+                    start: rowData.start,
+                    end: rowData.end,
+                    upstream: search_settings.upstream,
+                    downstream: search_settings.downstream,
+                };
+                heatMap = <HeatMap width="120" height="20" data={heatMapValues}/>
             }
             rows.push(<div key={i} style={borderBottom}>
 
@@ -153,7 +144,7 @@ class SearchResultsPanel extends React.Component {
                           <span style={resultSmallCell}>{rowData.chrom}</span>
                           <span style={resultSmallCell}>{rowData.start}</span>
                           <span style={resultSmallCell}>{rowData.end}</span>
-                          <span style={resultSmallCell}>{heatMapData}</span>
+                          <span >{heatMap}</span>
                         </div>);
         }
         var smallMargin = { margin: '10px' };
