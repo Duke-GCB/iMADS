@@ -1,19 +1,10 @@
 import React from 'react';
 import Loader from 'react-loader';
-
+import ScrollingContainer from './ScrollingContainer.jsx'
+import PageTitle from './PageTitle.jsx'
 import PagingButtons from './PagingButtons.jsx'
 import GeneSearchPanel from './GeneSearchPanel.jsx'
 import HeatMap from './HeatMap.jsx'
-
-var HEATMAPDATA = {
-    values: [ {start: 29417, value: 0.2088},
-        {start: 29199, value: 0.6715},
-            {start: 29419, value: 0.2715}],
-    start: 29170,
-    end: 29570,
-    upstream: 200,
-    downstream: 200,
-}
 
 class SearchResultsPanel extends React.Component {
     constructor(props) {
@@ -64,7 +55,7 @@ class SearchResultsPanel extends React.Component {
             textOverflow: 'ellipsis',
             overflow: 'hidden',
             fontFamily: 'Roboto, sans-serif',
-            fontSize: '20px',
+            fontSize: '16px',
             letterSpacing: '0.0625em',
         };
         var resultHeaderSmallCell = {
@@ -74,7 +65,7 @@ class SearchResultsPanel extends React.Component {
             textOverflow: 'ellipsis',
             overflow: 'hidden',
             fontFamily: 'Roboto, sans-serif',
-            fontSize: '20px',
+            fontSize: '16px',
             letterSpacing: '0.0625em',
         };
         var resultCell = {
@@ -127,21 +118,30 @@ class SearchResultsPanel extends React.Component {
             var rowData = queryResults[i];
             var heatMap = <span></span>;
             if (search_settings.all === true) {
+                var combined_name = rowData.common_name + " (" + rowData.name + ") ";
+                var offsets_str = "+" + search_settings.upstream + " -" + search_settings.downstream;
                 var heatMapValues = {
+                    title:  combined_name + " " + offsets_str,
                     values: rowData.values,
                     start: rowData.start,
                     end: rowData.end,
+                    strand: rowData.strand,
                     upstream: search_settings.upstream,
                     downstream: search_settings.downstream,
                 };
-                heatMap = <HeatMap width="120" height="20" data={heatMapValues}/>
+                heatMap = <HeatMap width="120" height="20"
+                                   showDetailsOnClick={true}
+                                   data={heatMapValues}
+                                   scaleFactor={1.0}
+
+                />
             }
             rows.push(<div key={i} style={borderBottom}>
 
                           <span style={resultCell}>{rowData.common_name}</span>
                           <span style={resultCell}>{rowData.name}</span>
                           <span style={resultSmallCell}>{rowData.max}</span>
-                          <span style={resultSmallCell}>{rowData.chrom}</span>
+                          <span style={resultSmallCell}>{rowData.chrom}{rowData.strand}</span>
                           <span style={resultSmallCell}>{rowData.start}</span>
                           <span style={resultSmallCell}>{rowData.end}</span>
                           <span >{heatMap}</span>
@@ -155,19 +155,17 @@ class SearchResultsPanel extends React.Component {
                     <div className="row">
 
                         <div className="col-md-offset-2 col-sm-offset-2 col-xs-offset-2 col-col-md-10 col-sm-10" >
-                            <h3>TF Binding Predictions</h3>
+                            <PageTitle>TF Binding Predictions</PageTitle>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-md-2 col-sm-2 col-xs-2"  >
-
                                 <GeneSearchPanel
                                         genome_data={this.props.genome_data}
                                         search={this.search}
                                         search_settings={this.props.search_settings}
                                         loaded={this.props.genome_data_loaded}
                                 />
-
                         </div>
                         <div className="col-md-10 col-sm-10 col-xs-10" >
                             <div style={{backgroundColor: '#235f9c', color: 'white'}} >

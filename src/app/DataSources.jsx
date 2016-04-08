@@ -1,5 +1,7 @@
 import React from 'react';
 import NavBar from './NavBar.jsx'
+import PageTitle from './PageTitle.jsx'
+import ScrollingContainer from './ScrollingContainer.jsx'
 import TableHeader from './table/TableHeader.jsx'
 import TableCell from './table/TableCell.jsx'
 import TableRow from './table/TableRow.jsx'
@@ -73,15 +75,15 @@ class DataSources extends React.Component {
         return  <div>
                     <NavBar selected="/datasources" />
                     <div className="std_left_right_margin std_bottom_margin">
-                        <h3>Data Sources</h3>
+                        <PageTitle>Data Sources</PageTitle>
                         <TableHeader>
                             <TableCell name="Description" style={this.mediumWidth} className="table_header_cell"/>
                             <TableCell name="Downloaded" style={this.smallWidth} className="table_header_cell"/>
                             <TableCell name="URL" style={this.largeWidth} className="table_header_cell"/>
                         </TableHeader>
-                        <div>
+                        <ScrollingContainer height="70%">
                             {rows}
-                        </div>
+                        </ScrollingContainer>
                     </div>
                 </div>;
     }
