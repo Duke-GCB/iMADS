@@ -100,7 +100,6 @@ class HeatMap extends React.Component {
         var data_size = this.props.data.upstream + this.props.data.downstream + 1;
         var view_size = this.props.width;
         var scale = view_size / data_size;
-
         var borderStyle = {
             strokeWidth: 1,
             stroke: 'rgb(0,0,0)',
@@ -108,27 +107,6 @@ class HeatMap extends React.Component {
         }
         var transcriptionStart = this.transcriptionStartRect(this.getTranscriptionStartX(scale));
         var predictions = this.getHeatRects(scale);
-        /*
-        for (var i = 0; i < this.props.data.values.length; i++) {
-            var data = this.props.data.values[i];
-            var start = data.start;
-            var value = data.value;
-            var x = parseInt((start - this.props.data.start) * scale);
-            var rev_color = 1 - value;
-            var red = 255;
-            var green = parseInt(255 * rev_color);
-            var blue = parseInt(255 * rev_color);
-            var fill = "rgb(" + red + "," + green + "," + blue + ")";
-            var width = Math.max(1, parseInt(20 * scale));
-            var title = [];
-            if (!this.props.showDetailsOnClick) {
-                title = <title>{data.value} @ {data.start}</title>;
-            }
-            predictions.push(<g>
-                {title}
-                <rect x={x} y={1} width={width} height={this.props.height-2} style={{fill:fill}} />
-                </g>)
-        }*/
         var popupDialog = [];
         var clickSurface = [];
         if (this.props.showDetailsOnClick) {
