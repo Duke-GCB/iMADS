@@ -9,7 +9,6 @@ class HeatMap extends React.Component {
         }
         this.hideDetails = this.hideDetails.bind(this);
         this.showDetails = this.showDetails.bind(this);
-        this.onClickHeatCell = this.onClickHeatCell.bind(this);
     }
 
     hideDetails() {
@@ -57,7 +56,6 @@ class HeatMap extends React.Component {
         return <g>
             {heatCell.title}
             <rect data-idx={idx} x={heatCell.x} y={1} width={heatCell.width} height={heatCell.height} style={{fill:heatCell.color}}
-                  onClick={this.onClickHeatCell}
             />
         </g>
     }
@@ -88,12 +86,6 @@ class HeatMap extends React.Component {
             title = <title>{data.value} @ {data.start}</title>;
         }
         return title;
-    }
-
-    onClickHeatCell(evt) {
-        var rect = evt.target;
-        var data = this.props.data.values[rect.getAttribute('data-idx')];
-        alert(data.start + "@" + data.value);
     }
 
     render() {
