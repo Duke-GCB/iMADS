@@ -16,7 +16,9 @@ VALUE_GT_SQL = PredictionQueryBuilder.VALUE_GT_SQL
 
 class TestPredictionQueryBuilder(TestCase):
     def schema_sql(self, parts):
-        return '\n'.join([SET_SCHEMA_SQL + ";", *parts]) + ";"
+        items = [SET_SCHEMA_SQL + ";"]
+        items.extend(parts)
+        return '\n'.join(items) + ";"
 
     def print_query(self, title, query, params):
         print(title)

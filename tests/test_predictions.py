@@ -30,7 +30,7 @@ class TestPredictions(TestCase):
         result = list(make_predictions_csv_response(predictions, search_args))
         self.assertEqual(4, len(result))
         header = result[0]
-        expected_header = 'Name,ID,Max,Location,Start,End,1,2,3,4,5,6\n'
+        expected_header = 'Name,ID,Max,Location,Start,End,-2,-1,0,1,2,3\n'
         some_val =        'NOC2L,uc001abz.4,chr1,0.228,894677,894681,0.227558,0,0,0,0,0'
         self.assertEqual(expected_header, header)
         print(result[1])
