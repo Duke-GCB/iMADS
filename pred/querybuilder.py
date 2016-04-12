@@ -8,6 +8,7 @@ class PredictionQueryNames(object):
     GENE_START = 'gene_start'
     PRED = 'pred'
 
+
 class PredictionQueryBuilder(object):
     SET_SCHEMA_SQL = "SET search_path TO %s,public"
     WITH_MAX_PRED_SQL = """with max_prediction_names as (
@@ -109,10 +110,11 @@ class DataSourcesQueryNames(object):
     DESCRIPTION = 'description'
     DOWNLOADED = 'downloaded'
     URL = 'url'
+    DATA_SOURCE_TYPE = 'data_source_type'
 
 
 class DataSourcesQueryBuilder(object):
-    FETCH_DATA_SOURCES_SQL = """select description, downloaded, url from data_source order by downloaded;"""
+    FETCH_DATA_SOURCES_SQL = """select description, downloaded, url, data_source_type from data_source order by downloaded;"""
 
     def make_query_and_params(self):
         return self.FETCH_DATA_SOURCES_SQL, []

@@ -1,7 +1,10 @@
 {# creates data_source tables in public schema #}
 
+CREATE TYPE data_source_type AS ENUM ('prediction', 'genelist');
+
 create table public.data_source (
   url varchar NOT NULL,
+  data_source_type data_source_type,
   description varchar NOT NULL,
   downloaded timestamp with time zone NOT NULL default current_timestamp,
   PRIMARY KEY (url)

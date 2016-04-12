@@ -9,7 +9,7 @@ from jinja2 import FileSystemLoader, Environment
 
 GENE_LIST_HOST = 'hgdownload.cse.ucsc.edu'
 DOWNLOAD_CHUNK_SIZE = 16 * 1024
-SQL_TEMPLATE_DIR = 'load_templates'
+SQL_TEMPLATE_DIR = 'sql_templates'
 
 
 def update_progress(message):
@@ -54,8 +54,8 @@ class TemplateExecutor(object):
     def create_data_source(self):
         self.execute_template('create_data_source.sql', {})
 
-    def insert_data_source(self, url, description):
-        self.execute_template('insert_data_source.sql', {}, exec_params=(url, description))
+    def insert_data_source(self, url, description, data_source_type):
+        self.execute_template('insert_data_source.sql', {}, exec_params=(url, description, data_source_type))
 
     def create_table_from_path(self, path):
         self.db.create_table(path)
@@ -100,7 +100,7 @@ def download_gene_list_files(executor, download_dir, genome, file_list):
         data_file.download_schema_and_convert()
         executor.create_table_from_path(data_file.get_local_schema_path())
         executor.copy_file_into_db(genome + '.' + data_file.get_root_filename(), data_file.get_extracted_path())
-        executor.insert_data_source(data_file.get_url(), data_file.get_description())
+        executor.insert_data_source(data_file.get_url(), data_file.get_description(), 'genelist')
 
 
 class GeneInfo(object):
@@ -131,7 +131,8 @@ def delete_gene_tables(executor, gene_lists):
 def load_prediction_table(executor, prediction_models):
     for prediction_data_source in prediction_models:
         prediction_data_source.create(executor.db)
-        executor.insert_data_source(prediction_data_source.get_url(), prediction_data_source.get_description())
+        executor.insert_data_source(prediction_data_source.get_url(), prediction_data_source.get_description(),
+                                    'prediction')
 
 
 def download_and_convert_predictions(prediction_models):
