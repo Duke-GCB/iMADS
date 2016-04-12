@@ -1,5 +1,29 @@
-from querybuilder import PredictionQueryBuilder, PredictionQueryNames
 import psycopg2.extras
+
+from pred.querybuilder import PredictionQueryBuilder, PredictionQueryNames
+
+
+def get_predictions_with_guess(db, config, genome, args):
+    search = PredictionSearch(db, genome, config.binding_max_offset, args, enable_guess=True)
+    predictions = search.get_predictions()
+    if search.has_max_prediction_guess():  # repeat without guess if we didn't get enough values
+        per_page = search.get_per_page()
+        if per_page:
+            if len(predictions) < per_page:
+                search.enable_guess = False
+                predictions = search.get_predictions()
+    return predictions, search.args
+
+
+def get_all_values(prediction, size):
+    values = [0] * size
+    offset = int(prediction['start'])
+    for data in prediction['values']:
+        start = int(data['start'])
+        value = data['value']
+        idx = start - offset
+        values[idx] = value
+    return [str(val) for val in values]
 
 
 class SearchArgs(object):

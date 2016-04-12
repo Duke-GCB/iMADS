@@ -45,6 +45,18 @@ class Config(object):
     def add_genome(self, genome_data):
         self.genome_data_list.append(genome_data)
 
+    def get_genomes_setup(self):
+        result = {}
+        for genome_data in self.genome_data_list:
+            genome = genome_data.genomename
+            model_names = [model.name for model in genome_data.prediction_lists]
+            gene_list_names = [gene_list.source_table for gene_list in genome_data.gene_lists]
+            result[genome] = {
+                'models': model_names,
+                'gene_lists': gene_list_names,
+            }
+        return result
+
 
 class GenomeData(object):
     def __init__(self, config, genome_data):
@@ -100,33 +112,3 @@ class PredictionSettings(object):
         self.genome = genome
         self.fix_script = fix_script
 
-"""
-g_binding_max_offset = 5000
-g_download_dir = '/tmp/ucscjpb'
-g_psql = PGCmdLine('pred', 'pred_user', 'pred_pass')
-
-g_genome = 'hg38'
-g_file_list = [
-    'goldenPath/hg38/database/wgEncodeGencodeBasicV23.txt.gz',
-    'goldenPath/hg38/database/wgEncodeGencodeCompV23.txt.gz',
-    'goldenPath/hg38/database/knownGene.txt.gz',
-    'goldenPath/hg38/database/kgXref.txt.gz',
-    'goldenPath/hg38/database/refGene.txt.gz',
-]
-g_gene_lists = [
-    GeneInfo(g_genome, 'knowngene', 'genesymbol', common_lookup_table='kgxref', common_lookup_table_field='kgid'),
-    GeneInfo(g_genome, 'refgene', 'name2'),
-    GeneInfo(g_genome, 'wgEncodeGencodeBasicV23', 'name2'),
-    GeneInfo(g_genome, 'wgEncodeGencodeCompV23', 'name2'),
-]
-E2F1 = PredictionDataSource('E2F1',
-                            g_download_dir,
-                            'http://trackhub.genome.duke.edu/tf-dna-binding-predictions/hg38/E2F1-hg38_binding_site_start.bw',
-                            g_genome)
-
-E2F4 = PredictionDataSource('E2F4',
-                            g_download_dir,
-                            'http://trackhub.genome.duke.edu/tf-dna-binding-predictions/hg38/E2F4-hg38_binding_site_start.bw',
-                            g_genome)
-g_prediction_models = [E2F1, E2F4]
-"""

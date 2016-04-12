@@ -77,9 +77,6 @@ class PredictionQueryBuilder(object):
         parts = [self._sql_set_search_path(),
                  self.main_query_func(upstream, downstream)]
         query = "\n".join(parts) + ";"
-        #fixed = query.replace("%s","{}")
-        #fixed_params = ["'{}'".format(param) for param in self.params]
-        #print(fixed.format(*fixed_params))
         return query, self.params
 
     def _sql_set_search_path(self):

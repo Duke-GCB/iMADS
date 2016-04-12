@@ -1,5 +1,6 @@
 from unittest import TestCase
-from querybuilder import PredictionQueryBuilder
+
+from pred.querybuilder import PredictionQueryBuilder
 
 SET_SCHEMA_SQL = PredictionQueryBuilder.SET_SCHEMA_SQL
 WHERE_BASE = PredictionQueryBuilder.WHERE_BASE
@@ -16,7 +17,9 @@ VALUE_GT_SQL = PredictionQueryBuilder.VALUE_GT_SQL
 
 class TestPredictionQueryBuilder(TestCase):
     def schema_sql(self, parts):
-        return '\n'.join([SET_SCHEMA_SQL + ";", *parts]) + ";"
+        items = [SET_SCHEMA_SQL + ";"]
+        items.extend(parts)
+        return '\n'.join(items) + ";"
 
     def print_query(self, title, query, params):
         print(title)

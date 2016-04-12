@@ -36,11 +36,13 @@ class PagingButtons extends React.Component {
         var disable_prev = current_page === 1;
         var disable_next = false;
         var buttons = [];
+        buttons.push(this.make_labeled_button('<<', disable_prev, 1));
         buttons.push(this.make_labeled_button('<', disable_prev, current_page - 1));
         for (var i = start_page; i <= end_page; i++) {
             buttons.push(this.make_number_button(i, i === current_page))
         }
         buttons.push(this.make_labeled_button('>', disable_next, current_page + 1));
+        buttons.push(this.make_labeled_button('>>', disable_next, current_page + 1));
         return buttons;
     }
 

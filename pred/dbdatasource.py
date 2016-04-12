@@ -1,5 +1,6 @@
-from querybuilder import DataSourcesQueryBuilder, DataSourcesQueryNames
 import psycopg2.extras
+
+from pred.querybuilder import DataSourcesQueryBuilder, DataSourcesQueryNames
 
 
 class DataSources(object):
