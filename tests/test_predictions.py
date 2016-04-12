@@ -1,7 +1,9 @@
 from unittest import TestCase
-from predictions import create_db_connection, make_predictions_csv_response
-from predictionsearch import PredictionSearch, SearchArgs
-from config import parse_config, CONFIG_FILENAME
+
+from pred.config import parse_config, CONFIG_FILENAME
+from pred.predictionsearch import PredictionSearch, SearchArgs
+from webserver import create_db_connection, make_predictions_csv_response
+
 
 class TestPredictions(TestCase):
     def setUp(self):
@@ -33,5 +35,4 @@ class TestPredictions(TestCase):
         expected_header = 'Name,ID,Max,Location,Start,End,-2,-1,0,1,2,3\n'
         some_val =        'NOC2L,uc001abz.4,chr1,0.228,894677,894681,0.227558,0,0,0,0,0'
         self.assertEqual(expected_header, header)
-        print(result[1])
 

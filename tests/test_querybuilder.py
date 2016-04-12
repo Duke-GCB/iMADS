@@ -1,5 +1,6 @@
 from unittest import TestCase
-from querybuilder import PredictionQueryBuilder
+
+from pred.querybuilder import PredictionQueryBuilder
 
 SET_SCHEMA_SQL = PredictionQueryBuilder.SET_SCHEMA_SQL
 WHERE_BASE = PredictionQueryBuilder.WHERE_BASE

@@ -1,21 +1,28 @@
 #!/usr/bin/env python
 from __future__ import print_function
+
 import psycopg2
 import psycopg2.extras
-from flask import Flask, request, render_template, jsonify, g, make_response, redirect, Response
-from config import parse_config, CONFIG_FILENAME
-from predictionsearch import PredictionSearch
-from datasource import DataSources
+from flask import Flask, request, render_template, jsonify, g, make_response, Response
+
+from pred.config import parse_config, CONFIG_FILENAME
+from pred.dbdatasource import DataSources
+from pred.predictionsearch import get_predictions_with_guess, get_all_values
+
 
 app = Flask(__name__)
 g_config = parse_config(CONFIG_FILENAME)
 g_dbconfig = g_config.dbconfig
 
 
+def log_info(message):
+    print(message)
+
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
-        print("Creating database connection.")
+        log_info("Creating database connection.")
         db = g._database = create_db_connection(g_dbconfig)
     return db
 
@@ -31,7 +38,7 @@ def create_db_connection(config):
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
-        print("Cleanup database connection.")
+        log_info("Cleanup database connection.")
         db.close()
 
 
@@ -45,47 +52,27 @@ def root():
 
 @app.route('/api/v1/datasources', methods=['GET'])
 def get_api_datasources():
+    log_info("Reading data sources.")
     data_sources = DataSources(get_db()).get_items()
     blob = jsonify({'results': data_sources})
     r = make_response(blob)
-    r.headers['Access-Control-Allow-Origin'] = '*'
-    print("Returning stuff.")
+    log_info("Returning data sources.")
     return r
 
 
 @app.route('/api/v1/genomes', methods=['GET'])
 def get_genome_versions():
-    result = {}
-    for genome_data in g_config.genome_data_list:
-        genome = genome_data.genomename
-        model_names = [model.name for model in genome_data.prediction_lists]
-        gene_list_names = [gene_list.source_table for gene_list in genome_data.gene_lists]
-        result[genome] = {
-            'models': model_names,
-            'gene_lists': gene_list_names,
-        }
-    blob = jsonify({'genomes': result})
+    log_info("Reading genome metadata")
+    blob = jsonify({'genomes': g_config.get_genomes_setup()})
     r = make_response(blob)
-    r.headers['Access-Control-Allow-Origin'] = '*'
+    log_info("Returning genome metadata")
     return r
-
-
-def get_predictions_with_guess(genome, args):
-    search = PredictionSearch(get_db(), genome, g_config.binding_max_offset, args, enable_guess=True)
-    predictions = search.get_predictions()
-    if search.has_max_prediction_guess():  # repeat without guess if we didn't get enough values
-        per_page = search.get_per_page()
-        if per_page:
-            if len(predictions) < per_page:
-                search.enable_guess = False
-                predictions = search.get_predictions()
-    return predictions, search.args
 
 
 @app.route('/api/v1/genomes/<genome>/prediction', methods=['POST','GET'])
 def prediction_search(genome):
-    print("finding predictions.")
-    predictions, args = get_predictions_with_guess(genome, request.args)
+    log_info("Finding predictions.")
+    predictions, args = get_predictions_with_guess(get_db(), g_config, genome, request.args)
     response_format = args.get_format()
     if response_format == 'json':
         r = make_json_response('predictions', predictions)
@@ -98,7 +85,7 @@ def prediction_search(genome):
 
     else:
         raise ValueError("Unexpected format:{}".format(response_format))
-
+    log_info("Returning predictions.")
     return r
 
 
@@ -129,19 +116,9 @@ def make_predictions_csv_response(predictions, args):
             str(prediction['start']),
             str(prediction['end'])]
         if args.get_include_all():
-            items.extend(get_all_values(prediction, size, args))
+            items.extend(get_all_values(prediction, size))
         yield separator.join(items) + '\n'
 
-
-def get_all_values(prediction, size, args):
-    values = [0] * size
-    offset = int(prediction['start'])
-    for data in prediction['values']:
-        start = int(data['start'])
-        value = data['value']
-        idx = start - offset
-        values[idx] = value
-    return [str(val) for val in values]
 
 if __name__ == '__main__':
     app.debug = True
