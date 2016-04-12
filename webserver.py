@@ -60,12 +60,15 @@ def get_api_datasources():
     return r
 
 
-@app.route('/api/v1/genomes', methods=['GET'])
+@app.route('/api/v1/settings', methods=['GET'])
 def get_genome_versions():
-    log_info("Reading genome metadata")
-    blob = jsonify({'genomes': g_config.get_genomes_setup()})
+    log_info("Reading settings")
+    blob = jsonify({
+        'genomes': g_config.get_genomes_setup(),
+        'max_binding_offset': g_config.binding_max_offset,
+    })
     r = make_response(blob)
-    log_info("Returning genome metadata")
+    log_info("Returning settings")
     return r
 
 

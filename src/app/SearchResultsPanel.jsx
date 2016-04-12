@@ -165,6 +165,7 @@ class SearchResultsPanel extends React.Component {
                                         search={this.search}
                                         search_settings={this.props.search_settings}
                                         loaded={this.props.genome_data_loaded}
+                                        max_binding_offset={this.props.max_binding_offset}
                                 />
                         </div>
                         <div className="col-md-10 col-sm-10 col-xs-10" >

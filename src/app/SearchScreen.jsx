@@ -3,34 +3,6 @@ import React from 'react';
 import GeneSearchPanel from './GeneSearchPanel.jsx'
 import SearchResultsPanel from './SearchResultsPanel.jsx'
 
-
-var GENOME_DATA2 = {
-  "genomes": {
-    "hg19": {
-      "gene_lists": [
-        "knowngene_19",
-        "refgene_19"
-      ],
-      "models": [
-        "E2F1",
-        "E2F4"
-      ]
-    },
-    "hg38": {
-      "gene_lists": [
-        "knowngene",
-        "refgene",
-        "wgEncodeGencodeBasicV23",
-        "wgEncodeGencodeCompV23"
-      ],
-      "models": [
-        "E2F1",
-        "E2F4"
-      ]
-    }
-  }
-};
-
 class SearchScreen extends React.Component {
      constructor(props) {
          super(props);
@@ -60,6 +32,7 @@ class SearchScreen extends React.Component {
             this.setState({
                 genome_data: data.genomes,
                 genome_data_loaded: true,
+                max_binding_offset: data.max_binding_offset,
             });
           }.bind(this),
           error: function(xhr, status, err) {
@@ -153,6 +126,7 @@ class SearchScreen extends React.Component {
                                        search={this.search}
                                        genome_data_loaded={this.state.genome_data_loaded}
                                        search_data_loaded={this.state.search_data_loaded}
+                                       max_binding_offset={this.state.max_binding_offset}
             />
         }
     }
