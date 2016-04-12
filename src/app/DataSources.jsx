@@ -50,11 +50,15 @@ class DataSources extends React.Component {
           }.bind(this)
         });
       }
-    create_rows(mediumWidth, largeWidth) {
+
+    create_rows(data_source_type) {
         var data_sources = this.state.data_sources;
         var rows = [];
         for (var i = 0; i < data_sources.length; i++) {
             var data = data_sources[i];
+            if (data.data_source_type !== data_source_type) {
+                continue;
+            }
             var cells = [];
             cells.push(<TableCell name={data.description} style={this.mediumWidth}></TableCell>);
             cells.push(<TableCell name={data.downloaded} style={this.smallWidth}></TableCell>);
@@ -71,18 +75,29 @@ class DataSources extends React.Component {
     }
 
     render() {
-        var rows = this.create_rows();
+        var prediction_rows = this.create_rows('prediction');
+        var gene_rows = this.create_rows('genelist');
         return  <div>
                     <NavBar selected="/datasources" />
                     <div className="std_left_right_margin std_bottom_margin">
-                        <PageTitle>Data Sources</PageTitle>
+                        <ScrollingContainer height="80%">
+                        <PageTitle>Predictions</PageTitle>
                         <TableHeader>
                             <TableCell name="Description" style={this.mediumWidth} className="table_header_cell"/>
                             <TableCell name="Downloaded" style={this.smallWidth} className="table_header_cell"/>
                             <TableCell name="URL" style={this.largeWidth} className="table_header_cell"/>
                         </TableHeader>
-                        <ScrollingContainer height="70%">
-                            {rows}
+                        {prediction_rows}
+
+                        <br />
+                        <PageTitle>Gene Lists</PageTitle>
+                        <TableHeader>
+                            <TableCell name="Description" style={this.mediumWidth} className="table_header_cell"/>
+                            <TableCell name="Downloaded" style={this.smallWidth} className="table_header_cell"/>
+                            <TableCell name="URL" style={this.largeWidth} className="table_header_cell"/>
+                        </TableHeader>
+
+                        {gene_rows}
                         </ScrollingContainer>
                     </div>
                 </div>;

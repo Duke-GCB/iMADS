@@ -23,6 +23,7 @@
     display: inline-block;
     font-family: Roboto, sans-serif;
     font-size: 14px;
+    vertical-align: top;
 }
 
 .table_row {
