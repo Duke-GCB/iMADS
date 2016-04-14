@@ -11,7 +11,7 @@ class PageBatch {
     setItems(batchPageNum, items, hasMore) {
         this.hasMore = hasMore;
         this.pageToItems = {}
-        var pageNum = batchPageNum * this.pagesInBatch;
+        var pageNum = (batchPageNum - 1)* this.pagesInBatch;
         for (var i = 0; i < this.pagesInBatch; i++) {
             var idx = (i * this.itemPerPage);
             var endIdx = idx + this.itemPerPage;
@@ -39,12 +39,52 @@ class PageBatch {
     }
 
     getBatchPageNum(page) {
+        if (page == -1) {
+            return page;
+        }
         return parseInt((page - 1)/ this.pagesInBatch) + 1;
     }
 
     getItemsPerBatch() {
         return this.pagesInBatch * this.itemPerPage;
     }
+
+    getPageNums() {
+        return Object.keys(this.pageToItems);
+    }
+
+    getStartPage() {
+        return this.getPageNums()[0];
+    }
+
+    getEndPage() {
+        var pageNums = this.getPageNums();
+        var lastPage = pageNums[0];
+        for (var i = 1; i < pageNums.length; i++) {
+            var somePage = pageNums[i];
+            if (!this.isPageEmpty(somePage)) {
+                lastPage = somePage;
+            }
+        }
+        return lastPage;
+    }
+
+    canNext(page) {
+        if (page == -1) {
+            return false;
+        }
+        var nextPage = page + 1;
+        if (this.hasPage(nextPage + 1)) {
+            if (this.isPageEmpty(nextPage)) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return this.hasMore;
+        }
+    }
+
 }
 
 export default PageBatch;

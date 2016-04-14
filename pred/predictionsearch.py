@@ -1,10 +1,14 @@
+import math
 import psycopg2.extras
-
-from pred.querybuilder import PredictionQueryBuilder, PredictionQueryNames
+from pred.querybuilder import PredictionQueryBuilder, PredictionQueryNames, PredictionCountQueryBuilder
 
 
 def get_predictions_with_guess(db, config, genome, args):
-    search = PredictionSearch(db, genome, config.binding_max_offset, args, enable_guess=True)
+    search_args = SearchArgs(config.binding_max_offset, args)
+    if search_args.is_last_page():
+        last_page = determine_last_page(db, genome, search_args)
+        search_args.set_page(last_page)
+    search = PredictionSearch(db, genome, search_args, enable_guess=True)
     predictions = search.get_predictions()
     if search.has_max_prediction_guess():  # repeat without guess if we didn't get enough values
         per_page = search.get_per_page()
@@ -13,6 +17,13 @@ def get_predictions_with_guess(db, config, genome, args):
                 search.enable_guess = False
                 predictions = search.get_predictions()
     return predictions, search.args
+
+
+def determine_last_page(db, genome, search_args):
+    search = PredictionSearch(db, genome, search_args, enable_guess=True)
+    items = float(search.get_count())
+    per_page = int(search_args.get_per_page())
+    return int(math.ceil(items / per_page))
 
 
 def get_all_values(prediction, size):
@@ -41,6 +52,7 @@ class SearchArgs(object):
     def __init__(self, max_stream_val, args):
         self.max_stream_val = max_stream_val
         self.args = args
+        self.page = args.get(self.PAGE)
 
     def _get_required_arg(self, name):
         value = self.args.get(name, None)
@@ -78,13 +90,22 @@ class SearchArgs(object):
         return self.args.get(self.MAX_PREDICTION_GUESS)
 
     def get_page_and_per_page(self):
-        page = self.args.get(self.PAGE, None)
-        per_page = self.args.get(self.PER_PAGE, None)
+        page = self.page
+        per_page = self.get_per_page()
         if page and per_page:
             return int(page), int(per_page)
         if page or per_page: # must have both or none
             raise ValueError("You must specify both {} and {}".format(self.PAGE, self.PER_PAGE))
         return None, None
+
+    def get_per_page(self):
+        return self.args.get(self.PER_PAGE, None)
+
+    def is_last_page(self):
+        return self.page and int(self.page) == -1
+
+    def set_page(self, page_num):
+        self.page = page_num
 
     def get_format(self):
         return self.args.get(self.FORMAT, 'json')
@@ -94,11 +115,26 @@ class SearchArgs(object):
 
 
 class PredictionSearch(object):
-    def __init__(self, db, genome, max_stream_val, args, enable_guess=True):
+    def __init__(self, db, genome, search_args, enable_guess=True):
         self.db = db
         self.genome = genome
-        self.args = SearchArgs(max_stream_val, args)
+        self.args = search_args
         self.enable_guess = enable_guess
+
+    def get_count(self):
+        query, params = self.make_count_query_and_params()
+        cur = self.db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute(query, params)
+        items = cur.fetchone()[0]
+        cur.close()
+        return items
+
+    def make_count_query_and_params(self):
+        builder = PredictionQueryBuilder(self.genome, self.args.get_gene_list(), self.args.get_model_name())
+        builder.set_max_value_guess(None)
+        count_builder = PredictionCountQueryBuilder(builder.main_query_func)
+        builder.set_main_query_func(count_builder.make_query)
+        return builder.make_query_and_params(self.args.get_upstream(), self.args.get_downstream())
 
     def get_predictions(self):
         upstream = self.args.get_upstream()

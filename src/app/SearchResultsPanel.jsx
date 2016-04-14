@@ -186,6 +186,7 @@ class SearchResultsPanel extends React.Component {
                             <nav>
                                 <PagingButtons start_page={start_page} current_page={this.props.page} end_page={end_page}
                                                change_page={this.change_page}
+                                               pageBatch={this.props.predictionStore.pageBatch}
                                 />
                                 &nbsp;
                                 <div className="dropup" style={{display:'inline'}}>

@@ -22,5 +22,8 @@
     "react-tap-event-plugin": "^0.2.2",
     "style-loader": "^0.13.1",
     "webpack": "^1.12.14"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0"
   }
 }

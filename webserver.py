@@ -78,7 +78,7 @@ def prediction_search(genome):
     predictions, args = get_predictions_with_guess(get_db(), g_config, genome, request.args)
     response_format = args.get_format()
     if response_format == 'json':
-        r = make_json_response('predictions', predictions)
+        r = make_json_response({'predictions': predictions, 'page': args.page})
     elif response_format == 'tsv' or response_format == 'csv':
         filename = 'prediction_{}_{}.{}'.format(args.get_upstream(), args.get_downstream(), response_format)
         content_disposition = 'attachment; filename="{}"'.format(filename)
@@ -92,10 +92,8 @@ def prediction_search(genome):
     return r
 
 
-def make_json_response(name, obj):
-    blob = jsonify({
-        name: obj,
-    })
+def make_json_response(props):
+    blob = jsonify(props)
     return make_response(blob)
 
 
