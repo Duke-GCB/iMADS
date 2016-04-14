@@ -119,7 +119,7 @@ class SearchResultsPanel extends React.Component {
             var heatMap = <span></span>;
             if (search_settings.all === true) {
                 var combined_name = rowData.common_name + " (" + rowData.name + ") ";
-                var offsets_str = "+" + search_settings.upstream + " -" + search_settings.downstream;
+                var offsets_str = "-" + search_settings.upstream + " +" + search_settings.downstream;
                 var heatMapValues = {
                     title:  combined_name + " " + offsets_str,
                     values: rowData.values,

@@ -63,7 +63,7 @@ class DataSources extends React.Component {
             cells.push(<TableCell name={data.description} style={this.mediumWidth}></TableCell>);
             cells.push(<TableCell name={data.downloaded} style={this.smallWidth}></TableCell>);
             var full_url = data.url;
-            if (!full_url.startsWith('http')) {
+            if (full_url.indexOf('http') === 0) {
                 full_url = 'http://' + full_url;
             }
             var clean_url = data.url.replace("https:\/\/","").replace("http:\/\/","");
