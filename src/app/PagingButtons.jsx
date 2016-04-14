@@ -7,7 +7,7 @@ class PagingButtons extends React.Component {
 
     onClickPage(page, evt) {
         evt.preventDefault();
-        if (page > 0) {
+        if (page > 0 || page === -1) {
             this.props.change_page(page);
         }
     }
@@ -25,16 +25,17 @@ class PagingButtons extends React.Component {
 
     make_labeled_button(label, disabled, page_num) {
         var props = {};
-        if (disabled) {
-            props['className'] = 'disabled';
-        }
         var func = this.onClickPage.bind(this, page_num);
-        return <li {...props} key={label}><a href="#" onClick={func}><span>{label}</span></a></li>;
+        if (disabled) {
+            return <li className="disabled" key={label}><span>{label}</span></li>;
+        } else {
+            return <li {...props} key={label}><a href="#" onClick={func}><span>{label}</span></a></li>;
+        }
     }
 
     make_buttons(start_page, current_page, end_page) {
         var disable_prev = current_page === 1;
-        var disable_next = false;
+        var disable_next = !this.props.pageBatch.canNext(current_page);
         var buttons = [];
         buttons.push(this.make_labeled_button('<<', disable_prev, 1));
         buttons.push(this.make_labeled_button('<', disable_prev, current_page - 1));
@@ -42,15 +43,15 @@ class PagingButtons extends React.Component {
             buttons.push(this.make_number_button(i, i === current_page))
         }
         buttons.push(this.make_labeled_button('>', disable_next, current_page + 1));
-        buttons.push(this.make_labeled_button('>>', disable_next, current_page + 1));
+        buttons.push(this.make_labeled_button('>>', disable_next, -1));
         return buttons;
     }
 
     render() {
         var buttons = this.make_buttons(
-            parseInt(this.props.start_page),
+            parseInt(this.props.pageBatch.getStartPage()),
             parseInt(this.props.current_page),
-            parseInt(this.props.end_page));
+            parseInt(this.props.pageBatch.getEndPage()));
 
         return <ul className="pagination">
             {buttons}

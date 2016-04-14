@@ -119,7 +119,7 @@ class SearchResultsPanel extends React.Component {
             var heatMap = <span></span>;
             if (search_settings.all === true) {
                 var combined_name = rowData.common_name + " (" + rowData.name + ") ";
-                var offsets_str = "+" + search_settings.upstream + " -" + search_settings.downstream;
+                var offsets_str = "-" + search_settings.upstream + " +" + search_settings.downstream;
                 var heatMapValues = {
                     title:  combined_name + " " + offsets_str,
                     values: rowData.values,
@@ -186,6 +186,7 @@ class SearchResultsPanel extends React.Component {
                             <nav>
                                 <PagingButtons start_page={start_page} current_page={this.props.page} end_page={end_page}
                                                change_page={this.change_page}
+                                               pageBatch={this.props.predictionStore.pageBatch}
                                 />
                                 &nbsp;
                                 <div className="dropup" style={{display:'inline'}}>

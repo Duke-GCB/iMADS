@@ -9,6 +9,15 @@ class PredictionQueryNames(object):
     PRED = 'pred'
 
 
+class PredictionCountQueryBuilder(object):
+    def __init__(self, main_query_func):
+        self.main_query_func = main_query_func
+
+    def make_query(self, upstream, downstream):
+        main_query = self.main_query_func(upstream, downstream)
+        return 'select count(*) from ({}) as foo;'.format(main_query)
+
+
 class PredictionQueryBuilder(object):
     SET_SCHEMA_SQL = "SET search_path TO %s,public"
     WITH_MAX_PRED_SQL = """with max_prediction_names as (
@@ -57,6 +66,9 @@ class PredictionQueryBuilder(object):
 
     def set_sort_by_max(self):
         self.main_query_func = self.sql_query_by_max
+
+    def set_main_query_func(self, main_query_func):
+        self.main_query_func = main_query_func
 
     def set_limit_and_offset(self, limit, offset):
         self.limit = limit

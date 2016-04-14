@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack -d --watch",
-    "build": "webpack -p"
+    "webpack": "webpack --progress --colors --watch",
+    "build": "webpack -p",
+    "test": "mocha --compilers js:babel-core/register src/tests"
   },
   "author": "",
   "license": "MIT",
@@ -22,5 +23,8 @@
     "react-tap-event-plugin": "^0.2.2",
     "style-loader": "^0.13.1",
     "webpack": "^1.12.14"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0"
   }
 }

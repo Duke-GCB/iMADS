@@ -2,6 +2,12 @@ import React from 'react';
 
 import GeneSearchPanel from './GeneSearchPanel.jsx'
 import SearchResultsPanel from './SearchResultsPanel.jsx'
+import PredictionsStore from './store/PredictionsStore.js'
+import URLBuilder from './store/URLBuilder.js'
+import PageBatch from './store/PageBatch.js'
+
+const ITEMS_PER_PAGE = 100;
+const NUM_PAGE_BUTTONS = 5;
 
 class SearchScreen extends React.Component {
      constructor(props) {
@@ -20,6 +26,9 @@ class SearchScreen extends React.Component {
          this.edit = this.edit.bind(this);
          this.download_all = this.download_all.bind(this);
          this.change_page = this.change_page.bind(this);
+         var pageBatch = new PageBatch(NUM_PAGE_BUTTONS, ITEMS_PER_PAGE);
+         var urlBuilder = new URLBuilder($.ajax);
+         this.predictionStore = new PredictionsStore(pageBatch, urlBuilder);
     }
 
     componentDidMount() {
@@ -50,22 +59,36 @@ class SearchScreen extends React.Component {
             per_page: this.props.items_per_page,
             search_data_loaded: false,
         });
+            /*
         $.ajax({
           url: this.search_url(search_settings, this.props.items_per_page, page),
           type: 'POST',
           dataType: 'json',
           cache: false,
           success: function(data) {
+
             this.setState({
                 search_results: data.predictions,
                 next_pages: data.next_pages,
                 search_data_loaded: true,
+                page: data.page,
             });
           }.bind(this),
           error: function(xhr, status, err) {
               console.error(this.props.url, status, err.toString());
           }.bind(this)
         });
+*/
+        this.predictionStore.requestPage(page, search_settings, function(predictions, pageNum, hasNextPages) {
+            this.setState({
+                search_results: predictions,
+                next_pages: hasNextPages,
+                search_data_loaded: true,
+                page: pageNum,
+            });
+        }.bind(this), function (message) {
+            alert(message);
+        })
     }
 
     search_url(search_settings, per_page, page) {
@@ -127,6 +150,7 @@ class SearchScreen extends React.Component {
                                        genome_data_loaded={this.state.genome_data_loaded}
                                        search_data_loaded={this.state.search_data_loaded}
                                        max_binding_offset={this.state.max_binding_offset}
+                                       predictionStore={this.predictionStore}
             />
         }
     }
