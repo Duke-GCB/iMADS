@@ -25,7 +25,6 @@ class URLBuilder {
 
     fetch(onData, onError, method = 'POST', dataType = 'json') {
         var url = this.url;
-        console.log('fetch ' + url);
         this.fetchMethod({
             url: url,
             type: method,

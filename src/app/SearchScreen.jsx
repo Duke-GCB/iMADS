@@ -2,9 +2,9 @@ import React from 'react';
 
 import GeneSearchPanel from './GeneSearchPanel.jsx'
 import SearchResultsPanel from './SearchResultsPanel.jsx'
-import PredictionsStore from './store/PredictionsStore.jsx'
-import URLBuilder from './store/URLBuilder.jsx'
-import PageBatch from './store/PageBatch.jsx'
+import PredictionsStore from './store/PredictionsStore.js'
+import URLBuilder from './store/URLBuilder.js'
+import PageBatch from './store/PageBatch.js'
 
 const ITEMS_PER_PAGE = 100;
 const NUM_PAGE_BUTTONS = 5;

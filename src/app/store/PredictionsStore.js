@@ -3,9 +3,11 @@ class PredictionsStore {
     constructor(pageBatch, urlBuilder) {
         this.pageBatch = pageBatch;
         this.urlBuilder = urlBuilder;
+        this.lastSearchSettingsStr = undefined;
     }
 
     requestPage(pageNum, searchSettings, onData, onError) {
+        this.saveSearchSettings(searchSettings);
         if (this.pageBatch.hasPage(pageNum)) {
             onData(this.pageBatch.getItems(pageNum), pageNum, true);
         } else {
@@ -23,6 +25,14 @@ class PredictionsStore {
                 onData(this.pageBatch.getItems(pageNum), pageNum, true);
             }.bind(this), onError);
         }
+    }
+
+    saveSearchSettings(searchSettings) {
+        var searchSettingsStr = JSON.stringify(searchSettings);
+        if (this.lastSearchSettingsStr && searchSettingsStr !== this.lastSearchSettingsStr) {
+            this.pageBatch.clearData();
+        }
+        this.lastSearchSettingsStr = searchSettingsStr;
     }
 
     setBuilderURL(page, perPage, searchSettings) {

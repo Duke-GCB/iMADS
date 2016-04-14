@@ -8,6 +8,11 @@ class PageBatch {
         this.hasMore = false;
     }
 
+    clearData() {
+        this.pageToItems = {}
+        this.hasMore = false;
+    }
+
     setItems(batchPageNum, items, hasMore) {
         this.hasMore = hasMore;
         this.pageToItems = {}

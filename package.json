@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack -d --watch",
-    "build": "webpack -p"
+    "webpack": "webpack --progress --colors --watch",
+    "build": "webpack -p",
+    "test": "mocha --compilers js:babel-core/register src/tests"
   },
   "author": "",
   "license": "MIT",

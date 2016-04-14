@@ -1,6 +1,4 @@
-//test by running: mocha --compilers js:babel-core/register jstests/
-
-import PageBatch from './../src/app/store/PageBatch.jsx';
+import PageBatch from './../app/store/PageBatch.js';
 var assert = require('chai').assert;
 
 describe('PageBatch', function () {
@@ -68,25 +66,3 @@ describe('PageBatch', function () {
         });
     });
 });
-
-/*
-
-function testBatchPageNum() {
-    var pagesInBatch = 3;
-    var itemsPerPage = 4;
-    var pageBatch = new PageBatch(pagesInBatch, itemsPerPage);
-
-}
-
-function testItemsPerBatch() {
-    var pagesInBatch = 3;
-    var itemsPerPage = 4;
-    var pageBatch = new PageBatch(pagesInBatch, itemsPerPage);
-    assert.equal(pageBatch.getItemsPerBatch(), 12);
-    pagesInBatch = 2;
-    itemsPerPage = 7;
-    pageBatch = new PageBatch(pagesInBatch, itemsPerPage);
-    assert.equal(pageBatch.getItemsPerBatch(), 14);
-
-}
- */

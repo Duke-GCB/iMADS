@@ -38,7 +38,7 @@ SET search_path TO hg38,public;
 ### Setup to run dev webserver:
 ```
 npm install
-webpack --progress --colors --watch
+npm run webpack
 ```
 In another window:
 ```
@@ -63,4 +63,18 @@ docker-compose up -d
 Populate the database. (This will take quite a while depending upon predictionsconf.yaml)
 ```
 docker-compose run --no-deps --rm web python load.py 
+```
+
+### Javascript unit tests:
+Requires mocha and chai.
+Currently installing mocha globally per their docs(not sure if it is necessary).
+Setup:
+```
+npm install -g mocha
+npm install --dev
+```
+
+To run:
+```
+npm run test
 ```
