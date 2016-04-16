@@ -28,10 +28,13 @@ def get_db():
 
 
 def create_db_connection(config):
-    return psycopg2.connect('host=' + config.host +
-                            ' dbname=' + config.dbname +
-                            ' user=' + config.user +
-                            ' password=' + config.password)
+    try:
+        return psycopg2.connect('host=' + config.host +
+                                ' dbname=' + config.dbname +
+                                ' user=' + config.user +
+                                ' password=' + config.password)
+    except:
+        raise ValueError("Unable to connect to database.")
 
 
 @app.teardown_appcontext
@@ -90,6 +93,13 @@ def prediction_search(genome):
         raise ValueError("Unexpected format:{}".format(response_format))
     log_info("Returning predictions.")
     return r
+
+
+@app.errorhandler(ValueError)
+def handle_invalid_usage(error):
+    response = jsonify({'message': str(error)})
+    response.status_code = 500
+    return response
 
 
 def make_json_response(props):

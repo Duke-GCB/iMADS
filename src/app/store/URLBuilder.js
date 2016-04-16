@@ -34,10 +34,11 @@ class URLBuilder {
                 onData(data);
             },
             error: function (xhr, status, err) {
+                var errorMessage = xhr.responseJSON.message;
                 onError({
                     url: url,
                     status: status,
-                    message: err.toString()
+                    message: errorMessage,
                 });
             }
         });

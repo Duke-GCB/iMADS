@@ -5,6 +5,7 @@ import PageTitle from './PageTitle.jsx'
 import PagingButtons from './PagingButtons.jsx'
 import GeneSearchPanel from './GeneSearchPanel.jsx'
 import HeatMap from './HeatMap.jsx'
+import ErrorPanel from './ErrorPanel.jsx'
 
 class SearchResultsPanel extends React.Component {
     constructor(props) {
@@ -151,6 +152,13 @@ class SearchResultsPanel extends React.Component {
 
         var start_page = parseInt((this.props.page - 1)/ 5) * 5 + 1;
         var end_page = start_page + 4;
+
+        var listContent = <Loader loaded={this.props.search_data_loaded} >
+                {rows}
+            </Loader>;
+        if (this.props.errorMessage) {
+            listContent = <ErrorPanel message={this.props.errorMessage} />;
+        }
         return  <div className="container" style={parentStyle}>
                     <div className="row">
 
@@ -166,6 +174,7 @@ class SearchResultsPanel extends React.Component {
                                         search_settings={this.props.search_settings}
                                         loaded={this.props.genome_data_loaded}
                                         max_binding_offset={this.props.max_binding_offset}
+                                        setErrorMessage={this.props.setErrorMessage}
                                 />
                         </div>
                         <div className="col-md-10 col-sm-10 col-xs-10" >
@@ -179,9 +188,7 @@ class SearchResultsPanel extends React.Component {
                                   {heatMapHeader}
                             </div>
                             <div style={{overflowY: 'auto', height:'calc(100vh - 300px)'}} id="resultsGridContainer">
-                                <Loader loaded={this.props.search_data_loaded} >
-                                    {rows}
-                                </Loader>
+                                {listContent}
                             </div>
                             <nav>
                                 <PagingButtons start_page={start_page} current_page={this.props.page} end_page={end_page}
