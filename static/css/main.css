@@ -88,22 +88,23 @@
 }
 
 .Aligner {
-  display: flex;
+    display: flex;
     flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .Aligner-item {
-  max-width: 90%;
+    max-width: 90%;
 }
 
 .Aligner-item--top {
-  align-self: flex-start;
+    align-self: flex-start;
 }
 
 .Aligner-item--bottom {
-  align-self: flex-end;
+    align-self: flex-end;
 }
 
 .errorCell {
