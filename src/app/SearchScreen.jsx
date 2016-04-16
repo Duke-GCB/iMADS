@@ -5,6 +5,7 @@ import SearchResultsPanel from './SearchResultsPanel.jsx'
 import PredictionsStore from './store/PredictionsStore.js'
 import URLBuilder from './store/URLBuilder.js'
 import PageBatch from './store/PageBatch.js'
+import StreamValue from './store/StreamValue.js'
 
 const ITEMS_PER_PAGE = 100;
 const NUM_PAGE_BUTTONS = 5;
@@ -13,7 +14,6 @@ class SearchScreen extends React.Component {
      constructor(props) {
          super(props);
          this.state = {
-             editMode: false,
              genome_data: {},
              search_results: [],
              search_settings: {},
@@ -21,14 +21,22 @@ class SearchScreen extends React.Component {
              next_pages: 0,
              genome_data_loaded: false,
              search_data_loaded: false,
+             errorMessage: "",
          };
          this.search = this.search.bind(this);
          this.edit = this.edit.bind(this);
          this.download_all = this.download_all.bind(this);
          this.change_page = this.change_page.bind(this);
+         this.setErrorMessage = this.setErrorMessage.bind(this);
          var pageBatch = new PageBatch(NUM_PAGE_BUTTONS, ITEMS_PER_PAGE);
          var urlBuilder = new URLBuilder($.ajax);
          this.predictionStore = new PredictionsStore(pageBatch, urlBuilder);
+    }
+
+    setErrorMessage(msg) {
+        this.setState({
+            errorMessage: msg,
+        })
     }
 
     componentDidMount() {
@@ -52,13 +60,25 @@ class SearchScreen extends React.Component {
 
     search(search_settings, page) {
         this.setState({
-            editMode: false,
-            //search_results: [],
             search_settings: search_settings,
             page: page,
             per_page: this.props.items_per_page,
             search_data_loaded: false,
         });
+        var streamValue = new StreamValue(this.state.max_binding_offset);
+        var upstreamError = streamValue.checkForError("Bases upstream", search_settings.upstream);
+        var downstreamError = streamValue.checkForError("Bases downstream", search_settings.downstream);
+        if (upstreamError || downstreamError) {
+            var errorMessage = upstreamError;
+            if (!errorMessage) {
+                errorMessage = downstreamError;
+            }
+            this.setState({
+                errorMessage: errorMessage,
+                search_data_loaded: true,
+            });
+            return;
+        }
             /*
         $.ajax({
           url: this.search_url(search_settings, this.props.items_per_page, page),
@@ -85,10 +105,14 @@ class SearchScreen extends React.Component {
                 next_pages: hasNextPages,
                 search_data_loaded: true,
                 page: pageNum,
+                errorMessage: '',
             });
-        }.bind(this), function (message) {
-            alert(message);
-        })
+        }.bind(this), function (err) {
+            this.setState({
+                errorMessage: err.message,
+                search_data_loaded: true,
+            });
+        }.bind(this));
     }
 
     search_url(search_settings, per_page, page) {
@@ -111,12 +135,6 @@ class SearchScreen extends React.Component {
         this.search(this.state.search_settings, page)
     }
 
-    edit() {
-        this.setState({
-            editMode: true,
-        });
-    }
-
     download_all(format) {
         var search_settings = this.state.search_settings;
         var url ='/api/v1/genomes/' + search_settings.genome +
@@ -132,27 +150,22 @@ class SearchScreen extends React.Component {
     }
 
     render () {
-        if (this.state.editMode) {
-            return <GeneSearchPanel genome_data={this.state.genome_data}
-                                    search={this.search}
-                                    search_settings={this.state.search_settings}
-                                     />
-        } else {
-            return <SearchResultsPanel edit={this.edit}
-                                       search_settings={this.state.search_settings}
-                                       search_results={this.state.search_results}
-                                       download_all={this.download_all}
-                                       page={this.state.page}
-                                       next_pages={this.state.next_pages}
-                                       change_page={this.change_page}
-                                       genome_data={this.state.genome_data}
-                                       search={this.search}
-                                       genome_data_loaded={this.state.genome_data_loaded}
-                                       search_data_loaded={this.state.search_data_loaded}
-                                       max_binding_offset={this.state.max_binding_offset}
-                                       predictionStore={this.predictionStore}
-            />
-        }
+        return <SearchResultsPanel edit={this.edit}
+                                   search_settings={this.state.search_settings}
+                                   search_results={this.state.search_results}
+                                   download_all={this.download_all}
+                                   page={this.state.page}
+                                   next_pages={this.state.next_pages}
+                                   change_page={this.change_page}
+                                   genome_data={this.state.genome_data}
+                                   search={this.search}
+                                   genome_data_loaded={this.state.genome_data_loaded}
+                                   search_data_loaded={this.state.search_data_loaded}
+                                   max_binding_offset={this.state.max_binding_offset}
+                                   predictionStore={this.predictionStore}
+                                   errorMessage={this.state.errorMessage}
+                                   setErrorMessage={this.setErrorMessage}
+        />
     }
 
 }

@@ -89,8 +89,10 @@ class HeatMap extends React.Component {
     }
 
     render() {
-        var data_size = this.props.data.upstream + this.props.data.downstream + 1;
-        var view_size = this.props.width;
+        var upstream = parseInt(this.props.data.upstream);
+        var downstream = parseInt(this.props.data.downstream);
+        var data_size = upstream + downstream + 1;
+        var view_size = parseInt(this.props.width);
         var scale = view_size / data_size;
         var borderStyle = {
             strokeWidth: 1,
@@ -109,7 +111,7 @@ class HeatMap extends React.Component {
                                  style={borderStyle} onClick={this.showDetails}/>;
         }
         return <div style={{display: 'inline-block', marginTop: '1px'}}>
-                <svg width={this.props.width} height={this.props.height} xmlns="http://www.w3.org/2000/svg">
+                <svg style={{cursor: 'pointer'}} width={this.props.width} height={this.props.height} xmlns="http://www.w3.org/2000/svg">
                     <rect class="bar" x={0} y={0} width={this.props.width - 1} height={this.props.height}
                                  style={borderStyle} />
                     {predictions}

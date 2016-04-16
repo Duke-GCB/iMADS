@@ -2,8 +2,10 @@ import React from 'react';
 import Loader from 'react-loader';
 
 import NavMenuButton from './NavMenuButton.jsx'
+import StreamValue from './store/StreamValue.js'
 
 const HEADER_LABEL = '';
+
 
 class SelectItem extends React.Component {
     render() {
@@ -23,21 +25,22 @@ class SelectItem extends React.Component {
 class StreamInput extends React.Component {
     constructor(props) {
         super(props);
+        this.onChange = this.onChange.bind(this);
         this.state = {
             isValid: true,
         }
-        this.onChange = this.onChange.bind(this);
     }
 
     onChange(evt) {
-        var isValid = this.props.validate(evt.target.value);
+        var streamValue = new StreamValue(this.props.max_binding_offset)
+        var isValid = streamValue.isValid(evt.target.value);
         this.setState({
             isValid: isValid,
         })
-    }
+        this.props.onChange(evt);
+     }
 
     render() {
-        var title = 'Value must be in range 1 to ' + this.props.max_binding_offset;
         var className = "form-control";
         if (!this.state.isValid) {
             className += " badValue"
@@ -47,9 +50,7 @@ class StreamInput extends React.Component {
                         <input type="text"
                                className={className}
                                defaultValue={this.props.value}
-                               onBlur={this.props.onChange}
-                               onChange={this.onChange}
-                               title={title}
+                               onBlur={this.onChange}
                         />
 
                     </label>
@@ -91,7 +92,9 @@ class GeneSearchPanel extends React.Component {
                     model: new_settings.model,
                     all: new_settings.all,
                     upstream: new_settings.upstream,
+                    upstreamValid: true,
                     downstream: new_settings.downstream,
+                    downstreamValid: true,
                     maxPredictionSort: new_settings.maxPredictionSort,
                 };
         } else {
@@ -107,7 +110,9 @@ class GeneSearchPanel extends React.Component {
                 model: model,
                 all: false,
                 upstream: 200,
+                upstreamValid: true,
                 downstream: 200,
+                downStreamValid: true,
                 maxPredictionSort: false,
             };
         }
@@ -119,7 +124,6 @@ class GeneSearchPanel extends React.Component {
         this.onChangeDownstream = this.onChangeDownstream.bind(this);
         this.onChangeMaxPredictionSort = this.onChangeMaxPredictionSort.bind(this);
         this.runSearch = this.runSearch.bind(this);
-        this.parseStreamValue = this.parseStreamValue.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -179,34 +183,31 @@ class GeneSearchPanel extends React.Component {
     }
 
     onChangeUpstream(e) {
-        var value = this.parseStreamValue(e.target.value);
-        if (value && this.state.upstream != value) {
-            this.setState({upstream: value}, this.runSearch);
-        }
+        var value = e.target.value;
+        this.setState({upstream: value}, this.runSearch);
     }
 
     onChangeDownstream(e) {
-        var value = this.parseStreamValue(e.target.value);
-        if (value && this.state.downstream != value) {
-            this.setState({downstream: value}, this.runSearch);
-        }
-    }
-
-    parseStreamValue(strValue) {
-        if (/^[1-9][0-9]*$/.test(strValue)) {
-            var value = parseInt(strValue);
-            if (value >= 1 && value <= this.props.max_binding_offset) {
-                return value;
-            }
-        }
-        return undefined;
+        var value = e.target.value;
+        this.setState({downstream: value}, this.runSearch);
     }
 
     onChangeMaxPredictionSort(value) {
         this.setState({maxPredictionSort: value}, this.runSearch);
     }
 
+    updateValidationState() {
+        var streamValue = new StreamValue(this.props.max_binding_offset);
+        var upstreamValid = streamValue.isValid(this.state.upstream);
+        var downstreamValid = streamValue.isValid(this.state.downstream);
+        this.setState({
+            upstreamValid: upstreamValid,
+            downstreamValid: downstreamValid,
+        });
+    }
+
     runSearch() {
+        this.updateValidationState();
         this.props.search(this.state, 1);
     }
 
@@ -247,12 +248,14 @@ class GeneSearchPanel extends React.Component {
                              value={this.state.upstream} 
                              onChange={this.onChangeUpstream}
                              max_binding_offset={this.props.max_binding_offset}
-                             validate={this.parseStreamValue} />
+                             isValid={this.state.upstreamValid}
+                              />
                 <StreamInput title="Bases downstream:"
                              value={this.state.downstream} 
                              onChange={this.onChangeDownstream}
                              max_binding_offset={this.props.max_binding_offset}
-                             validate={this.parseStreamValue} />
+                             isValid={this.state.downstreamValid}
+                             />
                 <BooleanInput checked={this.state.maxPredictionSort} label="Sort by max value"
                               onChange={this.onChangeMaxPredictionSort} />
                 <BooleanInput checked={this.state.all} label="Include all values" onChange={this.onChangeAll} />

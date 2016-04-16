@@ -8,7 +8,10 @@ function fake_ajax(fetchData) {
     if (good_ajax_response) {
         fetchData.success([1, 2, 3]);
     } else {
-        fetchData.error('someurl', 500, 'hey');
+        var xhr = { responseJSON: {
+            message: 'bad'
+        }}
+        fetchData.error(xhr, 500, 'hey');
     }
 }
 
