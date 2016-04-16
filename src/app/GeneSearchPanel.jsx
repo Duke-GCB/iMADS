@@ -96,7 +96,6 @@ class GeneSearchPanel extends React.Component {
                     downstream: new_settings.downstream,
                     downstreamValid: true,
                     maxPredictionSort: new_settings.maxPredictionSort,
-                    paramsValid: new_settings.paramsValid
                 };
         } else {
             if (genome_names.length > 0) {
@@ -115,8 +114,6 @@ class GeneSearchPanel extends React.Component {
                 downstream: 200,
                 downStreamValid: true,
                 maxPredictionSort: false,
-                paramsValid: true,
-
             };
         }
         this.onChangeGenome = this.onChangeGenome.bind(this);
