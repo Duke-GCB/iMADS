@@ -144,6 +144,8 @@ class SearchResultsPanel extends React.Component {
                     strand: rowData.strand,
                     upstream: search_settings.upstream,
                     downstream: search_settings.downstream,
+                    chrom: rowData.chrom,
+                    genome: this.props.search_settings.genome,
                 };
                 heatMap = <HeatMap width="120" height="20"
                                    showDetailsOnClick={true}
