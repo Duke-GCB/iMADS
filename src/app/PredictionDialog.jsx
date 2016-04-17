@@ -1,7 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 import HeatMap from './HeatMap.jsx'
-
+import GenomeBrowserURL from './store/GenomeBrowserURL.js'
 
 const customStyles = {
   content : {
@@ -24,6 +24,10 @@ function sortByStart(a, b) {
 }
 
 class PredictionDialog extends React.Component {
+    constructor(props) {
+        super(props);
+        this.genomeBrowserURL = new GenomeBrowserURL();
+    }
     render() {
         var rowData = this.props.data;
         var details = [];
@@ -31,13 +35,22 @@ class PredictionDialog extends React.Component {
         values.sort(sortByStart);
         for (var i = 0; i < values.length; i++) {
             var prediction = values[i];
+            var position = this.props.data.chrom + ":" + prediction.start  + '-' + prediction.end;
+            var url = this.genomeBrowserURL.get(this.props.data.genome, position);
             details.push(<tr>
                 <td>{prediction.start}</td>
                 <td>{prediction.end}</td>
-                <td>{prediction.value}</td>
+                <td>
+                    {prediction.value}
+                    &nbsp;
+                    <a alt="View in Genome Browser" title="View in Genome Browser" href={url} target="_blank">
+                        <span className="glyphicon glyphicon-new-window" aria-hidden="true"></span>
+                    </a>
+                </td>
             </tr>)
         }
-
+        var position = this.props.data.chrom + ":" + this.props.data.start  + '-' + this.props.data.end;
+        var allRangeGenomeBrowserURL = this.genomeBrowserURL.get(this.props.data.genome, position);
         return <Modal className="Modal__Bootstrap modal-dialog modal-lg"
                       isOpen={this.props.isOpen}
                       onRequestClose={this.props.onRequestClose}
@@ -51,7 +64,14 @@ class PredictionDialog extends React.Component {
                           <h4 className="modal-title">Predictions for {rowData.title}</h4>
                         </div>
                         <div className="modal-body">
-                            <h5>Values ({rowData.strand} strand)</h5>
+                            <h5>Values ({rowData.strand} strand)
+                                &nbsp;
+                                <a alt="View in Genome Browser" title="View in Genome Browser"
+                                   href={allRangeGenomeBrowserURL} target="_blank">
+                                    <span className="glyphicon glyphicon-new-window" aria-hidden="true"></span>
+                                </a>
+
+                            </h5>
                             <HeatMap width="800" height="40"
                                      showDetailsOnClick={false}
                                      data={rowData}/>
