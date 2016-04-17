@@ -43,11 +43,24 @@ class SearchResultsPanel extends React.Component {
         this.props.download_all('tsv');
     }
 
+    makeCellStyle(width, height, fontSize) {
+        return {
+            paddingLeft: '10px',
+            display: 'inline-block',
+            width: width,
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            fontFamily: 'Roboto, sans-serif',
+            fontSize: fontSize,
+            height: height,
+        };
+    }
+
     render() {
         var search_settings = this.props.search_settings;
-        var gridCellWidth = '16vw';
+        var gridCellWidth = '12vw';
         if (search_settings.all === true) {
-            gridCellWidth = '12vw';
+            gridCellWidth = '8vw';
         }
         var resultHeaderCell = {
             padding: '10px',
@@ -90,8 +103,10 @@ class SearchResultsPanel extends React.Component {
             height: '20px',
         };
         var heatMapHeader = <span></span>;
+        var cellExtraClassName = 'Wide';
         if (search_settings.all === true) {
             heatMapHeader = <span style={resultHeaderCell}>Values</span>
+            cellExtraClassName = '';
         }
         var borderBottom = {
             borderBottom: '1px solid grey'
@@ -120,7 +135,7 @@ class SearchResultsPanel extends React.Component {
             var heatMap = <span></span>;
             if (search_settings.all === true) {
                 var combined_name = rowData.common_name + " (" + rowData.name + ") ";
-                var offsets_str = "-" + search_settings.upstream + " +" + search_settings.downstream;
+                var offsets_str = " upstream:" + search_settings.upstream + " downstream:" + search_settings.downstream;
                 var heatMapValues = {
                     title:  combined_name + " " + offsets_str,
                     values: rowData.values,
@@ -138,13 +153,13 @@ class SearchResultsPanel extends React.Component {
                 />
             }
             rows.push(<div key={i} style={borderBottom}>
-
-                          <span style={resultCell}>{rowData.common_name}</span>
-                          <span style={resultCell}>{rowData.name}</span>
-                          <span style={resultSmallCell}>{rowData.max}</span>
-                          <span style={resultSmallCell}>{rowData.chrom}{rowData.strand}</span>
-                          <span style={resultSmallCell}>{rowData.start}</span>
-                          <span style={resultSmallCell}>{rowData.end}</span>
+                          <span className={"DataCell NameCell" + cellExtraClassName}>{rowData.common_name}</span>
+                          <span className={"DataCell IdCell" + cellExtraClassName}>{rowData.name}</span>
+                          <span className={"DataCell StrandCell" + cellExtraClassName}>{rowData.strand}</span>
+                          <span className={"DataCell ChromCell" + cellExtraClassName}>{rowData.chrom}</span>
+                          <span className="DataCell NumberCell">{rowData.start}</span>
+                          <span className="DataCell NumberCell">{rowData.end}</span>
+                          <span className="DataCell NumberCell">{rowData.max}</span>
                           <span >{heatMap}</span>
                         </div>);
         }
@@ -179,12 +194,13 @@ class SearchResultsPanel extends React.Component {
                         </div>
                         <div className="col-md-10 col-sm-10 col-xs-10" >
                             <div style={{backgroundColor: '#235f9c', color: 'white'}} >
-                                  <span style={resultHeaderCell}>Name</span>
-                                  <span style={resultHeaderCell}>ID</span>
-                                  <span style={resultHeaderSmallCell}>Max</span>
-                                  <span style={resultHeaderSmallCell}>Location</span>
-                                  <span style={resultHeaderSmallCell}>Start</span>
-                                  <span style={resultHeaderSmallCell}>End</span>
+                                  <span className={"HeaderCell NameCell" + cellExtraClassName}>Name</span>
+                                  <span className={"HeaderCell IdCell" + cellExtraClassName}>ID</span>
+                                  <span className={"HeaderCell StrandCell" + cellExtraClassName}>Strand</span>
+                                  <span className={"HeaderCell ChromCell" + cellExtraClassName}>Chromosome</span>
+                                  <span className="HeaderCell NumberCell">Start</span>
+                                  <span className="HeaderCell NumberCell">End</span>
+                                  <span className="HeaderCell NumberCell">Max</span>
                                   {heatMapHeader}
                             </div>
                             <div style={{overflowY: 'auto', height:'calc(100vh - 300px)'}} id="resultsGridContainer">

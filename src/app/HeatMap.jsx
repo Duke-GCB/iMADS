@@ -1,6 +1,16 @@
 import React from 'react';
 import PredictionDialog from './PredictionDialog.jsx'
 
+function sortByValue(a, b) {
+  if (a.value < b.value) {
+    return -1;
+  }
+  if (a.value > b.value) {
+    return 1;
+  }
+  return 0;
+}
+
 class HeatMap extends React.Component {
     constructor(props) {
         super(props);
@@ -37,9 +47,10 @@ class HeatMap extends React.Component {
 
     getHeatRects(scale) {
         var result = [];
-        var last
-        for (var i = 0; i < this.props.data.values.length; i++) {
-            var data = this.props.data.values[i];
+        var values = this.props.data.values.slice();
+        values.sort(sortByValue);
+        for (var i = 0; i < values.length; i++) {
+            var data = values[i];
             var heatCell = {
                 color: this.getHeatColor(data),
                 x: this.getHeatX(data, scale),

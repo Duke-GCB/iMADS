@@ -24,7 +24,6 @@ class SearchScreen extends React.Component {
              errorMessage: "",
          };
          this.search = this.search.bind(this);
-         this.edit = this.edit.bind(this);
          this.download_all = this.download_all.bind(this);
          this.change_page = this.change_page.bind(this);
          this.setErrorMessage = this.setErrorMessage.bind(this);
@@ -150,8 +149,7 @@ class SearchScreen extends React.Component {
     }
 
     render () {
-        return <SearchResultsPanel edit={this.edit}
-                                   search_settings={this.state.search_settings}
+        return <SearchResultsPanel search_settings={this.state.search_settings}
                                    search_results={this.state.search_results}
                                    download_all={this.download_all}
                                    page={this.state.page}

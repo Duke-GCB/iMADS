@@ -41,8 +41,7 @@ class PredictionQueryBuilder(object):
  max(chrom) as chrom,
  max(strand) as strand,
  max(case strand when '+' then txstart else txend end) as gene_start,
- json_agg(json_build_object('value', round(value, 4),
-  'start', (case strand when '+' then start_range else end_range end))) as pred
+ json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
  from gene_prediction
  """ + WHERE_BASE
     NAME_IN_MAX_NAMES_SQL = "and name in (select name from max_prediction_names)"
