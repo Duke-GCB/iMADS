@@ -13,13 +13,29 @@ const customStyles = {
     }
 };
 
+function sortByStart(a, b) {
+  if (a.start < b.start) {
+    return -1;
+  }
+  if (a.start > b.start) {
+    return 1;
+  }
+  return 0;
+}
+
 class PredictionDialog extends React.Component {
     render() {
         var rowData = this.props.data;
         var details = [];
-        for (var i = 0; i < rowData.values.length; i++) {
-            var prediction = rowData.values[i];
-            details.push(<tr><td>{prediction.start}</td><td>{prediction.value}</td></tr>)
+        var values = rowData.values.slice();
+        values.sort(sortByStart);
+        for (var i = 0; i < values.length; i++) {
+            var prediction = values[i];
+            details.push(<tr>
+                <td>{prediction.start}</td>
+                <td>{prediction.end}</td>
+                <td>{prediction.value}</td>
+            </tr>)
         }
 
         return <Modal className="Modal__Bootstrap modal-dialog modal-lg"
@@ -35,13 +51,13 @@ class PredictionDialog extends React.Component {
                           <h4 className="modal-title">Predictions for {rowData.title}</h4>
                         </div>
                         <div className="modal-body">
-                            <h5>Values</h5>
+                            <h5>Values ({rowData.strand} strand)</h5>
                             <HeatMap width="800" height="40"
                                      showDetailsOnClick={false}
                                      data={rowData}/>
                             <h5>Details</h5>
                             <table className="table" style={{width: 300}}>
-                                <tr><th>Location</th><th>Value</th></tr>
+                                <tr><th>Start</th><th>End</th><th>Value</th></tr>
                             {details}
                             </table>
                         </div>
