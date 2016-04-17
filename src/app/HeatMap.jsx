@@ -12,6 +12,7 @@ class HeatMap extends React.Component {
         this.hideDetails = this.hideDetails.bind(this);
         this.showDetails = this.showDetails.bind(this);
         this.drillDown = this.drillDown.bind(this);
+        this.viewInGenomeBrowser = this.viewInGenomeBrowser.bind(this);
         this.genomeBrowserURL = new GenomeBrowserURL();
     }
 
@@ -77,6 +78,12 @@ class HeatMap extends React.Component {
         window.open(url);
     }
 
+    viewInGenomeBrowser() {
+        var position = this.props.data.chrom + ":" + this.props.data.start  + '-' + this.props.data.end;
+        var url = this.genomeBrowserURL.get(this.props.data.genome, position);
+        window.open(url);
+    }
+
     render() {
         var upstream = parseInt(this.props.data.upstream);
         var downstream = parseInt(this.props.data.downstream);
@@ -92,6 +99,7 @@ class HeatMap extends React.Component {
         var predictions = this.getHeatRects(scale);
         var popupDialog = [];
         var clickSurface = [];
+        var beforePredictions = [];
         if (this.props.showDetailsOnClick) {
             // vvv this should be outside of this control.
             popupDialog = <PredictionDialog isOpen={this.state.detailsIsOpen}
@@ -99,11 +107,15 @@ class HeatMap extends React.Component {
                                             data={this.props.data}/>;
             clickSurface = <rect x={0} y={0} width={this.props.width - 1} height={this.props.height}
                                  style={borderStyle} onClick={this.showDetails}/>;
+        } else {
+            beforePredictions = <rect x={0} y={0} width={this.props.width - 1} height={this.props.height}
+                                 style={borderStyle} onClick={this.viewInGenomeBrowser}/>;
         }
         return <div style={{display: 'inline-block', marginTop: '1px'}}>
                 <svg style={{cursor: 'pointer'}} width={this.props.width} height={this.props.height} xmlns="http://www.w3.org/2000/svg">
                     <rect class="bar" x={0} y={0} width={this.props.width - 1} height={this.props.height}
                                  style={borderStyle} />
+                    {beforePredictions}
                     {predictions}
                     {transcriptionStart}
                     {clickSurface}
