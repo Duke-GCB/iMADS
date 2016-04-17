@@ -1,15 +1,7 @@
 import React from 'react';
 import PredictionDialog from './PredictionDialog.jsx'
-
-function sortByValue(a, b) {
-  if (a.value < b.value) {
-    return -1;
-  }
-  if (a.value > b.value) {
-    return 1;
-  }
-  return 0;
-}
+import HeatMapData from './store/HeatMapData.js'
+import GenomeBrowserURL from './store/GenomeBrowserURL.js'
 
 class HeatMap extends React.Component {
     constructor(props) {
@@ -19,6 +11,8 @@ class HeatMap extends React.Component {
         }
         this.hideDetails = this.hideDetails.bind(this);
         this.showDetails = this.showDetails.bind(this);
+        this.drillDown = this.drillDown.bind(this);
+        this.genomeBrowserURL = new GenomeBrowserURL();
     }
 
     hideDetails() {
@@ -47,56 +41,40 @@ class HeatMap extends React.Component {
 
     getHeatRects(scale) {
         var result = [];
-        var values = this.props.data.values.slice();
-        values.sort(sortByValue);
-        for (var i = 0; i < values.length; i++) {
-            var data = values[i];
-            var heatCell = {
-                color: this.getHeatColor(data),
-                x: this.getHeatX(data, scale),
-                width: this.getHeatWidth(data, scale),
-                height: this.props.height-2,
-                title: this.getHeatTitle(data),
-            };
-            result.push(this.makeHeatRect(i, heatCell));
+        var cells = HeatMapData.buildCellArray(this.props.data.values, {
+            xOffset: this.props.data.start,
+            includeTitle: !this.props.showDetailsOnClick,
+            scale: scale,
+            height: this.props.height-2,
+        });
+        for (var i = 0; i < cells.length; i++) {
+            result.push(this.makeHeatRect(i, cells[i]));
         }
         return result;
     }
 
     makeHeatRect(idx, heatCell) {
+        var title = [];
+        if (heatCell.title) {
+            title = <title>{heatCell.title}</title>;
+        }
+        var url = '';
+        if (!this.props.showDetailsOnClick) {
+            var position = this.props.data.chrom + ":" + heatCell.start  + '-' + heatCell.end;
+            url = this.genomeBrowserURL.get(this.props.data.genome, position);
+        }
         return <g>
-            {heatCell.title}
+            {title}
             <rect data-idx={idx} x={heatCell.x} y={1} width={heatCell.width} height={heatCell.height} style={{fill:heatCell.color}}
+                  onClick={this.drillDown} data-url={url}
             />
         </g>
     }
 
-    getHeatColor(data) {
-        var value = data.value;
-        var rev_color = 1 - value;
-        var red = 255;
-        var green = parseInt(255 * rev_color);
-        var blue = parseInt(255 * rev_color);
-        var fill = "rgb(" + red + "," + green + "," + blue + ")";
-        return fill;
-    }
-
-    getHeatX(data, scale) {
-        var start = data.start;
-        var value = data.value;
-        return parseInt((start - this.props.data.start) * scale);
-    }
-
-    getHeatWidth(data, scale) {
-        return Math.max(1, parseInt(20 * scale));
-    }
-
-    getHeatTitle(data) {
-        var title = [];
-        if (!this.props.showDetailsOnClick) {
-            title = <title>{data.value} @ {data.start}</title>;
-        }
-        return title;
+    drillDown(evt) {
+        var url = evt.target.getAttribute('data-url');
+        //window.location.href = url;
+        window.open(url);
     }
 
     render() {
@@ -115,6 +93,7 @@ class HeatMap extends React.Component {
         var popupDialog = [];
         var clickSurface = [];
         if (this.props.showDetailsOnClick) {
+            // vvv this should be outside of this control.
             popupDialog = <PredictionDialog isOpen={this.state.detailsIsOpen}
                                             onRequestClose={this.hideDetails}
                                             data={this.props.data}/>;
