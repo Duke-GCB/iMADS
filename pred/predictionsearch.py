@@ -3,6 +3,10 @@ import psycopg2.extras
 from pred.querybuilder import PredictionQueryBuilder, PredictionQueryNames, PredictionCountQueryBuilder
 
 
+CUSTOM_GENE_LIST = 'Custom Gene List'
+CUSTOM_RANGES_LIST = 'Custom Ranges List'
+
+
 def get_predictions_with_guess(db, config, genome, args):
     search_args = SearchArgs(config.binding_max_offset, args)
     if search_args.is_last_page():
@@ -48,6 +52,7 @@ class SearchArgs(object):
     MAX_PREDICTION_GUESS = 'max_prediction_guess'
     FORMAT = 'format'
     INCLUDE_ALL = 'include_all'
+    CUSTOM_LIST_DATA = 'custom_list_data'
 
     def __init__(self, max_stream_val, args):
         self.max_stream_val = max_stream_val
@@ -113,6 +118,17 @@ class SearchArgs(object):
     def get_include_all(self):
         return self.args.get(self.INCLUDE_ALL, '') == 'true'
 
+    def get_custom_list_data(self):
+        if self.is_custom_gene_list() or self.is_custom_ranges_list():
+            return self.args.get(self.CUSTOM_LIST_DATA, '')
+        return ''
+
+    def is_custom_gene_list(self):
+        return self.get_gene_list() == CUSTOM_GENE_LIST
+
+    def is_custom_ranges_list(self):
+        return self.get_gene_list() == CUSTOM_RANGES_LIST
+
 
 class PredictionSearch(object):
     def __init__(self, db, genome, search_args, enable_guess=True):
@@ -130,7 +146,8 @@ class PredictionSearch(object):
         return items
 
     def make_count_query_and_params(self):
-        builder = PredictionQueryBuilder(self.genome, self.args.get_gene_list(), self.args.get_model_name())
+        builder = PredictionQueryBuilder(self.genome, self.args.get_gene_list(), self.args.get_custom_list_data(),
+                                         self.args.get_model_name())
         builder.set_max_value_guess(None)
         count_builder = PredictionCountQueryBuilder(builder.main_query_func)
         builder.set_main_query_func(count_builder.make_query)
@@ -168,7 +185,8 @@ class PredictionSearch(object):
         return predictions
 
     def _create_query_and_params(self):
-        builder = PredictionQueryBuilder(self.genome, self.args.get_gene_list(), self.args.get_model_name())
+        builder = PredictionQueryBuilder(self.genome, self.args.get_gene_list(), self.args.get_custom_list_data(),
+                                         self.args.get_model_name())
         self._try_set_limit_and_offset(builder)
         self._try_set_max_sort(builder)
         return builder.make_query_and_params(self.args.get_upstream(), self.args.get_downstream())

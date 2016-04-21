@@ -28,7 +28,7 @@ class TestPredictionQueryBuilder(TestCase):
         print(fixed.format(*fixed_params))
 
     def test_sort_by_name_all_query(self):
-        query_builder = PredictionQueryBuilder('hg38','knowngene','E2F1')
+        query_builder = PredictionQueryBuilder('hg38', 'knowngene', '', 'E2F1')
         upstream = 200
         downstream = 100
         query, params = query_builder.make_query_and_params(upstream, downstream)
@@ -37,7 +37,7 @@ class TestPredictionQueryBuilder(TestCase):
         self.assertEqual(['hg38','knowngene','E2F1',upstream, downstream, downstream, upstream], params)
 
     def test_sort_by_name_limit(self):
-        query_builder = PredictionQueryBuilder('hg38', 'knowngene', 'E2F1')
+        query_builder = PredictionQueryBuilder('hg38', 'knowngene', '', 'E2F1')
         upstream = 200
         downstream = 100
         limit = 20
@@ -50,7 +50,7 @@ class TestPredictionQueryBuilder(TestCase):
         self.assertEqual(['hg38', 'knowngene', 'E2F1', upstream, downstream, downstream, upstream, limit, offset], params)
 
     def test_sort_by_max_all_query(self):
-        query_builder = PredictionQueryBuilder('hg38', 'knowngene', 'E2F1')
+        query_builder = PredictionQueryBuilder('hg38', 'knowngene', '', 'E2F1')
         upstream = 200
         downstream = 100
         query_builder.set_sort_by_max()
@@ -72,7 +72,7 @@ class TestPredictionQueryBuilder(TestCase):
         self.assertEqual(expected_params, params)
 
     def test_sort_by_max_limit_query(self):
-        query_builder = PredictionQueryBuilder('hg38', 'knowngene', 'E2F1')
+        query_builder = PredictionQueryBuilder('hg38', 'knowngene', '', 'E2F1')
         upstream = 200
         downstream = 100
         limit = 20
@@ -99,7 +99,7 @@ class TestPredictionQueryBuilder(TestCase):
         self.assertEqual(expected_params, params)
 
     def test_sort_by_max_limit_and_guess_query(self):
-        query_builder = PredictionQueryBuilder('hg38', 'knowngene', 'E2F1')
+        query_builder = PredictionQueryBuilder('hg38', 'knowngene', '', 'E2F1')
         upstream = 200
         downstream = 100
         limit = 20

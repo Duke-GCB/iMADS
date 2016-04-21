@@ -3,9 +3,12 @@ import Loader from 'react-loader';
 
 import NavMenuButton from './NavMenuButton.jsx'
 import StreamValue from './store/StreamValue.js'
+import CustomListDialog from './CustomListDialog.jsx'
 
 const HEADER_LABEL = '';
 
+const CUSTOM_GENE_LIST = 'Custom Gene List';
+const CUSTOM_RANGES_LIST = 'Custom Ranges List';
 
 class SelectItem extends React.Component {
     render() {
@@ -14,7 +17,9 @@ class SelectItem extends React.Component {
             sel = 'ok';
         }
         return <div>
-                    <label>{this.props.title}:</label>
+                    <label>
+                        {this.props.title}
+                    </label>
                         <select className="form-control" value={sel} onChange={this.props.onChange}>
                             {this.props.options}
                         </select>
@@ -96,6 +101,8 @@ class GeneSearchPanel extends React.Component {
                     downstream: new_settings.downstream,
                     downstreamValid: true,
                     maxPredictionSort: new_settings.maxPredictionSort,
+                    showCustomDialog: false,
+                    customListData: new_settings.customListData,
                 };
         } else {
             if (genome_names.length > 0) {
@@ -114,6 +121,8 @@ class GeneSearchPanel extends React.Component {
                 downstream: 200,
                 downStreamValid: true,
                 maxPredictionSort: false,
+                showCustomDialog: false,
+                customListData: "",
             };
         }
         this.onChangeGenome = this.onChangeGenome.bind(this);
@@ -124,6 +133,8 @@ class GeneSearchPanel extends React.Component {
         this.onChangeDownstream = this.onChangeDownstream.bind(this);
         this.onChangeMaxPredictionSort = this.onChangeMaxPredictionSort.bind(this);
         this.runSearch = this.runSearch.bind(this);
+        this.closeCustomDialog = this.closeCustomDialog.bind(this);
+        this.setShowCustomDialog = this.setShowCustomDialog.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -149,6 +160,7 @@ class GeneSearchPanel extends React.Component {
                     upstream: new_settings.upstream,
                     downstream: new_settings.downstream,
                     maxPredictionSort: new_settings.maxPredictionSort,
+                    customListData: new_settings.customListData,
                 });
         }
     }
@@ -167,7 +179,29 @@ class GeneSearchPanel extends React.Component {
     }
 
     onChangeGeneList(e) {
-        this.setState({gene_list: e.target.value}, this.runSearch);
+        var value = e.target.value;
+        var isCustom = value === CUSTOM_GENE_LIST || value === CUSTOM_RANGES_LIST;
+        var func = this.runSearch;
+        if (isCustom) {
+            func = Function.prototype
+        }
+        this.setState({
+            gene_list: e.target.value,
+            showCustomDialog: isCustom,
+        }, func);
+    }
+
+    setShowCustomDialog() {
+        this.setState({
+            showCustomDialog: true,
+        });
+    }
+
+    closeCustomDialog(customListData) {
+        this.setState({
+            showCustomDialog: false,
+            customListData: customListData,
+        }, this.runSearch);
     }
 
     onChangeModel(e) {
@@ -207,6 +241,9 @@ class GeneSearchPanel extends React.Component {
     }
 
     runSearch() {
+        if (this.state.showCustomDialog) {
+            return;
+        }
         this.updateValidationState();
         this.props.search(this.state, 1);
     }
@@ -235,15 +272,28 @@ class GeneSearchPanel extends React.Component {
                     });
                 }
             }
+            gene_list_options.push(<option key="customGeneList"  value={CUSTOM_GENE_LIST}>{CUSTOM_GENE_LIST}</option>)
+            gene_list_options.push(<option key="customRangeList"  value={CUSTOM_RANGES_LIST}>{CUSTOM_RANGES_LIST}</option>)
+        }
+        var geneListTitle = "Gene list:";
+        if (this.state.gene_list == CUSTOM_GENE_LIST || this.state.gene_list == CUSTOM_RANGES_LIST) {
+            geneListTitle = <div>
+                Gene list:
+                <button type="button" className="btn btn-default btn-sm" style={{marginLeft: '5px'}}
+                    onClick={this.setShowCustomDialog} >
+                    <span className="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                </button>
+            </div>;
         }
         return <div>
                 <h4>Filter</h4>
-                <SelectItem title="Assembly" selected={this.state.genome} options={assembly_options}
+                <SelectItem title="Assembly:" selected={this.state.genome} options={assembly_options}
                             onChange={this.onChangeGenome}/>
-                <SelectItem title="Protein/Model" selected={this.state.model} options={protein_options}
+                <SelectItem title="Protein/Model:" selected={this.state.model} options={protein_options}
                             onChange={this.onChangeModel}/>
-                <SelectItem title="Gene list" selected={this.state.gene_list} options={gene_list_options}
-                            onChange={this.onChangeGeneList}/>
+                <SelectItem title={geneListTitle} selected={this.state.gene_list} options={gene_list_options}
+                            onChange={this.onChangeGeneList}
+                            />
                 <StreamInput title="Bases upstream:" 
                              value={this.state.upstream} 
                              onChange={this.onChangeUpstream}
@@ -259,6 +309,9 @@ class GeneSearchPanel extends React.Component {
                 <BooleanInput checked={this.state.maxPredictionSort} label="Sort by max value"
                               onChange={this.onChangeMaxPredictionSort} />
                 <BooleanInput checked={this.state.all} label="Include all values" onChange={this.onChangeAll} />
+                <CustomListDialog type={this.state.gene_list}
+                                  isOpen={this.state.showCustomDialog}
+                                  onRequestClose={this.closeCustomDialog} />
         </div>
     }
 }
