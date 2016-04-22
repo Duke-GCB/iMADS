@@ -50,8 +50,16 @@ class PredictionsStore {
         if (searchSettings.maxPredictionSort) {
             urlBuilder.appendParam('max_prediction_guess', '0.4');
         }
-        urlBuilder.appendParam('page', page);
-        urlBuilder.appendParam('per_page', perPage);
+        if (page && perPage) {
+            urlBuilder.appendParam('page', page);
+            urlBuilder.appendParam('per_page', perPage);
+        }
+    }
+    
+    getDownloadURL(format, searchSettings) {
+        this.setBuilderURL(undefined, undefined, searchSettings)
+        this.urlBuilder.appendParam('format',format);
+        return this.urlBuilder.url;
     }
 }
 

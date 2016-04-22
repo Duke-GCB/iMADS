@@ -99,17 +99,7 @@ class SearchScreen extends React.Component {
     }
 
     download_all(format) {
-        var search_settings = this.state.search_settings;
-        var url ='/api/v1/genomes/' + search_settings.genome +
-            '/prediction?protein=' + search_settings.model +
-            '&gene_list=' + search_settings.gene_list +
-            '&upstream=' + search_settings.upstream +
-            '&downstream='  + search_settings.downstream +
-            '&include_all=' + search_settings.all +
-            '&max_prediction_sort=' + search_settings.maxPredictionSort +
-            '&format=' + format;
-        //window.open(url, '_self')
-        return url;
+        return this.predictionStore.getDownloadURL(format, this.state.search_settings);
     }
 
     render () {
