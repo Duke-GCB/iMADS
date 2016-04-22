@@ -6,6 +6,8 @@ import PagingButtons from './PagingButtons.jsx'
 import GeneSearchPanel from './GeneSearchPanel.jsx'
 import HeatMap from './HeatMap.jsx'
 import ErrorPanel from './ErrorPanel.jsx'
+import SearchSettings from './store/SearchSettings.js'
+import GenomeData from './store/GenomeData.js'
 
 class SearchResultsPanel extends React.Component {
     constructor(props) {
@@ -58,6 +60,8 @@ class SearchResultsPanel extends React.Component {
 
     render() {
         var search_settings = this.props.search_settings;
+        var searchSettingsObj = new SearchSettings(this.props.search_settings);
+        var genomeDataObj = new GenomeData(this.props.genome_data);
         var gridCellWidth = '12vw';
         if (search_settings.all === true) {
             gridCellWidth = '8vw';
@@ -136,6 +140,7 @@ class SearchResultsPanel extends React.Component {
             if (search_settings.all === true) {
                 var combined_name = rowData.common_name + " (" + rowData.name + ") ";
                 var offsets_str = " upstream:" + search_settings.upstream + " downstream:" + search_settings.downstream;
+                var trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettingsObj.genome_version);
                 var heatMapValues = {
                     title:  combined_name + " " + offsets_str,
                     values: rowData.values,
@@ -146,6 +151,7 @@ class SearchResultsPanel extends React.Component {
                     downstream: search_settings.downstream,
                     chrom: rowData.chrom,
                     genome: this.props.search_settings.genome,
+                    trackHubUrl: trackHubUrl,
                 };
                 heatMap = <HeatMap width="120" height="20"
                                    showDetailsOnClick={true}

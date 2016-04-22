@@ -25,7 +25,7 @@ class TestPredictions(TestCase):
             SearchArgs.INCLUDE_ALL: 'true',
 
         }
-        search = PredictionSearch(self.db, genome, self.config.binding_max_offset, args, enable_guess=True)
+        search = PredictionSearch(self.db, genome, args, enable_guess=True)
         predictions = search.get_predictions()
         search_args = search.args
 

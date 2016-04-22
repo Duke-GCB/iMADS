@@ -26,7 +26,7 @@ function sortByStart(a, b) {
 class PredictionDialog extends React.Component {
     constructor(props) {
         super(props);
-        this.genomeBrowserURL = new GenomeBrowserURL();
+        this.genomeBrowserURL = new GenomeBrowserURL('human', props.data.trackHubUrl);
     }
     render() {
         var rowData = this.props.data;
@@ -36,17 +36,10 @@ class PredictionDialog extends React.Component {
         for (var i = 0; i < values.length; i++) {
             var prediction = values[i];
             var position = this.props.data.chrom + ":" + prediction.start  + '-' + prediction.end;
-            var url = this.genomeBrowserURL.get(this.props.data.genome, position);
             details.push(<tr>
                 <td>{prediction.start}</td>
                 <td>{prediction.end}</td>
-                <td>
-                    {prediction.value}
-                    &nbsp;
-                    <a alt="View in Genome Browser" title="View in Genome Browser" href={url} target="_blank">
-                        <span className="glyphicon glyphicon-new-window" aria-hidden="true"></span>
-                    </a>
-                </td>
+                <td>{prediction.value}</td>
             </tr>)
         }
         var position = this.props.data.chrom + ":" + this.props.data.start  + '-' + this.props.data.end;
@@ -67,8 +60,10 @@ class PredictionDialog extends React.Component {
                             <h5>Values ({rowData.strand} strand)
                                 &nbsp;
                                 <a alt="View in Genome Browser" title="View in Genome Browser"
-                                   href={allRangeGenomeBrowserURL} target="_blank">
-                                    <span className="glyphicon glyphicon-new-window" aria-hidden="true"></span>
+                                   href={allRangeGenomeBrowserURL} target="_blank"
+                                   style={{float: 'right', paddingRight: '24px'}}
+                                >
+                                    View in Genome Browser
                                 </a>
 
                             </h5>

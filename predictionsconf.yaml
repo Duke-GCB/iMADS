@@ -3,6 +3,7 @@ download_dir: "/tmp/ucscjpb"
 genome_data:
   -
     genome: "hg19"
+    trackhub_url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt"
     ftp_files:
       - "goldenPath/hg19/database/knownGene.txt.gz"
       - "goldenPath/hg19/database/kgXref.txt.gz"
@@ -24,6 +25,7 @@ genome_data:
         fix_script: "bigBedToBed"
   -
     genome: "hg38"
+    trackhub_url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt"
     ftp_files:
       - "goldenPath/hg38/database/wgEncodeGencodeBasicV23.txt.gz"
       - "goldenPath/hg38/database/wgEncodeGencodeCompV23.txt.gz"

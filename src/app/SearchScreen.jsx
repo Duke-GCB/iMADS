@@ -78,26 +78,6 @@ class SearchScreen extends React.Component {
             });
             return;
         }
-            /*
-        $.ajax({
-          url: this.search_url(search_settings, this.props.items_per_page, page),
-          type: 'POST',
-          dataType: 'json',
-          cache: false,
-          success: function(data) {
-
-            this.setState({
-                search_results: data.predictions,
-                next_pages: data.next_pages,
-                search_data_loaded: true,
-                page: data.page,
-            });
-          }.bind(this),
-          error: function(xhr, status, err) {
-              console.error(this.props.url, status, err.toString());
-          }.bind(this)
-        });
-*/
         this.predictionStore.requestPage(page, search_settings, function(predictions, pageNum, hasNextPages) {
             this.setState({
                 search_results: predictions,
@@ -114,38 +94,12 @@ class SearchScreen extends React.Component {
         }.bind(this));
     }
 
-    search_url(search_settings, per_page, page) {
-        var url ='/api/v1/genomes/' + search_settings.genome +
-            '/prediction?protein=' + search_settings.model +
-            '&gene_list=' + search_settings.gene_list +
-             '&upstream=' + search_settings.upstream +
-            '&downstream='  + search_settings.downstream +
-            '&per_page=' + per_page +
-            '&page=' + page +
-            '&include_all=' + search_settings.all +
-            '&max_prediction_sort=' + search_settings.maxPredictionSort;
-        if (search_settings.maxPredictionSort) {
-            url += "&max_prediction_guess=0.4";
-        }
-        return url;
-    }
-
     change_page(page) {
         this.search(this.state.search_settings, page)
     }
 
     download_all(format) {
-        var search_settings = this.state.search_settings;
-        var url ='/api/v1/genomes/' + search_settings.genome +
-            '/prediction?protein=' + search_settings.model +
-            '&gene_list=' + search_settings.gene_list +
-            '&upstream=' + search_settings.upstream +
-            '&downstream='  + search_settings.downstream +
-            '&include_all=' + search_settings.all +
-            '&max_prediction_sort=' + search_settings.maxPredictionSort +
-            '&format=' + format;
-        //window.open(url, '_self')
-        return url;
+        return this.predictionStore.getDownloadURL(format, this.state.search_settings);
     }
 
     render () {
