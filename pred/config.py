@@ -54,6 +54,8 @@ class Config(object):
             result[genome] = {
                 'models': model_names,
                 'gene_lists': gene_list_names,
+                'trackhub_url': genome_data.trackhub_url
+
             }
         return result
 
@@ -62,6 +64,7 @@ class GenomeData(object):
     def __init__(self, config, genome_data):
         self.download_dir = config.download_dir
         self.genomename = genome_data['genome']
+        self.trackhub_url = genome_data['trackhub_url']
         self.ftp_files = []
         self.gene_lists = []
         self.prediction_lists = []

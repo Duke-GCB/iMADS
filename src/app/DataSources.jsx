@@ -6,20 +6,6 @@ import TableHeader from './table/TableHeader.jsx'
 import TableCell from './table/TableCell.jsx'
 import TableRow from './table/TableRow.jsx'
 
-var DATA_SOURCE_INFO = [
-    {'url': 'hgdownload.cse.ucsc.edu/goldenPath/hg19/database/knownGene.txt.gz',
-     'description': 'UCSC hg19 knownGene.txt.gz',
-     'downloaded': '2016-03-31 08:46'},
-    {'url': 'hgdownload.cse.ucsc.edu/goldenPath/hg19/database/kgXref.txt.gz',
-     'description': 'UCSC hg19 kgXref.txt.gz',
-     'downloaded': '2016-03-31 08:46'},
-    {'url': 'http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/E2F1-hg19_binding_site.bb',
-     'description': 'Prediction hg19 E2F1',
-     'downloaded': '2016-03-31 08:47'},
-    {'url': 'http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/E2F4-hg19_binding_site.bb',
-     'description': 'Prediction hg19 E2F4',
-     'downloaded': '2016-03-31 08:48'}];
-
 class DataSources extends React.Component {
     constructor(props) {
         super(props);

@@ -13,7 +13,7 @@ class HeatMap extends React.Component {
         this.showDetails = this.showDetails.bind(this);
         this.drillDown = this.drillDown.bind(this);
         this.viewInGenomeBrowser = this.viewInGenomeBrowser.bind(this);
-        this.genomeBrowserURL = new GenomeBrowserURL();
+        this.genomeBrowserURL = new GenomeBrowserURL('human', this.props.data.trackHubUrl);
     }
 
     hideDetails() {

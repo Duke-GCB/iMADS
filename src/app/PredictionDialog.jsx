@@ -26,7 +26,7 @@ function sortByStart(a, b) {
 class PredictionDialog extends React.Component {
     constructor(props) {
         super(props);
-        this.genomeBrowserURL = new GenomeBrowserURL();
+        this.genomeBrowserURL = new GenomeBrowserURL('human', props.data.trackHubUrl);
     }
     render() {
         var rowData = this.props.data;
