@@ -11,18 +11,19 @@ function sortByX(a, b) {
 }
 
 class HeatMapData {
-    constructor(data, xOffset = 0, includeTitle = false) {
+    constructor(chrom, data, xOffset = 0, includeTitle = false) {
+        this.chrom = chrom;
         this.data = data;
         this.xOffset = xOffset;
         this.includeTitle = includeTitle;
     }
 
-    static buildCellArray(inputArray, props) {
+    static buildCellArray(chrom, inputArray, props) {
         var results = [];
         var sortedArray = inputArray.slice();
         sortedArray.sort(sortByValue);
         for (let data of sortedArray) {
-            var hmd = new HeatMapData(data, props.xOffset, props.includeTitle);
+            var hmd = new HeatMapData(chrom, data, props.xOffset, props.includeTitle);
             results.push({
                 color: hmd.getColor(),
                 x: hmd.getX(props.scale),
@@ -102,7 +103,7 @@ class HeatMapData {
 
     getTitle() {
         if (this.includeTitle) {
-            return this.data.start + '-' + this.data.end + " : " + this.data.value;
+            return this.chrom + ":" + this.data.start + '-' + this.data.end + " -> " + this.data.value;
         }
         return '';
     }

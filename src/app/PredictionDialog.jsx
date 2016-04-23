@@ -37,6 +37,7 @@ class PredictionDialog extends React.Component {
             var prediction = values[i];
             var position = this.props.data.chrom + ":" + prediction.start  + '-' + prediction.end;
             details.push(<tr>
+                <td>{this.props.data.chrom}</td>
                 <td>{prediction.start}</td>
                 <td>{prediction.end}</td>
                 <td>{prediction.value}</td>
@@ -72,7 +73,7 @@ class PredictionDialog extends React.Component {
                                      data={rowData}/>
                             <h5>Details</h5>
                             <table className="table" style={{width: 300}}>
-                                <tr><th>Start</th><th>End</th><th>Value</th></tr>
+                                <tr><th>Chromosome</th><th>Start</th><th>End</th><th>Value</th></tr>
                             {details}
                             </table>
                         </div>

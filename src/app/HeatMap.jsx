@@ -42,7 +42,7 @@ class HeatMap extends React.Component {
 
     getHeatRects(scale) {
         var result = [];
-        var cells = HeatMapData.buildCellArray(this.props.data.values, {
+        var cells = HeatMapData.buildCellArray(this.props.data.chrom, this.props.data.values, {
             xOffset: this.props.data.start,
             includeTitle: !this.props.showDetailsOnClick,
             scale: scale,
@@ -74,7 +74,6 @@ class HeatMap extends React.Component {
 
     drillDown(evt) {
         var url = evt.target.getAttribute('data-url');
-        //window.location.href = url;
         window.open(url);
     }
 
