@@ -83,7 +83,7 @@ class CustomListDialog extends React.Component {
                         </div>
                             <div style={{margin: '20px'}}>
                                 {instructions}
-                                <textarea style={{width: '100%', height:'50%'}} placeholder={sampleData}
+                                <textarea style={{width: '100%', height:'50%', fontFamily: 'Monaco, monospace'}} placeholder={sampleData}
                                           value={this.state.text}
                                           onChange={this.changeText}
                                 ></textarea>
