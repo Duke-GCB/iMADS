@@ -8,7 +8,7 @@ SETTINGS[CUSTOM_GENE_LIST] = {
     decode: decodeGeneListValue
 };
 SETTINGS[CUSTOM_RANGES_LIST] = {
-    sampleData: "10413\t11027\tchr1\n520413\t521391\tchr2",
+    sampleData: "chr1\t10413\t11027\nchr2\t520413\t521391",
     encode: noop,
     decode: noop,
 };

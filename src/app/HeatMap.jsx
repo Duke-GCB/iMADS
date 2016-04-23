@@ -61,12 +61,12 @@ class HeatMap extends React.Component {
         }
         var url = '';
         if (!this.props.showDetailsOnClick) {
-            var position = this.props.data.chrom + ":" + heatCell.start  + '-' + heatCell.end;
-            url = this.genomeBrowserURL.get(this.props.data.genome, position);
+            url = this.genomeBrowserURL.getPredictionURL(this.props.data.genome, this.props.data.chrom,
+                heatCell.start, heatCell.end);
         }
         return <g>
             {title}
-            <rect data-idx={idx} x={heatCell.x} y={1} width={heatCell.width} height={heatCell.height} style={{fill:heatCell.color}}
+            <rect data-idx={idx} x={heatCell.x} y={0} width={heatCell.width} height={heatCell.height} style={{fill:heatCell.color}}
                   onClick={this.drillDown} data-url={url}
             />
         </g>
@@ -79,9 +79,8 @@ class HeatMap extends React.Component {
     }
 
     viewInGenomeBrowser() {
-        var position = this.props.data.chrom + ":" + this.props.data.start  + '-' + this.props.data.end;
-        var url = this.genomeBrowserURL.get(this.props.data.genome, position);
-        window.open(url);
+        var data = this.props.data;
+        window.open(this.genomeBrowserURL.getGeneURL(data.genome, data.chrom, data.start, data.end));
     }
 
     render() {
@@ -95,6 +94,10 @@ class HeatMap extends React.Component {
             stroke: 'rgb(0,0,0)',
             fill: 'rgba(0,0,0,0)',
         }
+
+        var emptyStyle = {
+            fill: 'rgba(0,0,0,0)',
+        }
         var transcriptionStart = this.transcriptionStartRect(this.getTranscriptionStartX(scale));
         var predictions = this.getHeatRects(scale);
         var popupDialog = [];
@@ -106,19 +109,27 @@ class HeatMap extends React.Component {
                                             onRequestClose={this.hideDetails}
                                             data={this.props.data}/>;
             clickSurface = <rect x={0} y={0} width={this.props.width - 1} height={this.props.height}
-                                 style={borderStyle} onClick={this.showDetails}/>;
+                                  style={emptyStyle} onClick={this.showDetails}/>;
         } else {
             beforePredictions = <rect x={0} y={0} width={this.props.width - 1} height={this.props.height}
-                                 style={borderStyle} onClick={this.viewInGenomeBrowser}/>;
+                                 style={emptyStyle} onClick={this.viewInGenomeBrowser}/>;
+        }
+        var transform = "";
+        if (this.props.data.strand == '-') {
+            var halfWidth = parseInt(this.props.width / 2);
+            var halfHeight = parseInt(this.props.height / 2) - 1;
+            transform = "rotate(180 " + halfWidth + " " + halfHeight +")";
         }
         return <div style={{display: 'inline-block', marginTop: '1px'}}>
-                <svg style={{cursor: 'pointer'}} width={this.props.width} height={this.props.height} xmlns="http://www.w3.org/2000/svg">
-                    <rect class="bar" x={0} y={0} width={this.props.width - 1} height={this.props.height}
-                                 style={borderStyle} />
+                <svg style={{cursor: 'pointer', border: '1px solid grey'}} width={this.props.width} height={this.props.height}
+                     xmlns="http://www.w3.org/2000/svg">
+
+                    <g transform={transform} >
                     {beforePredictions}
                     {predictions}
                     {transcriptionStart}
                     {clickSurface}
+                    </g>
                 </svg>
                 {popupDialog}
             </div>

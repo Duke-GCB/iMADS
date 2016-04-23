@@ -42,8 +42,8 @@ class PredictionDialog extends React.Component {
                 <td>{prediction.value}</td>
             </tr>)
         }
-        var position = this.props.data.chrom + ":" + this.props.data.start  + '-' + this.props.data.end;
-        var allRangeGenomeBrowserURL = this.genomeBrowserURL.get(this.props.data.genome, position);
+        var allRangeGenomeBrowserURL = this.genomeBrowserURL.getPredictionURL(this.props.data.genome,
+            this.props.data.chrom, this.props.data.start, this.props.data.end);
         return <Modal className="Modal__Bootstrap modal-dialog modal-lg"
                       isOpen={this.props.isOpen}
                       onRequestClose={this.props.onRequestClose}
@@ -57,13 +57,13 @@ class PredictionDialog extends React.Component {
                           <h4 className="modal-title">Predictions for {rowData.title}</h4>
                         </div>
                         <div className="modal-body">
-                            <h5>Values ({rowData.strand} strand)
+                            <h5>Values (on {rowData.strand} strand)
                                 &nbsp;
                                 <a alt="View in Genome Browser" title="View in Genome Browser"
                                    href={allRangeGenomeBrowserURL} target="_blank"
                                    style={{float: 'right', paddingRight: '24px'}}
                                 >
-                                    View in Genome Browser
+                                    View in Genome Browser (on + strand)
                                 </a>
 
                             </h5>

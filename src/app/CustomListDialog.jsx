@@ -60,12 +60,12 @@ class CustomListDialog extends React.Component {
         var sampleData = customListData.sampleData;
         if (customListData.isGeneList()) {
             instructions = <div>
-                    <p>Enter a a list of gene names or choose a file in that format.</p>
+                    <p>Enter a list of gene symbols/ID or choose a file in that format.</p>
                 </div>;
         } else {
             instructions = <div>
                     <p>Enter a list of tab separated values or choose a file in that format.</p>
-                    <p>Format is: "START END CHROMOSOME".</p>
+                    <p>Format is: "CHROMOSOME START END".</p>
                 </div>;
         }
         var disableSearch = this.state.text.length == 0;
