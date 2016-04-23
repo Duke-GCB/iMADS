@@ -1,7 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 import HeatMap from './HeatMap.jsx'
-import GenomeBrowserURL from './store/GenomeBrowserURL.js'
+import GenomeBrowserURL from '../store/GenomeBrowserURL.js'
 
 const customStyles = {
   content : {

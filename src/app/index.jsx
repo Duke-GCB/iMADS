@@ -2,10 +2,9 @@ import React from 'react'
 import {render} from 'react-dom';
 import { browserHistory, Router, Route } from 'react-router'
 
-import About from './About.jsx'
-import DataSources from './DataSources.jsx'
-import NavBar from './NavBar.jsx'
-import SearchScreen from './SearchScreen.jsx'
+import SearchPage from './search/SearchPage.jsx'
+import DataSourcesPage from './datasources/DataSourcesPage.jsx'
+import AboutPage from './about/AboutPage.jsx'
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
@@ -15,28 +14,10 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 // https://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin();
 
-class App extends React.Component {
-
-    render () {
-        return <div>
-            <NavBar selected="/" />
-            <SearchScreen url="/api/v1/settings" items_per_page="100"/>
-        </div>
-    }
-}
-
-//render(<App/>, document.getElementById('app'));
-/*
-render((
-  <Router history={hashHistory}>
-    <Route path="/" component={App}/>
-  </Router>
-), document.getElementById('app'))
-*/
 render((
   <Router history={browserHistory}>
-      <Route path="/" component={App}/>
-      <Route path="/datasources" component={DataSources}/>
-      <Route path="/about" component={About}/>
+      <Route path="/" component={SearchPage}/>
+      <Route path="/datasources" component={DataSourcesPage}/>
+      <Route path="/about" component={AboutPage}/>
   </Router>
-), document.getElementById('app'))
+), document.getElementById('app'));

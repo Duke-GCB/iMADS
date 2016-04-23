@@ -1,35 +1,60 @@
 import React from 'react';
-
-import GeneSearchPanel from './GeneSearchPanel.jsx'
+import { browserHistory } from 'react-router'
 import SearchResultsPanel from './SearchResultsPanel.jsx'
-import PredictionsStore from './store/PredictionsStore.js'
-import URLBuilder from './store/URLBuilder.js'
-import PageBatch from './store/PageBatch.js'
-import StreamValue from './store/StreamValue.js'
+import PredictionsStore from '../store/PredictionsStore.js'
+import URLBuilder from '../store/URLBuilder.js'
+import PageBatch from '../store/PageBatch.js'
+import StreamValue from '../store/StreamValue.js'
+import NavBar from '../common/NavBar.jsx'
+
 
 const ITEMS_PER_PAGE = 100;
 const NUM_PAGE_BUTTONS = 5;
 
-class SearchScreen extends React.Component {
+
+class SearchPage extends React.Component {
      constructor(props) {
          super(props);
+         var searchSettings = {};
+         this.runSearchOnMount = false;
+         var query = props.location.query;
+         if (query.genome) {
+            searchSettings = {
+                    genome: query.genome,
+                    gene_list: query.gene_list,
+                    model: query.model,
+                    all: query.all,
+                    upstream: query.upstream,
+                    upstreamValid: true,
+                    downstream: query.downstream,
+                    downstreamValid: true,
+                    maxPredictionSort: query.maxPredictionSort,
+                    showCustomDialog: false,
+                    customListData: '',
+                };
+             this.runSearchOnMount = true;
+         }
          this.state = {
              genome_data: {},
              search_results: [],
-             search_settings: {},
+             search_settings: searchSettings,
              current_page: 1,
              next_pages: 0,
              genome_data_loaded: false,
              search_data_loaded: false,
              errorMessage: "",
          };
+
          this.search = this.search.bind(this);
          this.download_all = this.download_all.bind(this);
          this.change_page = this.change_page.bind(this);
          this.setErrorMessage = this.setErrorMessage.bind(this);
+         this.searchFirstPage = this.searchFirstPage.bind(this);
          var pageBatch = new PageBatch(NUM_PAGE_BUTTONS, ITEMS_PER_PAGE);
          var urlBuilder = new URLBuilder($.ajax);
          this.predictionStore = new PredictionsStore(pageBatch, urlBuilder);
+         this.url="/api/v1/settings";
+         this.items_per_page="100";
     }
 
     setErrorMessage(msg) {
@@ -40,7 +65,7 @@ class SearchScreen extends React.Component {
 
     componentDidMount() {
         $.ajax({
-          url: this.props.url,
+          url: this.url,
           dataType: 'json',
             type: 'GET',
           cache: false,
@@ -49,19 +74,25 @@ class SearchScreen extends React.Component {
                 genome_data: data.genomes,
                 genome_data_loaded: true,
                 max_binding_offset: data.max_binding_offset,
-            });
+            }, this.searchFirstPage);
           }.bind(this),
           error: function(xhr, status, err) {
-            console.error(this.props.url, status, err.toString());
+            console.error(this.url, status, err.toString());
           }.bind(this)
         });
       }
+
+    searchFirstPage() {
+        if (this.runSearchOnMount) {
+            this.search(this.state.search_settings, 1);
+        }
+    }
 
     search(search_settings, page) {
         this.setState({
             search_settings: search_settings,
             page: page,
-            per_page: this.props.items_per_page,
+            per_page: this.items_per_page,
             search_data_loaded: false,
         });
         var streamValue = new StreamValue(this.state.max_binding_offset);
@@ -92,6 +123,9 @@ class SearchScreen extends React.Component {
                 search_data_loaded: true,
             });
         }.bind(this));
+        var localUrl = new URLBuilder();
+        this.predictionStore.addLocalUrl(localUrl, page, search_settings);
+        browserHistory.push(localUrl.url);
     }
 
     change_page(page) {
@@ -103,23 +137,26 @@ class SearchScreen extends React.Component {
     }
 
     render () {
-        return <SearchResultsPanel search_settings={this.state.search_settings}
-                                   search_results={this.state.search_results}
-                                   download_all={this.download_all}
-                                   page={this.state.page}
-                                   next_pages={this.state.next_pages}
-                                   change_page={this.change_page}
-                                   genome_data={this.state.genome_data}
-                                   search={this.search}
-                                   genome_data_loaded={this.state.genome_data_loaded}
-                                   search_data_loaded={this.state.search_data_loaded}
-                                   max_binding_offset={this.state.max_binding_offset}
-                                   predictionStore={this.predictionStore}
-                                   errorMessage={this.state.errorMessage}
-                                   setErrorMessage={this.setErrorMessage}
-        />
+        return <div>
+            <NavBar selected="/" />
+            <SearchResultsPanel search_settings={this.state.search_settings}
+                                       search_results={this.state.search_results}
+                                       download_all={this.download_all}
+                                       page={this.state.page}
+                                       next_pages={this.state.next_pages}
+                                       change_page={this.change_page}
+                                       genome_data={this.state.genome_data}
+                                       search={this.search}
+                                       genome_data_loaded={this.state.genome_data_loaded}
+                                       search_data_loaded={this.state.search_data_loaded}
+                                       max_binding_offset={this.state.max_binding_offset}
+                                       predictionStore={this.predictionStore}
+                                       errorMessage={this.state.errorMessage}
+                                       setErrorMessage={this.setErrorMessage}
+            />
+            </div>
     }
 
 }
 
-export default SearchScreen;
+export default SearchPage;

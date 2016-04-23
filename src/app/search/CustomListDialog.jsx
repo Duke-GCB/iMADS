@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
-import { CustomListData } from './store/CustomList.js';
+import { CustomListData } from '../store/CustomList.js';
 
 const customStyles = {
   content : {

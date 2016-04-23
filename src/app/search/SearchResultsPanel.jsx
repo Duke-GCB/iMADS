@@ -1,13 +1,12 @@
 import React from 'react';
 import Loader from 'react-loader';
-import ScrollingContainer from './ScrollingContainer.jsx'
-import PageTitle from './PageTitle.jsx'
+import PageTitle from '../common/PageTitle.jsx'
 import PagingButtons from './PagingButtons.jsx'
 import GeneSearchPanel from './GeneSearchPanel.jsx'
 import HeatMap from './HeatMap.jsx'
 import ErrorPanel from './ErrorPanel.jsx'
-import SearchSettings from './store/SearchSettings.js'
-import GenomeData from './store/GenomeData.js'
+import SearchSettings from '../store/SearchSettings.js'
+import GenomeData from '../store/GenomeData.js'
 
 class SearchResultsPanel extends React.Component {
     constructor(props) {

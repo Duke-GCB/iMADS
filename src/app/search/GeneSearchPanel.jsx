@@ -1,11 +1,6 @@
 import React from 'react';
-import Loader from 'react-loader';
-
-import NavMenuButton from './NavMenuButton.jsx'
-import StreamValue from './store/StreamValue.js'
+import StreamValue from '../store/StreamValue.js'
 import CustomListDialog from './CustomListDialog.jsx'
-
-const HEADER_LABEL = '';
 
 const CUSTOM_GENE_LIST = 'Custom Gene List';
 const CUSTOM_RANGES_LIST = 'Custom Ranges List';
@@ -135,6 +130,10 @@ class GeneSearchPanel extends React.Component {
         this.runSearch = this.runSearch.bind(this);
         this.closeCustomDialog = this.closeCustomDialog.bind(this);
         this.setShowCustomDialog = this.setShowCustomDialog.bind(this);
+    }
+
+    componentDidMount() {
+
     }
 
     componentWillReceiveProps(nextProps) {

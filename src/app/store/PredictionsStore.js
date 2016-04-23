@@ -1,4 +1,5 @@
 
+
 class PredictionsStore {
     constructor(pageBatch, urlBuilder) {
         this.pageBatch = pageBatch;
@@ -61,6 +62,19 @@ class PredictionsStore {
         this.urlBuilder.appendParam('format',format);
         return this.urlBuilder.url;
     }
+
+    addLocalUrl(urlBuilder, page, searchSettings) {
+        urlBuilder.reset('');
+        urlBuilder.appendParam('genome', searchSettings.genome);
+        urlBuilder.appendParam('model', searchSettings.model);
+        urlBuilder.appendParam('gene_list', searchSettings.gene_list);
+        urlBuilder.appendParam('upstream', searchSettings.upstream);
+        urlBuilder.appendParam('downstream', searchSettings.downstream);
+        urlBuilder.appendParam('include_all', searchSettings.all);
+        urlBuilder.appendParam('max_prediction_sort', searchSettings.maxPredictionSort);
+        urlBuilder.appendParam('page', page);
+    }
+
 }
 
 export default PredictionsStore;

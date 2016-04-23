@@ -1,7 +1,7 @@
 import React from 'react';
 import PredictionDialog from './PredictionDialog.jsx'
-import HeatMapData from './store/HeatMapData.js'
-import GenomeBrowserURL from './store/GenomeBrowserURL.js'
+import HeatMapData from '../store/HeatMapData.js'
+import GenomeBrowserURL from '../store/GenomeBrowserURL.js'
 
 class HeatMap extends React.Component {
     constructor(props) {

@@ -1,12 +1,12 @@
 import React from 'react';
-import NavBar from './NavBar.jsx'
-import PageTitle from './PageTitle.jsx'
-import ScrollingContainer from './ScrollingContainer.jsx'
-import TableHeader from './table/TableHeader.jsx'
-import TableCell from './table/TableCell.jsx'
-import TableRow from './table/TableRow.jsx'
+import NavBar from '../common/NavBar.jsx'
+import PageTitle from '../common/PageTitle.jsx'
+import ScrollingContainer from '../common/ScrollingContainer.jsx'
+import TableHeader from '../common/TableHeader.jsx'
+import TableCell from '../common/TableCell.jsx'
+import TableRow from '../common/TableRow.jsx'
 
-class DataSources extends React.Component {
+class DataSourcesPage extends React.Component {
     constructor(props) {
         super(props);
         this.smallWidth = {width:'14vw'};
@@ -90,4 +90,4 @@ class DataSources extends React.Component {
     }
 }
 
-export default DataSources;
+export default DataSourcesPage;
