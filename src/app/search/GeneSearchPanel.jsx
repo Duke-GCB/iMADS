@@ -275,10 +275,16 @@ class GeneSearchPanel extends React.Component {
             gene_list_options.push(<option key="customRangeList"  value={CUSTOM_RANGES_LIST}>{CUSTOM_RANGES_LIST}</option>)
         }
         var geneListTitle = "Gene list:";
+        var customListButton = [];
         if (this.state.gene_list == CUSTOM_GENE_LIST || this.state.gene_list == CUSTOM_RANGES_LIST) {
             geneListTitle = <div>
                 Gene list:
             </div>;
+            customListButton = <button type="button" className="btn btn-default btn-sm"
+                        style={{marginTop: '5px', marginBottom: '10px', width: '100%'}}
+                    onClick={this.setShowCustomDialog} >
+                    Update Custom List
+                </button>;
         }
         return <div>
                 <h4>Filter</h4>
@@ -289,10 +295,7 @@ class GeneSearchPanel extends React.Component {
                 <SelectItem title={geneListTitle} selected={this.state.gene_list} options={gene_list_options}
                             onChange={this.onChangeGeneList}
                             />
-                <button type="button" className="btn btn-default btn-sm" style={{marginLeft: '5px'}}
-                    onClick={this.setShowCustomDialog} >
-                    Update Custom List
-                </button>
+                {customListButton}
 
                 <StreamInput title="Bases upstream:" 
                              value={this.state.upstream} 
