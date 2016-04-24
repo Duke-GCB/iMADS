@@ -6,6 +6,7 @@ import URLBuilder from '../store/URLBuilder.js'
 import PageBatch from '../store/PageBatch.js'
 import StreamValue from '../store/StreamValue.js'
 import NavBar from '../common/NavBar.jsx'
+import {SEARCH_NAV} from '../store/Navigation.js'
 
 
 const ITEMS_PER_PAGE = 100;
@@ -138,7 +139,7 @@ class SearchPage extends React.Component {
 
     render () {
         return <div>
-            <NavBar selected="/" />
+            <NavBar selected={SEARCH_NAV.path} />
             <SearchResultsPanel search_settings={this.state.search_settings}
                                        search_results={this.state.search_results}
                                        download_all={this.download_all}
