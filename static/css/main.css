@@ -25,6 +25,16 @@
     vertical-align: top;
 }
 
+.table_cell_small {
+    width: 14vw;
+}
+.table_cell_medium {
+    width: 20vw;
+}
+.table_cell_large {
+    width: 30vw;
+}
+
 .table_row {
     border-bottom: 1px solid grey;
 }
@@ -151,3 +161,8 @@
 .ChromCellWide  {  width: 16%;  }
 .NumberCell     {  width: 10%;  }
 
+
+.listHeader {
+    background-color: #235f9c;
+    color: white;
+}
