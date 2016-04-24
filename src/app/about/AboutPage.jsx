@@ -11,7 +11,6 @@ class AboutPage extends React.Component {
             <div className="std_left_right_margin">
                 <PageTitle>About</PageTitle>
                 <ScrollingContainer height="80%">
-
                     <AboutContent />
                 </ScrollingContainer>
             </div>
