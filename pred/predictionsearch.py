@@ -38,7 +38,10 @@ def get_all_values(prediction, size):
         value = data['value']
         idx = start - offset
         values[idx] = value
-    return [str(val) for val in values]
+    result = [str(val) for val in values]
+    if prediction['strand'] == '-':
+        return result[::-1]
+    return result
 
 
 class SearchArgs(object):
