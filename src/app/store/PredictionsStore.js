@@ -70,9 +70,8 @@ class PredictionsStore {
         urlBuilder.appendParam('gene_list', searchSettings.gene_list);
         urlBuilder.appendParam('upstream', searchSettings.upstream);
         urlBuilder.appendParam('downstream', searchSettings.downstream);
-        urlBuilder.appendParam('include_all', searchSettings.all);
-        urlBuilder.appendParam('max_prediction_sort', searchSettings.maxPredictionSort);
-        urlBuilder.appendParam('page', page);
+        urlBuilder.appendParam('all', searchSettings.all);
+        urlBuilder.appendParam('maxPredictionSort', searchSettings.maxPredictionSort);
     }
 
 }

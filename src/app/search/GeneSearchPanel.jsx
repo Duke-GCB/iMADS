@@ -70,7 +70,7 @@ class BooleanInput extends React.Component {
     render() {
         return <label>
                     <input type="checkbox"
-                           checked={this.checked} onChange={this.onChange}
+                           checked={this.props.checked} onChange={this.onChange}
                     /> {this.props.label}
             </label>
     }
@@ -311,7 +311,8 @@ class GeneSearchPanel extends React.Component {
                              />
                 <BooleanInput checked={this.state.maxPredictionSort} label="Sort by max value"
                               onChange={this.onChangeMaxPredictionSort} />
-                <BooleanInput checked={this.state.all} label="Include all values" onChange={this.onChangeAll} />
+                <BooleanInput checked={this.state.all} label="Include all values"
+                              onChange={this.onChangeAll} />
                 <CustomListDialog type={this.state.gene_list}
                                   isOpen={this.state.showCustomDialog}
                                   onRequestClose={this.closeCustomDialog} />

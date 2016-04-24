@@ -26,7 +26,7 @@ class HeatMapData {
             var hmd = new HeatMapData(chrom, data, props.xOffset, props.includeTitle);
             results.push({
                 color: hmd.getColor(),
-                x: hmd.getX(props.scale),
+                x: hmd.getX(props.scale, props.strand, props.xOffsetEnd),
                 width: hmd.getWidth(props.scale),
                 height: props.height,
                 title: hmd.getTitle(),
@@ -91,10 +91,16 @@ class HeatMapData {
         return fill;
     }
 
-    getX(scale) {
+    getX(scale, strand, xOffsetEnd) {
         var start = this.data.start;
         var value = this.data.value;
-        return parseInt((start - this.xOffset) * scale);
+        if (strand === '-') {
+            let x = start - this.xOffset;
+            x = (xOffsetEnd - this.xOffset) - x - PREDICTION_WIDTH;
+            return x * scale;
+        } else {
+            return parseInt((start - this.xOffset) * scale);    
+        }
     }
 
     getWidth(scale) {

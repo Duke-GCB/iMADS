@@ -33,17 +33,15 @@ class HeatMap extends React.Component {
     }
 
     getTranscriptionStartX(scale) {
-        if (this.props.data.strand == '-') {
-            return parseInt(this.props.data.downstream * scale) + 1;
-        } else {
-            return parseInt(this.props.data.upstream * scale) + 1;
-        }
+        return parseInt(this.props.data.upstream * scale) + 1;
     }
 
     getHeatRects(scale) {
         var result = [];
         var cells = HeatMapData.buildCellArray(this.props.data.chrom, this.props.data.values, {
             xOffset: this.props.data.start,
+            xOffsetEnd: this.props.data.end,
+            strand: this.props.data.strand,
             includeTitle: !this.props.showDetailsOnClick,
             scale: scale,
             height: this.props.height-2,
@@ -113,22 +111,13 @@ class HeatMap extends React.Component {
             beforePredictions = <rect x={0} y={0} width={this.props.width - 1} height={this.props.height}
                                  style={emptyStyle} onClick={this.viewInGenomeBrowser}/>;
         }
-        var transform = "";
-        if (this.props.data.strand == '-') {
-            var halfWidth = parseInt(this.props.width / 2);
-            var halfHeight = parseInt(this.props.height / 2) - 1;
-            transform = "rotate(180 " + halfWidth + " " + halfHeight +")";
-        }
         return <div style={{display: 'inline-block', marginTop: '1px'}}>
                 <svg style={{cursor: 'pointer', border: '1px solid grey'}} width={this.props.width} height={this.props.height}
                      xmlns="http://www.w3.org/2000/svg">
-
-                    <g transform={transform} >
                     {beforePredictions}
                     {predictions}
                     {transcriptionStart}
                     {clickSurface}
-                    </g>
                 </svg>
                 {popupDialog}
             </div>
