@@ -48,6 +48,7 @@ class StreamInput extends React.Component {
         return <div>
                     <label>{this.props.title}
                         <input type="text"
+                               disabled={this.props.disabled}
                                className={className}
                                defaultValue={this.props.value}
                                onBlur={this.onChange}
@@ -286,6 +287,10 @@ class GeneSearchPanel extends React.Component {
                     Update Custom List
                 </button>;
         }
+        var disableUpstreamDownstream = false;
+        if (this.state.gene_list == CUSTOM_RANGES_LIST) {
+            disableUpstreamDownstream = true;
+        }
         return <div>
                 <h4>Filter</h4>
                 <SelectItem title="Assembly:" selected={this.state.genome} options={assembly_options}
@@ -302,12 +307,14 @@ class GeneSearchPanel extends React.Component {
                              onChange={this.onChangeUpstream}
                              max_binding_offset={this.props.max_binding_offset}
                              isValid={this.state.upstreamValid}
+                             disabled={disableUpstreamDownstream}
                               />
                 <StreamInput title="Bases downstream:"
                              value={this.state.downstream} 
                              onChange={this.onChangeDownstream}
                              max_binding_offset={this.props.max_binding_offset}
                              isValid={this.state.downstreamValid}
+                             disabled={disableUpstreamDownstream}
                              />
                 <BooleanInput checked={this.state.maxPredictionSort} label="Sort by max value"
                               onChange={this.onChangeMaxPredictionSort} />
