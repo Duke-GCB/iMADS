@@ -26,11 +26,11 @@ function lookup_settings(type) {
 }
 
 function encodeGeneListValue(value) {
-    return value.split('\n').join('%2C');
+    return value;
 }
 
 function decodeGeneListValue(value) {
-    return value.split('%2C').join('\n');
+    return value;
 }
 
 function noop(value) {

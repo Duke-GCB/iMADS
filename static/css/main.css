@@ -166,3 +166,11 @@
     background-color: #235f9c;
     color: white;
 }
+
+.CustomListDialog_textarea {
+    width: 100%;
+    height: 50%;
+    font-family: Monaco, monospace;
+    font-size: 10pt;
+    white-space: pre;
+}

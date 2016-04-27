@@ -78,7 +78,7 @@ def get_genome_versions():
 @app.route('/api/v1/genomes/<genome>/prediction', methods=['POST','GET'])
 def prediction_search(genome):
     log_info("Finding predictions.")
-    predictions, args = get_predictions_with_guess(get_db(), g_config, genome, request.args)
+    predictions, args = get_predictions_with_guess(get_db(), g_config, genome, request.args, request.get_json())
     response_format = args.get_format()
     if response_format == 'json':
         r = make_json_response({'predictions': predictions, 'page': args.page})
@@ -88,7 +88,6 @@ def prediction_search(genome):
         headers = {'Content-Disposition': content_disposition}
         gen = make_predictions_csv_response(predictions, args)
         r = Response(gen, mimetype='application/octet-stream', headers=headers)
-
     else:
         raise ValueError("Unexpected format:{}".format(response_format))
     log_info("Returning predictions.")
@@ -119,13 +118,18 @@ def make_predictions_csv_response(predictions, args):
         headers.extend([str(i) for i in range(-1*up, down+1)])
     yield separator.join(headers) + '\n'
     for prediction in predictions:
+        start = prediction['start']
+        end = prediction['end']
+        if not start:
+            start = prediction['range_start']
+            end = prediction['range_end']
         items = [
             prediction['common_name'],
             prediction['name'],
             str(prediction['max']),
             prediction['chrom'],
-            str(prediction['start']),
-            str(prediction['end'])]
+            str(start),
+            str(end)]
         if args.get_include_all():
             items.extend(get_all_values(prediction, size))
         yield separator.join(items) + '\n'

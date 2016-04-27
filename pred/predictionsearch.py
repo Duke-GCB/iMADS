@@ -1,14 +1,17 @@
 import math
 import psycopg2.extras
-from pred.querybuilder import PredictionQueryBuilder, PredictionQueryNames, PredictionCountQueryBuilder
-
+from pred.customlist import CustomList
+from pred.predictionquery import PredictionQuery
+from pred.maxpredictionquery import MaxPredictionQuery
+from pred.genelistquery import GeneListQuery
+from pred.rangelistquery import RangeListQuery
 
 CUSTOM_GENE_LIST = 'Custom Gene List'
 CUSTOM_RANGES_LIST = 'Custom Ranges List'
 
 
-def get_predictions_with_guess(db, config, genome, args):
-    search_args = SearchArgs(config.binding_max_offset, args)
+def get_predictions_with_guess(db, config, genome, args, json_data):
+    search_args = SearchArgs(config.binding_max_offset, args, json_data)
     if search_args.is_last_page():
         last_page = determine_last_page(db, genome, search_args)
         search_args.set_page(last_page)
@@ -44,6 +47,18 @@ def get_all_values(prediction, size):
     return result
 
 
+class PredictionQueryNames(object):
+    COMMON_NAME = 'common_name'
+    NAME = 'name'
+    MAX_VALUE = 'max_value'
+    CHROM = 'chrom'
+    STRAND = 'strand'
+    GENE_START = 'gene_start'
+    PRED = 'pred'
+    RANGE_START = 'range_start'
+    RANGE_END = 'range_end'
+
+
 class SearchArgs(object):
     GENE_LIST = 'gene_list'
     MODEL = 'protein'
@@ -57,10 +72,11 @@ class SearchArgs(object):
     INCLUDE_ALL = 'include_all'
     CUSTOM_LIST_DATA = 'custom_list_data'
 
-    def __init__(self, max_stream_val, args):
+    def __init__(self, max_stream_val, args, json_data):
         self.max_stream_val = max_stream_val
         self.args = args
         self.page = args.get(self.PAGE)
+        self.custom_data_list = json_data.get(self.CUSTOM_LIST_DATA)
 
     def _get_required_arg(self, name):
         value = self.args.get(name, None)
@@ -123,7 +139,7 @@ class SearchArgs(object):
 
     def get_custom_list_data(self):
         if self.is_custom_gene_list() or self.is_custom_ranges_list():
-            return self.args.get(self.CUSTOM_LIST_DATA, '')
+            return CustomList(self.is_custom_gene_list(), self.custom_data_list)
         return ''
 
     def is_custom_gene_list(self):
@@ -141,39 +157,40 @@ class PredictionSearch(object):
         self.enable_guess = enable_guess
 
     def get_count(self):
-        query, params = self.make_count_query_and_params()
+        query, params = self.make_query_and_params(count=True)
         cur = self.db.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute(query, params)
         items = cur.fetchone()[0]
         cur.close()
         return items
 
-    def make_count_query_and_params(self):
-        builder = PredictionQueryBuilder(self.genome, self.args.get_gene_list(), self.args.get_custom_list_data(),
-                                         self.args.get_model_name())
-        builder.set_max_value_guess(None)
-        count_builder = PredictionCountQueryBuilder(builder.main_query_func)
-        builder.set_main_query_func(count_builder.make_query)
-        return builder.make_query_and_params(self.args.get_upstream(), self.args.get_downstream())
-
     def get_predictions(self):
         upstream = self.args.get_upstream()
         downstream = self.args.get_downstream()
-        query, params = self._create_query_and_params()
+        query, params = self.make_query_and_params(count=False)
+        print("QUERY" + query)
         cur = self.db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        #self.saveit(query, params)
         cur.execute(query, params)
         predictions = []
         for row in cur.fetchall():
-            gene_start = int(row[PredictionQueryNames.GENE_START])
+            gene_start_str = row[PredictionQueryNames.GENE_START]
+            gene_start = ""
+            if gene_start_str:
+                gene_start = int(gene_start_str)
             strand = row[PredictionQueryNames.STRAND]
             start = None
             end = None
-            if strand == '+':
-                start = gene_start - upstream
-                end = gene_start + downstream
+            if gene_start:
+                if strand == '+':
+                    start = gene_start - upstream
+                    end = gene_start + downstream
+                else:
+                    start = gene_start - downstream
+                    end = gene_start + upstream
             else:
-                start = gene_start - downstream
-                end = gene_start + upstream
+                start = row[PredictionQueryNames.RANGE_START]
+                end = row[PredictionQueryNames.RANGE_END]
             predictions.append({
                  'name': row[PredictionQueryNames.NAME],
                  'common_name': row[PredictionQueryNames.COMMON_NAME],
@@ -184,30 +201,93 @@ class PredictionSearch(object):
                  'values': row[PredictionQueryNames.PRED],
                  'strand': strand,
             })
+        self.db.rollback()
         cur.close()
         return predictions
 
-    def _create_query_and_params(self):
-        builder = PredictionQueryBuilder(self.genome, self.args.get_gene_list(), self.args.get_custom_list_data(),
-                                         self.args.get_model_name())
-        self._try_set_limit_and_offset(builder)
-        self._try_set_max_sort(builder)
-        return builder.make_query_and_params(self.args.get_upstream(), self.args.get_downstream())
+    def saveit(self, query, params):
+        for param in params:
+            query = query.replace('%s', "'" + str(param) + "'", 1)
+        with open("/tmp/jpb.sql", 'w') as outfile:
+            outfile.write(query)
 
-    def _try_set_limit_and_offset(self, builder):
-        page, per_page = self.args.get_page_and_per_page()
-        if page and per_page:
-            builder.set_limit_and_offset(per_page, (page - 1) * per_page)
 
-    def _try_set_max_sort(self, builder):
+    def make_query_and_params(self, count):
+        return self.determine_query(count).get_query_and_params()
+
+    def determine_query(self, count):
+        if self.args.is_custom_gene_list():
+            return self.gene_list_query(count)
+        if self.args.is_custom_ranges_list():
+            return self.range_list_query(count)
         if self.args.get_sort_by_max():
-            builder.set_sort_by_max()
-            if self.enable_guess:
-                guess = self.args.get_max_prediction_guess()
-                if guess:
-                    builder.set_max_value_guess(guess)
-        else:
-            builder.set_sort_by_name()
+            return self.max_query(count)
+        return self.normal_query(count)
+
+    def gene_list_query(self, count):
+        custom_data_list = self.args.get_custom_list_data()
+        limit, offset = self.get_limit_and_offset(count)
+        return GeneListQuery(
+            schema=self.genome,
+            common_name_tuple=custom_data_list.get_gene_name_tuple(),
+            model_name=self.args.get_model_name(),
+            upstream=self.args.get_upstream(),
+            downstream=self.args.get_downstream(),
+            limit=limit,
+            offset=offset,
+            count=count,
+            sort_by_max=self.args.get_sort_by_max(),
+        )
+
+    def range_list_query(self, count):
+        custom_data_list = self.args.get_custom_list_data()
+        limit, offset = self.get_limit_and_offset(count)
+        return RangeListQuery(
+            schema=self.genome,
+            range_list=custom_data_list.get_ranges_array(),
+            model_name=self.args.get_model_name(),
+            limit=limit,
+            offset=offset,
+            count=count,
+            sort_by_max=self.args.get_sort_by_max(),
+        )
+
+    def max_query(self, count):
+        guess = None
+        if self.enable_guess:
+            guess = self.args.get_max_prediction_guess()
+        limit, offset = self.get_limit_and_offset(count)
+        return MaxPredictionQuery(
+            schema=self.genome,
+            gene_list=self.args.get_gene_list(),
+            model_name=self.args.get_model_name(),
+            upstream=self.args.get_upstream(),
+            downstream=self.args.get_downstream(),
+            guess=guess,
+            limit=limit,
+            offset=offset,
+            count=count,
+        )
+
+    def normal_query(self, count):
+        limit, offset = self.get_limit_and_offset(count)
+        return PredictionQuery(
+            schema=self.genome,
+            gene_list=self.args.get_gene_list(),
+            model_name=self.args.get_model_name(),
+            upstream=self.args.get_upstream(),
+            downstream=self.args.get_downstream(),
+            limit=limit,
+            offset=offset,
+            count=count,
+        )
+
+    def get_limit_and_offset(self, count):
+        if not count:
+            page, per_page = self.args.get_page_and_per_page()
+            if page and per_page:
+                return per_page, (page - 1) * per_page
+        return None, None
 
     def has_max_prediction_guess(self):
         return self.args.get_sort_by_max() and self.args.get_max_prediction_guess() != ''
@@ -215,4 +295,3 @@ class PredictionSearch(object):
     def get_per_page(self):
         page, per_page = self.args.get_page_and_per_page()
         return per_page
-

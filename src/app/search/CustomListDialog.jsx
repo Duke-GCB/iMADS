@@ -1,6 +1,9 @@
 import React from 'react';
 import Modal from 'react-modal';
+import Loader from 'react-loader';
 import { CustomListData } from '../store/CustomList.js';
+import FileUpload from '../store/FileUpload.js';
+
 
 const customStyles = {
   content : {
@@ -17,29 +20,31 @@ class CustomListDialog extends React.Component {
         super(props);
         this.state = {
             text: '',
+            loading: false,
         }
         this.changeUploadFile = this.changeUploadFile.bind(this);
         this.changeText = this.changeText.bind(this);
         this.onClickSearch = this.onClickSearch.bind(this);
+        this.closeReturningResult = this.closeReturningResult.bind(this);
         this.setText = this.setText.bind(this);
+        this.fileUpload = undefined;
 
     }
     changeUploadFile(evt) {
         var customListDialog = this;
         var file = evt.target.files[0];
         if (file) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                var text = reader.result;
-                customListDialog.setText(text);
-            }
-            reader.readAsText(file);
-        } else {
+            this.fileUpload = new FileUpload(file);
+            this.fileUpload.fetchPreviewLines(customListDialog.setText);
             customListDialog.setState({
-                text: this.state.text,
+                loading: true,
+            })
+        } else {
+            this.fileUpload = undefined;
+            customListDialog.setState({
+                text: '',
             });
         }
-
     }
     changeText(evt) {
         this.setText(evt.target.value);
@@ -47,13 +52,26 @@ class CustomListDialog extends React.Component {
     setText(value) {
         this.setState({
             text: value,
+            loading: false,
         });
     }
     onClickSearch() {
+        if (this.fileUpload) {
+            this.setState({
+                loading: true,
+            })
+            this.fileUpload.fetchAllFile(this.closeReturningResult);
+        } else {
+            this.closeReturningResult(this.state.text);
+        }
+    }
+
+    closeReturningResult(text) {
         var customListData = new CustomListData(this.props.type);
-        var result = customListData.encode(this.state.text);
+        var result = customListData.encode(text);
         this.props.onRequestClose(result);
     }
+
     render() {
         var customListData = new CustomListData(this.props.type);
         var instructions = [];
@@ -83,19 +101,25 @@ class CustomListDialog extends React.Component {
                         </div>
                             <div style={{margin: '20px'}}>
                                 {instructions}
-                                <textarea style={{width: '100%', height:'50%', fontFamily: 'Monaco, monospace'}} placeholder={sampleData}
+
+                                <textarea className="CustomListDialog_textarea"
+                                          placeholder={sampleData}
                                           value={this.state.text}
                                           onChange={this.changeText}
+                                          disabled={this.state.loading}
                                 ></textarea>
 
                                 <input style={{marginTop: '10px', marginBottom:'10px'}} type="file" name="fileField"
                                        onChange={this.changeUploadFile}
+                                       disabled={this.state.loading}
                                 />
+                                <Loader loaded={!this.state.loading} >
+                                    <button className="btn btn-default"
+                                            type="button"
+                                            disabled={disableSearch}
+                                            onClick={this.onClickSearch}>Search</button>
+                                </Loader>
 
-                                <button className="btn btn-default"
-                                        type="button"
-                                        disabled={disableSearch}
-                                        onClick={this.onClickSearch}>Search</button>
                             </div>
 
 

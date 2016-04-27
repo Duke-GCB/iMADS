@@ -1,6 +1,6 @@
 import psycopg2.extras
 
-from pred.querybuilder import DataSourcesQueryBuilder, DataSourcesQueryNames
+from pred.datasourcesquery import DataSourcesQuery, DataSourcesQueryNames
 
 
 class DataSources(object):
@@ -8,7 +8,7 @@ class DataSources(object):
         self.db = db
 
     def get_items(self):
-        query, params = DataSourcesQueryBuilder().make_query_and_params()
+        query, params = DataSourcesQuery().make_query_and_params()
         cur = self.db.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute(query, params)
         items = []

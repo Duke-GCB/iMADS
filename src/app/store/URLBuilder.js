@@ -3,6 +3,11 @@ class URLBuilder {
         this.fetchMethod = fetchMethod;
         this.url = ''
         this.hasParam = false;
+        this.data = {};
+    }
+
+    addToData(key, value) {
+        this.data[key] = value;
     }
 
     reset(baseURL) {
@@ -28,8 +33,10 @@ class URLBuilder {
         this.fetchMethod({
             url: url,
             type: method,
+            contentType: "application/json; charset=utf-8",
             dataType: dataType,
             cache: false,
+            data: JSON.stringify(this.data),
             success: function (data) {
                 onData(data);
             },
