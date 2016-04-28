@@ -28,6 +28,7 @@ class CustomListDialog extends React.Component {
         this.onClickSearch = this.onClickSearch.bind(this);
         this.closeReturningResult = this.closeReturningResult.bind(this);
         this.setText = this.setText.bind(this);
+        this.exitDialog = this.exitDialog.bind(this);
         this.fileUpload = undefined;
 
     }
@@ -67,12 +68,19 @@ class CustomListDialog extends React.Component {
         }
     }
 
+    exitDialog() {
+        this.props.onRequestClose('');
+    }
+
     closeReturningResult(text) {
         let customListDialog = this;
         let customListData = new CustomListData(customListDialog.props.type);
         let customFile = new CustomFile(customListData.isGeneList(), text);
         customFile.uploadFile(function(key) {
             customListDialog.props.onRequestClose(key);
+            customListDialog.setState( {
+                text: '',
+            })
         }, function(error){
             alert(error);
         })
@@ -95,11 +103,11 @@ class CustomListDialog extends React.Component {
         var disableSearch = this.state.text.length == 0;
         return <Modal className="Modal__Bootstrap modal-dialog modal-lg"
                       isOpen={this.props.isOpen}
-                      onRequestClose={this.props.onRequestClose}
+                      onRequestClose={this.exitDialog}
                       style={customStyles} >
                     <div>
                         <div className="modal-header">
-                          <button type="button" className="close" onClick={this.props.onRequestClose}>
+                          <button type="button" className="close" onClick={this.exitDialog}>
                             <span aria-hidden="true">&times;</span>
                             <span className="sr-only">Close</span>
                           </button>

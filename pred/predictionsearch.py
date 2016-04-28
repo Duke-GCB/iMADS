@@ -1,4 +1,5 @@
 import math
+import re
 import psycopg2.extras
 from pred.customlist import CustomList
 from pred.predictionquery import PredictionQuery
@@ -138,7 +139,10 @@ class SearchArgs(object):
 
     def get_custom_list_data(self):
         if self.is_custom_gene_list() or self.is_custom_ranges_list():
-            return CustomList(self.is_custom_gene_list(), self.args.get(self.CUSTOM_LIST_DATA))
+            list_id_str = self.args.get(self.CUSTOM_LIST_DATA)
+            if not re.match('^\d+$', list_id_str):
+                raise ValueError("Invalid custom list id:{}".format(list_id_str))
+            return CustomList(self.is_custom_gene_list(), list_id_str)
         return ''
 
     def is_custom_gene_list(self):

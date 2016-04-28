@@ -241,7 +241,7 @@ class GeneSearchPanel extends React.Component {
     }
 
     runSearch() {
-        if (this.state.showCustomDialog) {
+        if (this.state.showCustomDialog || !this.state.customListData) {
             return;
         }
         this.updateValidationState();
