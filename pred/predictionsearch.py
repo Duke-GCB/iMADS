@@ -1,7 +1,7 @@
 import math
 import re
 import psycopg2.extras
-from pred.customlist import CustomList
+from pred.customlist import CustomList, does_custom_list_exist
 from pred.predictionquery import PredictionQuery
 from pred.maxpredictionquery import MaxPredictionQuery
 from pred.genelistquery import GeneListQuery
@@ -227,12 +227,19 @@ class PredictionSearch(object):
             return self.max_query(count)
         return self.normal_query(count)
 
-    def gene_list_query(self, count):
+    def get_custom_list_key(self):
         custom_data_list = self.args.get_custom_list_data()
+        key = custom_data_list.key
+        if not does_custom_list_exist(self.db, key):
+            raise ValueError("No data found for this custom list({}).".format(key))
+        return key
+
+    def gene_list_query(self, count):
+        custom_list_key = self.get_custom_list_key()
         limit, offset = self.get_limit_and_offset(count)
         return GeneListQuery(
             schema=self.genome,
-            custom_list_id=custom_data_list.key,
+            custom_list_id=custom_list_key,
             model_name=self.args.get_model_name(),
             upstream=self.args.get_upstream(),
             downstream=self.args.get_downstream(),
@@ -243,11 +250,11 @@ class PredictionSearch(object):
         )
 
     def range_list_query(self, count):
-        custom_data_list = self.args.get_custom_list_data()
+        custom_list_key = self.get_custom_list_key()
         limit, offset = self.get_limit_and_offset(count)
         return RangeListQuery(
             schema=self.genome,
-            custom_list_id=custom_data_list.key,
+            custom_list_id=custom_list_key,
             model_name=self.args.get_model_name(),
             limit=limit,
             offset=offset,

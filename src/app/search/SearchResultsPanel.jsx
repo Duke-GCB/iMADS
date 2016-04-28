@@ -7,6 +7,7 @@ import HeatMap from './HeatMap.jsx'
 import ErrorPanel from './ErrorPanel.jsx'
 import SearchSettings from '../store/SearchSettings.js'
 import GenomeData from '../store/GenomeData.js'
+import {CUSTOM_RANGES_LIST} from '../store/CustomList.js'
 
 class SearchResultsPanel extends React.Component {
     constructor(props) {
@@ -140,6 +141,7 @@ class SearchResultsPanel extends React.Component {
                 var combined_name = rowData.common_name + " (" + rowData.name + ") ";
                 var offsets_str = " upstream:" + search_settings.upstream + " downstream:" + search_settings.downstream;
                 var trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettingsObj.genome_version);
+                var isCustomRange = search_settings.gene_list == CUSTOM_RANGES_LIST;
                 var heatMapValues = {
                     title:  combined_name + " " + offsets_str,
                     values: rowData.values,
@@ -151,6 +153,7 @@ class SearchResultsPanel extends React.Component {
                     chrom: rowData.chrom,
                     genome: this.props.search_settings.genome,
                     trackHubUrl: trackHubUrl,
+                    isCustomRange: isCustomRange,
                 };
                 heatMap = <HeatMap width="120" height="20"
                                    showDetailsOnClick={true}

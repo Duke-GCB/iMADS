@@ -14,6 +14,9 @@ SETTINGS[CUSTOM_RANGES_LIST] = {
 };
 
 
+export function is_custom_list(str) {
+    return str === CUSTOM_GENE_LIST || str == CUSTOM_RANGES_LIST
+}
 
 function lookup_settings(type) {
     if (type in SETTINGS) {

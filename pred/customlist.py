@@ -12,6 +12,17 @@ def save_custom_file(db, user_info, type, content):
     return custom_list.key
 
 
+def does_custom_list_exist(db, key):
+    cur = db.cursor()
+    cur.execute("select count(*) from custom_list where id = %s", [key])
+    exists = False
+    if cur.fetchone()[0] > 0:
+        exists = True
+    cur.close()
+    db.commit()
+    return exists
+
+
 class CustomList(object):
     def __init__(self, is_gene_list, key):
         self.is_gene_list = is_gene_list

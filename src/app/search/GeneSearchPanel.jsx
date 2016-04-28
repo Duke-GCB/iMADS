@@ -198,10 +198,11 @@ class GeneSearchPanel extends React.Component {
     }
 
     closeCustomDialog(customListData) {
+        var func = this.runSearch;
         this.setState({
             showCustomDialog: false,
             customListData: customListData,
-        }, this.runSearch);
+        }, func);
     }
 
     onChangeModel(e) {
@@ -241,7 +242,7 @@ class GeneSearchPanel extends React.Component {
     }
 
     runSearch() {
-        if (this.state.showCustomDialog || !this.state.customListData) {
+        if (this.state.showCustomDialog) {
             return;
         }
         this.updateValidationState();

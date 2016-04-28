@@ -7,6 +7,7 @@ import PageBatch from '../store/PageBatch.js'
 import StreamValue from '../store/StreamValue.js'
 import NavBar from '../common/NavBar.jsx'
 import {SEARCH_NAV} from '../store/Navigation.js'
+import {is_custom_list} from '../store/CustomList.js'
 
 
 const ITEMS_PER_PAGE = 100;
@@ -31,7 +32,7 @@ class SearchPage extends React.Component {
                     downstreamValid: true,
                     maxPredictionSort: (query.maxPredictionSort  === 'true'),
                     showCustomDialog: false,
-                    customListData: '',
+                    customListData: query.custom_list_data,
                 };
              this.runSearchOnMount = true;
          }
@@ -45,7 +46,6 @@ class SearchPage extends React.Component {
              search_data_loaded: false,
              errorMessage: "",
          };
-
          this.search = this.search.bind(this);
          this.download_all = this.download_all.bind(this);
          this.change_page = this.change_page.bind(this);
@@ -90,6 +90,11 @@ class SearchPage extends React.Component {
     }
 
     search(search_settings, page) {
+        if (is_custom_list(search_settings.gene_list)) {
+            if (!search_settings.customListData) {
+                return;
+            }
+        }
         this.setState({
             search_settings: search_settings,
             page: page,

@@ -68,6 +68,7 @@ class PredictionsStore {
         urlBuilder.appendParam('genome', searchSettings.genome);
         urlBuilder.appendParam('model', searchSettings.model);
         urlBuilder.appendParam('gene_list', searchSettings.gene_list);
+        urlBuilder.appendParam('custom_list_data', searchSettings.customListData);
         urlBuilder.appendParam('upstream', searchSettings.upstream);
         urlBuilder.appendParam('downstream', searchSettings.downstream);
         urlBuilder.appendParam('all', searchSettings.all);
