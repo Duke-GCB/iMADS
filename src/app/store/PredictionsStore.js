@@ -43,7 +43,7 @@ class PredictionsStore {
         urlBuilder.append('/prediction');
         urlBuilder.appendParam('protein', searchSettings.model);
         urlBuilder.appendParam('gene_list', searchSettings.gene_list);
-        urlBuilder.addToData('custom_list_data', searchSettings.customListData);
+        urlBuilder.appendParam('custom_list_data', searchSettings.customListData);
         urlBuilder.appendParam('upstream', searchSettings.upstream);
         urlBuilder.appendParam('downstream', searchSettings.downstream);
         urlBuilder.appendParam('include_all', searchSettings.all);
@@ -56,7 +56,7 @@ class PredictionsStore {
             urlBuilder.appendParam('per_page', perPage);
         }
     }
-    
+
     getDownloadURL(format, searchSettings) {
         this.setBuilderURL(undefined, undefined, searchSettings)
         this.urlBuilder.appendParam('format',format);

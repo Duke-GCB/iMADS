@@ -13,6 +13,8 @@ SETTINGS[CUSTOM_RANGES_LIST] = {
     decode: noop,
 };
 
+
+
 function lookup_settings(type) {
     if (type in SETTINGS) {
         return SETTINGS[type];
@@ -57,4 +59,6 @@ export class CustomListData {
     decode(value) {
         return this.decodeFunc(value);
     }
+
+
 }

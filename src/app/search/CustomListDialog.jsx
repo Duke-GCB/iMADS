@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import Loader from 'react-loader';
 import { CustomListData } from '../store/CustomList.js';
 import FileUpload from '../store/FileUpload.js';
+import CustomFile from '../store/CustomFile.js';
 
 
 const customStyles = {
@@ -67,9 +68,14 @@ class CustomListDialog extends React.Component {
     }
 
     closeReturningResult(text) {
-        var customListData = new CustomListData(this.props.type);
-        var result = customListData.encode(text);
-        this.props.onRequestClose(result);
+        let customListDialog = this;
+        let customListData = new CustomListData(customListDialog.props.type);
+        let customFile = new CustomFile(customListData.isGeneList(), text);
+        customFile.uploadFile(function(key) {
+            customListDialog.props.onRequestClose(key);
+        }, function(error){
+            alert(error);
+        })
     }
 
     render() {

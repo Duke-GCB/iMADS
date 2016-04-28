@@ -54,6 +54,9 @@ class TemplateExecutor(object):
     def create_data_source(self):
         self.execute_template('create_data_source.sql', {})
 
+    def create_custom_list(self):
+        self.execute_template('create_custom_list.sql', {})
+
     def insert_data_source(self, url, description, data_source_type):
         self.execute_template('insert_data_source.sql', {}, exec_params=(url, description, data_source_type))
 
@@ -145,6 +148,7 @@ def load_database_based_on_config(config):
     db = PostgresConnection(dbconfig.host, dbconfig.dbname, dbconfig.user, dbconfig.password, update_progress=update_progress)
     executor = TemplateExecutor(db, SQL_TEMPLATE_DIR)
     executor.create_data_source()
+    executor.create_custom_list()
     for genome_data in config.genome_data_list:
         genome = genome_data.genomename
         executor.create_schema(genome, dbconfig.user)

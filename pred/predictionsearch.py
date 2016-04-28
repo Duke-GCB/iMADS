@@ -10,8 +10,8 @@ CUSTOM_GENE_LIST = 'Custom Gene List'
 CUSTOM_RANGES_LIST = 'Custom Ranges List'
 
 
-def get_predictions_with_guess(db, config, genome, args, json_data):
-    search_args = SearchArgs(config.binding_max_offset, args, json_data)
+def get_predictions_with_guess(db, config, genome, args):
+    search_args = SearchArgs(config.binding_max_offset, args)
     if search_args.is_last_page():
         last_page = determine_last_page(db, genome, search_args)
         search_args.set_page(last_page)
@@ -72,11 +72,10 @@ class SearchArgs(object):
     INCLUDE_ALL = 'include_all'
     CUSTOM_LIST_DATA = 'custom_list_data'
 
-    def __init__(self, max_stream_val, args, json_data):
+    def __init__(self, max_stream_val, args):
         self.max_stream_val = max_stream_val
         self.args = args
         self.page = args.get(self.PAGE)
-        self.custom_data_list = json_data.get(self.CUSTOM_LIST_DATA)
 
     def _get_required_arg(self, name):
         value = self.args.get(name, None)
@@ -139,7 +138,7 @@ class SearchArgs(object):
 
     def get_custom_list_data(self):
         if self.is_custom_gene_list() or self.is_custom_ranges_list():
-            return CustomList(self.is_custom_gene_list(), self.custom_data_list)
+            return CustomList(self.is_custom_gene_list(), self.args.get(self.CUSTOM_LIST_DATA))
         return ''
 
     def is_custom_gene_list(self):
@@ -229,7 +228,7 @@ class PredictionSearch(object):
         limit, offset = self.get_limit_and_offset(count)
         return GeneListQuery(
             schema=self.genome,
-            common_name_tuple=custom_data_list.get_gene_name_tuple(),
+            custom_list_id=custom_data_list.key,
             model_name=self.args.get_model_name(),
             upstream=self.args.get_upstream(),
             downstream=self.args.get_downstream(),
@@ -244,7 +243,7 @@ class PredictionSearch(object):
         limit, offset = self.get_limit_and_offset(count)
         return RangeListQuery(
             schema=self.genome,
-            range_list=custom_data_list.get_ranges_array(),
+            custom_list_id=custom_data_list.key,
             model_name=self.args.get_model_name(),
             limit=limit,
             offset=offset,

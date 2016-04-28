@@ -9,25 +9,9 @@ def set_search_path(schema):
     return QueryPart("SET search_path TO %s,public;", [schema])
 
 
-def create_custom_range_list_temp_table():
-    return _query_part("""create temp table custom_range_list (
-rangename varchar,
-chrom varchar,
-range int4range
-) ON COMMIT DROP;""")
-
-
-def insert_custom_range_list(name, chrom, start, end):
-    return QueryPart("insert into custom_range_list values (%s, %s, int4range(%s, %s));", [name, chrom, start, end])
-
-
-def create_index_custom_range_list():
-    return _query_part("create index custom_range_list_idx on custom_range_list using gist(range);analyze custom_range_list;")
-
-
-def custom_range_list_query(model_name):
-    return QueryPart("""select rangename as name,
-rangename as common_name,
+def custom_range_list_query(list_id, model_name):
+    return QueryPart("""select '' as name,
+'range' || seq as common_name,
 max(custom_range_list.chrom) as chrom,
 '' as strand,
 '' as gene_start,
@@ -40,8 +24,9 @@ inner join prediction
 on prediction.chrom = custom_range_list.chrom
 and custom_range_list.range && prediction.range
 where
-model_name = %s
-group by rangename""", [model_name])
+custom_range_list.id = %s
+and model_name = %s
+group by seq""", [list_id, model_name])
 
 
 def select_prediction_values():
@@ -72,8 +57,8 @@ else
 end""", [gene_list, model_name, upstream, downstream, downstream, upstream])
 
 
-def filter_common_name(common_name_tuple, model_name, upstream, downstream):
-    return QueryPart("""common_name in %s
+def filter_common_name(custom_list_id, model_name, upstream, downstream):
+    return QueryPart("""common_name in (select gene_name from custom_gene_list where id = %s)
 and
 model_name = %s
 and
@@ -81,7 +66,7 @@ case strand when '+' then
 (txstart - %s) <= start_range and (txstart + %s) >= start_range
 else
 (txend - %s) <= end_range and (txend + %s) >= end_range
-end""", [common_name_tuple, model_name, upstream, downstream, downstream, upstream])
+end""", [custom_list_id, model_name, upstream, downstream, downstream, upstream])
 
 
 def with_max_prediction_names():
@@ -107,6 +92,10 @@ def group_by_name():
 
 def order_by_name():
     return _query_part("order by name")
+
+
+def order_by_seq():
+    return _query_part("order by seq")
 
 
 def order_by_max_value_desc():

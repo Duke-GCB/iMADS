@@ -8,6 +8,7 @@ from flask import Flask, request, render_template, jsonify, g, make_response, Re
 from pred.config import parse_config, CONFIG_FILENAME
 from pred.dbdatasource import DataSources
 from pred.predictionsearch import get_predictions_with_guess, get_all_values
+from pred.customlist import save_custom_file
 
 
 app = Flask(__name__)
@@ -75,10 +76,21 @@ def get_genome_versions():
     return r
 
 
+@app.route('/api/v1/custom_list', methods=['POST'])
+def create_custom_file():
+    user_info = "Addr:{} Browser:{} Platform:{} Agent:{}".format(
+        request.remote_addr,
+        request.user_agent.browser,
+        request.user_agent.platform,
+        request.user_agent.string)
+    json_data = request.get_json()
+    key = save_custom_file(get_db(), user_info, json_data.get('type'), json_data.get('content'))
+    return make_json_response({'key': key})
+
 @app.route('/api/v1/genomes/<genome>/prediction', methods=['POST','GET'])
 def prediction_search(genome):
     log_info("Finding predictions.")
-    predictions, args = get_predictions_with_guess(get_db(), g_config, genome, request.args, request.get_json())
+    predictions, args = get_predictions_with_guess(get_db(), g_config, genome, request.args)
     response_format = args.get_format()
     if response_format == 'json':
         r = make_json_response({'predictions': predictions, 'page': args.page})

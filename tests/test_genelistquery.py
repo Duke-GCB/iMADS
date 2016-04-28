@@ -12,7 +12,7 @@ max(case strand when '+' then txstart else txend end) as gene_start,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where
-common_name in %s
+common_name in (select gene_name from custom_gene_list where id = %s)
 and
 model_name = %s
 and
@@ -39,7 +39,7 @@ max(case strand when '+' then txstart else txend end) as gene_start,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where
-common_name in %s
+common_name in (select gene_name from custom_gene_list where id = %s)
 and
 model_name = %s
 and
@@ -56,10 +56,10 @@ order by name
 class TestGeneListQuery(TestCase):
     def test_gene_list_filter_with_limit(self):
         expected_sql = GENE_LIST_FILTER_WITH_LIMIT
-        expected_params = ["hg38", ("WASH7P",), "E2F4", "150", "250", "250", "150", "100", "200"]
+        expected_params = ["hg38", 55, "E2F4", "150", "250", "250", "150", "100", "200"]
         query = GeneListQuery(
             schema="hg38",
-            common_name_tuple=("WASH7P",),
+            custom_list_id=55,
             model_name="E2F4",
             upstream="150",
             downstream="250",
@@ -72,10 +72,10 @@ class TestGeneListQuery(TestCase):
 
     def test_gene_list_filter(self):
         expected_sql = GENE_LIST_FILTER
-        expected_params = ["hg38", ("WASH7P",), "E2F4", "150", "250", "250", "150"]
+        expected_params = ["hg38", 45, "E2F4", "150", "250", "250", "150"]
         query = GeneListQuery(
             schema="hg38",
-            common_name_tuple=("WASH7P",),
+            custom_list_id=45,
             model_name="E2F4",
             upstream="150",
             downstream="250",
@@ -86,10 +86,10 @@ class TestGeneListQuery(TestCase):
 
     def test_gene_list_count(self):
         expected_sql = COUNT_QUERY
-        expected_params = ["hg38", ("WASH7P",), "E2F4", "150", "250", "250", "150"]
+        expected_params = ["hg38", 77, "E2F4", "150", "250", "250", "150"]
         query = GeneListQuery(
             schema="hg38",
-            common_name_tuple=("WASH7P",),
+            custom_list_id=77,
             model_name="E2F4",
             upstream="150",
             downstream="250",
