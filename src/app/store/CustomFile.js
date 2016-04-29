@@ -24,8 +24,7 @@ class CustomFile {
                 onData(data[KEY_NAME]);
             }.bind(this),
             error: function (xhr, status, err) {
-                console.error(ENDPOINT, status, err.toString());
-                onError('Error uploading custom file ' + err.toString());
+                onError('Error uploading custom file ' + err);
             }.bind(this)
         });
     }

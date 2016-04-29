@@ -174,3 +174,8 @@
     font-size: 10pt;
     white-space: pre;
 }
+
+.PredictionDialog_dna_seq {
+    font-family: monospace;
+    font-size: 12pt;
+}

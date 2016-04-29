@@ -5,7 +5,6 @@ import { CustomListData } from '../store/CustomList.js';
 import FileUpload from '../store/FileUpload.js';
 import CustomFile from '../store/CustomFile.js';
 
-
 const customStyles = {
   content : {
 
@@ -80,8 +79,12 @@ class CustomListDialog extends React.Component {
             customListDialog.props.onRequestClose(key);
             customListDialog.setState( {
                 text: '',
+                loading: false,
             })
         }, function(error){
+            customListDialog.setState({
+                loading: false,
+            })
             alert(error);
         })
     }

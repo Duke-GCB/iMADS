@@ -1,7 +1,8 @@
 import React from 'react';
 import Modal from 'react-modal';
-import HeatMap from './HeatMap.jsx'
-import GenomeBrowserURL from '../store/GenomeBrowserURL.js'
+import HeatMap from './HeatMap.jsx';
+import GenomeBrowserURL from '../store/GenomeBrowserURL.js';
+import DnaSequences from '../store/DnaSequences.js';
 
 const customStyles = {
   content : {
@@ -26,8 +27,44 @@ function sortByStart(a, b) {
 class PredictionDialog extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            ranges: {}
+        }
         this.genomeBrowserURL = new GenomeBrowserURL('human', props.data.trackHubUrl);
+        this.onDnaRangesResponse = this.onDnaRangesResponse.bind(this);
+        this.onDnaRangesError = this.onDnaRangesError.bind(this);
     }
+
+    componentDidUpdate() {
+        let dnaSequences = new DnaSequences(this.props.data.genome);
+        var values = this.props.data.values;
+        var needsToUpdate = false;
+        if (values.length > 0) {
+            for (var i = 0; i < values.length; i++) {
+                var prediction = values[i];
+                var position = this.props.data.chrom + ":" + prediction.start + '-' + prediction.end;
+                if (position in this.state.ranges) {
+                    continue;
+                }
+                dnaSequences.add_range_request(position, this.props.data.chrom, prediction.start, prediction.end);
+                needsToUpdate = true;
+            }
+            if (needsToUpdate) {
+                dnaSequences.fetch_ranges(this.onDnaRangesResponse, this.onDnaRangesError);
+            }
+        }
+    }
+
+    onDnaRangesResponse(ranges) {
+        this.setState({
+            'ranges': ranges
+        })
+    }
+
+    onDnaRangesError(error) {
+        alert(error);
+    }
+
     render() {
         var rowData = this.props.data;
         var details = [];
@@ -36,11 +73,16 @@ class PredictionDialog extends React.Component {
         for (var i = 0; i < values.length; i++) {
             var prediction = values[i];
             var position = this.props.data.chrom + ":" + prediction.start  + '-' + prediction.end;
+            let seq = '';
+            if (position in this.state.ranges) {
+                seq = this.state.ranges[position];
+            }
             details.push(<tr>
                 <td>{this.props.data.chrom}</td>
                 <td>{prediction.start}</td>
                 <td>{prediction.end}</td>
                 <td>{prediction.value}</td>
+                <td><span className="PredictionDialog_dna_seq">{seq}</span></td>
             </tr>)
         }
         var allRangeGenomeBrowserURL = this.genomeBrowserURL.getPredictionURL(this.props.data.genome,
@@ -73,8 +115,12 @@ class PredictionDialog extends React.Component {
                                      data={rowData}/>
                             <h5>Details</h5>
                             <table className="table" style={{width: 300}}>
-                                <tr><th>Chromosome</th><th>Start</th><th>End</th><th>Value</th></tr>
-                            {details}
+                                <thead>
+                                    <tr><th>Chromosome</th><th>Start</th><th>End</th><th>Value</th><th>Sequence</th></tr>
+                                </thead>
+                                <tbody>
+                                    {details}
+                                </tbody>
                             </table>
                         </div>
                   </div>

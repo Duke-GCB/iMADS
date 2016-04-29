@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
+import os
 import psycopg2
 import psycopg2.extras
 from flask import Flask, request, render_template, jsonify, g, make_response, Response
@@ -9,6 +10,7 @@ from pred.config import parse_config, CONFIG_FILENAME
 from pred.dbdatasource import DataSources
 from pred.predictionsearch import get_predictions_with_guess, get_all_values
 from pred.customlist import save_custom_file
+from pred.dnasequence import lookup_dna_sequence
 
 
 app = Flask(__name__)
@@ -104,6 +106,14 @@ def prediction_search(genome):
         raise ValueError("Unexpected format:{}".format(response_format))
     log_info("Returning predictions.")
     return r
+
+
+@app.route('/api/v1/genomes/<genome>/sequences', methods=['GET','POST'])
+def get_sequences(genome):
+    json_data = request.get_json()
+    ranges = json_data['ranges']
+    sequences = lookup_dna_sequence(g_config, genome, ranges)
+    return make_json_response({'sequences': sequences})
 
 
 @app.errorhandler(ValueError)

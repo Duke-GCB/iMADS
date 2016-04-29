@@ -54,8 +54,8 @@ class Config(object):
             result[genome] = {
                 'models': model_names,
                 'gene_lists': gene_list_names,
-                'trackhub_url': genome_data.trackhub_url
-
+                'trackhub_url': genome_data.trackhub_url,
+                'genome_file' : genome_data.genome_file,
             }
         return result
 
@@ -65,6 +65,7 @@ class GenomeData(object):
         self.download_dir = config.download_dir
         self.genomename = genome_data['genome']
         self.trackhub_url = genome_data['trackhub_url']
+        self.genome_file = genome_data['genome_file']
         self.ftp_files = []
         self.gene_lists = []
         self.prediction_lists = []
@@ -75,6 +76,11 @@ class GenomeData(object):
     def _load_ftp_files(self, ftp_file_ary):
         for ftp_file in ftp_file_ary:
             self.ftp_files.append(ftp_file)
+
+    def get_all_ftp_files(self):
+        result = self.ftp_files
+        result.append(self.genome_file)
+        return result
 
     def _load_gene_lists(self, genome_data_ary):
         for gene_list in genome_data_ary:

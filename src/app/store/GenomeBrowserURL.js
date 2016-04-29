@@ -31,7 +31,6 @@ class GenomeBrowserURL {
         if (this.trackHubUrl) {
             url += '&hubUrl=' + this.trackHubUrl;
         }
-        console.log(url);
         return url;
     }
 

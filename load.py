@@ -3,7 +3,7 @@ Load gene list data and predictions into a Postgres database.
 """
 
 from pred.config import parse_config, CONFIG_FILENAME
-from pred.remotedata import PredictionDataInserter, GeneListDownloader
+from pred.remotedata import PredictionDataInserter, GeneListDownloader, GenomeDownloader
 from pred.postgres import PostgresConnection
 from jinja2 import FileSystemLoader, Environment
 
@@ -96,6 +96,11 @@ class TemplateExecutor(object):
         self.execute_template('insert_genelist.sql', render_params)
 
 
+def download_genome(executor, download_dir, genome, target):
+    downloader = GenomeDownloader(download_dir, GENE_LIST_HOST, target, genome, update_progress=update_progress)
+    downloader.download_and_convert()
+
+
 def download_gene_list_files(executor, download_dir, genome, file_list):
     for target in file_list:
         data_file = GeneListDownloader(download_dir, GENE_LIST_HOST, target, genome, update_progress=update_progress)
@@ -157,7 +162,7 @@ def load_database_based_on_config(config):
         gene_lists = [GeneInfo(gene_list_settings) for gene_list_settings in genome_data.gene_lists]
         prediction_lists = [PredictionDataInserter(prediction_setting, update_progress=update_progress)
                             for prediction_setting in genome_data.prediction_lists]
-
+        download_genome(executor, config.download_dir, genome, genome_data.genome_file)
         download_gene_list_files(executor, config.download_dir, genome, genome_data.ftp_files)
         load_gene_table(executor, gene_lists)
         executor.fill_gene_ranges(genome, config.binding_max_offset)
