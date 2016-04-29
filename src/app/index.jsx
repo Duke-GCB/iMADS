@@ -1,11 +1,12 @@
-import React from 'react'
+import "babel-polyfill";
+import React from 'react';
 import {render} from 'react-dom';
-import { browserHistory, Router, Route } from 'react-router'
+import { browserHistory, Router, Route } from 'react-router';
 
-import About from './About.jsx'
-import DataSources from './DataSources.jsx'
-import NavBar from './NavBar.jsx'
-import SearchScreen from './SearchScreen.jsx'
+import About from './About.jsx';
+import DataSources from './DataSources.jsx';
+import NavBar from './NavBar.jsx';
+import SearchScreen from './SearchScreen.jsx';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
