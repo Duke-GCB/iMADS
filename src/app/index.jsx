@@ -1,7 +1,7 @@
-require("babel-polyfill");
-import React from 'react'
+import "babel-polyfill";
+import React from 'react';
 import {render} from 'react-dom';
-import { browserHistory, Router, Route } from 'react-router'
+import { browserHistory, Router, Route } from 'react-router';
 
 import SearchPage from './search/SearchPage.jsx'
 import DataSourcesPage from './datasources/DataSourcesPage.jsx'
