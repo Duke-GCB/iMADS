@@ -104,6 +104,9 @@ class CustomListDialog extends React.Component {
                 </div>;
         }
         var disableSearch = this.state.text.length == 0;
+        var gene_list_options = [
+            <option>All Gene Lists</option>
+        ];
         return <Modal className="Modal__Bootstrap modal-dialog modal-lg"
                       isOpen={this.props.isOpen}
                       onRequestClose={this.exitDialog}

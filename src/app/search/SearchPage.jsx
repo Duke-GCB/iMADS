@@ -10,7 +10,7 @@ import {SEARCH_NAV} from '../store/Navigation.js'
 import {is_custom_list} from '../store/CustomList.js'
 
 
-const ITEMS_PER_PAGE = 100;
+const ITEMS_PER_PAGE = 20;
 const NUM_PAGE_BUTTONS = 5;
 
 

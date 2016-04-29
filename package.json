@@ -25,6 +25,7 @@
     "webpack": "^1.12.14"
   },
   "devDependencies": {
+    "babel-polyfill": "^6.7.4",
     "chai": "^3.5.0"
   }
 }

@@ -213,7 +213,7 @@ class SearchResultsPanel extends React.Component {
                                   <span className="HeaderCell NumberCell">Max</span>
                                   {heatMapHeader}
                             </div>
-                            <div style={{overflowY: 'auto', height:'calc(100vh - 300px)'}} id="resultsGridContainer">
+                            <div id="resultsGridContainer">
                                 {listContent}
                             </div>
                             <nav>
