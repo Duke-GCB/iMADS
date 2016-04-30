@@ -69,6 +69,7 @@ class CustomListParser(object):
             self._create_gene_list_records(cur, self.key)
         else:
             self._create_range_list_records(cur, self.key)
+        self._analyze_table(cur)
         cur.close()
         db.commit()
 
@@ -87,6 +88,12 @@ class CustomListParser(object):
         for idx, (name, chrom, start, end) in enumerate(self.get_ranges_array()):
             insert, params = custom_range_insert(list_id, idx + 1, chrom, start, end)
             cur.execute(insert, params)
+
+    def _analyze_table(self, cur):
+        if self.is_gene_list:
+            cur.execute("analyze custom_gene_list;", [])
+        else:
+            cur.execute("analyze custom_range_list;", [])
 
 
 def custom_list_insert(user_info, type):

@@ -62,6 +62,7 @@ class CustomListDialog extends React.Component {
                 loading: true,
             })
             this.fileUpload.fetchAllFile(this.closeReturningResult);
+            this.fileUpload = undefined;
         } else {
             this.closeReturningResult(this.state.text);
         }

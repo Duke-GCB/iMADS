@@ -136,13 +136,12 @@ class GeneListDownloader(object):
         mysql_to_pg.convert()
 
     def _download_file(self, filename, out_filename):
-        if not os.path.exists(out_filename):
-            ftp = FTP(self.ftp_host)
-            ftp.login()
-            ftp.cwd(self.get_ftp_dir())
-            with open(out_filename, 'wb') as outfile:
-                ftp.retrbinary("RETR " + filename, outfile.write)
-            ftp.close()
+        ftp = FTP(self.ftp_host)
+        ftp.login()
+        ftp.cwd(self.get_ftp_dir())
+        with open(out_filename, 'wb') as outfile:
+            ftp.retrbinary("RETR " + filename, outfile.write)
+        ftp.close()
 
 
 class GenomeDownloader(object):
@@ -158,25 +157,17 @@ class GenomeDownloader(object):
         if not os.path.exists(self.local_dir):
             os.mkdir(self.local_dir)
 
-    def download_and_convert(self):
+    def download(self):
         self._download_file(self.get_ftp_filename(), self.get_local_schema_path())
-        if self.get_local_schema_path().endswith(".2bit"):
-            two_bit_filename = self.get_local_schema_path()
-            fasta_filename = re.sub(".2bit$", ".fa", two_bit_filename)
-            fix_script = "twoBitToFa"
-            ret = subprocess.call([fix_script, two_bit_filename, fasta_filename])
-            if ret != 0:
-                raise ValueError("Failed to convert 2bit a file:" + str(ret))
 
     def _download_file(self, filename, out_filename):
-        if not os.path.exists(out_filename):
-            self.update_progress('Downloading: ' + self.get_ftp_schema_filename())
-            ftp = FTP(self.ftp_host)
-            ftp.login()
-            ftp.cwd(self.get_ftp_dir())
-            with open(out_filename, 'wb') as outfile:
-                ftp.retrbinary("RETR " + filename, outfile.write)
-            ftp.close()
+        self.update_progress('Downloading: ' + self.get_ftp_schema_filename())
+        ftp = FTP(self.ftp_host)
+        ftp.login()
+        ftp.cwd(self.get_ftp_dir())
+        with open(out_filename, 'wb') as outfile:
+            ftp.retrbinary("RETR " + filename, outfile.write)
+        ftp.close()
 
     def get_ftp_dir(self):
         return os.path.dirname(self.ftp_path)
@@ -189,6 +180,9 @@ class GenomeDownloader(object):
 
     def get_ftp_schema_filename(self):
         return re.sub(r".txt.gz$", ".sql", self.get_ftp_filename())
+
+    def get_url(self):
+        return "{}/{}".format(self.ftp_host, self.ftp_path)
 
 
 class MySQLtoPG(object):

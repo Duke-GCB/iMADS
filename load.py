@@ -98,7 +98,8 @@ class TemplateExecutor(object):
 
 def download_genome(executor, download_dir, genome, target):
     downloader = GenomeDownloader(download_dir, GENE_LIST_HOST, target, genome, update_progress=update_progress)
-    downloader.download_and_convert()
+    downloader.download()
+    executor.insert_data_source(downloader.get_url(), 'Genome {}'.format(genome), 'genelist')
 
 
 def download_gene_list_files(executor, download_dir, genome, file_list):
