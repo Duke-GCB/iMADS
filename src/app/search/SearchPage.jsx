@@ -19,6 +19,7 @@ class SearchPage extends React.Component {
          super(props);
          var searchSettings = {};
          this.runSearchOnMount = false;
+         this.runCustomListOnMount = false;
          var query = props.location.query;
          if (query.genome) {
             searchSettings = {
@@ -32,9 +33,13 @@ class SearchPage extends React.Component {
                     downstreamValid: true,
                     maxPredictionSort: (query.maxPredictionSort  === 'true'),
                     showCustomDialog: false,
-                    customListData: query.custom_list_data,
+                    customListData: undefined,
                 };
-             this.runSearchOnMount = true;
+             if (is_custom_list(searchSettings.gene_list)) {
+                 this.runCustomListOnMount = true;
+             } else {
+                 this.runSearchOnMount = true;
+             }
          }
          this.state = {
              genome_data: {},
@@ -45,6 +50,7 @@ class SearchPage extends React.Component {
              genome_data_loaded: false,
              search_data_loaded: false,
              errorMessage: "",
+             showCustomDialog: this.runCustomListOnMount,
          };
          this.search = this.search.bind(this);
          this.download_all = this.download_all.bind(this);
@@ -84,8 +90,12 @@ class SearchPage extends React.Component {
       }
 
     searchFirstPage() {
-        if (this.runSearchOnMount) {
-            this.search(this.state.search_settings, 1);
+        if (this.runCustomListOnMount) {
+
+        } else {
+            if (this.runSearchOnMount) {
+                this.search(this.state.search_settings, 1);
+            }
         }
     }
 
@@ -159,6 +169,7 @@ class SearchPage extends React.Component {
                                        predictionStore={this.predictionStore}
                                        errorMessage={this.state.errorMessage}
                                        setErrorMessage={this.setErrorMessage}
+                                       showCustomDialog={this.state.showCustomDialog}
             />
             </div>
     }

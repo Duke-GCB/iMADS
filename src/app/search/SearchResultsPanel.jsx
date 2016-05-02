@@ -177,12 +177,39 @@ class SearchResultsPanel extends React.Component {
 
         var start_page = parseInt((this.props.page - 1)/ 5) * 5 + 1;
         var end_page = start_page + 4;
-
         var listContent = <Loader loaded={this.props.search_data_loaded} >
                 {rows}
             </Loader>;
         if (this.props.errorMessage) {
             listContent = <ErrorPanel message={this.props.errorMessage} />;
+        } else {
+            if (this.props.showCustomDialog && !this.props.search_data_loaded) {
+                listContent = [];
+            }
+        }
+        //add spaceholder
+        var footer = <div style={{height:'50%'}}></div>;
+        if (this.props.search_data_loaded) {
+            footer = <nav>
+                        <PagingButtons start_page={start_page} current_page={this.props.page} end_page={end_page}
+                                       change_page={this.change_page}
+                                       pageBatch={this.props.predictionStore.pageBatch}
+                        />
+                        &nbsp;
+                        <div className="dropup" style={{display:'inline'}}>
+                              <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
+                                      style={{verticalAlign:'top', margin:'20px'}}
+                              >
+                                Download All Data
+
+                              </button>
+                              <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a href={this.props.download_all('tsv')} download>Tab Delimited</a></li>
+                                <li><a href={this.props.download_all('csv')} download>CSV Format</a></li>
+                              </ul>
+                        </div>
+                    </nav>
         }
         return  <div className="container" style={parentStyle}>
                     <div className="row">
@@ -200,6 +227,7 @@ class SearchResultsPanel extends React.Component {
                                         loaded={this.props.genome_data_loaded}
                                         max_binding_offset={this.props.max_binding_offset}
                                         setErrorMessage={this.props.setErrorMessage}
+                                        showCustomDialog={this.props.showCustomDialog}
                                 />
                         </div>
                         <div className="col-md-10 col-sm-10 col-xs-10" >
@@ -216,26 +244,7 @@ class SearchResultsPanel extends React.Component {
                             <div id="resultsGridContainer">
                                 {listContent}
                             </div>
-                            <nav>
-                                <PagingButtons start_page={start_page} current_page={this.props.page} end_page={end_page}
-                                               change_page={this.change_page}
-                                               pageBatch={this.props.predictionStore.pageBatch}
-                                />
-                                &nbsp;
-                                <div className="dropup" style={{display:'inline'}}>
-                                      <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
-                                              data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
-                                              style={{verticalAlign:'top', margin:'20px'}}
-                                      >
-                                        Download
-
-                                      </button>
-                                      <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                        <li><a href={this.props.download_all('tsv')} download>Tab Delimited</a></li>
-                                        <li><a href={this.props.download_all('csv')} download>CSV Format</a></li>
-                                      </ul>
-                                </div>
-                            </nav>
+                            {footer}
                         </div>
                     </div>
                 </div>

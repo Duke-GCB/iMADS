@@ -97,7 +97,7 @@ class GeneSearchPanel extends React.Component {
                     downstream: new_settings.downstream,
                     downstreamValid: true,
                     maxPredictionSort: new_settings.maxPredictionSort,
-                    showCustomDialog: false,
+                    showCustomDialog: this.props.showCustomDialog,
                     customListData: new_settings.customListData,
                 };
         } else {
@@ -117,7 +117,7 @@ class GeneSearchPanel extends React.Component {
                 downstream: 200,
                 downStreamValid: true,
                 maxPredictionSort: false,
-                showCustomDialog: false,
+                showCustomDialog: this.props.showCustomDialog,
                 customListData: "",
             };
         }
