@@ -1,14 +1,35 @@
 const ENDPOINT = '/api/v1/custom_list';
 const KEY_NAME = 'key';
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
+const RANGE_TYPE = 'range';
+const GENE_LIST_TYPE = 'gene_list';
 
 class CustomFile {
     constructor(isGeneList, content) {
-        this.type = 'range';
-        if (isGeneList) {
-            this.type = 'gene_list';
-        }
+        this.isGeneList = isGeneList;
         this.content = content;
+    }
+    getType() {
+        if (this.isGeneList) {
+            return GENE_LIST_TYPE;
+        }
+        return RANGE_TYPE;
+    }
+    getFormattedContent() {
+        var result = "";
+        for (let line of this.content.split('\n')) {
+            if (line) {
+                let parts = line.split(/\t /)
+                if (parts) {
+                    if (this.isGeneList) {
+                        result += parts[0] + "\n";
+                    } else {
+                        result += parts[0] + '\t' + parts[1] + '\t' + parts[2] + '\n';
+                    }
+                }
+            }
+        }
+        return result;
     }
     uploadFile(onData, onError) {
         if (this.content.length > MAX_FILE_SIZE) {
@@ -23,8 +44,8 @@ class CustomFile {
             cache: false,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
-                type: this.type,
-                content: this.content,
+                type: this.getType(),
+                content: this.getFormattedContent(),
             }),
             success: function (data) {
                 onData(data[KEY_NAME]);
@@ -39,6 +60,4 @@ class CustomFile {
     }
 }
 
-//{"content":"Lines of text that we will upload.\nLineTwo."}' http://127.0.0.1:5000/api/v1/custom_list
-
- export default CustomFile;
+export default CustomFile;

@@ -25,11 +25,6 @@ class FileUpload {
     fetchAllFile(consumeText) {
         return this._fetchContent(consumeText, false);
     }
-
-    formatPreview(text) {
-        let lines = text.split('\n');
-        return lines.slice(0, lines.length - 1).join('\n');
-    }
 }
 
 export default FileUpload;
