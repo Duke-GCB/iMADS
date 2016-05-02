@@ -10,3 +10,9 @@ services:
   db:
     image: postgres
     env_file: .env
+  vacuum:
+    image: jbradley/tfpred
+    env_file: .env
+    depends_on:
+      - db
+    command: python vacuum.py 1440
