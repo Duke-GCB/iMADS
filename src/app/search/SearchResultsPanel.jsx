@@ -182,14 +182,10 @@ class SearchResultsPanel extends React.Component {
             </Loader>;
         if (this.props.errorMessage) {
             listContent = <ErrorPanel message={this.props.errorMessage} />;
-        } else {
-            if (this.props.showCustomDialog && !this.props.search_data_loaded) {
-                listContent = [];
-            }
         }
         //add spaceholder
-        var footer = <div style={{height:'50%'}}></div>;
-        if (this.props.search_data_loaded) {
+        var footer = [];
+        if (queryResults.length > 0 && this.props.search_data_loaded) {
             footer = <nav>
                         <PagingButtons start_page={start_page} current_page={this.props.page} end_page={end_page}
                                        change_page={this.change_page}
@@ -241,7 +237,7 @@ class SearchResultsPanel extends React.Component {
                                   <span className="HeaderCell NumberCell">Max</span>
                                   {heatMapHeader}
                             </div>
-                            <div id="resultsGridContainer">
+                            <div id="resultsGridContainer" className="SearchResultsPanel__resultsGridContainer">
                                 {listContent}
                             </div>
                             {footer}

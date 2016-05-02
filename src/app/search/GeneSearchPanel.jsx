@@ -197,12 +197,12 @@ class GeneSearchPanel extends React.Component {
         });
     }
 
-    closeCustomDialog(customListData) {
-        var func = this.runSearch;
+    closeCustomDialog(customListData, customGeneList) {
         this.setState({
             showCustomDialog: false,
             customListData: customListData,
-        }, func);
+            customGeneList: customGeneList,
+        }, this.runSearch);
     }
 
     onChangeModel(e) {
@@ -258,6 +258,7 @@ class GeneSearchPanel extends React.Component {
         var protein_options = [];
         var gene_list_options = [];
         var current_genome = this.state.genome;
+        var gene_list_names = [];
         if (this.props.genome_data) {
             var genome_types = Object.keys(this.props.genome_data);
             for (var i = 0; i < genome_types.length; i++) {
@@ -270,6 +271,7 @@ class GeneSearchPanel extends React.Component {
                     });
                     genome_info.gene_lists.forEach(function (gene_list) {
                         gene_list_options.push(<option key={gene_list}  value={gene_list}>{gene_list}</option>);
+                        gene_list_names.push(gene_list);
                     });
                 }
             }
@@ -323,7 +325,10 @@ class GeneSearchPanel extends React.Component {
                               onChange={this.onChangeAll} />
                 <CustomListDialog type={this.state.gene_list}
                                   isOpen={this.state.showCustomDialog}
-                                  onRequestClose={this.closeCustomDialog} />
+                                  onRequestClose={this.closeCustomDialog}
+                                  gene_list_names={gene_list_names}
+
+                />
         </div>
     }
 }

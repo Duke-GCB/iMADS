@@ -179,3 +179,11 @@
     font-family: monospace;
     font-size: 12pt;
 }
+
+.small_lower_margin {
+    margin-bottom: 10px;
+}
+
+.SearchResultsPanel__resultsGridContainer {
+    min-height: 50%;
+}

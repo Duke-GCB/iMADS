@@ -44,10 +44,12 @@ class PredictionsStore {
         urlBuilder.appendParam('protein', searchSettings.model);
         urlBuilder.appendParam('gene_list', searchSettings.gene_list);
         urlBuilder.appendParam('custom_list_data', searchSettings.customListData);
+        urlBuilder.appendParam('custom_list_gene_list', searchSettings.customGeneList);
         urlBuilder.appendParam('upstream', searchSettings.upstream);
         urlBuilder.appendParam('downstream', searchSettings.downstream);
         urlBuilder.appendParam('include_all', searchSettings.all);
         urlBuilder.appendParam('max_prediction_sort', searchSettings.maxPredictionSort);
+
         if (searchSettings.maxPredictionSort) {
             urlBuilder.appendParam('max_prediction_guess', '0.4');
         }

@@ -72,6 +72,7 @@ class SearchArgs(object):
     FORMAT = 'format'
     INCLUDE_ALL = 'include_all'
     CUSTOM_LIST_DATA = 'custom_list_data'
+    CUSTOM_LIST_GENE_LIST = 'custom_list_gene_list'
 
     def __init__(self, max_stream_val, args):
         self.max_stream_val = max_stream_val
@@ -142,8 +143,12 @@ class SearchArgs(object):
             list_id_str = self.args.get(self.CUSTOM_LIST_DATA)
             if not re.match('^\d+$', list_id_str):
                 raise ValueError("Invalid custom list id:{}".format(list_id_str))
-            return CustomList(self.is_custom_gene_list(), list_id_str)
+            gene_list_filter = self.get_custom_list_gene_list()
+            return CustomList(self.is_custom_gene_list(), list_id_str, gene_list_filter)
         return ''
+
+    def get_custom_list_gene_list(self):
+        return self.args.get(self.CUSTOM_LIST_GENE_LIST)
 
     def is_custom_gene_list(self):
         return self.get_gene_list() == CUSTOM_GENE_LIST
@@ -214,7 +219,6 @@ class PredictionSearch(object):
         with open("/tmp/jpb.sql", 'w') as outfile:
             outfile.write(query)
 
-
     def make_query_and_params(self, count):
         return self.determine_query(count).get_query_and_params()
 
@@ -227,19 +231,20 @@ class PredictionSearch(object):
             return self.max_query(count)
         return self.normal_query(count)
 
-    def get_custom_list_key(self):
+    def get_custom_list_fields(self):
         custom_data_list = self.args.get_custom_list_data()
         key = custom_data_list.key
         if not does_custom_list_exist(self.db, key):
             raise ValueError("No data found for this custom list({}).".format(key))
-        return key
+        return key, custom_data_list.gene_list_filter
 
     def gene_list_query(self, count):
-        custom_list_key = self.get_custom_list_key()
+        custom_list_key, custom_gene_list_filter = self.get_custom_list_fields()
         limit, offset = self.get_limit_and_offset(count)
         return GeneListQuery(
             schema=self.genome,
             custom_list_id=custom_list_key,
+            custom_gene_list_filter=custom_gene_list_filter,
             model_name=self.args.get_model_name(),
             upstream=self.args.get_upstream(),
             downstream=self.args.get_downstream(),
@@ -250,7 +255,7 @@ class PredictionSearch(object):
         )
 
     def range_list_query(self, count):
-        custom_list_key = self.get_custom_list_key()
+        custom_list_key, custom_gene_list_filter = self.get_custom_list_fields()
         limit, offset = self.get_limit_and_offset(count)
         return RangeListQuery(
             schema=self.genome,

@@ -24,9 +24,11 @@ def does_custom_list_exist(db, key):
 
 
 class CustomList(object):
-    def __init__(self, is_gene_list, key):
+    def __init__(self, is_gene_list, key, gene_list_filter):
         self.is_gene_list = is_gene_list
         self.key = key
+        self.gene_list_filter = gene_list_filter
+
 
 class CustomListParser(object):
     def __init__(self, is_gene_list, data):
@@ -38,7 +40,12 @@ class CustomListParser(object):
         if not self.is_gene_list:
             raise ValueError("Programmer error this is not a gene list.")
         lines = self.data.split('\n')
-        gene_names = [line.split()[0] for line in lines]
+        gene_names = []
+        for line in lines:
+            if line:
+                parts = line.split()
+                if parts:
+                    gene_names.append(parts[0])
         result = tuple(gene_names)
         return result
 

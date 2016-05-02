@@ -21,32 +21,52 @@ class CustomListDialog extends React.Component {
         this.state = {
             text: '',
             loading: false,
+            file_value: '',
+            file: undefined,
+            gene_list: 'All',
         }
         this.changeUploadFile = this.changeUploadFile.bind(this);
         this.changeText = this.changeText.bind(this);
+        this.onChangeGeneList = this.onChangeGeneList.bind(this);
         this.onClickSearch = this.onClickSearch.bind(this);
         this.closeReturningResult = this.closeReturningResult.bind(this);
         this.setText = this.setText.bind(this);
         this.exitDialog = this.exitDialog.bind(this);
-        this.fileUpload = undefined;
-
     }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.isOpen && !this.state.props) {
+            this.setState({
+                text: '',
+                file: undefined,
+                file_value: '',
+                gene_list: 'All',
+                loading: false,
+            });
+        }
+    }
+
     changeUploadFile(evt) {
         var customListDialog = this;
         var file = evt.target.files[0];
         if (file) {
-            this.fileUpload = new FileUpload(file);
-            this.fileUpload.fetchPreviewLines(customListDialog.setText);
-            customListDialog.setState({
-                loading: true,
-            })
+            this.setState({
+                text: "",
+                file: file,
+                file_value: evt.target.value,
+                loading: false,
+            });
         } else {
-            this.fileUpload = undefined;
             customListDialog.setState({
                 text: '',
+                file_value: '',
+                file: file,
             });
         }
     }
+
+
+
     changeText(evt) {
         this.setText(evt.target.value);
     }
@@ -54,22 +74,30 @@ class CustomListDialog extends React.Component {
         this.setState({
             text: value,
             loading: false,
+            file: undefined,
+            file_value: '',
+        });
+    }
+    onChangeGeneList(evt) {
+        let gene_list = evt.target.value;
+        this.setState({
+            gene_list: gene_list
         });
     }
     onClickSearch() {
-        if (this.fileUpload) {
+        if (this.state.file) {
             this.setState({
                 loading: true,
             })
-            this.fileUpload.fetchAllFile(this.closeReturningResult);
-            this.fileUpload = undefined;
+            let fileUpload = new FileUpload(this.state.file);
+            fileUpload.fetchAllFile(this.closeReturningResult);
         } else {
             this.closeReturningResult(this.state.text);
         }
     }
 
     exitDialog() {
-        this.props.onRequestClose('');
+        this.props.onRequestClose('', this.state.gene_list);
     }
 
     closeReturningResult(text) {
@@ -77,11 +105,7 @@ class CustomListDialog extends React.Component {
         let customListData = new CustomListData(customListDialog.props.type);
         let customFile = new CustomFile(customListData.isGeneList(), text);
         customFile.uploadFile(function(key) {
-            customListDialog.props.onRequestClose(key);
-            customListDialog.setState( {
-                text: '',
-                loading: false,
-            })
+            customListDialog.props.onRequestClose(key, customListDialog.state.gene_list);
         }, function(error){
             customListDialog.setState({
                 loading: false,
@@ -104,10 +128,27 @@ class CustomListDialog extends React.Component {
                     <p>Format is: "CHROMOSOME START END".</p>
                 </div>;
         }
-        var disableSearch = this.state.text.length == 0;
+        var disableSearch = !this.state.text && !this.state.file;
         var gene_list_options = [
             <option>All Gene Lists</option>
         ];
+        var hasText = this.state.text.length > 0;
+        var geneListDropdown = [];
+        if (customListData.isGeneList()) {
+            var options = [<option key="All">All</option>]
+            for (let name of this.props.gene_list_names) {
+                options.push(<option key={name}>{name}</option>)
+            }
+            geneListDropdown = <div>
+                                    <label>Search Gene List:</label>
+                                    <select className="form-control small_lower_margin"
+                                            value={this.state.gene_list}
+                                            onChange={this.onChangeGeneList}>
+                                        {options}
+                                    </select>
+                                </div>
+        }
+        var thing = <h2>HEY</h2>;
         return <Modal className="Modal__Bootstrap modal-dialog modal-lg"
                       isOpen={this.props.isOpen}
                       onRequestClose={this.exitDialog}
@@ -130,11 +171,14 @@ class CustomListDialog extends React.Component {
                                           disabled={this.state.loading}
                                 ></textarea>
 
-                                <input style={{marginTop: '10px', marginBottom:'10px'}} type="file" name="fileField"
+                                <input
+                                    style={{marginTop: '10px', marginBottom:'10px'}} type="file" name="fileField"
                                        onChange={this.changeUploadFile}
                                        disabled={this.state.loading}
+                                       value={this.state.file_value}
                                 />
-                                <Loader loaded={!this.state.loading} >
+                                {geneListDropdown}
+                                <Loader loaded={!this.state.loading} component={thing} >
                                     <button className="btn btn-default"
                                             type="button"
                                             disabled={disableSearch}

@@ -22,10 +22,6 @@ class FileUpload {
         }
     }
 
-    fetchPreviewLines(consumeText) {
-        return this._fetchContent(consumeText, true);
-    }
-
     fetchAllFile(consumeText) {
         return this._fetchContent(consumeText, false);
     }

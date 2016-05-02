@@ -20,6 +20,7 @@ class SearchPage extends React.Component {
          var searchSettings = {};
          this.runSearchOnMount = false;
          this.runCustomListOnMount = false;
+         var search_data_loaded = false;
          var query = props.location.query;
          if (query.genome) {
             searchSettings = {
@@ -34,9 +35,11 @@ class SearchPage extends React.Component {
                     maxPredictionSort: (query.maxPredictionSort  === 'true'),
                     showCustomDialog: false,
                     customListData: undefined,
+                    custom_list_gene_list: query.custom_list_gene_list,
                 };
              if (is_custom_list(searchSettings.gene_list)) {
                  this.runCustomListOnMount = true;
+                 search_data_loaded = true;
              } else {
                  this.runSearchOnMount = true;
              }
@@ -48,7 +51,7 @@ class SearchPage extends React.Component {
              current_page: 1,
              next_pages: 0,
              genome_data_loaded: false,
-             search_data_loaded: false,
+             search_data_loaded: search_data_loaded,
              errorMessage: "",
              showCustomDialog: this.runCustomListOnMount,
          };
