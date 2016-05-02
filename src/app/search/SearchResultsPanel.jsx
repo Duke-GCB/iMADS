@@ -185,27 +185,33 @@ class SearchResultsPanel extends React.Component {
         }
         //add spaceholder
         var footer = [];
-        if (queryResults.length > 0 && this.props.search_data_loaded) {
-            footer = <nav>
-                        <PagingButtons start_page={start_page} current_page={this.props.page} end_page={end_page}
-                                       change_page={this.change_page}
-                                       pageBatch={this.props.predictionStore.pageBatch}
-                        />
-                        &nbsp;
-                        <div className="dropup" style={{display:'inline'}}>
-                              <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
-                                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
-                                      style={{verticalAlign:'top', margin:'20px'}}
-                              >
-                                Download All Data
+        if (this.props.search_data_loaded) {
+            if (queryResults.length > 0) {
+                footer = <nav>
+                    <PagingButtons start_page={start_page} current_page={this.props.page} end_page={end_page}
+                                   change_page={this.change_page}
+                                   pageBatch={this.props.predictionStore.pageBatch}
+                    />
+                    &nbsp;
+                    <div className="dropup" style={{display:'inline'}}>
+                        <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
+                                style={{verticalAlign:'top', margin:'20px'}}
+                        >
+                            Download All Data
 
-                              </button>
-                              <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                <li><a href={this.props.download_all('tsv')} download>Tab Delimited</a></li>
-                                <li><a href={this.props.download_all('csv')} download>CSV Format</a></li>
-                              </ul>
-                        </div>
-                    </nav>
+                        </button>
+                        <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a href={this.props.download_all('tsv')} download>Tab Delimited</a></li>
+                            <li><a href={this.props.download_all('csv')} download>CSV Format</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            } else {
+                listContent = <div className="centerChildrenHorizontally">
+                        <span className="SearchResultsPanel__no_results_found centerVertically">No results found.</span>
+                    </div>
+            }
         }
         return  <div className="container" style={parentStyle}>
                     <div className="row">

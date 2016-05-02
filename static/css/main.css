@@ -187,3 +187,20 @@
 .SearchResultsPanel__resultsGridContainer {
     min-height: 50%;
 }
+
+.centerChildrenHorizontally {
+    display: flex;
+    justify-content: center;
+}
+
+.centerVertically {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+}
+
+.SearchResultsPanel__no_results_found {
+    font-size: 14pt;
+}
