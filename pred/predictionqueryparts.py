@@ -60,7 +60,10 @@ end""", [gene_list, model_name, upstream, downstream, downstream, upstream])
 def filter_common_name(custom_list_id, custom_gene_list_filter, model_name, upstream, downstream):
     if custom_gene_list_filter.strip().upper() == "ALL":
         custom_gene_list_filter = ""
-    base_sql = """common_name in (select gene_name from custom_gene_list where id = %s)
+    base_sql = """( common_name in (select gene_name from custom_gene_list where id = %s)
+or
+name in (select gene_name from custom_gene_list where id = %s)
+)
 and
 model_name = %s
 and
@@ -70,7 +73,7 @@ else
 (txend - %s) <= end_range and (txend + %s) >= end_range
 end"""
     sql = base_sql
-    params = [custom_list_id, model_name, upstream, downstream, downstream, upstream]
+    params = [custom_list_id, custom_list_id, model_name, upstream, downstream, downstream, upstream]
     if custom_gene_list_filter:
         sql = "gene_list = %s\nand\n{}".format(base_sql)
         params.insert(0, custom_gene_list_filter)
