@@ -120,11 +120,11 @@ class CustomListDialog extends React.Component {
         var sampleData = customListData.sampleData;
         if (customListData.isGeneList()) {
             instructions = <div>
-                    <p>Enter a list of gene symbols/ID or choose a file in that format.</p>
+                    <p>Enter a list of gene symbols/ID or choose a file in that format. (Max file size 20MB)</p>
                 </div>;
         } else {
             instructions = <div>
-                    <p>Enter a list of tab separated values or choose a file in that format.</p>
+                    <p>Enter a list of tab separated values or choose a file in that format. (Max size 20MB)</p>
                     <p>Format is: "CHROMOSOME START END".</p>
                 </div>;
         }
@@ -148,7 +148,6 @@ class CustomListDialog extends React.Component {
                                     </select>
                                 </div>
         }
-        var thing = <h2>HEY</h2>;
         return <Modal className="Modal__Bootstrap modal-dialog modal-lg"
                       isOpen={this.props.isOpen}
                       onRequestClose={this.exitDialog}
@@ -178,7 +177,7 @@ class CustomListDialog extends React.Component {
                                        value={this.state.file_value}
                                 />
                                 {geneListDropdown}
-                                <Loader loaded={!this.state.loading} component={thing} >
+                                <Loader loaded={!this.state.loading} >
                                     <button className="btn btn-default"
                                             type="button"
                                             disabled={disableSearch}

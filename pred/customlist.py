@@ -1,6 +1,8 @@
 RANGE_TYPE = 'range'
 GENE_LIST_TYPE = 'gene_list'
 
+MAX_FILE_SIZE = 20 * 1024 * 1024
+MAX_FILE_SIZE_STR = "20MB"
 
 def save_custom_file(db, user_info, type, content):
     if type != RANGE_TYPE and type != GENE_LIST_TYPE:
@@ -32,6 +34,8 @@ class CustomList(object):
 
 class CustomListParser(object):
     def __init__(self, is_gene_list, data):
+        if len(data) > MAX_FILE_SIZE:
+            raise ValueError("File size too big max {}".format(MAX_FILE_SIZE_STR))
         self.is_gene_list = is_gene_list
         self.data = data
         self.key = None

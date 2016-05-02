@@ -1,5 +1,6 @@
 const ENDPOINT = '/api/v1/custom_list';
 const KEY_NAME = 'key';
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
 class CustomFile {
     constructor(isGeneList, content) {
@@ -10,6 +11,11 @@ class CustomFile {
         this.content = content;
     }
     uploadFile(onData, onError) {
+        if (this.content.length > MAX_FILE_SIZE) {
+            let file_size_mb = parseInt(this.content.length / 1024 / 1024 + 0.5);
+            onError('File size too big ' + file_size_mb  + " MB. Maximum allowed is 20 MB.");
+            return;
+        }
         $.ajax({
             url: ENDPOINT,
             dataType: 'json',
@@ -24,7 +30,10 @@ class CustomFile {
                 onData(data[KEY_NAME]);
             }.bind(this),
             error: function (xhr, status, err) {
-                onError('Error uploading custom file ' + err);
+                if (xhr.responseJSON) {
+                    err = xhr.responseJSON.message;
+                }
+                onError('Error uploading custom file: ' + err);
             }.bind(this)
         });
     }
