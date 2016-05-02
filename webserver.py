@@ -132,26 +132,35 @@ def make_predictions_csv_response(predictions, args):
     up = args.get_upstream()
     down = args.get_downstream()
     size = up + down + 1
+    if args.is_custom_ranges_list():
+        size = None
     separator = ','
     if args.get_format() == 'tsv':
         separator = '\t'
     headers = ['Name', 'ID', 'Max', 'Location', 'Start', 'End']
+    if args.is_custom_ranges_list():
+        headers = ['Name', 'Max']
     if args.get_include_all():
-        headers.extend([str(i) for i in range(-1*up, down+1)])
+        if args.is_custom_ranges_list():
+            headers.append('Values')
+        else:
+            headers.extend([str(i) for i in range(-1*up, down+1)])
     yield separator.join(headers) + '\n'
     for prediction in predictions:
-        start = prediction['start']
-        end = prediction['end']
-        if not start:
-            start = prediction['range_start']
-            end = prediction['range_end']
-        items = [
-            prediction['common_name'],
-            prediction['name'],
-            str(prediction['max']),
-            prediction['chrom'],
-            str(start),
-            str(end)]
+        items = []
+        if args.is_custom_ranges_list():
+            name = "{}:{}-{}".format(prediction['chrom'], prediction['start'], prediction['end'])
+            items = [name, str(prediction['max'])]
+        else:
+            start = prediction['start']
+            end = prediction['end']
+            items = [
+                prediction['common_name'],
+                prediction['name'],
+                str(prediction['max']),
+                prediction['chrom'],
+                str(start),
+                str(end)]
         if args.get_include_all():
             items.extend(get_all_values(prediction, size))
         yield separator.join(items) + '\n'

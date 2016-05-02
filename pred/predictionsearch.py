@@ -35,13 +35,17 @@ def determine_last_page(db, genome, search_args):
 
 
 def get_all_values(prediction, size):
+    if not size:
+        size = int(prediction['end']) - int(prediction['start'])
     values = [0] * size
     offset = int(prediction['start'])
     for data in prediction['values']:
         start = int(data['start'])
         value = data['value']
         idx = start - offset
-        values[idx] = value
+        if 0 <= idx <= size:
+            if value > values[idx]:
+                values[idx] = value
     result = [str(val) for val in values]
     if prediction['strand'] == '-':
         return result[::-1]
@@ -235,7 +239,7 @@ class PredictionSearch(object):
         custom_data_list = self.args.get_custom_list_data()
         key = custom_data_list.key
         if not does_custom_list_exist(self.db, key):
-            raise ValueError("No data found for this custom list({}).".format(key))
+            raise ValueError("No data found for this custom list. Perhaps it has purged.")
         return key, custom_data_list.gene_list_filter
 
     def gene_list_query(self, count):

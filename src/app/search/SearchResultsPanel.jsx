@@ -132,6 +132,7 @@ class SearchResultsPanel extends React.Component {
         var rowStyle = {
             borderBottom: '1px solid grey'
         };
+        var isCustomRange = search_settings.gene_list == CUSTOM_RANGES_LIST;
         var queryResults = this.props.search_results;
         var rows = [];
         for (var i = 0; i < queryResults.length; i++) {
@@ -141,7 +142,6 @@ class SearchResultsPanel extends React.Component {
                 var combined_name = rowData.common_name + " (" + rowData.name + ") ";
                 var offsets_str = " upstream:" + search_settings.upstream + " downstream:" + search_settings.downstream;
                 var trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettingsObj.genome_version);
-                var isCustomRange = search_settings.gene_list == CUSTOM_RANGES_LIST;
                 var heatMapValues = {
                     title:  combined_name + " " + offsets_str,
                     values: rowData.values,
@@ -162,16 +162,45 @@ class SearchResultsPanel extends React.Component {
 
                 />
             }
-            rows.push(<div key={i} style={borderBottom}>
-                          <span className={"DataCell NameCell" + cellExtraClassName}>{rowData.common_name}</span>
-                          <span className={"DataCell IdCell" + cellExtraClassName}>{rowData.name}</span>
-                          <span className={"DataCell StrandCell" + cellExtraClassName}>{rowData.strand}</span>
-                          <span className={"DataCell ChromCell" + cellExtraClassName}>{rowData.chrom}</span>
-                          <span className="DataCell NumberCell">{rowData.start}</span>
-                          <span className="DataCell NumberCell">{rowData.end}</span>
-                          <span className="DataCell NumberCell">{rowData.max}</span>
-                          <span >{heatMap}</span>
-                        </div>);
+            if (isCustomRange) {
+                rows.push(<div key={i} style={borderBottom}>
+                    <span className={"DataCell IdCellWide"}>
+                        {rowData.chrom}:{rowData.start}-{rowData.end}
+                    </span>
+                    <span className="DataCell NumberCell">{rowData.max}</span>
+                    <span >{heatMap}</span>
+                </div>);
+            } else {
+                rows.push(<div key={i} style={borderBottom}>
+                    <span className={"DataCell NameCell" + cellExtraClassName}>{rowData.common_name}</span>
+                    <span className={"DataCell IdCell" + cellExtraClassName}>{rowData.name}</span>
+                    <span className={"DataCell StrandCell" + cellExtraClassName}>{rowData.strand}</span>
+                    <span className={"DataCell ChromCell" + cellExtraClassName}>{rowData.chrom}</span>
+                    <span className="DataCell NumberCell">{rowData.start}</span>
+                    <span className="DataCell NumberCell">{rowData.end}</span>
+                    <span className="DataCell NumberCell">{rowData.max}</span>
+                    <span >{heatMap}</span>
+                </div>);
+            }
+        }
+        var column_headers;
+        if (isCustomRange) {
+            column_headers = <div style={{backgroundColor: '#235f9c', color: 'white'}} >
+                                  <span className={"HeaderCell IdCellWide" + cellExtraClassName}>Name</span>
+                                  <span className="HeaderCell NumberCell">Max</span>
+                                  {heatMapHeader}
+                            </div>
+        } else {
+            column_headers = <div style={{backgroundColor: '#235f9c', color: 'white'}} >
+                                  <span className={"HeaderCell NameCell" + cellExtraClassName}>Name</span>
+                                  <span className={"HeaderCell IdCell" + cellExtraClassName}>ID</span>
+                                  <span className={"HeaderCell StrandCell" + cellExtraClassName}>Strand</span>
+                                  <span className={"HeaderCell ChromCell" + cellExtraClassName}>Chromosome</span>
+                                  <span className="HeaderCell NumberCell">Start</span>
+                                  <span className="HeaderCell NumberCell">End</span>
+                                  <span className="HeaderCell NumberCell">Max</span>
+                                  {heatMapHeader}
+                            </div>
         }
         var smallMargin = { margin: '10px' };
 
@@ -233,16 +262,7 @@ class SearchResultsPanel extends React.Component {
                                 />
                         </div>
                         <div className="col-md-10 col-sm-10 col-xs-10" >
-                            <div style={{backgroundColor: '#235f9c', color: 'white'}} >
-                                  <span className={"HeaderCell NameCell" + cellExtraClassName}>Name</span>
-                                  <span className={"HeaderCell IdCell" + cellExtraClassName}>ID</span>
-                                  <span className={"HeaderCell StrandCell" + cellExtraClassName}>Strand</span>
-                                  <span className={"HeaderCell ChromCell" + cellExtraClassName}>Chromosome</span>
-                                  <span className="HeaderCell NumberCell">Start</span>
-                                  <span className="HeaderCell NumberCell">End</span>
-                                  <span className="HeaderCell NumberCell">Max</span>
-                                  {heatMapHeader}
-                            </div>
+                            {column_headers}
                             <div id="resultsGridContainer" className="SearchResultsPanel__resultsGridContainer">
                                 {listContent}
                             </div>
