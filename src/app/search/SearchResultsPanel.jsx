@@ -5,6 +5,7 @@ import PagingButtons from './PagingButtons.jsx'
 import GeneSearchPanel from './GeneSearchPanel.jsx'
 import HeatMap from './HeatMap.jsx'
 import ErrorPanel from './ErrorPanel.jsx'
+import GetLinkDialog from './GetLinkDialog.jsx'
 import SearchSettings from '../store/SearchSettings.js'
 import GenomeData from '../store/GenomeData.js'
 import {CUSTOM_RANGES_LIST} from '../store/CustomList.js'
@@ -16,7 +17,12 @@ class SearchResultsPanel extends React.Component {
         this.downloadTabDelimited = this.downloadTabDelimited.bind(this);
         this.search = this.search.bind(this);
         this.change_page = this.change_page.bind(this);
+        this.showGetLinkDialog = this.showGetLinkDialog.bind(this);
+        this.hideGetLinkDialog = this.hideGetLinkDialog.bind(this);
         this.scrollToTop = false;
+        this.state = {
+            showGetUrlDialog: false,
+        }
     }
 
     componentWillUpdate() {
@@ -43,6 +49,19 @@ class SearchResultsPanel extends React.Component {
 
     downloadTabDelimited() {
         this.props.download_all('tsv');
+    }
+
+    showGetLinkDialog() {
+        this.setState({
+            showGetUrlDialog: true,
+        });
+    }
+
+    hideGetLinkDialog() {
+        this.setState({
+            showGetUrlDialog: false,
+            shareUrl: '',
+        });
     }
 
     makeCellStyle(width, height, fontSize) {
@@ -225,7 +244,7 @@ class SearchResultsPanel extends React.Component {
                     <div className="dropup" style={{display:'inline'}}>
                         <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
-                                style={{verticalAlign:'top', margin:'20px'}}
+                                style={{verticalAlign:'top', marginLeft:'20px', marginTop:'20px'}}
                         >
                             Download All Data
 
@@ -234,17 +253,28 @@ class SearchResultsPanel extends React.Component {
                             <li><a href={this.props.download_all('tsv')} download>Tab Delimited</a></li>
                             <li><a href={this.props.download_all('csv')} download>CSV Format</a></li>
                         </ul>
+                        <button className="btn btn-default" type="button"
+                                style={{verticalAlign:'top', marginLeft:'20px', marginTop:'20px'}}
+                                onClick={this.showGetLinkDialog}
+                        >
+                            Share
+                        </button>
+                        <GetLinkDialog isOpen={this.state.showGetUrlDialog}
+                                       search_settings={this.props.search_settings}
+                                       closeDialog={this.hideGetLinkDialog} />
                     </div>
+
                 </nav>
             } else {
-                listContent = <div className="centerChildrenHorizontally">
+                if (!this.props.errorMessage) {
+                    listContent = <div className="centerChildrenHorizontally">
                         <span className="SearchResultsPanel__no_results_found centerVertically">No results found.</span>
                     </div>
+                }
             }
         }
         return  <div className="container" style={parentStyle}>
                     <div className="row">
-
                         <div className="col-md-offset-2 col-sm-offset-2 col-xs-offset-2 col-col-md-10 col-sm-10" >
                             <PageTitle>TF Binding Predictions</PageTitle>
                         </div>

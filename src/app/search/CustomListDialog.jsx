@@ -7,7 +7,7 @@ import CustomFile from '../store/CustomFile.js';
 
 const customStyles = {
   content : {
-
+    minHeight: '450px',
   },
     overlay : {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -118,13 +118,16 @@ class CustomListDialog extends React.Component {
         var customListData = new CustomListData(this.props.type);
         var instructions = [];
         var sampleData = customListData.sampleData;
+        var purgeWarning = <p className="CustomListDialog__delete_warning">Uploaded data will be deleted after 48 hours.</p>;
         if (customListData.isGeneList()) {
             instructions = <div>
                     <p>Enter a list of gene symbols/ID or choose a file in that format. (Max file size 20MB)</p>
+                    {purgeWarning}
                 </div>;
         } else {
             instructions = <div>
-                    <p>Enter a list of tab separated values or choose a file in that format. (Max size 20MB)</p>
+                    <p>Enter a list of tab or space separated values or choose a file in that format. (Max size 20MB)</p>
+                    {purgeWarning}
                     <p>Format is: "CHROMOSOME START END".</p>
                 </div>;
         }
@@ -169,7 +172,6 @@ class CustomListDialog extends React.Component {
                                           onChange={this.changeText}
                                           disabled={this.state.loading}
                                 ></textarea>
-
                                 <input
                                     style={{marginTop: '10px', marginBottom:'10px'}} type="file" name="fileField"
                                        onChange={this.changeUploadFile}

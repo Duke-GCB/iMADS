@@ -19,8 +19,8 @@ class SearchPage extends React.Component {
          super(props);
          var searchSettings = {};
          this.runSearchOnMount = false;
-         this.runCustomListOnMount = false;
          var search_data_loaded = false;
+         var show_custom_dialog = false;
          var query = props.location.query;
          if (query.genome) {
             searchSettings = {
@@ -34,12 +34,12 @@ class SearchPage extends React.Component {
                     downstreamValid: true,
                     maxPredictionSort: (query.maxPredictionSort  === 'true'),
                     showCustomDialog: false,
-                    customListData: undefined,
-                    custom_list_gene_list: query.custom_list_gene_list,
+                    customListData: query.customListData,
+                    custom_list_filter: query.custom_list_filter,
                 };
-             if (is_custom_list(searchSettings.gene_list)) {
-                 this.runCustomListOnMount = true;
+             if (is_custom_list(searchSettings.gene_list) && ! searchSettings.customListData) {
                  search_data_loaded = true;
+                 show_custom_dialog = true;
              } else {
                  this.runSearchOnMount = true;
              }
@@ -53,7 +53,7 @@ class SearchPage extends React.Component {
              genome_data_loaded: false,
              search_data_loaded: search_data_loaded,
              errorMessage: "",
-             showCustomDialog: this.runCustomListOnMount,
+             showCustomDialog: show_custom_dialog,
          };
          this.search = this.search.bind(this);
          this.download_all = this.download_all.bind(this);
@@ -93,12 +93,8 @@ class SearchPage extends React.Component {
       }
 
     searchFirstPage() {
-        if (this.runCustomListOnMount) {
-
-        } else {
-            if (this.runSearchOnMount) {
-                this.search(this.state.search_settings, 1);
-            }
+        if (this.runSearchOnMount) {
+            this.search(this.state.search_settings, 1);
         }
     }
 
@@ -166,6 +162,7 @@ class SearchPage extends React.Component {
                                        change_page={this.change_page}
                                        genome_data={this.state.genome_data}
                                        search={this.search}
+                                       get_sharable_url={this.get_sharable_url}
                                        genome_data_loaded={this.state.genome_data_loaded}
                                        search_data_loaded={this.state.search_data_loaded}
                                        max_binding_offset={this.state.max_binding_offset}

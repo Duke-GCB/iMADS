@@ -8,7 +8,7 @@ from flask import Flask, request, render_template, jsonify, g, make_response, Re
 
 from pred.config import parse_config, CONFIG_FILENAME
 from pred.dbdatasource import DataSources
-from pred.predictionsearch import get_predictions_with_guess, get_all_values
+from pred.predictionsearch import get_predictions_with_guess, get_all_values, SearchArgs, PredictionToken
 from pred.customlist import save_custom_file
 from pred.dnasequence import lookup_dna_sequence
 
@@ -52,6 +52,7 @@ def close_connection(exception):
 @app.route('/datasources', methods=['GET'])
 @app.route('/models', methods=['GET'])
 @app.route('/about', methods=['GET'])
+@app.route('/shared_link', methods=['GET'])
 def root():
     return render_template('index.html')
 

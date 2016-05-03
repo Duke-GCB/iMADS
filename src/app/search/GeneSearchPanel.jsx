@@ -181,6 +181,14 @@ class GeneSearchPanel extends React.Component {
     onChangeGeneList(e) {
         var value = e.target.value;
         var isCustom = value === CUSTOM_GENE_LIST || value === CUSTOM_RANGES_LIST;
+        var custom_list_filter = this.state.custom_list_filter;
+        var customListData = this.state.customListData;
+        if (!isCustom) {
+            custom_list_filter = '';
+        }
+        if (value !== this.state.gene_list) {
+            customListData = '';
+        }
         var func = this.runSearch;
         if (isCustom) {
             func = Function.prototype
@@ -188,6 +196,8 @@ class GeneSearchPanel extends React.Component {
         this.setState({
             gene_list: e.target.value,
             showCustomDialog: isCustom,
+            customListData: customListData,
+            custom_list_filter: custom_list_filter,
         }, func);
     }
 
@@ -197,11 +207,11 @@ class GeneSearchPanel extends React.Component {
         });
     }
 
-    closeCustomDialog(customListData, customGeneList) {
+    closeCustomDialog(customListData, customListFilter) {
         this.setState({
             showCustomDialog: false,
             customListData: customListData,
-            customGeneList: customGeneList,
+            customListFilter: customListFilter,
         }, this.runSearch);
     }
 

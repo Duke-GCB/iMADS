@@ -19,7 +19,10 @@ class URLBuilder {
         this.url += part;
     }
 
-    appendParam(name, value) {
+    appendParam(name, value, skipIfEmpty=false) {
+        if (skipIfEmpty && !value) {
+            return;
+        }
         var prefix = '?';
         if (this.hasParam) {
             var prefix = '&';

@@ -66,7 +66,7 @@ class TestGeneListQuery(TestCase):
         query = GeneListQuery(
             schema="hg38",
             custom_list_id=55,
-            custom_gene_list_filter='knowngene',
+            custom_list_filter='knowngene',
             model_name="E2F4",
             upstream="150",
             downstream="250",
@@ -84,7 +84,7 @@ class TestGeneListQuery(TestCase):
         query = GeneListQuery(
             schema="hg38",
             custom_list_id=45,
-            custom_gene_list_filter='',
+            custom_list_filter='',
             model_name="E2F4",
             upstream="150",
             downstream="250",
@@ -99,7 +99,7 @@ class TestGeneListQuery(TestCase):
         query = GeneListQuery(
             schema="hg38",
             custom_list_id=77,
-            custom_gene_list_filter='All',
+            custom_list_filter='All',
             model_name="E2F4",
             upstream="150",
             downstream="250",

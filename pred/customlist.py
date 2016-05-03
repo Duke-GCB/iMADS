@@ -1,3 +1,5 @@
+import uuid
+
 RANGE_TYPE = 'range'
 GENE_LIST_TYPE = 'gene_list'
 
@@ -26,10 +28,10 @@ def does_custom_list_exist(db, key):
 
 
 class CustomList(object):
-    def __init__(self, is_gene_list, key, gene_list_filter):
+    def __init__(self, is_gene_list, key, custom_list_filter):
         self.is_gene_list = is_gene_list
         self.key = key
-        self.gene_list_filter = gene_list_filter
+        self.custom_list_filter = custom_list_filter
 
 
 class CustomListParser(object):
@@ -85,9 +87,9 @@ class CustomListParser(object):
         db.commit()
 
     def _create_new_list_key(self, cur, user_info):
-        insert, params = custom_list_insert(user_info, self.get_type())
+        list_id = str(uuid.uuid1())
+        insert, params = custom_list_insert(list_id, user_info, self.get_type())
         cur.execute(insert, params)
-        list_id = cur.fetchone()[0]
         return list_id
 
     def _create_gene_list_records(self, cur, list_id):
@@ -107,10 +109,8 @@ class CustomListParser(object):
             cur.execute("analyze custom_range_list;", [])
 
 
-def custom_list_insert(user_info, type):
-    return "insert into custom_list(type, user_info) values (%s, %s); " \
-           "select currval('custom_list_id_seq')", \
-           [type, user_info]
+def custom_list_insert(uuid, user_info, type):
+    return "insert into custom_list(id, type, user_info) values (%s, %s, %s); ", [uuid, type, user_info]
 
 
 def custom_range_insert(list_id, seq, chrom, start, end):

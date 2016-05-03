@@ -3,11 +3,11 @@ from pred.predictionqueryparts import *
 
 
 class GeneListQuery(object):
-    def __init__(self, schema, custom_list_id, custom_gene_list_filter, model_name, upstream, downstream,
+    def __init__(self, schema, custom_list_id, custom_list_filter, model_name, upstream, downstream,
                  limit="", offset="", count=False, sort_by_max=False):
         self.schema = schema
         self.custom_list_id = custom_list_id
-        self.custom_gene_list_filter = custom_gene_list_filter
+        self.custom_list_filter = custom_list_filter
         self.model_name = model_name
         self.upstream = upstream
         self.downstream = downstream
@@ -30,7 +30,7 @@ class GeneListQuery(object):
         query_parts = [
             select_prediction_values(),
             where(),
-            filter_common_name(self.custom_list_id, self.custom_gene_list_filter, self.model_name, self.upstream, self.downstream),
+            filter_common_name(self.custom_list_id, self.custom_list_filter, self.model_name, self.upstream, self.downstream),
             group_by_name(),
         ]
         if self.sort_by_max:

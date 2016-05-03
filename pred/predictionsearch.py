@@ -1,5 +1,6 @@
 import math
-import re
+import uuid
+import base64
 import psycopg2.extras
 from pred.customlist import CustomList, does_custom_list_exist
 from pred.predictionquery import PredictionQuery
@@ -75,8 +76,8 @@ class SearchArgs(object):
     MAX_PREDICTION_GUESS = 'max_prediction_guess'
     FORMAT = 'format'
     INCLUDE_ALL = 'include_all'
-    CUSTOM_LIST_DATA = 'custom_list_data'
-    CUSTOM_LIST_GENE_LIST = 'custom_list_gene_list'
+    CUSTOM_LIST_DATA = 'customListData'
+    CUSTOM_LIST_FILTER = 'custom_list_filter'
 
     def __init__(self, max_stream_val, args):
         self.max_stream_val = max_stream_val
@@ -145,20 +146,34 @@ class SearchArgs(object):
     def get_custom_list_data(self):
         if self.is_custom_gene_list() or self.is_custom_ranges_list():
             list_id_str = self.args.get(self.CUSTOM_LIST_DATA)
-            if not re.match('^\d+$', list_id_str):
+            try:
+                val = uuid.UUID(list_id_str, version=1)
+            except ValueError:
                 raise ValueError("Invalid custom list id:{}".format(list_id_str))
-            gene_list_filter = self.get_custom_list_gene_list()
-            return CustomList(self.is_custom_gene_list(), list_id_str, gene_list_filter)
+            custom_list_filter = self.get_custom_list_filter()
+            return CustomList(self.is_custom_gene_list(), list_id_str, custom_list_filter)
         return ''
 
-    def get_custom_list_gene_list(self):
-        return self.args.get(self.CUSTOM_LIST_GENE_LIST)
+    def get_custom_list_filter(self):
+        return self.args.get(self.CUSTOM_LIST_FILTER, '')
 
     def is_custom_gene_list(self):
         return self.get_gene_list() == CUSTOM_GENE_LIST
 
     def is_custom_ranges_list(self):
         return self.get_gene_list() == CUSTOM_RANGES_LIST
+
+
+class PredictionToken(object):
+    def __init__(self, search_args):
+        self.search_args = search_args
+
+    def get(self):
+        result = ""
+        for key, value in self.search_args.args.items():
+            if value != 'undefined':
+                result += "{}={},".format(key, value)
+        return base64.b64encode(bytes(result, "utf-8")).decode('ascii')
 
 
 class PredictionSearch(object):
@@ -240,15 +255,15 @@ class PredictionSearch(object):
         key = custom_data_list.key
         if not does_custom_list_exist(self.db, key):
             raise ValueError("No data found for this custom list. Perhaps it has purged.")
-        return key, custom_data_list.gene_list_filter
+        return key, custom_data_list.custom_list_filter
 
     def gene_list_query(self, count):
-        custom_list_key, custom_gene_list_filter = self.get_custom_list_fields()
+        custom_list_key, custom_list_filter = self.get_custom_list_fields()
         limit, offset = self.get_limit_and_offset(count)
         return GeneListQuery(
             schema=self.genome,
             custom_list_id=custom_list_key,
-            custom_gene_list_filter=custom_gene_list_filter,
+            custom_list_filter=custom_list_filter,
             model_name=self.args.get_model_name(),
             upstream=self.args.get_upstream(),
             downstream=self.args.get_downstream(),
@@ -259,7 +274,7 @@ class PredictionSearch(object):
         )
 
     def range_list_query(self, count):
-        custom_list_key, custom_gene_list_filter = self.get_custom_list_fields()
+        custom_list_key, custom_list_filter = self.get_custom_list_fields()
         limit, offset = self.get_limit_and_offset(count)
         return RangeListQuery(
             schema=self.genome,
