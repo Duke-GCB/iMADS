@@ -46,7 +46,7 @@ class GetLinkDialog extends React.Component {
                            style={{marginRight: '10px', marginTop: '10px', marginLeft: '20px'}}/>
                     Include Custom List
                 </label>;
-            message = 'The custom list will expire 48 hours after being uploaded.';
+            message = 'Note: Custom lists are deleted 48 hours after uploading.';
         }
         return <Modal className="Modal__Bootstrap modal-dialog modal-md"
                       isOpen={this.props.isOpen}

@@ -208,3 +208,7 @@
 .CustomListDialog__delete_warning {
     font-weight: bold;
 }
+
+.SearchResultsPanel__searchWarning {
+    color: red;
+}

@@ -124,7 +124,7 @@ class SearchPage extends React.Component {
             });
             return;
         }
-        this.predictionStore.requestPage(page, search_settings, function(predictions, pageNum, hasNextPages) {
+        this.predictionStore.requestPage(page, search_settings, function(predictions, pageNum, hasNextPages, warning) {
             this.setState({
                 search_results: predictions,
                 next_pages: hasNextPages,
@@ -132,6 +132,9 @@ class SearchPage extends React.Component {
                 page: pageNum,
                 errorMessage: '',
             });
+            if (warning) {
+                alert(warning);
+            }
         }.bind(this), function (err) {
             this.setState({
                 errorMessage: err.message,

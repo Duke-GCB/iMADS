@@ -10,7 +10,7 @@ class PredictionsStore {
     requestPage(pageNum, searchSettings, onData, onError) {
         this.saveSearchSettings(searchSettings);
         if (this.pageBatch.hasPage(pageNum)) {
-            onData(this.pageBatch.getItems(pageNum), pageNum, true);
+            onData(this.pageBatch.getItems(pageNum), pageNum, true, '');
         } else {
             var batchPage = this.pageBatch.getBatchPageNum(pageNum)
             var itemsPerBatch = this.pageBatch.getItemsPerBatch();
@@ -23,7 +23,7 @@ class PredictionsStore {
                 if (pageNum == -1) {
                     pageNum = this.pageBatch.getEndPage();
                 }
-                onData(this.pageBatch.getItems(pageNum), pageNum, true);
+                onData(this.pageBatch.getItems(pageNum), pageNum, true, data.warning);
             }.bind(this), onError);
         }
     }

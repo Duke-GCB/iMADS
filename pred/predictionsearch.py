@@ -2,7 +2,7 @@ import math
 import uuid
 import base64
 import psycopg2.extras
-from pred.customlist import CustomList, does_custom_list_exist
+from pred.customlist import CustomList, does_custom_list_exist, get_gene_name_set
 from pred.predictionquery import PredictionQuery
 from pred.maxpredictionquery import MaxPredictionQuery
 from pred.genelistquery import GeneListQuery
@@ -25,7 +25,7 @@ def get_predictions_with_guess(db, config, genome, args):
             if len(predictions) < per_page:
                 search.enable_guess = False
                 predictions = search.get_predictions()
-    return predictions, search.args
+    return predictions, search.args, search.warning
 
 
 def determine_last_page(db, genome, search_args):
@@ -182,6 +182,7 @@ class PredictionSearch(object):
         self.genome = genome
         self.args = search_args
         self.enable_guess = enable_guess
+        self.warning = ''
 
     def get_count(self):
         query, params = self.make_query_and_params(count=True)
@@ -230,6 +231,8 @@ class PredictionSearch(object):
             })
         self.db.rollback()
         cur.close()
+        if self.args.is_custom_gene_list():
+            self.warning = self.check_for_unused_gene_names(predictions)
         return predictions
 
     def saveit(self, query, params):
@@ -329,3 +332,22 @@ class PredictionSearch(object):
     def get_per_page(self):
         page, per_page = self.args.get_page_and_per_page()
         return per_page
+
+    def check_for_unused_gene_names(self, predictions):
+        custom_list_key, custom_list_filter = self.get_custom_list_fields()
+        gene_name_set = get_gene_name_set(self.db, custom_list_key)
+        name_fields = ['name', 'common_name']
+        for prediction in predictions:
+            for name in name_fields:
+                gene_name = prediction.get(name)
+                if gene_name in gene_name_set:
+                    gene_name_set.remove(gene_name)
+        warning = ''
+        num_not_found_names = len(gene_name_set)
+        if num_not_found_names > 0:
+            if num_not_found_names > 10:
+                warning = '{} gene_names were not found in our database.'.format(num_not_found_names)
+            else:
+                names = ', '.join(gene_name_set)
+                warning = 'Gene_name(s) {} were not found in our database.'.format(names)
+        return warning

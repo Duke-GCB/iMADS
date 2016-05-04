@@ -6,6 +6,7 @@ GENE_LIST_TYPE = 'gene_list'
 MAX_FILE_SIZE = 20 * 1024 * 1024
 MAX_FILE_SIZE_STR = "20MB"
 
+
 def save_custom_file(db, user_info, type, content):
     if type != RANGE_TYPE and type != GENE_LIST_TYPE:
         raise ValueError("Unsupported type {}".format(type))
@@ -18,13 +19,24 @@ def save_custom_file(db, user_info, type, content):
 
 def does_custom_list_exist(db, key):
     cur = db.cursor()
-    cur.execute("select count(*) from custom_list where id = %s", [key])
+    cur.execute("select count(*) from custom_list where id = %s limit 1", [key])
     exists = False
     if cur.fetchone()[0] > 0:
         exists = True
     cur.close()
     db.commit()
     return exists
+
+
+def get_gene_name_set(db, key):
+    names = set()
+    cur = db.cursor()
+    cur.execute("select gene_name from custom_gene_list where id = %s", [key])
+    for row in cur.fetchall():
+        names.add(row[0])
+    cur.close()
+    db.commit()
+    return names
 
 
 class CustomList(object):

@@ -253,6 +253,7 @@ class SearchResultsPanel extends React.Component {
                             <li><a href={this.props.download_all('tsv')} download>Tab Delimited</a></li>
                             <li><a href={this.props.download_all('csv')} download>CSV Format</a></li>
                         </ul>
+                    </div>
                         <button className="btn btn-default" type="button"
                                 style={{verticalAlign:'top', marginLeft:'20px', marginTop:'20px'}}
                                 onClick={this.showGetLinkDialog}
@@ -262,8 +263,6 @@ class SearchResultsPanel extends React.Component {
                         <GetLinkDialog isOpen={this.state.showGetUrlDialog}
                                        search_settings={this.props.search_settings}
                                        closeDialog={this.hideGetLinkDialog} />
-                    </div>
-
                 </nav>
             } else {
                 if (!this.props.errorMessage) {
