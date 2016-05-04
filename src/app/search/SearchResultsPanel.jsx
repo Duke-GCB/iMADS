@@ -16,7 +16,7 @@ class SearchResultsPanel extends React.Component {
         this.downloadCsv = this.downloadCsv.bind(this);
         this.downloadTabDelimited = this.downloadTabDelimited.bind(this);
         this.search = this.search.bind(this);
-        this.change_page = this.change_page.bind(this);
+        this.changePage = this.changePage.bind(this);
         this.showGetLinkDialog = this.showGetLinkDialog.bind(this);
         this.hideGetLinkDialog = this.hideGetLinkDialog.bind(this);
         this.scrollToTop = false;
@@ -33,22 +33,22 @@ class SearchResultsPanel extends React.Component {
         }
     }
 
-    search(search_settings, page) {
-        this.props.search(search_settings, page);
+    search(searchSettings, page) {
+        this.props.search(searchSettings, page);
         this.scrollToTop = true;
     }
 
-    change_page(page) {
-        this.props.change_page(page);
+    changePage(page) {
+        this.props.changePage(page);
         this.scrollToTop = true;
     }
 
     downloadCsv() {
-        this.props.download_all('csv');
+        this.props.downloadAll('csv');
     }
 
     downloadTabDelimited() {
-        this.props.download_all('tsv');
+        this.props.downloadAll('tsv');
     }
 
     showGetLinkDialog() {
@@ -78,11 +78,11 @@ class SearchResultsPanel extends React.Component {
     }
 
     render() {
-        var search_settings = this.props.search_settings;
-        var searchSettingsObj = new SearchSettings(this.props.search_settings);
-        var genomeDataObj = new GenomeData(this.props.genome_data);
+        var searchSettings = this.props.searchSettings;
+        var searchSettingsObj = new SearchSettings(this.props.searchSettings);
+        var genomeDataObj = new GenomeData(this.props.genomeData);
         var gridCellWidth = '12vw';
-        if (search_settings.all === true) {
+        if (searchSettings.all === true) {
             gridCellWidth = '8vw';
         }
         var resultHeaderCell = {
@@ -127,7 +127,7 @@ class SearchResultsPanel extends React.Component {
         };
         var heatMapHeader = <span></span>;
         var cellExtraClassName = 'Wide';
-        if (search_settings.all === true) {
+        if (searchSettings.all === true) {
             heatMapHeader = <span style={resultHeaderCell}>Values</span>
             cellExtraClassName = '';
         }
@@ -151,26 +151,26 @@ class SearchResultsPanel extends React.Component {
         var rowStyle = {
             borderBottom: '1px solid grey'
         };
-        var isCustomRange = search_settings.gene_list == CUSTOM_RANGES_LIST;
-        var queryResults = this.props.search_results;
+        var isCustomRange = searchSettings.geneList == CUSTOM_RANGES_LIST;
+        var queryResults = this.props.searchResults;
         var rows = [];
         for (var i = 0; i < queryResults.length; i++) {
             var rowData = queryResults[i];
             var heatMap = <span></span>;
-            if (search_settings.all === true) {
-                var combined_name = rowData.common_name + " (" + rowData.name + ") ";
-                var offsets_str = " upstream:" + search_settings.upstream + " downstream:" + search_settings.downstream;
-                var trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettingsObj.genome_version);
+            if (searchSettings.all === true) {
+                var combinedName = rowData.commonName + " (" + rowData.name + ") ";
+                var offsetsStr = " upstream:" + searchSettings.upstream + " downstream:" + searchSettings.downstream;
+                var trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettingsObj.genomeVersion);
                 var heatMapValues = {
-                    title:  combined_name + " " + offsets_str,
+                    title:  combinedName + " " + offsetsStr,
                     values: rowData.values,
                     start: rowData.start,
                     end: rowData.end,
                     strand: rowData.strand,
-                    upstream: search_settings.upstream,
-                    downstream: search_settings.downstream,
+                    upstream: searchSettings.upstream,
+                    downstream: searchSettings.downstream,
                     chrom: rowData.chrom,
-                    genome: this.props.search_settings.genome,
+                    genome: this.props.searchSettings.genome,
                     trackHubUrl: trackHubUrl,
                     isCustomRange: isCustomRange,
                 };
@@ -191,7 +191,7 @@ class SearchResultsPanel extends React.Component {
                 </div>);
             } else {
                 rows.push(<div key={i} style={borderBottom}>
-                    <span className={"DataCell NameCell" + cellExtraClassName}>{rowData.common_name}</span>
+                    <span className={"DataCell NameCell" + cellExtraClassName}>{rowData.commonName}</span>
                     <span className={"DataCell IdCell" + cellExtraClassName}>{rowData.name}</span>
                     <span className={"DataCell StrandCell" + cellExtraClassName}>{rowData.strand}</span>
                     <span className={"DataCell ChromCell" + cellExtraClassName}>{rowData.chrom}</span>
@@ -202,15 +202,15 @@ class SearchResultsPanel extends React.Component {
                 </div>);
             }
         }
-        var column_headers;
+        var columnHeaders;
         if (isCustomRange) {
-            column_headers = <div style={{backgroundColor: '#235f9c', color: 'white'}} >
-                                  <span className={"HeaderCell IdCellWide" + cellExtraClassName}>Name</span>
+            columnHeaders = <div style={{backgroundColor: '#235f9c', color: 'white'}} >
+                                  <span className={"HeaderCell IdCellWide"}>Name</span>
                                   <span className="HeaderCell NumberCell">Max</span>
                                   {heatMapHeader}
                             </div>
         } else {
-            column_headers = <div style={{backgroundColor: '#235f9c', color: 'white'}} >
+            columnHeaders = <div style={{backgroundColor: '#235f9c', color: 'white'}} >
                                   <span className={"HeaderCell NameCell" + cellExtraClassName}>Name</span>
                                   <span className={"HeaderCell IdCell" + cellExtraClassName}>ID</span>
                                   <span className={"HeaderCell StrandCell" + cellExtraClassName}>Strand</span>
@@ -223,9 +223,9 @@ class SearchResultsPanel extends React.Component {
         }
         var smallMargin = { margin: '10px' };
 
-        var start_page = parseInt((this.props.page - 1)/ 5) * 5 + 1;
-        var end_page = start_page + 4;
-        var listContent = <Loader loaded={this.props.search_data_loaded} >
+        var startPage = parseInt((this.props.page - 1)/ 5) * 5 + 1;
+        var endPage = startPage + 4;
+        var listContent = <Loader loaded={this.props.searchDataLoaded} >
                 {rows}
             </Loader>;
         if (this.props.errorMessage) {
@@ -233,11 +233,11 @@ class SearchResultsPanel extends React.Component {
         }
         //add spaceholder
         var footer = [];
-        if (this.props.search_data_loaded) {
+        if (this.props.searchDataLoaded) {
             if (queryResults.length > 0) {
                 footer = <nav>
-                    <PagingButtons start_page={start_page} current_page={this.props.page} end_page={end_page}
-                                   change_page={this.change_page}
+                    <PagingButtons startPage={startPage} currentPage={this.props.page} endPage={endPage}
+                                   changePage={this.changePage}
                                    pageBatch={this.props.predictionStore.pageBatch}
                     />
                     &nbsp;
@@ -250,8 +250,8 @@ class SearchResultsPanel extends React.Component {
 
                         </button>
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <li><a href={this.props.download_all('tsv')} download>Tab Delimited</a></li>
-                            <li><a href={this.props.download_all('csv')} download>CSV Format</a></li>
+                            <li><a href={this.props.downloadAll('tsv')} download>Tab Delimited</a></li>
+                            <li><a href={this.props.downloadAll('csv')} download>CSV Format</a></li>
                         </ul>
                     </div>
                         <button className="btn btn-default" type="button"
@@ -261,7 +261,7 @@ class SearchResultsPanel extends React.Component {
                             Share
                         </button>
                         <GetLinkDialog isOpen={this.state.showGetUrlDialog}
-                                       search_settings={this.props.search_settings}
+                                       searchSettings={this.props.searchSettings}
                                        closeDialog={this.hideGetLinkDialog} />
                 </nav>
             } else {
@@ -281,17 +281,17 @@ class SearchResultsPanel extends React.Component {
                     <div className="row">
                         <div className="col-md-2 col-sm-2 col-xs-2"  >
                                 <GeneSearchPanel
-                                        genome_data={this.props.genome_data}
+                                        genomeData={this.props.genomeData}
                                         search={this.search}
-                                        search_settings={this.props.search_settings}
-                                        loaded={this.props.genome_data_loaded}
-                                        max_binding_offset={this.props.max_binding_offset}
+                                        searchSettings={this.props.searchSettings}
+                                        loaded={this.props.genomeDataLoaded}
+                                        maxBindingOffset={this.props.maxBindingOffset}
                                         setErrorMessage={this.props.setErrorMessage}
                                         showCustomDialog={this.props.showCustomDialog}
                                 />
                         </div>
                         <div className="col-md-10 col-sm-10 col-xs-10" >
-                            {column_headers}
+                            {columnHeaders}
                             <div id="resultsGridContainer" className="SearchResultsPanel__resultsGridContainer">
                                 {listContent}
                             </div>

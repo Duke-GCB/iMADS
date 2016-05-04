@@ -19,7 +19,7 @@ class DataSources(object):
                 DataSourcesQueryNames.DESCRIPTION: row[DataSourcesQueryNames.DESCRIPTION],
                 DataSourcesQueryNames.DOWNLOADED: downloaded_str,
                 DataSourcesQueryNames.URL: row[DataSourcesQueryNames.URL],
-                DataSourcesQueryNames.DATA_SOURCE_TYPE: row[DataSourcesQueryNames.DATA_SOURCE_TYPE]
+                'dataSourceType': row[DataSourcesQueryNames.DATA_SOURCE_TYPE]
             })
         cur.close()
         return items

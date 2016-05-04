@@ -28,11 +28,11 @@ class HeatMap extends React.Component {
         if (this.props.data.isCustomRange) {
             return [];
         }
-        var rect_width = 1;
+        var rectWidth = 1;
         var style = {
             fill: "rgba(0,0,0, 0.5)",
         }
-        return <rect x={x} y={0} width={rect_width} height={this.props.height} style={{style}}  />
+        return <rect x={x} y={0} width={rectWidth} height={this.props.height} style={{style}}  />
     }
 
     getTranscriptionStartX(scale) {
@@ -87,12 +87,12 @@ class HeatMap extends React.Component {
         var data = this.props.data;
         var upstream = parseInt(data.upstream);
         var downstream = parseInt(data.downstream);
-        var data_size = upstream + downstream + 1;
-        var view_size = parseInt(this.props.width);
+        var dataSize = upstream + downstream + 1;
+        var viewSize = parseInt(this.props.width);
         //when not using upstream and downstream this doesn't work
-        var scale = view_size / data_size;
+        var scale = viewSize / dataSize;
         if (data.isCustomRange) {
-            scale = view_size / (data.end - data.start);
+            scale = viewSize / (data.end - data.start);
         }
         var borderStyle = {
             strokeWidth: 1,

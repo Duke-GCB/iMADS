@@ -6,7 +6,7 @@ class DnaSequences {
         this.ranges = [];
     }
 
-    add_range_request(name, chrom, start, end) {
+    addRangeRequest(name, chrom, start, end) {
         this.ranges.push({
             name: name,
             chrom: chrom,
@@ -15,7 +15,7 @@ class DnaSequences {
         });
     }
 
-    fetch_ranges(onData, onError) {
+    fetchRanges(onData, onError) {
         let ranges = this.ranges;
         let url = ENDPOINT + this.genome + '/sequences';
         $.ajax({

@@ -7,7 +7,7 @@ import PageBatch from '../store/PageBatch.js'
 import StreamValue from '../store/StreamValue.js'
 import NavBar from '../common/NavBar.jsx'
 import {SEARCH_NAV} from '../store/Navigation.js'
-import {is_custom_list} from '../store/CustomList.js'
+import {isCustomList} from '../store/CustomList.js'
 
 
 const ITEMS_PER_PAGE = 20;
@@ -19,13 +19,13 @@ class SearchPage extends React.Component {
          super(props);
          var searchSettings = {};
          this.runSearchOnMount = false;
-         var search_data_loaded = false;
-         var show_custom_dialog = false;
+         var searchDataLoaded = false;
+         var showCustomDialog = false;
          var query = props.location.query;
          if (query.genome) {
             searchSettings = {
                     genome: query.genome,
-                    gene_list: query.gene_list,
+                    geneList: query.geneList,
                     model: query.model,
                     all: (query.all === 'true'),
                     upstream: query.upstream,
@@ -35,36 +35,35 @@ class SearchPage extends React.Component {
                     maxPredictionSort: (query.maxPredictionSort  === 'true'),
                     showCustomDialog: false,
                     customListData: query.customListData,
-                    custom_list_filter: query.custom_list_filter,
+                    customListFilter: query.customListFilter,
                 };
-             if (is_custom_list(searchSettings.gene_list) && ! searchSettings.customListData) {
-                 search_data_loaded = true;
-                 show_custom_dialog = true;
+             if (isCustomList(searchSettings.geneList) && ! searchSettings.customListData) {
+                 searchDataLoaded = true;
+                 showCustomDialog = true;
              } else {
                  this.runSearchOnMount = true;
              }
          }
          this.state = {
-             genome_data: {},
-             search_results: [],
-             search_settings: searchSettings,
-             current_page: 1,
-             next_pages: 0,
-             genome_data_loaded: false,
-             search_data_loaded: search_data_loaded,
+             genomeData: {},
+             searchResults: [],
+             searchSettings: searchSettings,
+             currentPage: 1,
+             nextPages: 0,
+             genomeDataLoaded: false,
+             searchDataLoaded: searchDataLoaded,
              errorMessage: "",
-             showCustomDialog: show_custom_dialog,
+             showCustomDialog: showCustomDialog,
          };
          this.search = this.search.bind(this);
-         this.download_all = this.download_all.bind(this);
-         this.change_page = this.change_page.bind(this);
+         this.downloadAll = this.downloadAll.bind(this);
+         this.changePage = this.changePage.bind(this);
          this.setErrorMessage = this.setErrorMessage.bind(this);
          this.searchFirstPage = this.searchFirstPage.bind(this);
          var pageBatch = new PageBatch(NUM_PAGE_BUTTONS, ITEMS_PER_PAGE);
          var urlBuilder = new URLBuilder($.ajax);
          this.predictionStore = new PredictionsStore(pageBatch, urlBuilder);
-         this.url="/api/v1/settings";
-         this.items_per_page="100";
+         this.url = "/api/v1/settings";
     }
 
     setErrorMessage(msg) {
@@ -81,9 +80,9 @@ class SearchPage extends React.Component {
           cache: false,
           success: function(data) {
             this.setState({
-                genome_data: data.genomes,
-                genome_data_loaded: true,
-                max_binding_offset: data.max_binding_offset,
+                genomeData: data.genomes,
+                genomeDataLoaded: true,
+                maxBindingOffset: data.maxBindingOffset,
             }, this.searchFirstPage);
           }.bind(this),
           error: function(xhr, status, err) {
@@ -94,25 +93,25 @@ class SearchPage extends React.Component {
 
     searchFirstPage() {
         if (this.runSearchOnMount) {
-            this.search(this.state.search_settings, 1);
+            this.search(this.state.searchSettings, 1);
         }
     }
 
-    search(search_settings, page) {
-        if (is_custom_list(search_settings.gene_list)) {
-            if (!search_settings.customListData) {
+    search(searchSettings, page) {
+        if (isCustomList(searchSettings.geneList)) {
+            if (!searchSettings.customListData) {
                 return;
             }
         }
         this.setState({
-            search_settings: search_settings,
+            searchSettings: searchSettings,
             page: page,
-            per_page: this.items_per_page,
-            search_data_loaded: false,
+            perPage: this.perPage,
+            searchDataLoaded: false,
         });
-        var streamValue = new StreamValue(this.state.max_binding_offset);
-        var upstreamError = streamValue.checkForError("Bases upstream", search_settings.upstream);
-        var downstreamError = streamValue.checkForError("Bases downstream", search_settings.downstream);
+        var streamValue = new StreamValue(this.state.maxBindingOffset);
+        var upstreamError = streamValue.checkForError("Bases upstream", searchSettings.upstream);
+        var downstreamError = streamValue.checkForError("Bases downstream", searchSettings.downstream);
         if (upstreamError || downstreamError) {
             var errorMessage = upstreamError;
             if (!errorMessage) {
@@ -120,15 +119,15 @@ class SearchPage extends React.Component {
             }
             this.setState({
                 errorMessage: errorMessage,
-                search_data_loaded: true,
+                searchDataLoaded: true,
             });
             return;
         }
-        this.predictionStore.requestPage(page, search_settings, function(predictions, pageNum, hasNextPages, warning) {
+        this.predictionStore.requestPage(page, searchSettings, function(predictions, pageNum, hasNextPages, warning) {
             this.setState({
-                search_results: predictions,
-                next_pages: hasNextPages,
-                search_data_loaded: true,
+                searchResults: predictions,
+                nextPages: hasNextPages,
+                searchDataLoaded: true,
                 page: pageNum,
                 errorMessage: '',
             });
@@ -138,37 +137,37 @@ class SearchPage extends React.Component {
         }.bind(this), function (err) {
             this.setState({
                 errorMessage: err.message,
-                search_data_loaded: true,
+                searchDataLoaded: true,
             });
         }.bind(this));
         var localUrl = new URLBuilder();
-        this.predictionStore.addLocalUrl(localUrl, page, search_settings);
+        this.predictionStore.addLocalUrl(localUrl, page, searchSettings);
         browserHistory.push(localUrl.url);
     }
 
-    change_page(page) {
-        this.search(this.state.search_settings, page)
+    changePage(page) {
+        this.search(this.state.searchSettings, page)
     }
 
-    download_all(format) {
-        return this.predictionStore.getDownloadURL(format, this.state.search_settings);
+    downloadAll(format) {
+        return this.predictionStore.getDownloadURL(format, this.state.searchSettings);
     }
 
     render () {
         return <div>
             <NavBar selected={SEARCH_NAV.path} />
-            <SearchResultsPanel search_settings={this.state.search_settings}
-                                       search_results={this.state.search_results}
-                                       download_all={this.download_all}
+            <SearchResultsPanel searchSettings={this.state.searchSettings}
+                                       searchResults={this.state.searchResults}
+                                       downloadAll={this.downloadAll}
                                        page={this.state.page}
-                                       next_pages={this.state.next_pages}
-                                       change_page={this.change_page}
-                                       genome_data={this.state.genome_data}
+                                       nextPages={this.state.nextPages}
+                                       changePage={this.changePage}
+                                       genomeData={this.state.genomeData}
                                        search={this.search}
-                                       get_sharable_url={this.get_sharable_url}
-                                       genome_data_loaded={this.state.genome_data_loaded}
-                                       search_data_loaded={this.state.search_data_loaded}
-                                       max_binding_offset={this.state.max_binding_offset}
+                                       getSharableUrl={this.getSharableUrl}
+                                       genomeDataLoaded={this.state.genomeDataLoaded}
+                                       searchDataLoaded={this.state.searchDataLoaded}
+                                       maxBindingOffset={this.state.maxBindingOffset}
                                        predictionStore={this.predictionStore}
                                        errorMessage={this.state.errorMessage}
                                        setErrorMessage={this.setErrorMessage}

@@ -33,8 +33,8 @@ class CustomFile {
     }
     uploadFile(onData, onError) {
         if (this.content.length > MAX_FILE_SIZE) {
-            let file_size_mb = parseInt(this.content.length / 1024 / 1024 + 0.5);
-            onError('File size too big ' + file_size_mb  + " MB. Maximum allowed is 20 MB.");
+            let fileSizeMB = parseInt(this.content.length / 1024 / 1024 + 0.5);
+            onError('File size too big ' + fileSizeMB  + " MB. Maximum allowed is 20 MB.");
             return;
         }
         $.ajax({

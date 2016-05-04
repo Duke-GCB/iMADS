@@ -21,9 +21,9 @@ class CustomListDialog extends React.Component {
         this.state = {
             text: '',
             loading: false,
-            file_value: '',
+            fileValue: '',
             file: undefined,
-            gene_list: 'All',
+            geneList: 'All',
         }
         this.changeUploadFile = this.changeUploadFile.bind(this);
         this.changeText = this.changeText.bind(this);
@@ -39,8 +39,8 @@ class CustomListDialog extends React.Component {
             this.setState({
                 text: '',
                 file: undefined,
-                file_value: '',
-                gene_list: 'All',
+                fileValue: '',
+                geneList: 'All',
                 loading: false,
             });
         }
@@ -53,13 +53,13 @@ class CustomListDialog extends React.Component {
             this.setState({
                 text: "",
                 file: file,
-                file_value: evt.target.value,
+                fileValue: evt.target.value,
                 loading: false,
             });
         } else {
             customListDialog.setState({
                 text: '',
-                file_value: '',
+                fileValue: '',
                 file: file,
             });
         }
@@ -75,13 +75,13 @@ class CustomListDialog extends React.Component {
             text: value,
             loading: false,
             file: undefined,
-            file_value: '',
+            fileValue: '',
         });
     }
     onChangeGeneList(evt) {
-        let gene_list = evt.target.value;
+        let geneList = evt.target.value;
         this.setState({
-            gene_list: gene_list
+            geneList: geneList
         });
     }
     onClickSearch() {
@@ -97,7 +97,7 @@ class CustomListDialog extends React.Component {
     }
 
     exitDialog() {
-        this.props.onRequestClose('', this.state.gene_list);
+        this.props.onRequestClose('', this.state.geneList);
     }
 
     closeReturningResult(text) {
@@ -105,7 +105,7 @@ class CustomListDialog extends React.Component {
         let customListData = new CustomListData(customListDialog.props.type);
         let customFile = new CustomFile(customListData.isGeneList(), text);
         customFile.uploadFile(function(key) {
-            customListDialog.props.onRequestClose(key, customListDialog.state.gene_list);
+            customListDialog.props.onRequestClose(key, customListDialog.state.geneList);
         }, function(error){
             customListDialog.setState({
                 loading: false,
@@ -132,20 +132,17 @@ class CustomListDialog extends React.Component {
                 </div>;
         }
         var disableSearch = !this.state.text && !this.state.file;
-        var gene_list_options = [
-            <option>All Gene Lists</option>
-        ];
         var hasText = this.state.text.length > 0;
         var geneListDropdown = [];
         if (customListData.isGeneList()) {
             var options = [<option key="All">All</option>]
-            for (let name of this.props.gene_list_names) {
+            for (let name of this.props.geneListNames) {
                 options.push(<option key={name}>{name}</option>)
             }
             geneListDropdown = <div>
                                     <label>Search Gene List:</label>
                                     <select className="form-control small_lower_margin"
-                                            value={this.state.gene_list}
+                                            value={this.state.geneList}
                                             onChange={this.onChangeGeneList}>
                                         {options}
                                     </select>
@@ -176,7 +173,7 @@ class CustomListDialog extends React.Component {
                                     style={{marginTop: '10px', marginBottom:'10px'}} type="file" name="fileField"
                                        onChange={this.changeUploadFile}
                                        disabled={this.state.loading}
-                                       value={this.state.file_value}
+                                       value={this.state.fileValue}
                                 />
                                 {geneListDropdown}
                                 <Loader loaded={!this.state.loading} >

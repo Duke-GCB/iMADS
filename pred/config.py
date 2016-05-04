@@ -53,9 +53,9 @@ class Config(object):
             gene_list_names = [gene_list.source_table for gene_list in genome_data.gene_lists]
             result[genome] = {
                 'models': model_names,
-                'gene_lists': gene_list_names,
-                'trackhub_url': genome_data.trackhub_url,
-                'genome_file' : genome_data.genome_file,
+                'geneLists': gene_list_names,
+                'trackhubUrl': genome_data.trackhub_url,
+                'genomeFile' : genome_data.genome_file,
             }
         return result
 

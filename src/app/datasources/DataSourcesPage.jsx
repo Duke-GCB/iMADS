@@ -42,15 +42,15 @@ class DataSourcesPage extends React.Component {
     }
 
     render() {
-        var prediction_rows = this.state.predictions.map(this.makeRow);
-        var gene_rows = this.state.genelists.map(this.makeRow);
+        var predictionRows = this.state.predictions.map(this.makeRow);
+        var geneRows = this.state.genelists.map(this.makeRow);
         return <div>
             <NavBar selected={DATA_SOURCES_NAV.path}/>
             <div className="std_left_right_margin std_bottom_margin">
                 <ScrollingContainer height="80%">
-                    <DSList title="Predictions" content={prediction_rows}/>
+                    <DSList title="Predictions" content={predictionRows}/>
                     <br />
-                    <DSList title="Gene Lists" content={gene_rows}/>
+                    <DSList title="Gene Lists" content={geneRows}/>
                 </ScrollingContainer>
             </div>
         </div>;

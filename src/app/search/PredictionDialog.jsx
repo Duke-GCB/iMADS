@@ -46,11 +46,11 @@ class PredictionDialog extends React.Component {
                 if (position in this.state.ranges) {
                     continue;
                 }
-                dnaSequences.add_range_request(position, this.props.data.chrom, prediction.start, prediction.end);
+                dnaSequences.addRangeRequest(position, this.props.data.chrom, prediction.start, prediction.end);
                 needsToUpdate = true;
             }
             if (needsToUpdate) {
-                dnaSequences.fetch_ranges(this.onDnaRangesResponse, this.onDnaRangesError);
+                dnaSequences.fetchRanges(this.onDnaRangesResponse, this.onDnaRangesError);
             }
         }
     }

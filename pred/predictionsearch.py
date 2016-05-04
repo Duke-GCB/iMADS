@@ -66,18 +66,18 @@ class PredictionQueryNames(object):
 
 
 class SearchArgs(object):
-    GENE_LIST = 'gene_list'
+    GENE_LIST = 'geneList'
     MODEL = 'protein'
     UPSTREAM = 'upstream'
     DOWNSTREAM = 'downstream'
     PAGE = 'page'
-    PER_PAGE = 'per_page'
-    MAX_PREDICTION_SORT = 'max_prediction_sort'
-    MAX_PREDICTION_GUESS = 'max_prediction_guess'
+    PER_PAGE = 'perPage'
+    MAX_PREDICTION_SORT = 'maxPredictionSort'
+    MAX_PREDICTION_GUESS = 'maxPredictionGuess'
     FORMAT = 'format'
-    INCLUDE_ALL = 'include_all'
+    INCLUDE_ALL = 'includeAll'
     CUSTOM_LIST_DATA = 'customListData'
-    CUSTOM_LIST_FILTER = 'custom_list_filter'
+    CUSTOM_LIST_FILTER = 'customListFilter'
 
     def __init__(self, max_stream_val, args):
         self.max_stream_val = max_stream_val
@@ -221,7 +221,7 @@ class PredictionSearch(object):
                 end = row[PredictionQueryNames.RANGE_END]
             predictions.append({
                  'name': row[PredictionQueryNames.NAME],
-                 'common_name': row[PredictionQueryNames.COMMON_NAME],
+                 'commonName': row[PredictionQueryNames.COMMON_NAME],
                  'chrom': row[PredictionQueryNames.CHROM],
                  'max': str(row[PredictionQueryNames.MAX_VALUE]),
                  'start': str(start),

@@ -8,24 +8,26 @@ class PagingButtons extends React.Component {
     onClickPage(page, evt) {
         evt.preventDefault();
         if (page > 0 || page === -1) {
-            this.props.change_page(page);
+            this.props.changePage(page);
         }
     }
 
-    make_number_button(page_num, selected) {
+    makeNumberButton(pageNum, selected) {
         var props = {};
         var child = '';
         if (selected) {
             props['className'] = 'active';
             child = <span className="sr-only">(current)</span>;
         }
-        var func = this.onClickPage.bind(this, page_num);
-        return <li {...props} key={page_num} ><a href="#" style={{width: '3em', textAlign: 'center'}} onClick={func}>{page_num} {child}</a></li>;
+        var func = this.onClickPage.bind(this, pageNum);
+        return <li {...props} key={pageNum} >
+            <a href="#" style={{width: '3em', textAlign: 'center'}} onClick={func}>{pageNum} {child}</a>
+        </li>;
     }
 
-    make_labeled_button(label, disabled, page_num) {
+    makeLabeledButton(label, disabled, pageNum) {
         var props = {};
-        var func = this.onClickPage.bind(this, page_num);
+        var func = this.onClickPage.bind(this, pageNum);
         if (disabled) {
             return <li className="disabled" key={label}><span>{label}</span></li>;
         } else {
@@ -33,24 +35,24 @@ class PagingButtons extends React.Component {
         }
     }
 
-    make_buttons(start_page, current_page, end_page) {
-        var disable_prev = current_page === 1;
-        var disable_next = !this.props.pageBatch.canNext(current_page);
+    makeButtons(startPage, currentPage, endPage) {
+        var disablePrev = currentPage === 1;
+        var disableNext = !this.props.pageBatch.canNext(currentPage);
         var buttons = [];
-        buttons.push(this.make_labeled_button('<<', disable_prev, 1));
-        buttons.push(this.make_labeled_button('<', disable_prev, current_page - 1));
-        for (var i = start_page; i <= end_page; i++) {
-            buttons.push(this.make_number_button(i, i === current_page))
+        buttons.push(this.makeLabeledButton('<<', disablePrev, 1));
+        buttons.push(this.makeLabeledButton('<', disablePrev, currentPage - 1));
+        for (var i = startPage; i <= endPage; i++) {
+            buttons.push(this.makeNumberButton(i, i === currentPage))
         }
-        buttons.push(this.make_labeled_button('>', disable_next, current_page + 1));
-        buttons.push(this.make_labeled_button('>>', disable_next, -1));
+        buttons.push(this.makeLabeledButton('>', disableNext, currentPage + 1));
+        buttons.push(this.makeLabeledButton('>>', disableNext, -1));
         return buttons;
     }
 
     render() {
-        var buttons = this.make_buttons(
+        var buttons = this.makeButtons(
             parseInt(this.props.pageBatch.getStartPage()),
-            parseInt(this.props.current_page),
+            parseInt(this.props.currentPage),
             parseInt(this.props.pageBatch.getEndPage()));
 
         return <ul className="pagination">

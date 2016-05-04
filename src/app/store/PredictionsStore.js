@@ -42,20 +42,20 @@ class PredictionsStore {
         urlBuilder.append(searchSettings.genome);
         urlBuilder.append('/prediction');
         urlBuilder.appendParam('protein', searchSettings.model);
-        urlBuilder.appendParam('gene_list', searchSettings.gene_list);
+        urlBuilder.appendParam('geneList', searchSettings.geneList);
         urlBuilder.appendParam('customListData', searchSettings.customListData);
-        urlBuilder.appendParam('custom_list_filter', searchSettings.customListFilter, true);
+        urlBuilder.appendParam('customListFilter', searchSettings.customListFilter, true);
         urlBuilder.appendParam('upstream', searchSettings.upstream);
         urlBuilder.appendParam('downstream', searchSettings.downstream);
-        urlBuilder.appendParam('include_all', searchSettings.all);
-        urlBuilder.appendParam('max_prediction_sort', searchSettings.maxPredictionSort);
+        urlBuilder.appendParam('includeAll', searchSettings.all);
+        urlBuilder.appendParam('maxPredictionSort', searchSettings.maxPredictionSort);
 
         if (searchSettings.maxPredictionSort) {
-            urlBuilder.appendParam('max_prediction_guess', '0.4');
+            urlBuilder.appendParam('maxPredictionGuess', '0.4');
         }
         if (page && perPage) {
             urlBuilder.appendParam('page', page);
-            urlBuilder.appendParam('per_page', perPage);
+            urlBuilder.appendParam('perPage', perPage);
         }
     }
 
@@ -69,12 +69,12 @@ class PredictionsStore {
         urlBuilder.reset('');
         urlBuilder.appendParam('genome', searchSettings.genome);
         urlBuilder.appendParam('model', searchSettings.model);
-        urlBuilder.appendParam('gene_list', searchSettings.gene_list);
+        urlBuilder.appendParam('geneList', searchSettings.geneList);
         urlBuilder.appendParam('upstream', searchSettings.upstream);
         urlBuilder.appendParam('downstream', searchSettings.downstream);
         urlBuilder.appendParam('all', searchSettings.all);
         urlBuilder.appendParam('maxPredictionSort', searchSettings.maxPredictionSort);
-        urlBuilder.appendParam('custom_list_filter', searchSettings.customListFilter, true);
+        urlBuilder.appendParam('customListFilter', searchSettings.customListFilter, true);
         urlBuilder.appendParam('customListData', searchSettings.customListData, true);
     }
 

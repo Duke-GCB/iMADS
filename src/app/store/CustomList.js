@@ -14,11 +14,11 @@ SETTINGS[CUSTOM_RANGES_LIST] = {
 };
 
 
-export function is_custom_list(str) {
+export function isCustomList(str) {
     return str === CUSTOM_GENE_LIST || str == CUSTOM_RANGES_LIST
 }
 
-function lookup_settings(type) {
+function lookupSettings(type) {
     if (type in SETTINGS) {
         return SETTINGS[type];
     } else {
@@ -44,7 +44,7 @@ function noop(value) {
 
 export class CustomListData {
     constructor(type) {
-        var settings = lookup_settings(type);
+        var settings = lookupSettings(type);
         this.type = type;
         this.sampleData = settings.sampleData;
         this.encodeFunc = settings.encode;

@@ -72,7 +72,7 @@ def get_genome_versions():
     log_info("Reading settings")
     blob = jsonify({
         'genomes': g_config.get_genomes_setup(),
-        'max_binding_offset': g_config.binding_max_offset,
+        'maxBindingOffset': g_config.binding_max_offset,
     })
     r = make_response(blob)
     log_info("Returning settings")
@@ -160,7 +160,7 @@ def make_predictions_csv_response(predictions, args):
             start = prediction['start']
             end = prediction['end']
             items = [
-                prediction['common_name'],
+                prediction['commonName'],
                 prediction['name'],
                 str(prediction['max']),
                 prediction['chrom'],

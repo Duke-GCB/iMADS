@@ -83,10 +83,10 @@ class HeatMapData {
 
     getColor() {
         var value = this.data.value;
-        var rev_color = 1 - value;
+        var revColor = 1 - value;
         var red = 255;
-        var green = parseInt(255 * rev_color);
-        var blue = parseInt(255 * rev_color);
+        var green = parseInt(255 * revColor);
+        var blue = parseInt(255 * revColor);
         var fill = "rgb(" + red + "," + green + "," + blue + ")";
         return fill;
     }

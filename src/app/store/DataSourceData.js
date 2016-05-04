@@ -23,23 +23,23 @@ class DataSourceData {
         });
     }
 
-    formatData(data_source_type, data_source) {
+    formatData(dataSourceType, dataSource) {
         var rows = [];
-        for (var i = 0; i < data_source.length; i++) {
-            var data = data_source[i];
-            if (data.data_source_type !== data_source_type) {
+        for (var i = 0; i < dataSource.length; i++) {
+            var data = dataSource[i];
+            if (data.dataSourceType !== dataSourceType) {
                 continue;
             }
-            var full_url = data.url;
-            if (full_url.indexOf('http') === 0) {
-                full_url = 'http://' + full_url;
+            var fullUrl = data.url;
+            if (fullUrl.indexOf('http') < 0) {
+                fullUrl = 'http://' + fullUrl;
             }
-            var clean_url = data.url.replace("https:\/\/", "").replace("http:\/\/", "");
+            var cleanUrl = data.url.replace("https:\/\/", "").replace("http:\/\/", "");
             var row = {
                 description: data.description,
                 downloaded: data.downloaded,
-                fullUrl: full_url,
-                cleanUrl: clean_url,
+                fullUrl: fullUrl,
+                cleanUrl: cleanUrl,
             };
             rows.push(row);
         }

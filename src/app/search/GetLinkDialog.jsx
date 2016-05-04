@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
-import {is_custom_list} from '../store/CustomList.js'
+import {isCustomList} from '../store/CustomList.js'
 
 const customStyles = {
     content: {
@@ -30,15 +30,15 @@ class GetLinkDialog extends React.Component {
     }
 
     render() {
-        var isCustomList = is_custom_list(this.props.search_settings.gene_list);
+        var customList = isCustomList(this.props.searchSettings.geneList);
         var url = window.location.href;
         if (!this.state.includeCustomList) {
             url = url.replace(/&customListData=[a-f\d-]+/, '');
         }
-        let searchSettings = this.props.search_settings;
+        let searchSettings = this.props.searchSettings;
         var customListCheckbox = [];
         var message = '';
-        if (isCustomList) {
+        if (customList) {
             customListCheckbox = <label>
                     <input type="checkbox"
                            checked={this.state.includeCustomList}
