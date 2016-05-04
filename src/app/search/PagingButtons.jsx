@@ -21,7 +21,7 @@ class PagingButtons extends React.Component {
         }
         var func = this.onClickPage.bind(this, pageNum);
         return <li {...props} key={pageNum} >
-            <a href="#" style={{width: '3em', textAlign: 'center'}} onClick={func}>{pageNum} {child}</a>
+            <a href="#" style={{width: '4em', textAlign: 'center'}} onClick={func}>{pageNum} {child}</a>
         </li>;
     }
 
