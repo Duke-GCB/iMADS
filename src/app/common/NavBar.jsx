@@ -2,28 +2,17 @@ import React from 'react';
 import { Link } from 'react-router'
 
 import NavMenuButton from './NavMenuButton.jsx'
+import {ALL_NAV} from '../store/Navigation.js'
 
 class NavBar extends React.Component {
     render() {
-        // The webserver must know to route these to index.html.
-        var link_data = [{
-            to: "/",
-            label: "SEARCH GENOME"
-        },{
-            to: "/datasources",
-            label: "DATA SOURCES"
-        },{
-            to: "/about",
-            label: "ABOUT"
-        },];
         var items = [];
-        for (var i = 0; i < link_data.length; i++) {
-            var link = link_data[i];
+        for (let nav of ALL_NAV) {
             var className = "";
-            if (link.to === this.props.selected) {
+            if (nav.path === this.props.selected) {
                 className = "Active";
             }
-            items.push(<li key={link.to} className={className}><Link to={link.to}>{link.label}</Link></li>)
+            items.push(<li key={nav.path} className={className}><Link to={nav.path}>{nav.label}</Link></li>)
         }
         return (
             <nav className="navbar navbar-default">

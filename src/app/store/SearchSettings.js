@@ -1,6 +1,6 @@
 class SearchSettings {
     constructor(data) {
-        this.genome_version = data.genome;
+        this.genomeVersion = data.genome;
     }
 }
 

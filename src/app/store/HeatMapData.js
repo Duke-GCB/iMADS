@@ -11,21 +11,22 @@ function sortByX(a, b) {
 }
 
 class HeatMapData {
-    constructor(data, xOffset = 0, includeTitle = false) {
+    constructor(chrom, data, xOffset = 0, includeTitle = false) {
+        this.chrom = chrom;
         this.data = data;
         this.xOffset = xOffset;
         this.includeTitle = includeTitle;
     }
 
-    static buildCellArray(inputArray, props) {
+    static buildCellArray(chrom, inputArray, props) {
         var results = [];
         var sortedArray = inputArray.slice();
         sortedArray.sort(sortByValue);
         for (let data of sortedArray) {
-            var hmd = new HeatMapData(data, props.xOffset, props.includeTitle);
+            var hmd = new HeatMapData(chrom, data, props.xOffset, props.includeTitle);
             results.push({
                 color: hmd.getColor(),
-                x: hmd.getX(props.scale),
+                x: hmd.getX(props.scale, props.strand, props.xOffsetEnd),
                 width: hmd.getWidth(props.scale),
                 height: props.height,
                 title: hmd.getTitle(),
@@ -82,18 +83,24 @@ class HeatMapData {
 
     getColor() {
         var value = this.data.value;
-        var rev_color = 1 - value;
+        var revColor = 1 - value;
         var red = 255;
-        var green = parseInt(255 * rev_color);
-        var blue = parseInt(255 * rev_color);
+        var green = parseInt(255 * revColor);
+        var blue = parseInt(255 * revColor);
         var fill = "rgb(" + red + "," + green + "," + blue + ")";
         return fill;
     }
 
-    getX(scale) {
+    getX(scale, strand, xOffsetEnd) {
         var start = this.data.start;
         var value = this.data.value;
-        return parseInt((start - this.xOffset) * scale);
+        if (strand === '-') {
+            let x = start - this.xOffset;
+            x = (xOffsetEnd - this.xOffset) - x - PREDICTION_WIDTH;
+            return x * scale;
+        } else {
+            return parseInt((start - this.xOffset) * scale);    
+        }
     }
 
     getWidth(scale) {
@@ -102,7 +109,7 @@ class HeatMapData {
 
     getTitle() {
         if (this.includeTitle) {
-            return this.data.start + '-' + this.data.end + " : " + this.data.value;
+            return this.chrom + ":" + this.data.start + '-' + this.data.end + " -> " + this.data.value;
         }
         return '';
     }

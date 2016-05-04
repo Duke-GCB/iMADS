@@ -3,8 +3,8 @@ class GenomeData {
         this.data = data;
     }
 
-    getTrackHubUrl(genome_version) {
-        return this.data[genome_version].trackhub_url;
+    getTrackHubUrl(genomeVersion) {
+        return this.data[genomeVersion].trackhubUrl;
     }
 
 }

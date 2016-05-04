@@ -1,4 +1,5 @@
 
+
 class PredictionsStore {
     constructor(pageBatch, urlBuilder) {
         this.pageBatch = pageBatch;
@@ -9,7 +10,7 @@ class PredictionsStore {
     requestPage(pageNum, searchSettings, onData, onError) {
         this.saveSearchSettings(searchSettings);
         if (this.pageBatch.hasPage(pageNum)) {
-            onData(this.pageBatch.getItems(pageNum), pageNum, true);
+            onData(this.pageBatch.getItems(pageNum), pageNum, true, '');
         } else {
             var batchPage = this.pageBatch.getBatchPageNum(pageNum)
             var itemsPerBatch = this.pageBatch.getItemsPerBatch();
@@ -22,7 +23,7 @@ class PredictionsStore {
                 if (pageNum == -1) {
                     pageNum = this.pageBatch.getEndPage();
                 }
-                onData(this.pageBatch.getItems(pageNum), pageNum, true);
+                onData(this.pageBatch.getItems(pageNum), pageNum, true, data.warning);
             }.bind(this), onError);
         }
     }
@@ -41,26 +42,42 @@ class PredictionsStore {
         urlBuilder.append(searchSettings.genome);
         urlBuilder.append('/prediction');
         urlBuilder.appendParam('protein', searchSettings.model);
-        urlBuilder.appendParam('gene_list', searchSettings.gene_list);
-        urlBuilder.appendParam('custom_list_data', searchSettings.customListData);
+        urlBuilder.appendParam('geneList', searchSettings.geneList);
+        urlBuilder.appendParam('customListData', searchSettings.customListData);
+        urlBuilder.appendParam('customListFilter', searchSettings.customListFilter, true);
         urlBuilder.appendParam('upstream', searchSettings.upstream);
         urlBuilder.appendParam('downstream', searchSettings.downstream);
-        urlBuilder.appendParam('include_all', searchSettings.all);
-        urlBuilder.appendParam('max_prediction_sort', searchSettings.maxPredictionSort);
+        urlBuilder.appendParam('includeAll', searchSettings.all);
+        urlBuilder.appendParam('maxPredictionSort', searchSettings.maxPredictionSort);
+
         if (searchSettings.maxPredictionSort) {
-            urlBuilder.appendParam('max_prediction_guess', '0.4');
+            urlBuilder.appendParam('maxPredictionGuess', '0.4');
         }
         if (page && perPage) {
             urlBuilder.appendParam('page', page);
-            urlBuilder.appendParam('per_page', perPage);
+            urlBuilder.appendParam('perPage', perPage);
         }
     }
-    
+
     getDownloadURL(format, searchSettings) {
         this.setBuilderURL(undefined, undefined, searchSettings)
         this.urlBuilder.appendParam('format',format);
         return this.urlBuilder.url;
     }
+
+    addLocalUrl(urlBuilder, page, searchSettings) {
+        urlBuilder.reset('');
+        urlBuilder.appendParam('genome', searchSettings.genome);
+        urlBuilder.appendParam('model', searchSettings.model);
+        urlBuilder.appendParam('geneList', searchSettings.geneList);
+        urlBuilder.appendParam('upstream', searchSettings.upstream);
+        urlBuilder.appendParam('downstream', searchSettings.downstream);
+        urlBuilder.appendParam('all', searchSettings.all);
+        urlBuilder.appendParam('maxPredictionSort', searchSettings.maxPredictionSort);
+        urlBuilder.appendParam('customListFilter', searchSettings.customListFilter, true);
+        urlBuilder.appendParam('customListData', searchSettings.customListData, true);
+    }
+
 }
 
 export default PredictionsStore;

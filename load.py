@@ -3,7 +3,7 @@ Load gene list data and predictions into a Postgres database.
 """
 
 from pred.config import parse_config, CONFIG_FILENAME
-from pred.remotedata import PredictionDataInserter, GeneListDownloader
+from pred.remotedata import PredictionDataInserter, GeneListDownloader, GenomeDownloader
 from pred.postgres import PostgresConnection
 from jinja2 import FileSystemLoader, Environment
 
@@ -54,6 +54,9 @@ class TemplateExecutor(object):
     def create_data_source(self):
         self.execute_template('create_data_source.sql', {})
 
+    def create_custom_list(self):
+        self.execute_template('create_custom_list.sql', {})
+
     def insert_data_source(self, url, description, data_source_type):
         self.execute_template('insert_data_source.sql', {}, exec_params=(url, description, data_source_type))
 
@@ -91,6 +94,12 @@ class TemplateExecutor(object):
             'common_name': gene_info.common_name,
         }
         self.execute_template('insert_genelist.sql', render_params)
+
+
+def download_genome(executor, download_dir, genome, target):
+    downloader = GenomeDownloader(download_dir, GENE_LIST_HOST, target, genome, update_progress=update_progress)
+    downloader.download()
+    executor.insert_data_source(downloader.get_url(), 'Genome {}'.format(genome), 'genelist')
 
 
 def download_gene_list_files(executor, download_dir, genome, file_list):
@@ -145,6 +154,7 @@ def load_database_based_on_config(config):
     db = PostgresConnection(dbconfig.host, dbconfig.dbname, dbconfig.user, dbconfig.password, update_progress=update_progress)
     executor = TemplateExecutor(db, SQL_TEMPLATE_DIR)
     executor.create_data_source()
+    executor.create_custom_list()
     for genome_data in config.genome_data_list:
         genome = genome_data.genomename
         executor.create_schema(genome, dbconfig.user)
@@ -153,7 +163,7 @@ def load_database_based_on_config(config):
         gene_lists = [GeneInfo(gene_list_settings) for gene_list_settings in genome_data.gene_lists]
         prediction_lists = [PredictionDataInserter(prediction_setting, update_progress=update_progress)
                             for prediction_setting in genome_data.prediction_lists]
-
+        download_genome(executor, config.download_dir, genome, genome_data.genome_file)
         download_gene_list_files(executor, config.download_dir, genome, genome_data.ftp_files)
         load_gene_table(executor, gene_lists)
         executor.fill_gene_ranges(genome, config.binding_max_offset)

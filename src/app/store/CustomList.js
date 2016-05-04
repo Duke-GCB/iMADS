@@ -8,12 +8,17 @@ SETTINGS[CUSTOM_GENE_LIST] = {
     decode: decodeGeneListValue
 };
 SETTINGS[CUSTOM_RANGES_LIST] = {
-    sampleData: "10413\t11027\tchr1\n520413\t521391\tchr2",
+    sampleData: "chr1\t10413\t11027\nchr2\t520413\t521391",
     encode: noop,
     decode: noop,
 };
 
-function lookup_settings(type) {
+
+export function isCustomList(str) {
+    return str === CUSTOM_GENE_LIST || str == CUSTOM_RANGES_LIST
+}
+
+function lookupSettings(type) {
     if (type in SETTINGS) {
         return SETTINGS[type];
     } else {
@@ -26,11 +31,11 @@ function lookup_settings(type) {
 }
 
 function encodeGeneListValue(value) {
-    return value.split('\n').join('%2C');
+    return value;
 }
 
 function decodeGeneListValue(value) {
-    return value.split('%2C').join('\n');
+    return value;
 }
 
 function noop(value) {
@@ -39,7 +44,7 @@ function noop(value) {
 
 export class CustomListData {
     constructor(type) {
-        var settings = lookup_settings(type);
+        var settings = lookupSettings(type);
         this.type = type;
         this.sampleData = settings.sampleData;
         this.encodeFunc = settings.encode;
@@ -57,4 +62,6 @@ export class CustomListData {
     decode(value) {
         return this.decodeFunc(value);
     }
+
+
 }

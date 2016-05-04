@@ -1,171 +1,39 @@
+class QueryBuilder(object):
+    def __init__(self):
+        self.set_schema = QueryPart("", [])
+        self.with_clause = QueryPart("", [])
+        self.query = QueryPart("", [])
 
-class PredictionQueryNames(object):
-    COMMON_NAME = 'common_name'
-    NAME = 'name'
-    MAX_VALUE = 'max_value'
-    CHROM = 'chrom'
-    STRAND = 'strand'
-    GENE_START = 'gene_start'
-    PRED = 'pred'
-
-
-class PredictionCountQueryBuilder(object):
-    def __init__(self, main_query_func):
-        self.main_query_func = main_query_func
-
-    def make_query(self, upstream, downstream):
-        main_query = self.main_query_func(upstream, downstream)
-        return 'select count(*) from ({}) as foo;'.format(main_query)
-
-
-class PredictionQueryBuilder(object):
-    SET_SCHEMA_SQL = "SET search_path TO %s,public"
-    WITH_MAX_PRED_SQL = """with max_prediction_names as (
- select name from gene_prediction"""
-    WHERE_BASE = """where
- gene_list = %s
- and
- model_name = %s
- and
- case strand when '+' then
-  (txstart - %s) <= start_range and (txstart + %s) >= start_range
- else
-  (txend - %s) <= end_range and (txend + %s) >= end_range
- end"""
-    WHERE_CUSTOM_GENE_LIST = """where
-     common_name in %s
-     and
-     model_name = %s
-     and
-     case strand when '+' then
-      (txstart - %s) <= start_range and (txstart + %s) >= start_range
-     else
-      (txend - %s) <= end_range and (txend + %s) >= end_range
-     end"""
-
-    VALUE_GT_SQL = " and value > %s"
-    GROUP_BY_NAME_SQL = " group by name"
-    QUERY_BASE = """select
- max(common_name) as common_name,
- name,
- round(max(value),4) max_value,
- max(chrom) as chrom,
- max(strand) as strand,
- max(case strand when '+' then txstart else txend end) as gene_start,
- json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
- from gene_prediction
- """
-    NAME_IN_MAX_NAMES_SQL = "and name in (select name from max_prediction_names)"
-    ORDER_BY_NAME = " order by name"
-    ORDER_BY_COMMON_NAME = " order by common_name"
-    ORDER_BY_MAX = " order by max(value) desc"
-    ORDER_BY_MAX_AND_NAME = " order by max(value) desc, name"
-    LIMIT_OFFSET_SQL = " limit %s offset %s"
-
-    def __init__(self, genome, gene_list, custom_data_list, model_name):
-        self.genome = genome
-        self.gene_list = gene_list
-        self.custom_data_list = custom_data_list
-        self.model_name = model_name
-        self.limit = None
-        self.offset = None
-        self.max_value_guess = None
-        self.main_query_func = self.sql_query_by_name
-        self.params = []
-        self.post_sort_by_max = False
-
-    def set_sort_by_name(self):
-        self.main_query_func = self.sql_query_by_name
-
-    def set_sort_by_max(self):
-        if self.custom_data_list:
-            self.post_sort_by_max = True
-            self.main_query_func = self.sql_query_by_name
-        else:
-            self.main_query_func = self.sql_query_by_max
-
-    def set_main_query_func(self, main_query_func):
-        self.main_query_func = main_query_func
-
-    def set_limit_and_offset(self, limit, offset):
-        self.limit = limit
-        self.offset = offset
-
-    def set_max_value_guess(self, guess):
-        self.max_value_guess = guess
-
-    def join_with_limit(self, parts):
-        if self.limit:
-            parts.append(self._sql_limit_and_offset())
-        return self.join(parts)
-
-    def join(self, parts):
-        return '\n'.join(parts)
-
-    def make_query_and_params(self, upstream, downstream):
-        self.params = []
-        parts = [self._sql_set_search_path(),
-                 self.main_query_func(upstream, downstream)]
-        query = "\n".join(parts) + ";"
-        return query, self.params
-
-    def _sql_set_search_path(self):
-        self.params.append(self.genome)
-        return self.SET_SCHEMA_SQL + ";"
-
-    def sql_query_by_name(self, upstream, downstream):
-        query_base = self.QUERY_BASE + self.WHERE_BASE
-        if self.custom_data_list:
-            query_base = self.QUERY_BASE + self.WHERE_CUSTOM_GENE_LIST
-            self.params.extend([self.get_custom_data_list(), self.model_name, upstream, downstream, downstream, upstream])
-        else:
-            self.params.extend([self.gene_list, self.model_name, upstream, downstream, downstream, upstream])
-        order_by = self.ORDER_BY_NAME
-        if self.custom_data_list:
-            order_by = self.ORDER_BY_COMMON_NAME
-        if self.post_sort_by_max:
-            order_by = self.ORDER_BY_MAX_AND_NAME
-        return self.join_with_limit([query_base, self.GROUP_BY_NAME_SQL, order_by])
-
-    def sql_query_by_max(self, upstream, downstream):
-        if self.custom_data_list:
-            self.params.extend([self.get_custom_data_list(), self.model_name, upstream, downstream, downstream, upstream])
-            parts = [self.WITH_MAX_PRED_SQL, self.WHERE_CUSTOM_GENE_LIST]
-        else:
-            self.params.extend([self.gene_list, self.model_name, upstream, downstream, downstream, upstream])
-            parts = [self.WITH_MAX_PRED_SQL, self.WHERE_BASE]
-        if self.max_value_guess:
-            self.params.append(self.max_value_guess)
-            parts.append(self.VALUE_GT_SQL)
-        parts.extend([self.GROUP_BY_NAME_SQL, self.ORDER_BY_MAX])
-        with_clause = self.join_with_limit(parts)
-        with_clause += "\n)"
-        query_base = self.QUERY_BASE + self.WHERE_BASE
-        if self.custom_data_list:
-            query_base = self.QUERY_BASE + self.WHERE_CUSTOM_GENE_LIST
-            self.params.extend([self.get_custom_data_list(), self.model_name, upstream, downstream, downstream, upstream])
-        else:
-            self.params.extend([self.gene_list, self.model_name, upstream, downstream, downstream, upstream])
-        return self.join([with_clause, query_base, self.NAME_IN_MAX_NAMES_SQL,
-                          self.GROUP_BY_NAME_SQL, self.ORDER_BY_MAX_AND_NAME])
-
-    def _sql_limit_and_offset(self):
-        self.params.extend([self.limit, self.offset])
-        return self.LIMIT_OFFSET_SQL
-
-    def get_custom_data_list(self):
-        return tuple(self.custom_data_list.split(','))
+    def get_query_and_params(self):
+        """
+        Combine the sql and param from parts.
+        """
+        parts = [self.set_schema, self.with_clause, self.query]
+        sql = ""
+        params = []
+        prefix = ""
+        for part in parts:
+            if part.sql:
+                sql += prefix + part.sql
+                params.extend(part.params)
+                prefix = "\n"
+        return sql, params
 
 
-class DataSourcesQueryNames(object):
-    DESCRIPTION = 'description'
-    DOWNLOADED = 'downloaded'
-    URL = 'url'
-    DATA_SOURCE_TYPE = 'data_source_type'
+class QueryPart(object):
+    def __init__(self, sql, params):
+        self.sql = sql
+        self.params = params
 
+    def add(self, sql, params):
+        if self.sql and sql:
+            self.sql += "\n"
+        self.sql += sql
+        self.params.extend(params)
 
-class DataSourcesQueryBuilder(object):
-    FETCH_DATA_SOURCES_SQL = """select description, downloaded, url, data_source_type from data_source order by downloaded;"""
+    def add_part(self, part):
+        self.add(part.sql, part.params)
 
-    def make_query_and_params(self):
-        return self.FETCH_DATA_SOURCES_SQL, []
+    def add_parts(self, parts):
+        for part in parts:
+            self.add_part(part)
