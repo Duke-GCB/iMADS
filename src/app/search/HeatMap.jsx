@@ -1,5 +1,4 @@
 import React from 'react';
-import PredictionDialog from './PredictionDialog.jsx'
 import HeatMapData from '../store/HeatMapData.js'
 import GenomeBrowserURL from '../store/GenomeBrowserURL.js'
 
@@ -21,7 +20,7 @@ class HeatMap extends React.Component {
     }
 
     showDetails() {
-        this.setState({detailsIsOpen: true});
+        this.props.onClickHeatmap(this.props.data);
     }
 
     transcriptionStartRect(x) {
@@ -89,7 +88,6 @@ class HeatMap extends React.Component {
         var downstream = parseInt(data.downstream);
         var dataSize = upstream + downstream + 1;
         var viewSize = parseInt(this.props.width);
-        //when not using upstream and downstream this doesn't work
         var scale = viewSize / dataSize;
         if (data.isCustomRange) {
             scale = viewSize / (data.end - data.start);
@@ -108,11 +106,7 @@ class HeatMap extends React.Component {
         var popupDialog = [];
         var clickSurface = [];
         var beforePredictions = [];
-        if (this.props.showDetailsOnClick) {
-            // vvv this should be outside of this control.
-            popupDialog = <PredictionDialog isOpen={this.state.detailsIsOpen}
-                                            onRequestClose={this.hideDetails}
-                                            data={this.props.data}/>;
+        if (this.props.onClickHeatmap) {
             clickSurface = <rect x={0} y={0} width={this.props.width - 1} height={this.props.height}
                                   style={emptyStyle} onClick={this.showDetails}/>;
         } else {

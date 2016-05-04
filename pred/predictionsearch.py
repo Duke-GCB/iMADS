@@ -336,7 +336,7 @@ class PredictionSearch(object):
     def check_for_unused_gene_names(self, predictions):
         custom_list_key, custom_list_filter = self.get_custom_list_fields()
         gene_name_set = get_gene_name_set(self.db, custom_list_key)
-        name_fields = ['name', 'common_name']
+        name_fields = ['name', 'commonName']
         for prediction in predictions:
             for name in name_fields:
                 gene_name = prediction.get(name)

@@ -2,6 +2,7 @@ import React from 'react';
 import Loader from 'react-loader';
 import PageTitle from '../common/PageTitle.jsx'
 import PagingButtons from './PagingButtons.jsx'
+import PredictionDialog from './PredictionDialog.jsx'
 import GeneSearchPanel from './GeneSearchPanel.jsx'
 import HeatMap from './HeatMap.jsx'
 import ErrorPanel from './ErrorPanel.jsx'
@@ -19,9 +20,12 @@ class SearchResultsPanel extends React.Component {
         this.changePage = this.changePage.bind(this);
         this.showGetLinkDialog = this.showGetLinkDialog.bind(this);
         this.hideGetLinkDialog = this.hideGetLinkDialog.bind(this);
+        this.showPredictionDetails = this.showPredictionDetails.bind(this);
+        this.hidePredictionDetails = this.hidePredictionDetails.bind(this);
         this.scrollToTop = false;
         this.state = {
             showGetUrlDialog: false,
+            predictionData: undefined,
         }
     }
 
@@ -75,6 +79,18 @@ class SearchResultsPanel extends React.Component {
             fontSize: fontSize,
             height: height,
         };
+    }
+
+    showPredictionDetails(predictionData) {
+        this.setState({
+            predictionData: predictionData,
+        })
+    }
+
+    hidePredictionDetails(predictionData) {
+        this.setState({
+            predictionData: undefined,
+        })
     }
 
     render() {
@@ -175,10 +191,9 @@ class SearchResultsPanel extends React.Component {
                     isCustomRange: isCustomRange,
                 };
                 heatMap = <HeatMap width="120" height="20"
-                                   showDetailsOnClick={true}
+                                   onClickHeatmap={this.showPredictionDetails}
                                    data={heatMapValues}
                                    scaleFactor={1.0}
-
                 />
             }
             if (isCustomRange) {
@@ -231,7 +246,10 @@ class SearchResultsPanel extends React.Component {
         if (this.props.errorMessage) {
             listContent = <ErrorPanel message={this.props.errorMessage} />;
         }
-        //add spaceholder
+        var showPredictionDetails = false;
+        if (this.state.predictionData) {
+            showPredictionDetails = true;
+        }
         var footer = [];
         if (this.props.searchDataLoaded) {
             if (queryResults.length > 0) {
@@ -298,6 +316,9 @@ class SearchResultsPanel extends React.Component {
                             {footer}
                         </div>
                     </div>
+                    <PredictionDialog isOpen={showPredictionDetails}
+                                      onRequestClose={this.hidePredictionDetails}
+                                      data={this.state.predictionData}/>
                 </div>
     }
 }
