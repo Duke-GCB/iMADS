@@ -5,7 +5,7 @@ import psycopg2.extras
 from pred.customlist import CustomList, does_custom_list_exist, get_gene_name_set
 from pred.predictionquery import PredictionQuery
 from pred.maxpredictionquery import MaxPredictionQuery
-from pred.genelistquery import GeneListQuery
+from pred.genelistquery import GeneListQuery, GeneListUnusedNames
 from pred.rangelistquery import RangeListQuery
 
 CUSTOM_GENE_LIST = 'Custom Gene List'
@@ -196,9 +196,7 @@ class PredictionSearch(object):
         upstream = self.args.get_upstream()
         downstream = self.args.get_downstream()
         query, params = self.make_query_and_params(count=False)
-        print("QUERY" + query)
         cur = self.db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        #self.saveit(query, params)
         cur.execute(query, params)
         predictions = []
         for row in cur.fetchall():
@@ -232,14 +230,8 @@ class PredictionSearch(object):
         self.db.rollback()
         cur.close()
         if self.args.is_custom_gene_list():
-            self.warning = self.check_for_unused_gene_names(predictions)
+            self.warning = self.query_for_unused_gene_names()
         return predictions
-
-    def saveit(self, query, params):
-        for param in params:
-            query = query.replace('%s', "'" + str(param) + "'", 1)
-        with open("/tmp/jpb.sql", 'w') as outfile:
-            outfile.write(query)
 
     def make_query_and_params(self, count):
         return self.determine_query(count).get_query_and_params()
@@ -333,21 +325,26 @@ class PredictionSearch(object):
         page, per_page = self.args.get_page_and_per_page()
         return per_page
 
-    def check_for_unused_gene_names(self, predictions):
+    def query_for_unused_gene_names(self):
         custom_list_key, custom_list_filter = self.get_custom_list_fields()
-        gene_name_set = get_gene_name_set(self.db, custom_list_key)
-        name_fields = ['name', 'commonName']
-        for prediction in predictions:
-            for name in name_fields:
-                gene_name = prediction.get(name)
-                if gene_name in gene_name_set:
-                    gene_name_set.remove(gene_name)
-        warning = ''
-        num_not_found_names = len(gene_name_set)
-        if num_not_found_names > 0:
-            if num_not_found_names > 10:
-                warning = '{} gene_names were not found in our database.'.format(num_not_found_names)
-            else:
-                names = ', '.join(gene_name_set)
-                warning = 'Gene_name(s) {} were not found in our database.'.format(names)
-        return warning
+        unused_name_query = GeneListUnusedNames(
+            schema=self.genome,
+            custom_list_id=custom_list_key,
+            custom_list_filter=custom_list_filter,
+        )
+        bad_names = self.get_name_set(unused_name_query.get_query_and_params())
+        if bad_names:
+            return "Gene names not in our database:\n" + "\n".join(bad_names)
+        return ""
+
+    def get_name_set(self, query_and_param):
+        result = set()
+        query, params = query_and_param
+        cur = self.db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute(query, params)
+        for row in cur.fetchall():
+            result.add(row[0])
+        self.db.rollback()
+        cur.close
+        return result
+

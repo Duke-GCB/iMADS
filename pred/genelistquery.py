@@ -40,3 +40,16 @@ class GeneListQuery(object):
         if self.limit:
             query_parts.append(limit_and_offset(self.limit, self.offset))
         return query_parts
+
+
+class GeneListUnusedNames(object):
+    def __init__(self, schema, custom_list_id, custom_list_filter):
+        self.schema = schema
+        self.custom_list_id = custom_list_id
+        self.custom_list_filter = custom_list_filter
+
+    def get_query_and_params(self):
+        builder = QueryBuilder()
+        builder.set_schema.add_part(set_search_path(self.schema))
+        builder.query.add_parts([items_not_in_gene_list(self.custom_list_id, self.custom_list_filter)])
+        return builder.get_query_and_params()

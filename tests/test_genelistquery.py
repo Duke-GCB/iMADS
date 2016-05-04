@@ -1,5 +1,5 @@
 from unittest import TestCase
-from pred.genelistquery import GeneListQuery
+from pred.genelistquery import GeneListQuery, GeneListUnusedNames
 
 QUERY_BASE = """SET search_path TO %s,public;
 select
@@ -109,3 +109,35 @@ class TestGeneListQuery(TestCase):
         self.assertEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 
+
+UNUSED_BASE = """SET search_path TO %s,public;
+select gene_name from custom_gene_list
+where id = %s and not exists
+(select 1 from gene where (gene.name = custom_gene_list.gene_name OR
+gene.common_name = custom_gene_list.gene_name){})"""
+UNUSED_WITH_FILTER = UNUSED_BASE.format("and gene_list = %s")
+UNUSED_NO_FILTER = UNUSED_BASE.format("")
+
+
+class TestGeneListUnusedNames(TestCase):
+    def test_unused_with_filter(self):
+        expected_params = ["hg38", 55, "knowngene"]
+        query = GeneListUnusedNames(
+            schema="hg38",
+            custom_list_id=55,
+            custom_list_filter='knowngene',
+        )
+        sql, params = query.get_query_and_params()
+        self.assertEqual(UNUSED_WITH_FILTER, sql)
+        self.assertEqual(expected_params, params)
+
+    def test_unused_no_filter(self):
+        expected_params = ["hg38", 55]
+        query = GeneListUnusedNames(
+            schema="hg38",
+            custom_list_id=55,
+            custom_list_filter=None,
+        )
+        sql, params = query.get_query_and_params()
+        self.assertEqual(UNUSED_NO_FILTER, sql)
+        self.assertEqual(expected_params, params)

@@ -80,6 +80,19 @@ end"""
     return QueryPart(sql, params)
 
 
+def items_not_in_gene_list(list_id, gene_list_filter):
+    sql = """select gene_name from custom_gene_list
+where id = %s and not exists
+(select 1 from gene where (gene.name = custom_gene_list.gene_name OR
+gene.common_name = custom_gene_list.gene_name)"""
+    params = [list_id]
+    if gene_list_filter and gene_list_filter.upper() != "ALL":
+        sql += "and gene_list = %s"
+        params.append(gene_list_filter)
+    sql += ")"
+    return QueryPart(sql, params)
+
+
 def with_max_prediction_names():
     return _query_part("""with max_prediction_names as (
  select name from gene_prediction""")
