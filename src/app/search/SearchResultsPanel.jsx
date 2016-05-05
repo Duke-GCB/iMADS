@@ -177,8 +177,12 @@ class SearchResultsPanel extends React.Component {
                 var combinedName = rowData.commonName + " (" + rowData.name + ") ";
                 var offsetsStr = " upstream:" + searchSettings.upstream + " downstream:" + searchSettings.downstream;
                 var trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettingsObj.genomeVersion);
+                var title = combinedName + " " + offsetsStr;
+                if (isCustomRange) {
+                    title = rowData.chrom + ":" + rowData.start + "-" + rowData.end;
+                }
                 var heatMapValues = {
-                    title:  combinedName + " " + offsetsStr,
+                    title:  title,
                     values: rowData.values,
                     start: rowData.start,
                     end: rowData.end,
