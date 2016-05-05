@@ -7,6 +7,8 @@ services:
       - "80:80"
     depends_on:
       - db
+    volumes:
+      - ./pred_data:/tmp/pred_data
   db:
     image: postgres
     env_file: .env
