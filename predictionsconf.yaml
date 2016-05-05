@@ -1,5 +1,5 @@
 binding_max_offset: 5000
-download_dir: "/tmp/ucscjpb"
+download_dir: "/tmp/pred_data"
 genome_data:
   -
     genome: "hg19"
