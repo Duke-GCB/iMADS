@@ -1,3 +1,5 @@
+import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
+
 class URLBuilder {
     constructor(fetchMethod) {
         this.fetchMethod = fetchMethod;
@@ -44,10 +46,7 @@ class URLBuilder {
                 onData(data);
             },
             error: function (xhr, status, err) {
-                var errorMessage = err;
-                if (xhr.responseJSON) {
-                    errorMessage = xhr.responseJSON.message;
-                }
+                var errorMessage = getAndLogErrorMessage('fetching data', xhr, status, err);
                 onError({
                     url: url,
                     status: status,

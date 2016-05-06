@@ -1,3 +1,5 @@
+import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
+
 const ENDPOINT = '/api/v1/datasources';
 const PREDICTION_NAME = 'prediction';
 const GENELIST_NAME = 'genelist';
@@ -17,8 +19,8 @@ class DataSourceData {
                 );
             }.bind(this),
             error: function (xhr, status, err) {
-                console.error(this.props.url, status, err.toString());
-                onError('Error fetching datasources data' + err.toString());
+                var errorMessage = getAndLogErrorMessage('fetching datasource data', xhr, status, err);
+                onError(errorMessage);
             }.bind(this)
         });
     }

@@ -1,3 +1,5 @@
+import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
+
 const ENDPOINT = '/api/v1/custom_list';
 const KEY_NAME = 'key';
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -51,10 +53,8 @@ class CustomFile {
                 onData(data[KEY_NAME]);
             }.bind(this),
             error: function (xhr, status, err) {
-                if (xhr.responseJSON) {
-                    err = xhr.responseJSON.message;
-                }
-                onError('Error uploading custom file: ' + err);
+                let message = getAndLogErrorMessage('uploading custom file', xhr, status, err);
+                onError(message);
             }.bind(this)
         });
     }
