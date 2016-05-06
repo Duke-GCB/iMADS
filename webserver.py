@@ -37,7 +37,7 @@ def create_db_connection(config):
                                 ' user=' + config.user +
                                 ' password=' + config.password)
     except:
-        raise ValueError("Unable to connect to database.")
+        raise ValueError("Unable to connect to the database.")
 
 
 @app.teardown_appcontext
@@ -117,8 +117,11 @@ def prediction_search(genome):
 def get_sequences(genome):
     json_data = request.get_json()
     ranges = json_data['ranges']
-    sequences = lookup_dna_sequence(g_config, genome, ranges)
-    return make_json_response({'sequences': sequences})
+    try:
+        sequences = lookup_dna_sequence(g_config, genome, ranges)
+        return make_json_response({'sequences': sequences})
+    except FileNotFoundError:
+        raise ValueError("Missing file for {}.".format(genome))
 
 
 @app.errorhandler(ValueError)

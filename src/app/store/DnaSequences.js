@@ -1,3 +1,4 @@
+import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
 const ENDPOINT = '/api/v1/genomes/';
 
 class DnaSequences {
@@ -31,8 +32,8 @@ class DnaSequences {
                 onData(data.sequences);
             }.bind(this),
             error: function (xhr, status, err) {
-                onError('Error fetching dna sequences' + err);
-                console.log('Error fetching dna sequences' + err);
+                let message = getAndLogErrorMessage('fetching dna sequences', xhr, status, err);
+                onError(message);
             }.bind(this)
         });
     }

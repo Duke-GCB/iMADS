@@ -8,6 +8,7 @@ import StreamValue from '../store/StreamValue.js'
 import NavBar from '../common/NavBar.jsx'
 import {SEARCH_NAV} from '../store/Navigation.js'
 import {isCustomList} from '../store/CustomList.js'
+import {getAndLogErrorMessage} from '../store/AjaxErrorMessage.js'
 
 
 const ITEMS_PER_PAGE = 20;
@@ -86,7 +87,8 @@ class SearchPage extends React.Component {
             }, this.searchFirstPage);
           }.bind(this),
           error: function(xhr, status, err) {
-            console.error(this.url, status, err.toString());
+              let message = getAndLogErrorMessage('fetching genome metadata', xhr, status, err);
+              alert(message);
           }.bind(this)
         });
       }
