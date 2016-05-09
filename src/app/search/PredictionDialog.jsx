@@ -5,9 +5,9 @@ import GenomeBrowserURL from '../store/GenomeBrowserURL.js';
 import DnaSequences from '../store/DnaSequences.js';
 
 const customStyles = {
-  content : {
+    content : {
 
-  },
+    },
     overlay : {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         zIndex: 100,
@@ -37,12 +37,12 @@ class PredictionDialog extends React.Component {
     componentDidUpdate() {
         if (this.props.data) {
             let dnaSequences = new DnaSequences(this.props.data.genome);
-            var values = this.props.data.values;
-            var needsToUpdate = false;
+            let values = this.props.data.values;
+            let needsToUpdate = false;
             if (values.length > 0) {
-                for (var i = 0; i < values.length; i++) {
-                    var prediction = values[i];
-                    var position = this.props.data.chrom + ":" + prediction.start + '-' + prediction.end;
+                for (let i = 0; i < values.length; i++) {
+                    let prediction = values[i];
+                    let position = this.props.data.chrom + ":" + prediction.start + '-' + prediction.end;
                     if (position in this.state.ranges) {
                         continue;
                     }
@@ -70,13 +70,13 @@ class PredictionDialog extends React.Component {
         if (!this.props.data) {
             return <div></div>;
         }
-        var rowData = this.props.data;
-        var details = [];
-        var values = rowData.values.slice();
+        let rowData = this.props.data;
+        let details = [];
+        let values = rowData.values.slice();
         values.sort(sortByStart);
-        for (var i = 0; i < values.length; i++) {
-            var prediction = values[i];
-            var position = this.props.data.chrom + ":" + prediction.start  + '-' + prediction.end;
+        for (let i = 0; i < values.length; i++) {
+            let prediction = values[i];
+            let position = this.props.data.chrom + ":" + prediction.start  + '-' + prediction.end;
             let seq = '';
             if (position in this.state.ranges) {
                 seq = this.state.ranges[position];
@@ -89,8 +89,8 @@ class PredictionDialog extends React.Component {
                 <td><span className="PredictionDialog_dna_seq">{seq}</span></td>
             </tr>)
         }
-        var genomeBrowserURL = new GenomeBrowserURL('human', this.props.data.trackHubUrl);
-        var allRangeGenomeBrowserURL = genomeBrowserURL.getPredictionURL(this.props.data.genome,
+        let genomeBrowserURL = new GenomeBrowserURL('human', this.props.data.trackHubUrl);
+        let allRangeGenomeBrowserURL = genomeBrowserURL.getPredictionURL(this.props.data.genome,
             this.props.data.chrom, this.props.data.start, this.props.data.end);
         return <Modal className="Modal__Bootstrap modal-dialog modal-lg"
                       isOpen={this.props.isOpen}

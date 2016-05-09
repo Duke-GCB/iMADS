@@ -1,7 +1,7 @@
 export const CUSTOM_GENE_LIST = 'Custom Gene List';
 export const CUSTOM_RANGES_LIST = 'Custom Ranges List';
 
-var SETTINGS = [];
+let SETTINGS = [];
 SETTINGS[CUSTOM_GENE_LIST] = {
     sampleData: "WASH7P\nSAMD11\nRIMKLA",
     encode: encodeGeneListValue,
@@ -44,7 +44,7 @@ function noop(value) {
 
 export class CustomListData {
     constructor(type) {
-        var settings = lookupSettings(type);
+        let settings = lookupSettings(type);
         this.type = type;
         this.sampleData = settings.sampleData;
         this.encodeFunc = settings.encode;

@@ -27,8 +27,8 @@ class HeatMap extends React.Component {
         if (this.props.data.isCustomRange) {
             return [];
         }
-        var rectWidth = 1;
-        var style = {
+        let rectWidth = 1;
+        let style = {
             fill: "rgba(0,0,0, 0.5)",
         }
         return <rect x={x} y={0} width={rectWidth} height={this.props.height} style={{style}}  />
@@ -39,8 +39,8 @@ class HeatMap extends React.Component {
     }
 
     getHeatRects(scale) {
-        var result = [];
-        var cells = HeatMapData.buildCellArray(this.props.data.chrom, this.props.data.values, {
+        let result = [];
+        let cells = HeatMapData.buildCellArray(this.props.data.chrom, this.props.data.values, {
             xOffset: this.props.data.start,
             xOffsetEnd: this.props.data.end,
             strand: this.props.data.strand,
@@ -48,18 +48,18 @@ class HeatMap extends React.Component {
             scale: scale,
             height: this.props.height-2,
         });
-        for (var i = 0; i < cells.length; i++) {
+        for (let i = 0; i < cells.length; i++) {
             result.push(this.makeHeatRect(i, cells[i]));
         }
         return result;
     }
 
     makeHeatRect(idx, heatCell) {
-        var title = [];
+        let title = [];
         if (heatCell.title) {
             title = <title>{heatCell.title}</title>;
         }
-        var url = '';
+        let url = '';
         if (!this.props.showDetailsOnClick) {
             url = this.genomeBrowserURL.getPredictionURL(this.props.data.genome, this.props.data.chrom,
                 heatCell.start, heatCell.end);
@@ -73,39 +73,39 @@ class HeatMap extends React.Component {
     }
 
     drillDown(evt) {
-        var url = evt.target.getAttribute('data-url');
+        let url = evt.target.getAttribute('data-url');
         window.open(url);
     }
 
     viewInGenomeBrowser() {
-        var data = this.props.data;
+        let data = this.props.data;
         window.open(this.genomeBrowserURL.getGeneURL(data.genome, data.chrom, data.start, data.end));
     }
 
     render() {
-        var data = this.props.data;
-        var upstream = parseInt(data.upstream);
-        var downstream = parseInt(data.downstream);
-        var dataSize = upstream + downstream + 1;
-        var viewSize = parseInt(this.props.width);
-        var scale = viewSize / dataSize;
+        let data = this.props.data;
+        let upstream = parseInt(data.upstream);
+        let downstream = parseInt(data.downstream);
+        let dataSize = upstream + downstream + 1;
+        let viewSize = parseInt(this.props.width);
+        let scale = viewSize / dataSize;
         if (data.isCustomRange) {
             scale = viewSize / (data.end - data.start);
         }
-        var borderStyle = {
+        let borderStyle = {
             strokeWidth: 1,
             stroke: 'rgb(0,0,0)',
             fill: 'rgba(0,0,0,0)',
         }
 
-        var emptyStyle = {
+        let emptyStyle = {
             fill: 'rgba(0,0,0,0)',
         }
-        var transcriptionStart = this.transcriptionStartRect(this.getTranscriptionStartX(scale));
-        var predictions = this.getHeatRects(scale);
-        var popupDialog = [];
-        var clickSurface = [];
-        var beforePredictions = [];
+        let transcriptionStart = this.transcriptionStartRect(this.getTranscriptionStartX(scale));
+        let predictions = this.getHeatRects(scale);
+        let popupDialog = [];
+        let clickSurface = [];
+        let beforePredictions = [];
         if (this.props.onClickHeatmap) {
             clickSurface = <rect x={0} y={0} width={this.props.width - 1} height={this.props.height}
                                   style={emptyStyle} onClick={this.showDetails}/>;

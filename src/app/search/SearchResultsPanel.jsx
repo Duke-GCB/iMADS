@@ -6,6 +6,7 @@ import PredictionDialog from './PredictionDialog.jsx'
 import GeneSearchPanel from './GeneSearchPanel.jsx'
 import HeatMap from './HeatMap.jsx'
 import ErrorPanel from './ErrorPanel.jsx'
+import ListHeader from '../common/ListHeader.jsx'
 import GetLinkDialog from './GetLinkDialog.jsx'
 import SearchSettings from '../store/SearchSettings.js'
 import GenomeData from '../store/GenomeData.js'
@@ -31,7 +32,7 @@ class SearchResultsPanel extends React.Component {
 
     componentWillUpdate() {
         if (this.scrollToTop) {
-            var resultsGridContainer = document.getElementById('resultsGridContainer');
+            let resultsGridContainer = document.getElementById('resultsGridContainer');
             resultsGridContainer.scrollTop = 0;
             this.scrollToTop = false;
         }
@@ -94,14 +95,14 @@ class SearchResultsPanel extends React.Component {
     }
 
     render() {
-        var searchSettings = this.props.searchSettings;
-        var searchSettingsObj = new SearchSettings(this.props.searchSettings);
-        var genomeDataObj = new GenomeData(this.props.genomeData);
-        var gridCellWidth = '12vw';
+        let searchSettings = this.props.searchSettings;
+        let searchSettingsObj = new SearchSettings(this.props.searchSettings);
+        let genomeDataObj = new GenomeData(this.props.genomeData);
+        let gridCellWidth = '12vw';
         if (searchSettings.all === true) {
             gridCellWidth = '8vw';
         }
-        var resultHeaderCell = {
+        let resultHeaderCell = {
             padding: '10px',
             display: 'inline-block',
             width: gridCellWidth,
@@ -111,7 +112,7 @@ class SearchResultsPanel extends React.Component {
             fontSize: '16px',
             letterSpacing: '0.0625em',
         };
-        var resultHeaderSmallCell = {
+        let resultHeaderSmallCell = {
             padding: '10px',
             display: 'inline-block',
             width: '10vw',
@@ -121,7 +122,7 @@ class SearchResultsPanel extends React.Component {
             fontSize: '16px',
             letterSpacing: '0.0625em',
         };
-        var resultCell = {
+        let resultCell = {
             paddingLeft: '10px',
             display: 'inline-block',
             width: gridCellWidth,
@@ -131,7 +132,7 @@ class SearchResultsPanel extends React.Component {
             fontSize: '14px',
             height: '20px',
         };
-        var resultSmallCell = {
+        let resultSmallCell = {
             paddingLeft: '10px',
             display: 'inline-block',
             width: '10vw',
@@ -141,47 +142,47 @@ class SearchResultsPanel extends React.Component {
             fontSize: '14px',
             height: '20px',
         };
-        var heatMapHeader = <span></span>;
-        var cellExtraClassName = 'Wide';
+        let heatMapHeader = <span></span>;
+        let cellExtraClassName = 'Wide';
         if (searchSettings.all === true) {
             heatMapHeader = <span style={resultHeaderCell}>Values</span>
             cellExtraClassName = '';
         }
-        var borderBottom = {
+        let borderBottom = {
             borderBottom: '1px solid grey'
         }
-        var smallPadding = { padding: '10px', width: '20vw' }
-        var headerStyle = {
+        let smallPadding = { padding: '10px', width: '20vw' }
+        let headerStyle = {
             backgroundColor: '#235f9c',
             color: 'white',
         };
-        var parentStyle = {
+        let parentStyle = {
             float: 'none',
             margin: '0 auto',
             width: '100%'
 
         }
-        var tableStyle = {
+        let tableStyle = {
             width: '100%',
         }
-        var rowStyle = {
+        let rowStyle = {
             borderBottom: '1px solid grey'
         };
-        var isCustomRange = searchSettings.geneList == CUSTOM_RANGES_LIST;
-        var queryResults = this.props.searchResults;
-        var rows = [];
-        for (var i = 0; i < queryResults.length; i++) {
-            var rowData = queryResults[i];
-            var heatMap = <span></span>;
+        let isCustomRange = searchSettings.geneList == CUSTOM_RANGES_LIST;
+        let queryResults = this.props.searchResults;
+        let rows = [];
+        for (let i = 0; i < queryResults.length; i++) {
+            let rowData = queryResults[i];
+            let heatMap = <span></span>;
             if (searchSettings.all === true) {
-                var combinedName = rowData.commonName + " (" + rowData.name + ") ";
-                var offsetsStr = " upstream:" + searchSettings.upstream + " downstream:" + searchSettings.downstream;
-                var trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettingsObj.genomeVersion);
-                var title = combinedName + " " + offsetsStr;
+                let combinedName = rowData.commonName + " (" + rowData.name + ") ";
+                let offsetsStr = " upstream:" + searchSettings.upstream + " downstream:" + searchSettings.downstream;
+                let trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettingsObj.genomeVersion);
+                let title = combinedName + " " + offsetsStr;
                 if (isCustomRange) {
                     title = rowData.chrom + ":" + rowData.start + "-" + rowData.end;
                 }
-                var heatMapValues = {
+                let heatMapValues = {
                     title:  title,
                     values: rowData.values,
                     start: rowData.start,
@@ -221,15 +222,15 @@ class SearchResultsPanel extends React.Component {
                 </div>);
             }
         }
-        var columnHeaders;
+        let columnHeaders;
         if (isCustomRange) {
-            columnHeaders = <div style={{backgroundColor: '#235f9c', color: 'white'}} >
+            columnHeaders = <ListHeader>
                                   <span className={"HeaderCell IdCellWide"}>Name</span>
                                   <span className="HeaderCell NumberCell">Max</span>
                                   {heatMapHeader}
-                            </div>
+                            </ListHeader>
         } else {
-            columnHeaders = <div style={{backgroundColor: '#235f9c', color: 'white'}} >
+            columnHeaders = <ListHeader >
                                   <span className={"HeaderCell NameCell" + cellExtraClassName}>Name</span>
                                   <span className={"HeaderCell IdCell" + cellExtraClassName}>ID</span>
                                   <span className={"HeaderCell StrandCell" + cellExtraClassName}>Strand</span>
@@ -238,23 +239,23 @@ class SearchResultsPanel extends React.Component {
                                   <span className="HeaderCell NumberCell">End</span>
                                   <span className="HeaderCell NumberCell">Max</span>
                                   {heatMapHeader}
-                            </div>
+                            </ListHeader>
         }
-        var smallMargin = { margin: '10px' };
+        let smallMargin = { margin: '10px' };
 
-        var startPage = parseInt((this.props.page - 1)/ 5) * 5 + 1;
-        var endPage = startPage + 4;
-        var listContent = <Loader loaded={this.props.searchDataLoaded} >
+        let startPage = parseInt((this.props.page - 1)/ 5) * 5 + 1;
+        let endPage = startPage + 4;
+        let listContent = <Loader loaded={this.props.searchDataLoaded} >
                 {rows}
             </Loader>;
         if (this.props.errorMessage) {
             listContent = <ErrorPanel message={this.props.errorMessage} />;
         }
-        var showPredictionDetails = false;
+        let showPredictionDetails = false;
         if (this.state.predictionData) {
             showPredictionDetails = true;
         }
-        var footer = [];
+        let footer = [];
         if (this.props.searchDataLoaded) {
             if (queryResults.length > 0) {
                 footer = <nav>

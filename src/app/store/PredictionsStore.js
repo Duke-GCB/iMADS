@@ -12,8 +12,8 @@ class PredictionsStore {
         if (this.pageBatch.hasPage(pageNum)) {
             onData(this.pageBatch.getItems(pageNum), pageNum, true, '');
         } else {
-            var batchPage = this.pageBatch.getBatchPageNum(pageNum)
-            var itemsPerBatch = this.pageBatch.getItemsPerBatch();
+            let batchPage = this.pageBatch.getBatchPageNum(pageNum)
+            let itemsPerBatch = this.pageBatch.getItemsPerBatch();
             this.setBuilderURL(batchPage, itemsPerBatch, searchSettings);
             this.urlBuilder.fetch(function(data) {
                 if (pageNum == -1) {
@@ -29,7 +29,7 @@ class PredictionsStore {
     }
 
     saveSearchSettings(searchSettings) {
-        var searchSettingsStr = JSON.stringify(searchSettings);
+        let searchSettingsStr = JSON.stringify(searchSettings);
         if (this.lastSearchSettingsStr && searchSettingsStr !== this.lastSearchSettingsStr) {
             this.pageBatch.clearData();
         }
@@ -37,7 +37,7 @@ class PredictionsStore {
     }
 
     setBuilderURL(page, perPage, searchSettings) {
-        var urlBuilder = this.urlBuilder;
+        let urlBuilder = this.urlBuilder;
         urlBuilder.reset('/api/v1/genomes/');
         urlBuilder.append(searchSettings.genome);
         urlBuilder.append('/prediction');

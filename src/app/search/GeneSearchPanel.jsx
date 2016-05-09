@@ -7,7 +7,7 @@ const CUSTOM_RANGES_LIST = 'Custom Ranges List';
 
 class SelectItem extends React.Component {
     render() {
-        var sel = this.props.selected;
+        let sel = this.props.selected;
         if (sel === "") {
             sel = 'ok';
         }
@@ -32,8 +32,8 @@ class StreamInput extends React.Component {
     }
 
     onChange(evt) {
-        var streamValue = new StreamValue(this.props.maxBindingOffset)
-        var isValid = streamValue.isValid(evt.target.value);
+        let streamValue = new StreamValue(this.props.maxBindingOffset)
+        let isValid = streamValue.isValid(evt.target.value);
         this.setState({
             isValid: isValid,
         })
@@ -41,7 +41,7 @@ class StreamInput extends React.Component {
      }
 
     render() {
-        var className = "form-control";
+        let className = "form-control";
         if (!this.state.isValid) {
             className += " badValue"
         }
@@ -80,13 +80,13 @@ class BooleanInput extends React.Component {
 class GeneSearchPanel extends React.Component {
     constructor(props) {
         super(props);
-        var genomes = this.props.genomeData;
-        var selectedGenome = '';
-        var geneList = "";
-        var model = "";
-        var genomeNames = Object.keys(genomes);
+        let genomes = this.props.genomeData;
+        let selectedGenome = '';
+        let geneList = "";
+        let model = "";
+        let genomeNames = Object.keys(genomes);
         if (this.props.searchSettings.genome) {
-            var newSettings = this.props.searchSettings;
+            let newSettings = this.props.searchSettings;
             this.state = {
                     genome: newSettings.genome,
                     geneList: newSettings.geneList,
@@ -103,7 +103,7 @@ class GeneSearchPanel extends React.Component {
         } else {
             if (genomeNames.length > 0) {
                 selectedGenome = genomeNames[0];
-                var genomeData = genomes[selectedGenome];
+                let genomeData = genomes[selectedGenome];
                 geneList = genomeData.geneLists[0];
                 model = genomeData.models[0];
             }
@@ -139,8 +139,8 @@ class GeneSearchPanel extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.genomeData) {
-            var genomeName = Object.keys(nextProps.genomeData)[0];
-            var newState = this.switchGenomeState(nextProps.genomeData, genomeName);
+            let genomeName = Object.keys(nextProps.genomeData)[0];
+            let newState = this.switchGenomeState(nextProps.genomeData, genomeName);
             if (this.state.genome == '') {
                 this.setState(newState, this.runSearch);
             }
@@ -150,7 +150,7 @@ class GeneSearchPanel extends React.Component {
 
         }
         if (nextProps.searchSettings.genome) {
-            var newSettings = nextProps.searchSettings;
+            let newSettings = nextProps.searchSettings;
             this.setState(
                 {
                     genome: newSettings.genome,
@@ -166,7 +166,7 @@ class GeneSearchPanel extends React.Component {
     }
 
     onChangeGenome(e) {
-        var value = e.target.value;
+        let value = e.target.value;
         this.setState(this.switchGenomeState(this.props.genomeData, value), this.runSearch);
     }
 
@@ -179,17 +179,17 @@ class GeneSearchPanel extends React.Component {
     }
 
     onChangeGeneList(e) {
-        var value = e.target.value;
-        var isCustom = value === CUSTOM_GENE_LIST || value === CUSTOM_RANGES_LIST;
-        var customListFilter = this.state.customListFilter;
-        var customListData = this.state.customListData;
+        let value = e.target.value;
+        let isCustom = value === CUSTOM_GENE_LIST || value === CUSTOM_RANGES_LIST;
+        let customListFilter = this.state.customListFilter;
+        let customListData = this.state.customListData;
         if (!isCustom) {
             customListFilter = '';
         }
         if (value !== this.state.geneList) {
             customListData = '';
         }
-        var func = this.runSearch;
+        let func = this.runSearch;
         if (isCustom) {
             func = Function.prototype
         }
@@ -228,12 +228,12 @@ class GeneSearchPanel extends React.Component {
     }
 
     onChangeUpstream(e) {
-        var value = e.target.value;
+        let value = e.target.value;
         this.setState({upstream: value}, this.runSearch);
     }
 
     onChangeDownstream(e) {
-        var value = e.target.value;
+        let value = e.target.value;
         this.setState({downstream: value}, this.runSearch);
     }
 
@@ -242,9 +242,9 @@ class GeneSearchPanel extends React.Component {
     }
 
     updateValidationState() {
-        var streamValue = new StreamValue(this.props.maxBindingOffset);
-        var upstreamValid = streamValue.isValid(this.state.upstream);
-        var downstreamValid = streamValue.isValid(this.state.downstream);
+        let streamValue = new StreamValue(this.props.maxBindingOffset);
+        let upstreamValid = streamValue.isValid(this.state.upstream);
+        let downstreamValid = streamValue.isValid(this.state.downstream);
         this.setState({
             upstreamValid: upstreamValid,
             downstreamValid: downstreamValid,
@@ -260,20 +260,20 @@ class GeneSearchPanel extends React.Component {
     }
 
     render() {
-        var secondGroupStyle = {marginLeft:'40px'};
-        var streamInputStyle = {display: 'inline', width:'4em', marginRight: '10px'};
-        var smallMargin = { margin: '10px' }
-        var smallMarginRight = { marginLeft: '10px' }
-        var assemblyOptions = [];
-        var proteinOptions = [];
-        var geneListOptions = [];
-        var currentGenome = this.state.genome;
-        var geneListNames = [];
+        let secondGroupStyle = {marginLeft:'40px'};
+        let streamInputStyle = {display: 'inline', width:'4em', marginRight: '10px'};
+        let smallMargin = { margin: '10px' }
+        let smallMarginRight = { marginLeft: '10px' }
+        let assemblyOptions = [];
+        let proteinOptions = [];
+        let geneListOptions = [];
+        let currentGenome = this.state.genome;
+        let geneListNames = [];
         if (this.props.genomeData) {
-            var genomeTypes = Object.keys(this.props.genomeData);
-            for (var i = 0; i < genomeTypes.length; i++) {
-                var name = genomeTypes[i];
-                var genomeInfo = this.props.genomeData[name];
+            let genomeTypes = Object.keys(this.props.genomeData);
+            for (let i = 0; i < genomeTypes.length; i++) {
+                let name = genomeTypes[i];
+                let genomeInfo = this.props.genomeData[name];
                 assemblyOptions.push(<option key={name} value={name}>{name}</option>);
                 if (name === currentGenome) {
                     genomeInfo.models.forEach(function (model) {
@@ -288,8 +288,8 @@ class GeneSearchPanel extends React.Component {
             geneListOptions.push(<option key="customGeneList"  value={CUSTOM_GENE_LIST}>{CUSTOM_GENE_LIST}</option>)
             geneListOptions.push(<option key="customRangeList"  value={CUSTOM_RANGES_LIST}>{CUSTOM_RANGES_LIST}</option>)
         }
-        var geneListTitle = "Gene list:";
-        var customListButton = [];
+        let geneListTitle = "Gene list:";
+        let customListButton = [];
         if (this.state.geneList == CUSTOM_GENE_LIST || this.state.geneList == CUSTOM_RANGES_LIST) {
             geneListTitle = <div>
                 Gene list:
@@ -300,7 +300,7 @@ class GeneSearchPanel extends React.Component {
                     Update Custom List
                 </button>;
         }
-        var disableUpstreamDownstream = false;
+        let disableUpstreamDownstream = false;
         if (this.state.geneList == CUSTOM_RANGES_LIST) {
             disableUpstreamDownstream = true;
         }

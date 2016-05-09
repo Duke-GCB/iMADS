@@ -19,25 +19,25 @@ class DataSourceData {
                 );
             }.bind(this),
             error: function (xhr, status, err) {
-                var errorMessage = getAndLogErrorMessage('fetching datasource data', xhr, status, err);
+                let errorMessage = getAndLogErrorMessage('fetching datasource data', xhr, status, err);
                 onError(errorMessage);
             }.bind(this)
         });
     }
 
     formatData(dataSourceType, dataSource) {
-        var rows = [];
-        for (var i = 0; i < dataSource.length; i++) {
-            var data = dataSource[i];
+        let rows = [];
+        for (let i = 0; i < dataSource.length; i++) {
+            let data = dataSource[i];
             if (data.dataSourceType !== dataSourceType) {
                 continue;
             }
-            var fullUrl = data.url;
+            let fullUrl = data.url;
             if (fullUrl.indexOf('http') < 0) {
                 fullUrl = 'http://' + fullUrl;
             }
-            var cleanUrl = data.url.replace("https:\/\/", "").replace("http:\/\/", "");
-            var row = {
+            let cleanUrl = data.url.replace("https:\/\/", "").replace("http:\/\/", "");
+            let row = {
                 description: data.description,
                 downloaded: data.downloaded,
                 fullUrl: fullUrl,

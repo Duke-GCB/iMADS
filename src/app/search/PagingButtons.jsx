@@ -13,21 +13,21 @@ class PagingButtons extends React.Component {
     }
 
     makeNumberButton(pageNum, selected) {
-        var props = {};
-        var child = '';
+        let props = {};
+        let child = '';
         if (selected) {
             props['className'] = 'active';
             child = <span className="sr-only">(current)</span>;
         }
-        var func = this.onClickPage.bind(this, pageNum);
+        let func = this.onClickPage.bind(this, pageNum);
         return <li {...props} key={pageNum} >
             <a href="#" style={{width: '4em', textAlign: 'center'}} onClick={func}>{pageNum} {child}</a>
         </li>;
     }
 
     makeLabeledButton(label, disabled, pageNum) {
-        var props = {};
-        var func = this.onClickPage.bind(this, pageNum);
+        let props = {};
+        let func = this.onClickPage.bind(this, pageNum);
         if (disabled) {
             return <li className="disabled" key={label}><span>{label}</span></li>;
         } else {
@@ -36,12 +36,12 @@ class PagingButtons extends React.Component {
     }
 
     makeButtons(startPage, currentPage, endPage) {
-        var disablePrev = currentPage === 1;
-        var disableNext = !this.props.pageBatch.canNext(currentPage);
-        var buttons = [];
+        let disablePrev = currentPage === 1;
+        let disableNext = !this.props.pageBatch.canNext(currentPage);
+        let buttons = [];
         buttons.push(this.makeLabeledButton('<<', disablePrev, 1));
         buttons.push(this.makeLabeledButton('<', disablePrev, currentPage - 1));
-        for (var i = startPage; i <= endPage; i++) {
+        for (let i = startPage; i <= endPage; i++) {
             buttons.push(this.makeNumberButton(i, i === currentPage))
         }
         buttons.push(this.makeLabeledButton('>', disableNext, currentPage + 1));
@@ -50,7 +50,7 @@ class PagingButtons extends React.Component {
     }
 
     render() {
-        var buttons = this.makeButtons(
+        let buttons = this.makeButtons(
             parseInt(this.props.pageBatch.getStartPage()),
             parseInt(this.props.currentPage),
             parseInt(this.props.pageBatch.getEndPage()));

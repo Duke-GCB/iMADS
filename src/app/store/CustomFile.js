@@ -18,7 +18,7 @@ class CustomFile {
         return RANGE_TYPE;
     }
     getFormattedContent() {
-        var result = "";
+        let result = "";
         for (let line of this.content.split('\n')) {
             if (line) {
                 let parts = line.split(/\t /)

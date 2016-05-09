@@ -18,11 +18,11 @@ const NUM_PAGE_BUTTONS = 5;
 class SearchPage extends React.Component {
      constructor(props) {
          super(props);
-         var searchSettings = {};
+         let searchSettings = {};
          this.runSearchOnMount = false;
-         var searchDataLoaded = false;
-         var showCustomDialog = false;
-         var query = props.location.query;
+         let searchDataLoaded = false;
+         let showCustomDialog = false;
+         let query = props.location.query;
          if (query.genome) {
             searchSettings = {
                     genome: query.genome,
@@ -61,8 +61,8 @@ class SearchPage extends React.Component {
          this.changePage = this.changePage.bind(this);
          this.setErrorMessage = this.setErrorMessage.bind(this);
          this.searchFirstPage = this.searchFirstPage.bind(this);
-         var pageBatch = new PageBatch(NUM_PAGE_BUTTONS, ITEMS_PER_PAGE);
-         var urlBuilder = new URLBuilder($.ajax);
+         let pageBatch = new PageBatch(NUM_PAGE_BUTTONS, ITEMS_PER_PAGE);
+         let urlBuilder = new URLBuilder($.ajax);
          this.predictionStore = new PredictionsStore(pageBatch, urlBuilder);
          this.url = "/api/v1/settings";
     }
@@ -111,11 +111,11 @@ class SearchPage extends React.Component {
             perPage: this.perPage,
             searchDataLoaded: false,
         });
-        var streamValue = new StreamValue(this.state.maxBindingOffset);
-        var upstreamError = streamValue.checkForError("Bases upstream", searchSettings.upstream);
-        var downstreamError = streamValue.checkForError("Bases downstream", searchSettings.downstream);
+        let streamValue = new StreamValue(this.state.maxBindingOffset);
+        let upstreamError = streamValue.checkForError("Bases upstream", searchSettings.upstream);
+        let downstreamError = streamValue.checkForError("Bases downstream", searchSettings.downstream);
         if (upstreamError || downstreamError) {
-            var errorMessage = upstreamError;
+            let errorMessage = upstreamError;
             if (!errorMessage) {
                 errorMessage = downstreamError;
             }
@@ -142,7 +142,7 @@ class SearchPage extends React.Component {
                 searchDataLoaded: true,
             });
         }.bind(this));
-        var localUrl = new URLBuilder();
+        let localUrl = new URLBuilder();
         this.predictionStore.addLocalUrl(localUrl, page, searchSettings);
         browserHistory.push(localUrl.url);
     }

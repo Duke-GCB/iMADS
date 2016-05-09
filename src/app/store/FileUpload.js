@@ -7,9 +7,9 @@ class FileUpload {
 
     _fetchContent(consumeText, previewText = false) {
         let fileUpload = this;
-        var reader = new FileReader();
+        let reader = new FileReader();
         reader.onload = function (e) {
-            var text = reader.result;
+            let text = reader.result;
             if (previewText) {
                 text = fileUpload.formatPreview(text)
             }

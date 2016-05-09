@@ -6,9 +6,9 @@ import {ALL_NAV} from '../store/Navigation.js'
 
 class NavBar extends React.Component {
     render() {
-        var items = [];
+        let items = [];
         for (let nav of ALL_NAV) {
-            var className = "";
+            let className = "";
             if (nav.path === this.props.selected) {
                 className = "Active";
             }
