@@ -1,6 +1,6 @@
 import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
+import {URL} from './URL.js'
 
-const ENDPOINT = '/api/v1/custom_list';
 const KEY_NAME = 'key';
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
 const RANGE_TYPE = 'range';
@@ -40,7 +40,7 @@ class CustomFile {
             return;
         }
         $.ajax({
-            url: ENDPOINT,
+            url: URL.customList,
             dataType: 'json',
             type: 'POST',
             cache: false,

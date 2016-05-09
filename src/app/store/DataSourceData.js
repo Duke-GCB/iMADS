@@ -1,13 +1,13 @@
 import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
+import {URL} from './URL.js'
 
-const ENDPOINT = '/api/v1/datasources';
 const PREDICTION_NAME = 'prediction';
 const GENELIST_NAME = 'genelist';
 
 class DataSourceData {
     fetchData(onData, onError) {
         $.ajax({
-            url: ENDPOINT,
+            url: URL.datasources,
             dataType: 'json',
             type: 'GET',
             cache: false,

@@ -1,4 +1,4 @@
-
+import {URL} from './URL.js'
 
 class PredictionsStore {
     constructor(pageBatch, urlBuilder) {
@@ -38,7 +38,7 @@ class PredictionsStore {
 
     setBuilderURL(page, perPage, searchSettings) {
         let urlBuilder = this.urlBuilder;
-        urlBuilder.reset('/api/v1/genomes/');
+        urlBuilder.reset(URL.genomes + '/');
         urlBuilder.append(searchSettings.genome);
         urlBuilder.append('/prediction');
         urlBuilder.appendParam('protein', searchSettings.model);

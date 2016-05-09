@@ -9,7 +9,7 @@ import NavBar from '../common/NavBar.jsx'
 import {SEARCH_NAV} from '../store/Navigation.js'
 import {isCustomList} from '../store/CustomList.js'
 import {getAndLogErrorMessage} from '../store/AjaxErrorMessage.js'
-
+import {URL} from '../store/URL.js'
 
 const ITEMS_PER_PAGE = 20;
 const NUM_PAGE_BUTTONS = 5;
@@ -64,7 +64,7 @@ class SearchPage extends React.Component {
          let pageBatch = new PageBatch(NUM_PAGE_BUTTONS, ITEMS_PER_PAGE);
          let urlBuilder = new URLBuilder($.ajax);
          this.predictionStore = new PredictionsStore(pageBatch, urlBuilder);
-         this.url = "/api/v1/settings";
+         this.url = URL.settings;
     }
 
     setErrorMessage(msg) {
