@@ -1,4 +1,4 @@
-import {URL} from './URL.js'
+import {URL} from './AppSettings.js'
 import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
 
 export function fetchPredictionSettings(onData, onError) {

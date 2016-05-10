@@ -1,5 +1,5 @@
 import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
-import {URL} from './URL.js'
+import {URL} from './AppSettings.js'
 
 class DnaSequences {
     constructor(genome) {

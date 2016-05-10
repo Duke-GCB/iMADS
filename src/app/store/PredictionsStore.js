@@ -1,4 +1,4 @@
-import {URL} from './URL.js'
+import {URL} from './AppSettings.js'
 import {isCustomList} from '../store/CustomList.js'
 import StreamValue from './StreamValue.js'
 import URLBuilder from './URLBuilder.js'

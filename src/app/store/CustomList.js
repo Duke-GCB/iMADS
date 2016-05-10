@@ -3,16 +3,11 @@ export const CUSTOM_RANGES_LIST = 'Custom Ranges List';
 
 let SETTINGS = [];
 SETTINGS[CUSTOM_GENE_LIST] = {
-    sampleData: "WASH7P\nSAMD11\nRIMKLA",
-    encode: encodeGeneListValue,
-    decode: decodeGeneListValue
+    sampleData: "WASH7P",
 };
 SETTINGS[CUSTOM_RANGES_LIST] = {
-    sampleData: "chr1\t10413\t11027\nchr2\t520413\t521391",
-    encode: noop,
-    decode: noop,
+    sampleData: "chr1\t10413\t11027",
 };
-
 
 export function isCustomList(str) {
     return str === CUSTOM_GENE_LIST || str == CUSTOM_RANGES_LIST
@@ -24,22 +19,8 @@ function lookupSettings(type) {
     } else {
         return {
             sampleData: "",
-            encode: noop,
-            decode: noop,
         };
     }
-}
-
-function encodeGeneListValue(value) {
-    return value;
-}
-
-function decodeGeneListValue(value) {
-    return value;
-}
-
-function noop(value) {
-    return value;
 }
 
 export class CustomListData {
@@ -47,21 +28,9 @@ export class CustomListData {
         let settings = lookupSettings(type);
         this.type = type;
         this.sampleData = settings.sampleData;
-        this.encodeFunc = settings.encode;
-        this.decodeFunc = settings.decode;
     }
 
     isGeneList() {
         return this.type == CUSTOM_GENE_LIST;
     }
-
-    encode(value) {
-        return this.encodeFunc(value);
-    }
-
-    decode(value) {
-        return this.decodeFunc(value);
-    }
-
-
 }

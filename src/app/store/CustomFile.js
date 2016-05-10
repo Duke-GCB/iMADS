@@ -1,5 +1,5 @@
 import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
-import {URL} from './URL.js'
+import {URL} from './AppSettings.js'
 
 const KEY_NAME = 'key';
 const MAX_FILE_SIZE = 20 * 1024 * 1024;

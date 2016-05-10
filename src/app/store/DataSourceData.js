@@ -1,5 +1,5 @@
 import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
-import {URL} from './URL.js'
+import {URL} from './AppSettings.js'
 
 const PREDICTION_NAME = 'prediction';
 const GENELIST_NAME = 'genelist';
