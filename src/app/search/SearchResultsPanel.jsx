@@ -1,14 +1,11 @@
 import React from 'react';
 import Loader from 'react-loader';
-import PageTitle from '../common/PageTitle.jsx'
 import PagingButtons from './PagingButtons.jsx'
 import PredictionDialog from './PredictionDialog.jsx'
-import GeneSearchPanel from './GeneSearchPanel.jsx'
 import HeatMap from './HeatMap.jsx'
 import ErrorPanel from './ErrorPanel.jsx'
 import ListHeader from '../common/ListHeader.jsx'
 import GetLinkDialog from './GetLinkDialog.jsx'
-import SearchSettings from '../store/SearchSettings.js'
 import GenomeData from '../store/GenomeData.js'
 import {CUSTOM_RANGES_LIST} from '../store/CustomList.js'
 
@@ -17,17 +14,19 @@ class SearchResultsPanel extends React.Component {
         super(props);
         this.downloadCsv = this.downloadCsv.bind(this);
         this.downloadTabDelimited = this.downloadTabDelimited.bind(this);
-        this.search = this.search.bind(this);
         this.changePage = this.changePage.bind(this);
         this.showGetLinkDialog = this.showGetLinkDialog.bind(this);
         this.hideGetLinkDialog = this.hideGetLinkDialog.bind(this);
         this.showPredictionDetails = this.showPredictionDetails.bind(this);
         this.hidePredictionDetails = this.hidePredictionDetails.bind(this);
-        this.scrollToTop = false;
         this.state = {
             showGetUrlDialog: false,
             predictionData: undefined,
         }
+    }
+
+    searchOperations() {
+        return this.props.searchOperations;
     }
 
     componentWillUpdate() {
@@ -38,34 +37,29 @@ class SearchResultsPanel extends React.Component {
         }
     }
 
-    search(searchSettings, page) {
-        this.props.search(searchSettings, page);
-        this.scrollToTop = true;
-    }
-
-    changePage(page) {
-        this.props.changePage(page);
+    changePage(page){
+        this.searchOperations().changePage(page);
         this.scrollToTop = true;
     }
 
     downloadCsv() {
-        this.props.downloadAll('csv');
+        return this.searchOperations().downloadAll('csv');
     }
 
     downloadTabDelimited() {
-        this.props.downloadAll('tsv');
+        return this.searchOperations().downloadAll('tsv');
     }
 
     showGetLinkDialog() {
         this.setState({
-            showGetUrlDialog: true,
+            showGetUrlDialog: true
         });
     }
 
     hideGetLinkDialog() {
         this.setState({
             showGetUrlDialog: false,
-            shareUrl: '',
+            shareUrl: ''
         });
     }
 
@@ -96,7 +90,6 @@ class SearchResultsPanel extends React.Component {
 
     render() {
         let searchSettings = this.props.searchSettings;
-        let searchSettingsObj = new SearchSettings(this.props.searchSettings);
         let genomeDataObj = new GenomeData(this.props.genomeData);
         let gridCellWidth = '12vw';
         if (searchSettings.all === true) {
@@ -152,22 +145,6 @@ class SearchResultsPanel extends React.Component {
             borderBottom: '1px solid grey'
         }
         let smallPadding = { padding: '10px', width: '20vw' }
-        let headerStyle = {
-            backgroundColor: '#235f9c',
-            color: 'white',
-        };
-        let parentStyle = {
-            float: 'none',
-            margin: '0 auto',
-            width: '100%'
-
-        }
-        let tableStyle = {
-            width: '100%',
-        }
-        let rowStyle = {
-            borderBottom: '1px solid grey'
-        };
         let isCustomRange = searchSettings.geneList == CUSTOM_RANGES_LIST;
         let queryResults = this.props.searchResults;
         let rows = [];
@@ -177,7 +154,7 @@ class SearchResultsPanel extends React.Component {
             if (searchSettings.all === true) {
                 let combinedName = rowData.commonName + " (" + rowData.name + ") ";
                 let offsetsStr = " upstream:" + searchSettings.upstream + " downstream:" + searchSettings.downstream;
-                let trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettingsObj.genomeVersion);
+                let trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettings.genome);
                 let title = combinedName + " " + offsetsStr;
                 if (isCustomRange) {
                     title = rowData.chrom + ":" + rowData.start + "-" + rowData.end;
@@ -273,8 +250,8 @@ class SearchResultsPanel extends React.Component {
 
                         </button>
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <li><a href={this.props.downloadAll('tsv')} download>Tab Delimited</a></li>
-                            <li><a href={this.props.downloadAll('csv')} download>CSV Format</a></li>
+                            <li><a href={this.downloadTabDelimited()} download>Tab Delimited</a></li>
+                            <li><a href={this.downloadCsv()} download>CSV Format</a></li>
                         </ul>
                     </div>
                         <button className="btn btn-default" type="button"
@@ -295,36 +272,16 @@ class SearchResultsPanel extends React.Component {
                 }
             }
         }
-        return  <div className="container" style={parentStyle}>
-                    <div className="row">
-                        <div className="col-md-offset-2 col-sm-offset-2 col-xs-offset-2 col-col-md-10 col-sm-10" >
-                            <PageTitle>TF Binding Predictions</PageTitle>
-                        </div>
+        return  <div>
+                    {columnHeaders}
+                    <div id="resultsGridContainer" className="SearchResultsPanel__resultsGridContainer">
+                        {listContent}
                     </div>
-                    <div className="row">
-                        <div className="col-md-2 col-sm-2 col-xs-2"  >
-                                <GeneSearchPanel
-                                        genomeData={this.props.genomeData}
-                                        search={this.search}
-                                        searchSettings={this.props.searchSettings}
-                                        loaded={this.props.genomeDataLoaded}
-                                        maxBindingOffset={this.props.maxBindingOffset}
-                                        setErrorMessage={this.props.setErrorMessage}
-                                        showCustomDialog={this.props.showCustomDialog}
-                                />
-                        </div>
-                        <div className="col-md-10 col-sm-10 col-xs-10" >
-                            {columnHeaders}
-                            <div id="resultsGridContainer" className="SearchResultsPanel__resultsGridContainer">
-                                {listContent}
-                            </div>
-                            {footer}
-                        </div>
-                    </div>
+                    {footer}
                     <PredictionDialog isOpen={showPredictionDetails}
-                                      onRequestClose={this.hidePredictionDetails}
-                                      data={this.state.predictionData}/>
-                </div>
+                              onRequestClose={this.hidePredictionDetails}
+                              data={this.state.predictionData}/>
+        </div>
     }
 }
 
