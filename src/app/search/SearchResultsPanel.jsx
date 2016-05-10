@@ -8,6 +8,7 @@ import ListHeader from '../common/ListHeader.jsx'
 import GetLinkDialog from './GetLinkDialog.jsx'
 import GenomeData from '../store/GenomeData.js'
 import {CUSTOM_RANGES_LIST} from '../store/CustomList.js'
+import {ResultHeaderRow, ResultDetailRow} from './ResultRow.jsx'
 
 class SearchResultsPanel extends React.Component {
     constructor(props) {
@@ -89,8 +90,17 @@ class SearchResultsPanel extends React.Component {
     }
 
     render() {
+
+
         let searchSettings = this.props.searchSettings;
         let genomeDataObj = new GenomeData(this.props.genomeData);
+
+        let rangeType = searchSettings.geneList == CUSTOM_RANGES_LIST;
+        let includeValues = false;
+        if (searchSettings.all === true) {
+            includeValues = true;
+        }
+
         let gridCellWidth = '12vw';
         if (searchSettings.all === true) {
             gridCellWidth = '8vw';
@@ -135,12 +145,6 @@ class SearchResultsPanel extends React.Component {
             fontSize: '14px',
             height: '20px',
         };
-        let heatMapHeader = <span></span>;
-        let cellExtraClassName = 'Wide';
-        if (searchSettings.all === true) {
-            heatMapHeader = <span style={resultHeaderCell}>Values</span>
-            cellExtraClassName = '';
-        }
         let borderBottom = {
             borderBottom: '1px solid grey'
         }
@@ -199,25 +203,6 @@ class SearchResultsPanel extends React.Component {
                 </div>);
             }
         }
-        let columnHeaders;
-        if (isCustomRange) {
-            columnHeaders = <ListHeader>
-                                  <span className={"HeaderCell IdCellWide"}>Name</span>
-                                  <span className="HeaderCell NumberCell">Max</span>
-                                  {heatMapHeader}
-                            </ListHeader>
-        } else {
-            columnHeaders = <ListHeader >
-                                  <span className={"HeaderCell NameCell" + cellExtraClassName}>Name</span>
-                                  <span className={"HeaderCell IdCell" + cellExtraClassName}>ID</span>
-                                  <span className={"HeaderCell StrandCell" + cellExtraClassName}>Strand</span>
-                                  <span className={"HeaderCell ChromCell" + cellExtraClassName}>Chromosome</span>
-                                  <span className="HeaderCell NumberCell">Start</span>
-                                  <span className="HeaderCell NumberCell">End</span>
-                                  <span className="HeaderCell NumberCell">Max</span>
-                                  {heatMapHeader}
-                            </ListHeader>
-        }
         let smallMargin = { margin: '10px' };
 
         let startPage = parseInt((this.props.page - 1)/ 5) * 5 + 1;
@@ -273,7 +258,8 @@ class SearchResultsPanel extends React.Component {
             }
         }
         return  <div>
-                    {columnHeaders}
+                    <ResultHeaderRow rangeType={rangeType} includeValues={includeValues} />
+                    <ResultDetailRow />
                     <div id="resultsGridContainer" className="SearchResultsPanel__resultsGridContainer">
                         {listContent}
                     </div>

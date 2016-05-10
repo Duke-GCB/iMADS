@@ -42,6 +42,7 @@ class SearchPage extends React.Component {
     setErrorMessage(msg) {
         this.setState({
             errorMessage: msg,
+            searchDataLoaded: true,
         })
     }
 
@@ -61,10 +62,7 @@ class SearchPage extends React.Component {
     search(searchSettings, page) {
         let {canRun, errorMessage} = this.predictionStore.checkSettings(searchSettings, this.state.maxBindingOffset);
         if (!canRun) {
-            this.setState({
-                errorMessage: errorMessage,
-                searchDataLoaded: true,
-            });
+            this.setErrorMessage(errorMessage);
             return;
         }
         this.setState({
@@ -93,10 +91,7 @@ class SearchPage extends React.Component {
     }
 
     onError(err) {
-        this.setState({
-            errorMessage: err.message,
-            searchDataLoaded: true,
-        });
+        this.setErrorMessage(err.message);
     }
 
     changePage(page) {
@@ -141,7 +136,7 @@ class SearchPage extends React.Component {
                                 searchResults={this.state.searchResults}
                                 page={this.state.page}
                                 nextPages={this.state.nextPages}
-                                
+
                                 searchDataLoaded={this.state.searchDataLoaded}
                                 errorMessage={this.state.errorMessage}
                                 showCustomDialog={this.state.showCustomDialog}

@@ -3,7 +3,7 @@ import React from 'react';
 class HeaderCell extends React.Component {
     render() {
         let {width} = this.props;
-        let combinedStyle = Object.assign(style, {width: width});
+        let combinedStyle = Object.assign({}, style, {width: width});
         return <span style={combinedStyle}>
             {this.props.children}
         </span>
