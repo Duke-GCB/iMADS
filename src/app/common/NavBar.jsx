@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router'
-
 import NavMenuButton from './NavMenuButton.jsx'
 import {ALL_NAV} from '../store/Navigation.js'
 
