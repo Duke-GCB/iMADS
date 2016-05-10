@@ -1,6 +1,11 @@
+/*
+ * ResultHeaderRow and ResultDetailRow - together display table of results from a prediction query.
+ * Contains settings so the headers in ResultHeaderRow match up with ResultDetailRow.
+*/
 import React from 'react';
-import HeaderCell from '../common/HeaderCell.jsx'
 import ListHeader from '../common/ListHeader.jsx'
+import HeaderCell from '../common/HeaderCell.jsx'
+import DataCell from '../common/DataCell.jsx'
 
 const RangeColumnData = [
     {
@@ -53,17 +58,23 @@ const ValuesColumnData = {
     normalWidth: '100px',
 };
 
-function getTitles(rangeType, includeValues) {
+function getTitles(rangeType, includeHeatMap) {
     let list = NormalColumnData.slice(0);
     if (rangeType) {
         list = RangeColumnData.slice(0);
     }
-    if (includeValues) {
+    if (includeHeatMap) {
         list.push(ValuesColumnData);
         return list.map(getNormalWidthAndTitle);
     } else {
         return list.map(getWideWidthAndTitle);
     }
+}
+
+function getColumnWidths(rangeType, includeHeatMap) {
+    return getTitles(rangeType, includeHeatMap).map(function (columnInfo) {
+        return columnInfo.width;
+    })
 }
 
 function getWidthAndTitle(columnInfo, wideMode) {
@@ -98,43 +109,66 @@ function getWideWidthAndTitle(columnInfo) {
 
 export class ResultHeaderRow extends React.Component {
     makeHeader(headerInfo) {
-        return <HeaderCell width={headerInfo.width}>{headerInfo.title}</HeaderCell>
+        return <HeaderCell key={headerInfo.title} width={headerInfo.width}>{headerInfo.title}</HeaderCell>
     }
     render() {
-        let {rangeType, includeValues} = this.props;
-        let cells = getTitles(rangeType, includeValues).map(this.makeHeader);
+        let {rangeType, includeHeatMap} = this.props;
+        let cells = getTitles(rangeType, includeHeatMap).map(this.makeHeader);
         return <ListHeader>
             {cells}
         </ListHeader>
     }
 }
 
-/*
-let columnHeaders;
-        if (isCustomRange) {
-            columnHeaders = <ListHeader>
-                                  <span className={"HeaderCell IdCellWide"}>Name</span>
-                                  <span className="HeaderCell NumberCell">Max</span>
-                                  {heatMapHeader}
-                            </ListHeader>
-        } else {
-            columnHeaders = <ListHeader >
-
-                                  <span className={"HeaderCell NameCell" + cellExtraClassName}>Name</span>
-                                  <span className={"HeaderCell IdCell" + cellExtraClassName}>ID</span>
-                                  <span className={"HeaderCell StrandCell" + cellExtraClassName}>Strand</span>
-                                  <span className={"HeaderCell ChromCell" + cellExtraClassName}>Chromosome</span>
-                                  <span className="HeaderCell NumberCell">Start</span>
-                                  <span className="HeaderCell NumberCell">End</span>
-                                  <span className="HeaderCell NumberCell">Max</span>
-                                  {heatMapHeader}
-                            </ListHeader>
-        }
- */
-
-
 export class ResultDetailRow extends React.Component {
-    render() {
-        return <div>Detail</div>
+
+    determineValues() {
+        let {rowData, heatMap, rangeType, includeHeatMap} = this.props;
+        let values = [];
+        if (rangeType) {
+            values.push(rowData.chrom + ':' + rowData.start + '-' + rowData.end);
+            values.push(rowData.max);
+        } else {
+            values.push(rowData.commonName);
+            values.push(rowData.name);
+            values.push(rowData.strand);
+            values.push(rowData.chrom);
+            values.push(rowData.start);
+            values.push(rowData.end);
+            values.push(rowData.max);
+        }
+        if (includeHeatMap) {
+            values.push(heatMap);
+        }
+        return values;
     }
+
+    makeDataCell(value, width) {
+        return <DataCell width={width}>{value}</DataCell>;
+    }
+
+    render() {
+        let {rangeType, includeHeatMap} = this.props;
+        let values = this.determineValues();
+        let widths = getColumnWidths(rangeType, includeHeatMap);
+
+        let rows = [];
+        for (let i = 0; i < values.length; i++) {
+            let style = {
+                width: widths[i],
+                height: DATA_CELL_ROW_HEIGHT
+            }
+            if (i == 0) {
+                style['paddingLeft'] = DATA_CELL_LEFT_PADDING;
+            }
+            rows.push(<DataCell key={i} style={style}>{values[i]}</DataCell>);
+        }
+        return <div style={dataCellStyle}>{rows}</div>
+    }
+}
+
+const DATA_CELL_ROW_HEIGHT = "20px";
+const DATA_CELL_LEFT_PADDING = "10px";
+let dataCellStyle = {
+    borderBottom: '1px solid grey'
 }
