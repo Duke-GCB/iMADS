@@ -77,7 +77,7 @@ class BooleanInput extends React.Component {
     }
 }
 
-class GeneSearchPanel extends React.Component {
+class SearchFilterPanel extends React.Component {
     constructor(props) {
         super(props);
         let genomes = this.props.genomeData;
@@ -343,4 +343,4 @@ class GeneSearchPanel extends React.Component {
     }
 }
 
-export default GeneSearchPanel;
+export default SearchFilterPanel;

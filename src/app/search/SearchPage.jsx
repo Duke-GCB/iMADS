@@ -1,14 +1,14 @@
 import React from 'react';
 import { browserHistory } from 'react-router'
+import NavBar from '../common/NavBar.jsx'
+import {SEARCH_NAV} from '../store/Navigation.js'
 import SearchResultsPanel from './SearchResultsPanel.jsx'
+import PageTitle from '../common/PageTitle.jsx'
+import SearchFilterPanel from './SearchFilterPanel.jsx'
 import PredictionsStore from '../store/PredictionsStore.js'
 import URLBuilder from '../store/URLBuilder.js'
 import PageBatch from '../store/PageBatch.js'
-import NavBar from '../common/NavBar.jsx'
-import {SEARCH_NAV} from '../store/Navigation.js'
 import {fetchPredictionSettings} from '../store/PredictionSettings.js'
-import PageTitle from '../common/PageTitle.jsx'
-import GeneSearchPanel from './GeneSearchPanel.jsx'
 
 const ITEMS_PER_PAGE = 20;
 const NUM_PAGE_BUTTONS = 5;
@@ -72,9 +72,7 @@ class SearchPage extends React.Component {
             searchDataLoaded: false,
         });
         this.predictionStore.requestPage(page, searchSettings, this.onSearchData, this.onError);
-        let localUrl = new URLBuilder();
-        this.predictionStore.addLocalUrl(localUrl, page, searchSettings);
-        browserHistory.push(localUrl.url);
+        browserHistory.push(this.predictionStore.makeLocalUrl(searchSettings));
     }
 
     onSearchData(predictions, pageNum, hasNextPages, warning) {
@@ -119,7 +117,7 @@ class SearchPage extends React.Component {
                     </div>
                     <div className="row">
                         <div className="col-md-2 col-sm-2 col-xs-2"  >
-                                <GeneSearchPanel
+                                <SearchFilterPanel
                                         genomeData={this.state.genomeData}
                                         search={this.search}
                                         searchSettings={this.state.searchSettings}

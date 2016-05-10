@@ -90,6 +90,15 @@ class PageBatch {
         }
     }
 
+    getStartAndEndPages(page) {
+        let numPages = this.pagesInBatch;
+        let startPage = parseInt((page - 1)/ numPages) * numPages + 1;
+        let endPage = startPage + numPages - 1;
+        return {
+            startPage: startPage,
+            endPage: endPage
+        }
+    }
 }
 
 export default PageBatch;

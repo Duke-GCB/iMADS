@@ -1,6 +1,7 @@
 import React from 'react';
 import PagingButtons from './PagingButtons.jsx'
 import GetLinkDialog from './GetLinkDialog.jsx'
+import DownloadButton from './DownloadButton.jsx'
 
 class SearchResultsFooter extends React.Component {
     constructor(props) {
@@ -15,6 +16,7 @@ class SearchResultsFooter extends React.Component {
         this.showGetLinkDialog = this.showGetLinkDialog.bind(this);
         this.hideGetLinkDialog = this.hideGetLinkDialog.bind(this);
     }
+
     searchOperations() {
         return this.props.searchOperations;
     }
@@ -27,7 +29,7 @@ class SearchResultsFooter extends React.Component {
         }
     }
 
-    changePage(page){
+    changePage(page) {
         this.searchOperations().changePage(page);
     }
 
@@ -55,9 +57,7 @@ class SearchResultsFooter extends React.Component {
     render() {
         let {searchSettings, searchResults, searchDataLoaded, predictionStore, page} = this.props;
         let footer = <div></div>;
-        //bad hard coding
-        let startPage = parseInt((page - 1)/ 5) * 5 + 1;
-        let endPage = startPage + 4;
+        let {startPage, endPage} = predictionStore.pageBatch.getStartAndEndPages(page);
         if (searchDataLoaded) {
             if (searchResults.length > 0) {
                 footer = <nav>
@@ -66,37 +66,18 @@ class SearchResultsFooter extends React.Component {
                                    pageBatch={predictionStore.pageBatch}
                     />
                     &nbsp;
-                    <div className="dropup" style={{display:'inline'}}>
-                        <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
-                                style={{verticalAlign:'top', marginLeft:'20px', marginTop:'20px'}}
-                        >
-                            Download All Data
-
-                        </button>
-                        <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <li><a href={this.downloadTabDelimited()} download>Tab Delimited</a></li>
-                            <li><a href={this.downloadCsv()} download>CSV Format</a></li>
-                        </ul>
-                    </div>
-                        <button className="btn btn-default" type="button"
-                                style={{verticalAlign:'top', marginLeft:'20px', marginTop:'20px'}}
-                                onClick={this.showGetLinkDialog}
-                        >
-                            Share
-                        </button>
-                        <GetLinkDialog isOpen={this.state.showGetUrlDialog}
-                                       searchSettings={searchSettings}
-                                       closeDialog={this.hideGetLinkDialog} />
+                    <DownloadButton
+                        tabDelimitedURL={this.downloadTabDelimited()}
+                        csvDelimitedURL={this.downloadCsv()}/>
+                    <button className="btn btn-default" type="button"
+                            style={{verticalAlign:'top', marginLeft:'20px', marginTop:'20px'}}
+                            onClick={this.showGetLinkDialog} >Share</button>
+                    <GetLinkDialog isOpen={this.state.showGetUrlDialog}
+                                   searchSettings={searchSettings}
+                                   closeDialog={this.hideGetLinkDialog}/>
                 </nav>
-            } else {
-                if (!this.props.errorMessage) {
-                    listContent = <div className="centerChildrenHorizontally">
-                        <span className="SearchResultsPanel__no_results_found centerVertically">No results found.</span>
-                    </div>
-                }
             }
-        }        
+        }
         return footer;
     }
 }

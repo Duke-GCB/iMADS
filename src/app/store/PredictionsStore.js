@@ -1,6 +1,7 @@
 import {URL} from './URL.js'
 import {isCustomList} from '../store/CustomList.js'
 import StreamValue from './StreamValue.js'
+import URLBuilder from './URLBuilder.js'
 
 class PredictionsStore {
     constructor(pageBatch, urlBuilder) {
@@ -131,7 +132,8 @@ class PredictionsStore {
         return this.urlBuilder.url;
     }
 
-    addLocalUrl(urlBuilder, page, searchSettings) {
+    makeLocalUrl(searchSettings) {
+        let urlBuilder = new URLBuilder();
         urlBuilder.reset('');
         urlBuilder.appendParam('genome', searchSettings.genome);
         urlBuilder.appendParam('model', searchSettings.model);
@@ -142,6 +144,7 @@ class PredictionsStore {
         urlBuilder.appendParam('maxPredictionSort', searchSettings.maxPredictionSort);
         urlBuilder.appendParam('customListFilter', searchSettings.customListFilter, true);
         urlBuilder.appendParam('customListData', searchSettings.customListData, true);
+        return urlBuilder.url;
     }
 
 }

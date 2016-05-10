@@ -77,12 +77,16 @@ class SearchResultsPanel extends React.Component {
     }
 
     makeListContent() {
-        let {errorMessage} = this.props;
+        let {errorMessage, searchResults, searchDataLoaded} = this.props;
         if (errorMessage) {
             return <ErrorPanel message={errorMessage}/>;
-        } else {
-            return this.makeListRowsContent();
         }
+        if (searchResults.length == 0 && searchDataLoaded) {
+            return <div className="centerChildrenHorizontally">
+                    <span className="SearchResultsPanel__no_results_found centerVertically">No results found.</span>
+                </div>
+        }
+        return this.makeListRowsContent();
     }
 
     makeListRowsContent() {
