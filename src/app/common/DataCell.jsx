@@ -3,7 +3,7 @@ import React from 'react';
 class DataCell extends React.Component {
     render() {
         let {style} = this.props;
-        let combinedStyle = Object.assign(defaultStyle, style);
+        let combinedStyle = Object.assign({}, defaultStyle, style);
         return <span style={combinedStyle}>
             {this.props.children}
         </span>

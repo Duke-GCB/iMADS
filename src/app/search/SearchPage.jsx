@@ -9,9 +9,7 @@ import PredictionsStore from '../store/PredictionsStore.js'
 import URLBuilder from '../store/URLBuilder.js'
 import PageBatch from '../store/PageBatch.js'
 import {fetchPredictionSettings} from '../store/PredictionSettings.js'
-
-const ITEMS_PER_PAGE = 20;
-const NUM_PAGE_BUTTONS = 5;
+import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../store/AppSettings.js'
 
 class SearchPage extends React.Component {
      constructor(props) {

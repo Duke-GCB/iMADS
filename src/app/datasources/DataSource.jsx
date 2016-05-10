@@ -17,10 +17,10 @@ class DataSource extends React.Component {
     makeRow(item) {
         let {fullUrl, cleanUrl, description, downloaded} = item;
         let nameLink = <a href={fullUrl}>{cleanUrl}</a>;
-        return <CellRow>
-            <DataCell width={MEDIUM_WIDTH}>{description}</DataCell>
-            <DataCell width={SMALL_WIDTH}>{downloaded}</DataCell>
-            <DataCell width={LARGE_WIDTH}>{nameLink}</DataCell>
+        return <CellRow key={item.fullUrl}>
+            <DataCell style={{width: MEDIUM_WIDTH, padding: DATA_CELL_PADDING}} >{description}</DataCell>
+            <DataCell style={{width: SMALL_WIDTH, padding: DATA_CELL_PADDING}} >{downloaded}</DataCell>
+            <DataCell style={{width: LARGE_WIDTH, padding: DATA_CELL_PADDING}} >{nameLink}</DataCell>
         </CellRow>
     }
 
@@ -39,5 +39,6 @@ class DataSource extends React.Component {
 let SMALL_WIDTH = '14vw';
 let MEDIUM_WIDTH = '20vw';
 let LARGE_WIDTH = '30vw';
+let DATA_CELL_PADDING = '10px';
 
 export default DataSource;
