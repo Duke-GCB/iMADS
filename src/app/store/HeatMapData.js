@@ -19,11 +19,11 @@ class HeatMapData {
     }
 
     static buildCellArray(chrom, inputArray, props) {
-        var results = [];
-        var sortedArray = inputArray.slice();
+        let results = [];
+        let sortedArray = inputArray.slice();
         sortedArray.sort(sortByValue);
         for (let data of sortedArray) {
-            var hmd = new HeatMapData(chrom, data, props.xOffset, props.includeTitle);
+            let hmd = new HeatMapData(chrom, data, props.xOffset, props.includeTitle);
             results.push({
                 color: hmd.getColor(),
                 x: hmd.getX(props.scale, props.strand, props.xOffsetEnd),
@@ -41,13 +41,13 @@ class HeatMapData {
     }
 
     static combineOverlappingTitles(cells) {
-        var prev = undefined;
-        var group = [];
-        var sortedArray = cells.slice();
+        let prev = undefined;
+        let group = [];
+        let sortedArray = cells.slice();
         sortedArray.sort(sortByX);
         for (let cell of sortedArray) {
             if (prev) {
-                var prevEnd = prev.x + prev.width;
+                let prevEnd = prev.x + prev.width;
                 if (prevEnd > cell.x) {
                     if (group.length === 0) {
                         group.push(prev);
@@ -69,8 +69,8 @@ class HeatMapData {
     }
 
     static mergeTitles(cells) {
-        var combinedTitle = '';
-        var prefix = '';
+        let combinedTitle = '';
+        let prefix = '';
         for (let cell of cells) {
             combinedTitle += prefix;
             combinedTitle += cell.title;
@@ -82,18 +82,18 @@ class HeatMapData {
     }
 
     getColor() {
-        var value = this.data.value;
-        var revColor = 1 - value;
-        var red = 255;
-        var green = parseInt(255 * revColor);
-        var blue = parseInt(255 * revColor);
-        var fill = "rgb(" + red + "," + green + "," + blue + ")";
+        let value = this.data.value;
+        let revColor = 1 - value;
+        let red = 255;
+        let green = parseInt(255 * revColor);
+        let blue = parseInt(255 * revColor);
+        let fill = "rgb(" + red + "," + green + "," + blue + ")";
         return fill;
     }
 
     getX(scale, strand, xOffsetEnd) {
-        var start = this.data.start;
-        var value = this.data.value;
+        let start = this.data.start;
+        let value = this.data.value;
         if (strand === '-') {
             let x = start - this.xOffset;
             x = (xOffsetEnd - this.xOffset) - x - PREDICTION_WIDTH;

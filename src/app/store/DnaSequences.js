@@ -1,5 +1,5 @@
 import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
-const ENDPOINT = '/api/v1/genomes/';
+import {URL} from './AppSettings.js'
 
 class DnaSequences {
     constructor(genome) {
@@ -18,7 +18,7 @@ class DnaSequences {
 
     fetchRanges(onData, onError) {
         let ranges = this.ranges;
-        let url = ENDPOINT + this.genome + '/sequences';
+        let url = URL.genomes + '/' + this.genome + '/sequences';
         $.ajax({
             url: url,
             dataType: 'json',

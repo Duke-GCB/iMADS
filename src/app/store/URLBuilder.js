@@ -25,16 +25,16 @@ class URLBuilder {
         if (skipIfEmpty && !value) {
             return;
         }
-        var prefix = '?';
+        let prefix = '?';
         if (this.hasParam) {
-            var prefix = '&';
+            prefix = '&';
         }
         this.url += prefix + name + "=" + value;
         this.hasParam = true;
     }
 
     fetch(onData, onError, method = 'POST', dataType = 'json') {
-        var url = this.url;
+        let url = this.url;
         this.fetchMethod({
             url: url,
             type: method,
@@ -46,7 +46,7 @@ class URLBuilder {
                 onData(data);
             },
             error: function (xhr, status, err) {
-                var errorMessage = getAndLogErrorMessage('fetching data', xhr, status, err);
+                let errorMessage = getAndLogErrorMessage('fetching data', xhr, status, err);
                 onError({
                     url: url,
                     status: status,

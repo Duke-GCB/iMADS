@@ -1,5 +1,5 @@
 export function getAndLogErrorMessage(activityStr, xhr, status, err) {
-    var errorMsg = err;
+    let errorMsg = err;
     if (xhr.responseJSON) {
         errorMsg = xhr.responseJSON.message;
     }

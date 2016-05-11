@@ -47,8 +47,8 @@ class CustomListDialog extends React.Component {
     }
 
     changeUploadFile(evt) {
-        var customListDialog = this;
-        var file = evt.target.files[0];
+        let customListDialog = this;
+        let file = evt.target.files[0];
         if (file) {
             this.setState({
                 text: "",
@@ -115,10 +115,10 @@ class CustomListDialog extends React.Component {
     }
 
     render() {
-        var customListData = new CustomListData(this.props.type);
-        var instructions = [];
-        var sampleData = customListData.sampleData;
-        var purgeWarning = <p className="CustomListDialog__delete_warning">Uploaded data will be deleted after 48 hours.</p>;
+        let customListData = new CustomListData(this.props.type);
+        let instructions = [];
+        let sampleData = customListData.sampleData;
+        let purgeWarning = <p className="CustomListDialog__delete_warning">Uploaded data will be deleted after 48 hours.</p>;
         if (customListData.isGeneList()) {
             instructions = <div>
                     <p>Enter a list of gene symbols/ID or choose a file in that format. (Max file size 20MB)</p>
@@ -131,11 +131,11 @@ class CustomListDialog extends React.Component {
                     <p>Format is: "CHROMOSOME START END".</p>
                 </div>;
         }
-        var disableSearch = !this.state.text && !this.state.file;
-        var hasText = this.state.text.length > 0;
-        var geneListDropdown = [];
+        let disableSearch = !this.state.text && !this.state.file;
+        let hasText = this.state.text.length > 0;
+        let geneListDropdown = [];
         if (customListData.isGeneList()) {
-            var options = [<option key="All">All</option>]
+            let options = [<option key="All">All</option>]
             for (let name of this.props.geneListNames) {
                 options.push(<option key={name}>{name}</option>)
             }

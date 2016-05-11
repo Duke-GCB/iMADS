@@ -27,7 +27,7 @@ class GenomeBrowserURL {
     }
 
     get(db, position) {
-        var url = BASE_URL + '?org=' + this.org + '&db=' + db + '&position=' + position;
+        let url = BASE_URL + '?org=' + this.org + '&db=' + db + '&position=' + position;
         if (this.trackHubUrl) {
             url += '&hubUrl=' + this.trackHubUrl;
         }

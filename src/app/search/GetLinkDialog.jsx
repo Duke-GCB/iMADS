@@ -30,14 +30,14 @@ class GetLinkDialog extends React.Component {
     }
 
     render() {
-        var customList = isCustomList(this.props.searchSettings.geneList);
-        var url = window.location.href;
+        let customList = isCustomList(this.props.searchSettings.geneList);
+        let url = window.location.href;
         if (!this.state.includeCustomList) {
             url = url.replace(/&customListData=[a-f\d-]+/, '');
         }
         let searchSettings = this.props.searchSettings;
-        var customListCheckbox = [];
-        var message = '';
+        let customListCheckbox = [];
+        let message = '';
         if (customList) {
             customListCheckbox = <label>
                     <input type="checkbox"

@@ -1,10 +1,9 @@
 import React from 'react';
 import NavBar from '../common/NavBar.jsx'
-import ScrollingContainer from '../common/ScrollingContainer.jsx'
-import DSRow from './DSRow.jsx'
-import DSList from './DSList.jsx'
-import DataSourceData from '../store/DataSourceData.js'
 import {DATA_SOURCES_NAV} from '../store/Navigation.js'
+import PageContent from '../common/PageContent.jsx'
+import DataSource from './DataSource.jsx'
+import DataSourceData from '../store/DataSourceData.js'
 
 class DataSourcesPage extends React.Component {
     constructor(props) {
@@ -33,26 +32,15 @@ class DataSourcesPage extends React.Component {
         alert(message);
     }
 
-    makeRow(item) {
-        return <DSRow key={item.fullUrl}
-                      description={item.description}
-                      downloaded={item.downloaded}
-                      fullUrl={item.fullUrl}
-                      cleanUrl={item.cleanUrl}/>
-    }
-
     render() {
-        var predictionRows = this.state.predictions.map(this.makeRow);
-        var geneRows = this.state.genelists.map(this.makeRow);
+        let {predictions, genelists} = this.state;
         return <div>
             <NavBar selected={DATA_SOURCES_NAV.path}/>
-            <div className="std_left_right_margin std_bottom_margin">
-                <ScrollingContainer height="80%">
-                    <DSList title="Predictions" content={predictionRows}/>
-                    <br />
-                    <DSList title="Gene Lists" content={geneRows}/>
-                </ScrollingContainer>
-            </div>
+            <PageContent>
+                <DataSource title="Predictions" content={predictions}/>
+                <br />
+                <DataSource title="Gene Lists" content={genelists}/>
+            </PageContent>
         </div>;
     }
 }

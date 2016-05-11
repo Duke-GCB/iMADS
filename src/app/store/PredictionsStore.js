@@ -1,4 +1,7 @@
-
+import {URL} from './AppSettings.js'
+import {isCustomList} from '../store/CustomList.js'
+import StreamValue from './StreamValue.js'
+import URLBuilder from './URLBuilder.js'
 
 class PredictionsStore {
     constructor(pageBatch, urlBuilder) {
@@ -7,13 +10,77 @@ class PredictionsStore {
         this.lastSearchSettingsStr = undefined;
     }
 
+    checkSettings(searchSettings, maxBindingOffset) {
+        let canRun = true;
+        let errorMessage = '';
+        // We don't have a genome version - we must waiting for settings to load.
+        if (!searchSettings.genome) {
+            canRun = false;
+        }
+        if (canRun) {
+            // We have a custom list with no data - we must prompt first.
+            if (isCustomList(searchSettings.geneList)) {
+                if (!searchSettings.customListData) {
+                    canRun = false;
+                }
+            }
+        }
+        if (canRun) {
+            // User has entered bad upstream or downstream values.
+            let streamValue = new StreamValue(maxBindingOffset);
+            let upstreamError = streamValue.checkForError("Bases upstream", searchSettings.upstream);
+            let downstreamError = streamValue.checkForError("Bases downstream", searchSettings.downstream);
+            if (upstreamError || downstreamError) {
+                errorMessage = upstreamError;
+                if (!errorMessage) {
+                    errorMessage = downstreamError;
+                }
+                canRun = false;
+            }
+        }
+        return {
+            canRun: canRun,
+            errorMessage: errorMessage
+        };
+    }
+
+    createSettingsFromQueryParams(query) {
+        let settings = {};
+        if (query.genome) {
+            settings = {
+                genome: query.genome,
+                geneList: query.geneList,
+                model: query.model,
+                all: this.isStrTrue(query.all),
+                upstream: query.upstream,
+                upstreamValid: true,
+                downstream: query.downstream,
+                downstreamValid: true,
+                maxPredictionSort: this.isStrTrue(query.maxPredictionSort),
+                showCustomDialog: false,
+                customListData: query.customListData,
+                customListFilter: query.customListFilter,
+            };
+        }
+        let customList = isCustomList(settings.geneList);
+        let hasCustomListData = Boolean(settings.customListData);
+        return {
+            searchSettings: settings,
+            customListWithoutData: customList && !hasCustomListData
+        };
+    }
+
+    isStrTrue(val) {
+        return val === 'true'
+    }
+
     requestPage(pageNum, searchSettings, onData, onError) {
         this.saveSearchSettings(searchSettings);
         if (this.pageBatch.hasPage(pageNum)) {
             onData(this.pageBatch.getItems(pageNum), pageNum, true, '');
         } else {
-            var batchPage = this.pageBatch.getBatchPageNum(pageNum)
-            var itemsPerBatch = this.pageBatch.getItemsPerBatch();
+            let batchPage = this.pageBatch.getBatchPageNum(pageNum)
+            let itemsPerBatch = this.pageBatch.getItemsPerBatch();
             this.setBuilderURL(batchPage, itemsPerBatch, searchSettings);
             this.urlBuilder.fetch(function(data) {
                 if (pageNum == -1) {
@@ -29,7 +96,7 @@ class PredictionsStore {
     }
 
     saveSearchSettings(searchSettings) {
-        var searchSettingsStr = JSON.stringify(searchSettings);
+        let searchSettingsStr = JSON.stringify(searchSettings);
         if (this.lastSearchSettingsStr && searchSettingsStr !== this.lastSearchSettingsStr) {
             this.pageBatch.clearData();
         }
@@ -37,8 +104,8 @@ class PredictionsStore {
     }
 
     setBuilderURL(page, perPage, searchSettings) {
-        var urlBuilder = this.urlBuilder;
-        urlBuilder.reset('/api/v1/genomes/');
+        let urlBuilder = this.urlBuilder;
+        urlBuilder.reset(URL.genomes + '/');
         urlBuilder.append(searchSettings.genome);
         urlBuilder.append('/prediction');
         urlBuilder.appendParam('protein', searchSettings.model);
@@ -65,7 +132,8 @@ class PredictionsStore {
         return this.urlBuilder.url;
     }
 
-    addLocalUrl(urlBuilder, page, searchSettings) {
+    makeLocalUrl(searchSettings) {
+        let urlBuilder = new URLBuilder();
         urlBuilder.reset('');
         urlBuilder.appendParam('genome', searchSettings.genome);
         urlBuilder.appendParam('model', searchSettings.model);
@@ -76,6 +144,7 @@ class PredictionsStore {
         urlBuilder.appendParam('maxPredictionSort', searchSettings.maxPredictionSort);
         urlBuilder.appendParam('customListFilter', searchSettings.customListFilter, true);
         urlBuilder.appendParam('customListData', searchSettings.customListData, true);
+        return urlBuilder.url;
     }
 
 }

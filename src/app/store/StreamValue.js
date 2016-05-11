@@ -8,13 +8,13 @@ class StreamValue {
     }
 
     isValid(strValue) {
-        var errorMessage = this.checkForError('', strValue);
+        let errorMessage = this.checkForError('', strValue);
         return errorMessage.length == 0;
     }
 
     checkForError(name, strValue) {
         if (/^[0-9]+$/.test(strValue)) {
-            var streamValue = parseInt(strValue);
+            let streamValue = parseInt(strValue);
             if (streamValue > this.maxValue) {
                 return name + " must be <= " + this.maxValue + ".";
             }

@@ -1,109 +1,67 @@
 import React from 'react';
 import { browserHistory } from 'react-router'
+import NavBar from '../common/NavBar.jsx'
+import {SEARCH_NAV} from '../store/Navigation.js'
 import SearchResultsPanel from './SearchResultsPanel.jsx'
+import PageTitle from '../common/PageTitle.jsx'
+import SearchFilterPanel from './SearchFilterPanel.jsx'
 import PredictionsStore from '../store/PredictionsStore.js'
 import URLBuilder from '../store/URLBuilder.js'
 import PageBatch from '../store/PageBatch.js'
-import StreamValue from '../store/StreamValue.js'
-import NavBar from '../common/NavBar.jsx'
-import {SEARCH_NAV} from '../store/Navigation.js'
-import {isCustomList} from '../store/CustomList.js'
-import {getAndLogErrorMessage} from '../store/AjaxErrorMessage.js'
-
-
-const ITEMS_PER_PAGE = 20;
-const NUM_PAGE_BUTTONS = 5;
-
+import {fetchPredictionSettings} from '../store/PredictionSettings.js'
+import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../store/AppSettings.js'
 
 class SearchPage extends React.Component {
      constructor(props) {
          super(props);
-         var searchSettings = {};
-         this.runSearchOnMount = false;
-         var searchDataLoaded = false;
-         var showCustomDialog = false;
-         var query = props.location.query;
-         if (query.genome) {
-            searchSettings = {
-                    genome: query.genome,
-                    geneList: query.geneList,
-                    model: query.model,
-                    all: (query.all === 'true'),
-                    upstream: query.upstream,
-                    upstreamValid: true,
-                    downstream: query.downstream,
-                    downstreamValid: true,
-                    maxPredictionSort: (query.maxPredictionSort  === 'true'),
-                    showCustomDialog: false,
-                    customListData: query.customListData,
-                    customListFilter: query.customListFilter,
-                };
-             if (isCustomList(searchSettings.geneList) && ! searchSettings.customListData) {
-                 searchDataLoaded = true;
-                 showCustomDialog = true;
-             } else {
-                 this.runSearchOnMount = true;
-             }
-         }
+         let pageBatch = new PageBatch(NUM_PAGE_BUTTONS, ITEMS_PER_PAGE);
+         this.predictionStore = new PredictionsStore(pageBatch, new URLBuilder($.ajax));
+         let {searchSettings, customListWithoutData} = this.predictionStore.createSettingsFromQueryParams(props.location.query);
+         let searchDataLoaded = customListWithoutData;
          this.state = {
              genomeData: {},
              searchResults: [],
              searchSettings: searchSettings,
              currentPage: 1,
              nextPages: 0,
-             genomeDataLoaded: false,
              searchDataLoaded: searchDataLoaded,
              errorMessage: "",
-             showCustomDialog: showCustomDialog,
+             showCustomDialog: customListWithoutData,
          };
          this.search = this.search.bind(this);
          this.downloadAll = this.downloadAll.bind(this);
          this.changePage = this.changePage.bind(this);
          this.setErrorMessage = this.setErrorMessage.bind(this);
          this.searchFirstPage = this.searchFirstPage.bind(this);
-         var pageBatch = new PageBatch(NUM_PAGE_BUTTONS, ITEMS_PER_PAGE);
-         var urlBuilder = new URLBuilder($.ajax);
-         this.predictionStore = new PredictionsStore(pageBatch, urlBuilder);
-         this.url = "/api/v1/settings";
+         this.onError = this.onError.bind(this);
+         this.onSearchData = this.onSearchData.bind(this);
     }
 
     setErrorMessage(msg) {
         this.setState({
             errorMessage: msg,
+            searchDataLoaded: true,
         })
     }
 
     componentDidMount() {
-        $.ajax({
-          url: this.url,
-          dataType: 'json',
-            type: 'GET',
-          cache: false,
-          success: function(data) {
+        fetchPredictionSettings(function(genomes, maxBindingOffset) {
             this.setState({
-                genomeData: data.genomes,
-                genomeDataLoaded: true,
-                maxBindingOffset: data.maxBindingOffset,
+                genomeData: genomes,
+                maxBindingOffset: maxBindingOffset,
             }, this.searchFirstPage);
-          }.bind(this),
-          error: function(xhr, status, err) {
-              let message = getAndLogErrorMessage('fetching genome metadata', xhr, status, err);
-              alert(message);
-          }.bind(this)
-        });
-      }
+        }.bind(this), this.onError);
+    }
 
     searchFirstPage() {
-        if (this.runSearchOnMount) {
-            this.search(this.state.searchSettings, 1);
-        }
+        this.search(this.state.searchSettings, 1);
     }
 
     search(searchSettings, page) {
-        if (isCustomList(searchSettings.geneList)) {
-            if (!searchSettings.customListData) {
-                return;
-            }
+        let {canRun, errorMessage} = this.predictionStore.checkSettings(searchSettings, this.state.maxBindingOffset);
+        if (!canRun) {
+            this.setErrorMessage(errorMessage);
+            return;
         }
         this.setState({
             searchSettings: searchSettings,
@@ -111,40 +69,25 @@ class SearchPage extends React.Component {
             perPage: this.perPage,
             searchDataLoaded: false,
         });
-        var streamValue = new StreamValue(this.state.maxBindingOffset);
-        var upstreamError = streamValue.checkForError("Bases upstream", searchSettings.upstream);
-        var downstreamError = streamValue.checkForError("Bases downstream", searchSettings.downstream);
-        if (upstreamError || downstreamError) {
-            var errorMessage = upstreamError;
-            if (!errorMessage) {
-                errorMessage = downstreamError;
-            }
-            this.setState({
-                errorMessage: errorMessage,
-                searchDataLoaded: true,
-            });
-            return;
+        this.predictionStore.requestPage(page, searchSettings, this.onSearchData, this.onError);
+        browserHistory.push(this.predictionStore.makeLocalUrl(searchSettings));
+    }
+
+    onSearchData(predictions, pageNum, hasNextPages, warning) {
+        this.setState({
+            searchResults: predictions,
+            nextPages: hasNextPages,
+            searchDataLoaded: true,
+            page: pageNum,
+            errorMessage: '',
+        });
+        if (warning) {
+            alert(warning);
         }
-        this.predictionStore.requestPage(page, searchSettings, function(predictions, pageNum, hasNextPages, warning) {
-            this.setState({
-                searchResults: predictions,
-                nextPages: hasNextPages,
-                searchDataLoaded: true,
-                page: pageNum,
-                errorMessage: '',
-            });
-            if (warning) {
-                alert(warning);
-            }
-        }.bind(this), function (err) {
-            this.setState({
-                errorMessage: err.message,
-                searchDataLoaded: true,
-            });
-        }.bind(this));
-        var localUrl = new URLBuilder();
-        this.predictionStore.addLocalUrl(localUrl, page, searchSettings);
-        browserHistory.push(localUrl.url);
+    }
+
+    onError(err) {
+        this.setErrorMessage(err.message);
     }
 
     changePage(page) {
@@ -156,25 +99,53 @@ class SearchPage extends React.Component {
     }
 
     render () {
+        let searchOperations = {
+            search: this.search,
+            changePage: this.changePage,
+            downloadAll: this.downloadAll,
+            setErrorMessage: this.setErrorMessage
+        };
         return <div>
             <NavBar selected={SEARCH_NAV.path} />
-            <SearchResultsPanel searchSettings={this.state.searchSettings}
-                                       searchResults={this.state.searchResults}
-                                       downloadAll={this.downloadAll}
-                                       page={this.state.page}
-                                       nextPages={this.state.nextPages}
-                                       changePage={this.changePage}
-                                       genomeData={this.state.genomeData}
-                                       search={this.search}
-                                       getSharableUrl={this.getSharableUrl}
-                                       genomeDataLoaded={this.state.genomeDataLoaded}
-                                       searchDataLoaded={this.state.searchDataLoaded}
-                                       maxBindingOffset={this.state.maxBindingOffset}
-                                       predictionStore={this.predictionStore}
-                                       errorMessage={this.state.errorMessage}
-                                       setErrorMessage={this.setErrorMessage}
-                                       showCustomDialog={this.state.showCustomDialog}
-            />
+            <div className="container" style={{width:'100%'}}>
+                    <div className="row">
+                        <div className="col-md-offset-2 col-sm-offset-2 col-xs-offset-2 col-col-md-10 col-sm-10" >
+                            <PageTitle>TF Binding Predictions</PageTitle>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md-2 col-sm-2 col-xs-2"  >
+                                <SearchFilterPanel
+                                        genomeData={this.state.genomeData}
+                                        search={this.search}
+                                        searchSettings={this.state.searchSettings}
+                                        maxBindingOffset={this.state.maxBindingOffset}
+                                        setErrorMessage={this.setErrorMessage}
+                                        showCustomDialog={this.state.showCustomDialog}
+                                />
+                        </div>
+                        <div className="col-md-10 col-sm-10 col-xs-10" >
+                            <SearchResultsPanel
+                                genomeData={this.state.genomeData}
+
+                                searchSettings={this.state.searchSettings}
+                                searchResults={this.state.searchResults}
+                                page={this.state.page}
+                                nextPages={this.state.nextPages}
+
+                                searchDataLoaded={this.state.searchDataLoaded}
+                                errorMessage={this.state.errorMessage}
+                                showCustomDialog={this.state.showCustomDialog}
+
+                                predictionStore={this.predictionStore}
+                                searchOperations={searchOperations}
+                            />
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
     }
 

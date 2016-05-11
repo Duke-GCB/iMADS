@@ -16,12 +16,12 @@ class PageBatch {
     setItems(batchPageNum, items, hasMore) {
         this.hasMore = hasMore;
         this.pageToItems = {}
-        var pageNum = (batchPageNum - 1)* this.pagesInBatch;
-        for (var i = 0; i < this.pagesInBatch; i++) {
-            var idx = (i * this.itemPerPage);
-            var endIdx = idx + this.itemPerPage;
+        let pageNum = (batchPageNum - 1)* this.pagesInBatch;
+        for (let i = 0; i < this.pagesInBatch; i++) {
+            let idx = (i * this.itemPerPage);
+            let endIdx = idx + this.itemPerPage;
             pageNum += 1;
-            var pageItems = [];
+            let pageItems = [];
             if (endIdx >= items.length) {
                 pageItems = items.slice(idx)
             } else {
@@ -63,10 +63,10 @@ class PageBatch {
     }
 
     getEndPage() {
-        var pageNums = this.getPageNums();
-        var lastPage = pageNums[0];
-        for (var i = 1; i < pageNums.length; i++) {
-            var somePage = pageNums[i];
+        let pageNums = this.getPageNums();
+        let lastPage = pageNums[0];
+        for (let i = 1; i < pageNums.length; i++) {
+            let somePage = pageNums[i];
             if (!this.isPageEmpty(somePage)) {
                 lastPage = somePage;
             }
@@ -78,7 +78,7 @@ class PageBatch {
         if (page == -1) {
             return false;
         }
-        var nextPage = page + 1;
+        let nextPage = page + 1;
         if (this.hasPage(nextPage + 1)) {
             if (this.isPageEmpty(nextPage)) {
                 return false;
@@ -90,6 +90,15 @@ class PageBatch {
         }
     }
 
+    getStartAndEndPages(page) {
+        let numPages = this.pagesInBatch;
+        let startPage = parseInt((page - 1)/ numPages) * numPages + 1;
+        let endPage = startPage + numPages - 1;
+        return {
+            startPage: startPage,
+            endPage: endPage
+        }
+    }
 }
 
 export default PageBatch;
