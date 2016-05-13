@@ -18,11 +18,11 @@ genome_data:
     prediction_lists:
       -
         name: "E2F1_0001(JS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/E2F1-hg19_binding_site.bb"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0001-E2F1-E2F1-bestSVR.model.bb"
         fix_script: "bigBedToBed"
       -
         name: "E2F4_0002(JS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/E2F4-hg19_binding_site.bb"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0002-E2F4-E2F4-bestSVR.model.bb"
         fix_script: "bigBedToBed"
       -
         name: "E2F1_0003(NS)"
@@ -112,11 +112,11 @@ genome_data:
     prediction_lists:
       -
         name: "E2F1_0001(JS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/E2F1-hg38_binding_site.bb"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0001-E2F1-E2F1-bestSVR.model.bb	"
         fix_script: "bigBedToBed"
       -
         name: "E2F4_0002(JS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/E2F4-hg38_binding_site.bb"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0002-E2F4-E2F4-bestSVR.model.bb"
         fix_script: "bigBedToBed"
       -
         name: "E2F1_0003(NS)"
