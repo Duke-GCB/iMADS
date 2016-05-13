@@ -112,7 +112,7 @@ genome_data:
     prediction_lists:
       -
         name: "E2F1_0001(JS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0001-E2F1-E2F1-bestSVR.model.bb	"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0001-E2F1-E2F1-bestSVR.model.bb"
         fix_script: "bigBedToBed"
       -
         name: "E2F4_0002(JS)"
