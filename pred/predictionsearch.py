@@ -229,7 +229,7 @@ class PredictionSearch(object):
                  'strand': strand,
             }
             if row['name'] and self.same_except_name(row, prev_row):
-                prev_row['name'] += ',' + row['name']
+                prev_row['name'] += ';' + row['name']
                 continue
             predictions.append(row)
             prev_row = row
