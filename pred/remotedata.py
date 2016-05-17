@@ -61,17 +61,15 @@ class PredictionDataInserter(object):
                     if line:
                         parts = line.split('\t')
                         included_values = parts[:4]
-                        included_values.append(self.name)
-                        outfile.write('\t'.join(included_values) + '\n')
+                        (chorm, start_range, end_range, value) = included_values
+                        result_values = [chorm, start_range, end_range, value, self.name, "[{},{}]".format(start_range, end_range)]
+                        outfile.write('\t'.join(result_values) + '\n')
                     else:
                         break
         os.close(fd)
         db.copy_file_into_db(self.genome + '.prediction', temp_path,
-                               columns=('chrom', 'start_range', 'end_range', 'value', 'model_name'))
+                               columns=('chrom', 'start_range', 'end_range', 'value', 'model_name', 'range'))
         os.remove(temp_path)
-        update_sql = 'update {}.prediction set range = int4range(start_range, end_range) where range is null'
-        fix_range_sql = update_sql.format(self.genome)
-        db.execute(fix_range_sql, None)
 
 
 class GeneListDownloader(object):
