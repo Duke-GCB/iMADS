@@ -9,7 +9,7 @@ import DataCell from '../common/DataCell.jsx'
 
 const RangeColumnData = [
     {
-        title:"Name",
+        title:"Location",
         normalWidth: '24%'
     },
     {
@@ -35,17 +35,8 @@ const NormalColumnData = [
         normalWidth: '8%'
     },
     {
-        title:"Chromosome",
-        wideWidth: '16%',
-        normalWidth: '8%'
-    },
-    {
-        title:"Start",
-        normalWidth: '10%'
-    },
-    {
-        title:"End",
-        normalWidth: '10%'
+        title:"Location",
+        normalWidth: '24%'
     },
     {
         title:"Max",
@@ -55,7 +46,7 @@ const NormalColumnData = [
 
 const ValuesColumnData = {
     title: "Values",
-    normalWidth: '100px',
+    normalWidth: '120px',
 };
 
 function getTitles(rangeType, includeHeatMap) {
@@ -132,9 +123,7 @@ export class ResultDetailRow extends React.Component {
             values.push(rowData.commonName);
             values.push(rowData.name);
             values.push(rowData.strand);
-            values.push(rowData.chrom);
-            values.push(rowData.start);
-            values.push(rowData.end);
+            values.push(rowData.chrom + ':' + rowData.start + '-' + rowData.end);
             values.push(rowData.max);
         }
         if (includeHeatMap) {

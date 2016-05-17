@@ -11,6 +11,7 @@ class ListHeader extends React.Component {
 let style = {
     backgroundColor: '#235f9c',
     color: 'white',
+    paddingLeft: '10px',
 }
 
 export default ListHeader;

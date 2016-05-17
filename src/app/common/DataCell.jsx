@@ -4,18 +4,20 @@ class DataCell extends React.Component {
     render() {
         let {style} = this.props;
         let combinedStyle = Object.assign({}, defaultStyle, style);
-        return <span style={combinedStyle}>
+        return <div style={combinedStyle}>
             {this.props.children}
-        </span>
+        </div>
     }
 }
 
 let defaultStyle = {
     display: 'inline-block',
     textOverflow: 'ellipsis',
+    overflow: 'hidden',
     fontFamily: 'Roboto, sans-serif',
     fontSize: '14px',
     verticalAlign: 'top',
+
 };
 
 export default DataCell;
