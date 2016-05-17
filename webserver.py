@@ -161,9 +161,9 @@ def make_predictions_csv_response(predictions, args):
     separator = ','
     if args.get_format() == 'tsv':
         separator = '\t'
-    headers = ['Name', 'ID', 'Max', 'Location', 'Start', 'End']
+    headers = ['Name', 'ID', 'Max', 'Chromosome', 'Start', 'End']
     if args.is_custom_ranges_list():
-        headers = ['Name', 'Max']
+        headers = ['Chromosome', 'Start', 'End', 'Max']
     if args.get_include_all():
         if args.is_custom_ranges_list():
             headers.append('Values')
@@ -173,8 +173,7 @@ def make_predictions_csv_response(predictions, args):
     for prediction in predictions:
         items = []
         if args.is_custom_ranges_list():
-            name = "{}:{}-{}".format(prediction['chrom'], prediction['start'], prediction['end'])
-            items = [name, str(prediction['max'])]
+            items = [prediction['chrom'], str(prediction['start']), str(prediction['end']), str(prediction['max'])]
         else:
             start = prediction['start']
             end = prediction['end']
