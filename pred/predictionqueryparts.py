@@ -117,8 +117,13 @@ def group_by_name():
 def order_by_name():
     return _query_part("order by name")
 
+
 def order_by_common_name():
     return _query_part("order by common_name")
+
+
+def order_by_common_name_and_name():
+    return _query_part("order by common_name, name")
 
 
 def order_by_seq():
@@ -131,6 +136,10 @@ def order_by_max_value_desc():
 
 def order_by_max_value_desc_name():
     return _query_part("order by max(value) desc, name")
+
+
+def order_by_max_value_desc_common_name():
+    return _query_part("order by max(value) desc, common_name")
 
 
 def limit_and_offset(limit, offset):

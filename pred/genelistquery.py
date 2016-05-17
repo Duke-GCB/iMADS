@@ -34,9 +34,9 @@ class GeneListQuery(object):
             group_by_name(),
         ]
         if self.sort_by_max:
-            query_parts.append(order_by_max_value_desc_name())
+            query_parts.append(order_by_max_value_desc_common_name())
         else:
-            query_parts.append(order_by_common_name())
+            query_parts.append(order_by_common_name_and_name())
         if self.limit:
             query_parts.append(limit_and_offset(self.limit, self.offset))
         return query_parts
