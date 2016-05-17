@@ -102,7 +102,7 @@ def prediction_search(genome):
             'warning': warning,
         })
     elif response_format == 'tsv' or response_format == 'csv':
-        filename = 'prediction_{}_{}.{}'.format(args.get_upstream(), args.get_downstream(), response_format)
+        filename = make_download_filename(genome, args, response_format)
         content_disposition = 'attachment; filename="{}"'.format(filename)
         headers = {'Content-Disposition': content_disposition}
         gen = make_predictions_csv_response(predictions, args)
@@ -111,6 +111,22 @@ def prediction_search(genome):
         raise ValueError("Unexpected format:{}".format(response_format))
     log_info("Returning predictions.")
     return r
+
+
+def make_download_filename(genome, args, response_format):
+    """
+    Make filename that will explain to the user what the predictions are for
+    :param genome: str: which version of the genome we are pulling data from
+    :param args: SearchArgs: argument used for search
+    :param response_format: str file extension/format
+    :return: str filename that will be returned to the user
+    """
+    prefix = 'predictions_{}_{}_{}'.format(genome, args.get_model_name(), args.get_gene_list())
+    middle = ''
+    if not args.is_custom_ranges_list():
+        middle = '_{}_{}'.format(args.get_upstream(), args.get_downstream())
+    filename = '{}{}.{}'.format(prefix, middle, response_format)
+    return filename.replace(' ', '_')
 
 
 @app.route('/api/v1/genomes/<genome>/sequences', methods=['GET','POST'])
