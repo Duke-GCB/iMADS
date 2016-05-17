@@ -117,6 +117,9 @@ def group_by_name():
 def order_by_name():
     return _query_part("order by name")
 
+def order_by_common_name():
+    return _query_part("order by common_name")
+
 
 def order_by_seq():
     return _query_part("order by seq")

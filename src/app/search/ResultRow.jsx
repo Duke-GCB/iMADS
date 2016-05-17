@@ -117,19 +117,27 @@ export class ResultDetailRow extends React.Component {
         let {rowData, heatMap, rangeType, includeHeatMap} = this.props;
         let values = [];
         if (rangeType) {
-            values.push(rowData.chrom + ':' + rowData.start + '-' + rowData.end);
-            values.push(rowData.max);
+            this.addTextValue(values, rowData.chrom + ':' + rowData.start + '-' + rowData.end);
+            this.addTextValue(values, rowData.max);
         } else {
-            values.push(rowData.commonName);
-            values.push(rowData.name);
-            values.push(rowData.strand);
-            values.push(rowData.chrom + ':' + rowData.start + '-' + rowData.end);
-            values.push(rowData.max);
+            this.addTextValue(values, rowData.commonName);
+            this.addTextValue(values, rowData.name, rowData.name.replace(/,/g,'\n'));
+            this.addTextValue(values, rowData.strand);
+            this.addTextValue(values, rowData.chrom + ':' + rowData.start + '-' + rowData.end);
+            this.addTextValue(values, rowData.max);
         }
         if (includeHeatMap) {
             values.push(heatMap);
         }
         return values;
+    }
+
+    addTextValue(values, text, title) {
+        if (!title) {
+            title = text;
+        }
+        let span = <span title={title}>{text}</span>
+        values.push(span);
     }
 
     makeDataCell(value, width) {
