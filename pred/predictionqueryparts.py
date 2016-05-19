@@ -153,8 +153,10 @@ def begin_count():
 def end_count():
     return _query_part(") as foo")
 
+
 def begin():
     return _query_part("begin;")
+
 
 def commit():
     return _query_part(";commit;")
