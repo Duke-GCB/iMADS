@@ -144,7 +144,7 @@ class GenomeDownloader(object):
         :param filename: str: filename we should download via FTP
         :param out_filename: str: path where we should write the 2bit file.
         """
-        self.update_progress('Downloading: ' + self.get_ftp_schema_filename())
+        self.update_progress('Downloading: ' + filename)
         ftp = FTP(self.ftp_host)
         ftp.login()
         ftp.cwd(self.get_ftp_dir())
