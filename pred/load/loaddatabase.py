@@ -9,7 +9,7 @@ import datetime
 from multiprocessing import Pool
 from jinja2 import FileSystemLoader, Environment
 from pred.load.download import GenomeDownloader, GeneListDownloader, PredictionDownloader, GENE_LIST_HOST
-from pred.load.postgres import PostgresConnection
+from pred.load.postgres import PostgresConnection, CopyCommand
 
 SQL_TEMPLATE_DIR = 'sql_templates'
 
@@ -206,7 +206,7 @@ class SQLBuilder(object):
             self.add_sql(infile.read() + "\n")
 
     def copy_file_into_db(self, destination, source_path):
-        self.add_sql("COPY {} FROM '{}';\n".format(destination, source_path))
+        self.add_sql(CopyCommand(destination, source_path))
 
     def delete_tables(self, schema_prefix, tables):
         self.add_template('delete_tables.sql', {'schema_prefix':schema_prefix, 'delete_tables':tables})

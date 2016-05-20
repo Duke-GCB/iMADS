@@ -34,11 +34,15 @@ class PostgresConnection(object):
         :param sql: str: SQL command to run
         :param params: tuple: parameters for the query
         """
-        self.update_progress('Execute sql:' + sql)
+
         if not self.conn:
             self.create_connection()
         self.cur = self.conn.cursor()
-        self.cur.execute(sql, params)
+        if type(sql) is CopyCommand:
+            sql.run(self.cur)
+        else:
+            self.update_progress('Execute sql:' + sql)
+            self.cur.execute(sql, params)
         self.conn.commit()
         self.cur.close()
         self.cur = None
@@ -50,3 +54,12 @@ class PostgresConnection(object):
         self.conn.close()
         self.conn = None
 
+
+class CopyCommand(object):
+    def __init__(self, destination, source_path):
+        self.destination = destination
+        self.source_path = source_path
+
+    def run(self, cursor):
+        with open(self.source_path) as infile:
+            cursor.copy_from(infile, self.destination)
