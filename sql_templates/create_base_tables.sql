@@ -24,3 +24,19 @@ CREATE TABLE {{ schema_prefix }}.gene (
 );
 GRANT ALL PRIVILEGES ON {{ schema_prefix }}.gene TO pred_user;
 CREATE index gene_list_idx on {{ schema_prefix }}.gene(gene_list);
+
+
+CREATE TABLE {{ schema_prefix }}.gene_prediction (
+  gene_list varchar NOT NULL,
+  name varchar NOT NULL,
+  common_name varchar,
+  chrom varchar NOT NULL,
+  strand char(1) NOT NULL,
+  txstart int NOT NULL,
+  txend int NOT NULL,
+  model_name varchar NOT NULL,
+  value numeric NOT NULL,
+  start_range int NOT NULL,
+  end_range int NOT NULL
+);
+GRANT ALL PRIVILEGES ON {{ schema_prefix }}.gene_prediction TO pred_user;

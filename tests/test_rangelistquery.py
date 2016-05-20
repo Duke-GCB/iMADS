@@ -1,5 +1,5 @@
 from unittest import TestCase
-from pred.rangelistquery import RangeListQuery
+from pred.queries.rangelistquery import RangeListQuery
 
 QUERY_BASE = """SET search_path TO %s,public;
 select '' as name,

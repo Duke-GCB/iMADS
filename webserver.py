@@ -7,10 +7,10 @@ import psycopg2.extras
 from flask import Flask, request, render_template, jsonify, g, make_response, Response
 
 from pred.config import parse_config, CONFIG_FILENAME
-from pred.dbdatasource import DataSources
-from pred.predictionsearch import get_predictions_with_guess, get_all_values, SearchArgs, PredictionToken
-from pred.customlist import save_custom_file
-from pred.dnasequence import lookup_dna_sequence
+from pred.webserver.dbdatasource import DataSources
+from pred.webserver.predictionsearch import get_predictions_with_guess, get_all_values
+from pred.webserver.customlist import save_custom_file
+from pred.webserver.dnasequence import lookup_dna_sequence
 
 
 app = Flask(__name__)

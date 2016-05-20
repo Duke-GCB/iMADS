@@ -1,5 +1,5 @@
-from pred.querybuilder import QueryBuilder
-from pred.predictionqueryparts import *
+from pred.queries.querybuilder import QueryBuilder
+from pred.queries.predictionqueryparts import *
 
 
 class MaxPredictionQuery(object):

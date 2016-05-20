@@ -98,8 +98,7 @@ class GenomeData(object):
             name = prediction_data['name']
             url = prediction_data['url']
             fix_script = prediction_data['fix_script']
-            prediction = PredictionSettings(name, self.download_dir, url, self.genomename,
-                                            fix_script)
+            prediction = PredictionSettings(name, url, self.genomename, fix_script)
             self.prediction_lists.append(prediction)
 
 
@@ -114,9 +113,8 @@ class GeneInfoSettings(object):
 
 
 class PredictionSettings(object):
-    def __init__(self, name, local_dir, url, genome, fix_script):
+    def __init__(self, name, url, genome, fix_script):
         self.name = name
-        self.local_dir = local_dir
         self.url = url
         self.genome = genome
         self.fix_script = fix_script

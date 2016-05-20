@@ -2,11 +2,11 @@ import math
 import uuid
 import base64
 import psycopg2.extras
-from pred.customlist import CustomList, does_custom_list_exist, get_gene_name_set
-from pred.predictionquery import PredictionQuery
-from pred.maxpredictionquery import MaxPredictionQuery
-from pred.genelistquery import GeneListQuery, GeneListUnusedNames
-from pred.rangelistquery import RangeListQuery
+from pred.webserver.customlist import CustomList, does_custom_list_exist, get_gene_name_set
+from pred.queries.predictionquery import PredictionQuery
+from pred.queries.maxpredictionquery import MaxPredictionQuery
+from pred.queries.genelistquery import GeneListQuery, GeneListUnusedNames
+from pred.queries.rangelistquery import RangeListQuery
 
 CUSTOM_GENE_LIST = 'Custom Gene List'
 CUSTOM_RANGES_LIST = 'Custom Ranges List'

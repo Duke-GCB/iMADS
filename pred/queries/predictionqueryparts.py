@@ -1,4 +1,4 @@
-from pred.querybuilder import QueryPart
+from pred.queries.querybuilder import QueryPart
 
 
 def _query_part(sql):
