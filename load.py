@@ -38,7 +38,7 @@ def run_sql_command(config):
     :param config: pred.Config: global configuration containing what data to download/convert/load.
     """
     update_progress("STAGE: Creating SQL files.")
-    sql_pipeline = create_sql_pipeline(config, update_progress())
+    sql_pipeline = create_sql_pipeline(config, update_progress)
     update_progress("STAGE: Executing SQL files.")
     runner = SqlRunner(config, update_progress)
     sql_pipeline.run(runner.execute)

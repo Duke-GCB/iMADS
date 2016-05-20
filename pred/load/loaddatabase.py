@@ -65,7 +65,7 @@ class DatabaseLoader(object):
         self.sql_builder.insert_data_source(downloader.get_url(),
                                             'Genome {}'.format(self.genome),
                                             'genelist',
-                                            downloader.get_local_schema_path())
+                                            downloader.get_local_path())
 
     def insert_gene_list_files(self):
         for target in self.genome_data.ftp_files:
@@ -86,7 +86,7 @@ class DatabaseLoader(object):
     def insert_prediction_files(self):
         self.sql_builder.begin_parallel()
         for prediction_setting in self.genome_data.prediction_lists:
-            downloader = PredictionDownloader(prediction_setting, self.update_progress)
+            downloader = PredictionDownloader(self.config, prediction_setting, self.update_progress)
             filename = downloader.get_local_tsv_path()
             self.sql_builder.copy_file_into_db(self.genome_data.genomename + '.prediction', filename)
             self.sql_builder.insert_data_source(downloader.get_url(), downloader.get_description(),
@@ -304,9 +304,7 @@ class SqlRunner(object):
 
 
 def create_connection(db_config):
-    return PostgresConnection(db_config.host, db_config.dbname,
-                              db_config.user, db_config.password,
-                              update_progress=print)
+    return PostgresConnection(db_config, print)
 
 
 def execute_sql(db_config, sql):
