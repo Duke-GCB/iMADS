@@ -320,7 +320,7 @@ class PredictionDownloader(object):
         temp_path = self.get_local_tsv_path()
         with open(self.get_local_bed_path(), 'r') as bedfile:
             with open(temp_path, 'w') as outfile:
-                self.convert_tsv_data(bedfile, out)
+                self.convert_tsv_data(bedfile, outfile)
                 while True:
                     line = bedfile.readline()
                     if line:
