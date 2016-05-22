@@ -228,9 +228,10 @@ class PredictionSearch(object):
                  'values': row[PredictionQueryNames.PRED],
                  'strand': strand,
             }
-            if row['name'] and self.same_except_name(row, prev_row):
-                prev_row['name'] += ';' + row['name']
-                continue
+            #this messes up my counts can I push it into SQL
+            #if row['name'] and self.same_except_name(row, prev_row):
+            #    prev_row['name'] += ';' + row['name']
+            #    continue
             predictions.append(row)
             prev_row = row
         self.db.rollback()
