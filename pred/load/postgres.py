@@ -39,6 +39,7 @@ class PostgresConnection(object):
             self.create_connection()
         self.cur = self.conn.cursor()
         if type(sql) is CopyCommand:
+            self.update_progress('Execute copy:' + sql.source_path)
             sql.run(self.cur)
         else:
             self.update_progress('Execute sql:' + sql)

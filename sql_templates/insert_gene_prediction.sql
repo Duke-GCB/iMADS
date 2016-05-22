@@ -5,4 +5,5 @@ select gene.gene_list, name, common_name, gene.chrom, strand, txstart, txend, pr
     inner join {{ schema_prefix }}.prediction
     on gene.range && prediction.range
     and gene.chrom = prediction.chrom
-    where gene.chrom = '{{ chromosome }}';
+    where gene.chrom = '{{ chromosome }}'
+        and model_name = '{{ model_name }}';

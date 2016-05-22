@@ -97,9 +97,11 @@ class DatabaseLoader(object):
         self.sql_builder.create_gene_and_prediction_indexes(self.genome)
 
     def create_gene_prediction(self):
-        self.sql_builder.begin_parallel()
-        self.sql_builder.insert_gene_prediction(self.genome)
-        self.sql_builder.end_parallel()
+        for prediction_setting in self.genome_data.prediction_lists:
+            model_name = prediction_setting.name
+            self.sql_builder.begin_parallel()
+            self.sql_builder.insert_gene_prediction(self.genome, model_name)
+            self.sql_builder.end_parallel()
         self.sql_builder.create_gene_prediction_indexes(self.genome)
 
     def delete_sql_for_gene_list_files(self):
@@ -161,11 +163,12 @@ class SQLBuilder(object):
         """
         self.add_sql(self.render_template(template_name, render_params))
 
-    def insert_gene_prediction(self, schema_prefix):
+    def insert_gene_prediction(self, schema_prefix, model_name):
         for chrom in self.get_chromosomes():
             params = {
                 'schema_prefix': schema_prefix,
-                'chromosome': chrom
+                'chromosome': chrom,
+                'model_name': model_name
             }
             self.add_template('insert_gene_prediction.sql', params)
 
