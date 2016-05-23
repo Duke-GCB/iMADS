@@ -31,7 +31,7 @@ class MaxPredictionQuery(object):
             where(),
             filter_gene_list(self.gene_list, self.model_name, self.upstream, self.downstream),
         ]
-        if self.guess:
+        if self.guess and not self.count:
             with_parts.append(value_greater_than(self.guess))
         with_parts.append(group_by_name())
         with_parts.append(order_by_max_value_desc())
