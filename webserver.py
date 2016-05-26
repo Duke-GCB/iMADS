@@ -7,10 +7,10 @@ import psycopg2.extras
 from flask import Flask, request, render_template, jsonify, g, make_response, Response
 
 from pred.config import parse_config, CONFIG_FILENAME
-from pred.dbdatasource import DataSources
-from pred.predictionsearch import get_predictions_with_guess, get_all_values, SearchArgs, PredictionToken
-from pred.customlist import save_custom_file
-from pred.dnasequence import lookup_dna_sequence
+from pred.webserver.dbdatasource import DataSources
+from pred.webserver.predictionsearch import get_predictions_with_guess, get_all_values
+from pred.webserver.customlist import save_custom_file
+from pred.webserver.dnasequence import lookup_dna_sequence
 
 
 app = Flask(__name__)
@@ -102,7 +102,7 @@ def prediction_search(genome):
             'warning': warning,
         })
     elif response_format == 'tsv' or response_format == 'csv':
-        filename = 'prediction_{}_{}.{}'.format(args.get_upstream(), args.get_downstream(), response_format)
+        filename = make_download_filename(genome, args, response_format)
         content_disposition = 'attachment; filename="{}"'.format(filename)
         headers = {'Content-Disposition': content_disposition}
         gen = make_predictions_csv_response(predictions, args)
@@ -111,6 +111,22 @@ def prediction_search(genome):
         raise ValueError("Unexpected format:{}".format(response_format))
     log_info("Returning predictions.")
     return r
+
+
+def make_download_filename(genome, args, response_format):
+    """
+    Make filename that will explain to the user what the predictions are for
+    :param genome: str: which version of the genome we are pulling data from
+    :param args: SearchArgs: argument used for search
+    :param response_format: str file extension/format
+    :return: str filename that will be returned to the user
+    """
+    prefix = 'predictions_{}_{}_{}'.format(genome, args.get_model_name(), args.get_gene_list())
+    middle = ''
+    if not args.is_custom_ranges_list():
+        middle = '_{}_{}'.format(args.get_upstream(), args.get_downstream())
+    filename = '{}{}.{}'.format(prefix, middle, response_format)
+    return filename.replace(' ', '_')
 
 
 @app.route('/api/v1/genomes/<genome>/sequences', methods=['GET','POST'])
@@ -145,9 +161,9 @@ def make_predictions_csv_response(predictions, args):
     separator = ','
     if args.get_format() == 'tsv':
         separator = '\t'
-    headers = ['Name', 'ID', 'Max', 'Location', 'Start', 'End']
+    headers = ['Name', 'ID', 'Max', 'Chromosome', 'Start', 'End']
     if args.is_custom_ranges_list():
-        headers = ['Name', 'Max']
+        headers = ['Chromosome', 'Start', 'End', 'Max']
     if args.get_include_all():
         if args.is_custom_ranges_list():
             headers.append('Values')
@@ -157,8 +173,7 @@ def make_predictions_csv_response(predictions, args):
     for prediction in predictions:
         items = []
         if args.is_custom_ranges_list():
-            name = "{}:{}-{}".format(prediction['chrom'], prediction['start'], prediction['end'])
-            items = [name, str(prediction['max'])]
+            items = [prediction['chrom'], str(prediction['start']), str(prediction['end']), str(prediction['max'])]
         else:
             start = prediction['start']
             end = prediction['end']

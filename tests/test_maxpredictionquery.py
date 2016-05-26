@@ -1,5 +1,5 @@
 from unittest import TestCase
-from pred.maxpredictionquery import MaxPredictionQuery
+from pred.queries.maxpredictionquery import MaxPredictionQuery
 
 MAX_QUERY_BASE = """SET search_path TO %s,public;
 with max_prediction_names as (

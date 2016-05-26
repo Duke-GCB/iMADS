@@ -5,4 +5,8 @@ npm install
 npm install --dev
 npm install webpack -g
 webpack
-gunicorn --bind 0.0.0.0:80 webserver:app
+TIMEOUT=180
+gunicorn --bind 0.0.0.0:80 \
+         --timeout $TIMEOUT \
+         --log-level=debug \
+         webserver:app

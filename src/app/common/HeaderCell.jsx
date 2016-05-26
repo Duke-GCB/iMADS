@@ -11,7 +11,8 @@ class HeaderCell extends React.Component {
 }
 
 let style = {
-    padding: '10px',
+    paddingTop: '10px',
+    paddingBottom: '10px',
     display: 'inline-block',
     textOverflow: 'ellipsis',
     overflow: 'hidden',

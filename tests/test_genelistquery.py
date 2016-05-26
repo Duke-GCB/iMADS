@@ -1,5 +1,5 @@
 from unittest import TestCase
-from pred.genelistquery import GeneListQuery, GeneListUnusedNames
+from pred.queries.genelistquery import GeneListQuery, GeneListUnusedNames
 
 QUERY_BASE = """SET search_path TO %s,public;
 select
@@ -25,7 +25,7 @@ else
 (txend - %s) <= end_range and (txend + %s) >= end_range
 end
 group by name
-order by name{}"""
+order by common_name, name{}"""
 
 GENE_LIST_FILTER_WITH_LIMIT = QUERY_BASE.format("\ngene_list = %s\nand", "\nlimit %s offset %s")
 GENE_LIST_FILTER = QUERY_BASE.format("", "")
@@ -55,7 +55,7 @@ else
 (txend - %s) <= end_range and (txend + %s) >= end_range
 end
 group by name
-order by name
+order by common_name, name
 ) as foo"""
 
 
@@ -105,6 +105,7 @@ class TestGeneListQuery(TestCase):
             downstream="250",
             count=True
         )
+        self.maxDiff = None
         sql, params = query.get_query_and_params()
         self.assertEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)

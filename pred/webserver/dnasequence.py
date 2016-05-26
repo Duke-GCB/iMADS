@@ -1,6 +1,6 @@
 import os
 import twobitreader
-from pred.paramvalidation import verify_genome, verify_chrom
+from pred.webserver.paramvalidation import verify_genome, verify_chrom
 
 
 def lookup_dna_sequence(config, genome, ranges):

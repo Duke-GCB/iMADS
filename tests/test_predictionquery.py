@@ -1,5 +1,5 @@
 from unittest import TestCase
-from pred.predictionquery import PredictionQuery
+from pred.queries.predictionquery import PredictionQuery
 
 QUERY_BASE = """SET search_path TO %s,public;
 select

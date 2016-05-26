@@ -2,11 +2,11 @@ import math
 import uuid
 import base64
 import psycopg2.extras
-from pred.customlist import CustomList, does_custom_list_exist, get_gene_name_set
-from pred.predictionquery import PredictionQuery
-from pred.maxpredictionquery import MaxPredictionQuery
-from pred.genelistquery import GeneListQuery, GeneListUnusedNames
-from pred.rangelistquery import RangeListQuery
+from pred.webserver.customlist import CustomList, does_custom_list_exist, get_gene_name_set
+from pred.queries.predictionquery import PredictionQuery
+from pred.queries.maxpredictionquery import MaxPredictionQuery
+from pred.queries.genelistquery import GeneListQuery, GeneListUnusedNames
+from pred.queries.rangelistquery import RangeListQuery
 
 CUSTOM_GENE_LIST = 'Custom Gene List'
 CUSTOM_RANGES_LIST = 'Custom Ranges List'
@@ -199,6 +199,7 @@ class PredictionSearch(object):
         cur = self.db.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute(query, params)
         predictions = []
+        prev_row = None
         for row in cur.fetchall():
             gene_start_str = row[PredictionQueryNames.GENE_START]
             gene_start = ""
@@ -217,7 +218,7 @@ class PredictionSearch(object):
             else:
                 start = row[PredictionQueryNames.RANGE_START]
                 end = row[PredictionQueryNames.RANGE_END]
-            predictions.append({
+            row = {
                  'name': row[PredictionQueryNames.NAME],
                  'commonName': row[PredictionQueryNames.COMMON_NAME],
                  'chrom': row[PredictionQueryNames.CHROM],
@@ -226,12 +227,28 @@ class PredictionSearch(object):
                  'end': str(end),
                  'values': row[PredictionQueryNames.PRED],
                  'strand': strand,
-            })
+            }
+            #this messes up my counts can I push it into SQL
+            #if row['name'] and self.same_except_name(row, prev_row):
+            #    prev_row['name'] += ';' + row['name']
+            #    continue
+            predictions.append(row)
+            prev_row = row
         self.db.rollback()
         cur.close()
         if self.args.is_custom_gene_list():
             self.warning = self.query_for_unused_gene_names()
         return predictions
+
+    @staticmethod
+    def same_except_name(row, prev_row):
+        if not prev_row:
+            return False
+        check_fields = ['commonName', 'chrom', 'max', 'start', 'end', 'strand']
+        for field in check_fields:
+            if prev_row[field] != row[field]:
+                return False
+        return True
 
     def make_query_and_params(self, count):
         return self.determine_query(count).get_query_and_params()

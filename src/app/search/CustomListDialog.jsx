@@ -35,13 +35,20 @@ class CustomListDialog extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.isOpen && !this.state.props) {
+        if (nextProps.isOpen) {
+            let text = this.state.text;
+            let geneList = this.state.geneList;
+            if (this.state.type !== nextProps.type) {
+                text = '';
+                geneList = 'All';
+            }
             this.setState({
-                text: '',
+                text: text,
                 file: undefined,
                 fileValue: '',
-                geneList: 'All',
+                geneList: geneList,
                 loading: false,
+                type: nextProps.type,
             });
         }
     }

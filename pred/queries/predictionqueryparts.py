@@ -1,4 +1,4 @@
-from pred.querybuilder import QueryPart
+from pred.queries.querybuilder import QueryPart
 
 
 def _query_part(sql):
@@ -118,6 +118,14 @@ def order_by_name():
     return _query_part("order by name")
 
 
+def order_by_common_name():
+    return _query_part("order by common_name")
+
+
+def order_by_common_name_and_name():
+    return _query_part("order by common_name, name")
+
+
 def order_by_seq():
     return _query_part("order by seq")
 
@@ -128,6 +136,10 @@ def order_by_max_value_desc():
 
 def order_by_max_value_desc_name():
     return _query_part("order by max(value) desc, name")
+
+
+def order_by_max_value_desc_common_name():
+    return _query_part("order by max(value) desc, common_name")
 
 
 def limit_and_offset(limit, offset):
@@ -141,8 +153,10 @@ def begin_count():
 def end_count():
     return _query_part(") as foo")
 
+
 def begin():
     return _query_part("begin;")
+
 
 def commit():
     return _query_part(";commit;")
