@@ -36,8 +36,8 @@ def create_db_connection(config):
                                 ' dbname=' + config.dbname +
                                 ' user=' + config.user +
                                 ' password=' + config.password)
-    except:
-        raise ValueError("Unable to connect to the database.")
+    except Exception as ex:
+        raise ValueError("Unable to connect to the database:{}.".format(ex))
 
 
 @app.teardown_appcontext

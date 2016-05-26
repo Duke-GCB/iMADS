@@ -19,11 +19,15 @@ def parse_config(filename):
     config = None
     with open(filename) as data_file:
         data = load(data_file)
-        dbconfig = DBConfig()
-        config = Config(data, dbconfig)
-        genome_data_ary = data['genome_data']
-        for genome_data in genome_data_ary:
-            config.add_genome(GenomeData(config, genome_data))
+        return parse_config_from_dict(data)
+
+
+def parse_config_from_dict(data):
+    dbconfig = DBConfig()
+    config = Config(data, dbconfig)
+    genome_data_ary = data['genome_data']
+    for genome_data in genome_data_ary:
+        config.add_genome(GenomeData(config, genome_data))
     return config
 
 

@@ -4,6 +4,18 @@ Database connection that commits and prints each statement sent to it.
 import psycopg2
 
 
+def copy_from(cursor, filename, destination):
+    """
+    Copy data from filename into the database as table destination.
+    This function exists for unit testing.
+    :param cursor: Cursor: database connection
+    :param filename: str: filename to copy rows from
+    :param destination: str: name of the table to copy the data into
+    """
+    with open(filename) as infile:
+        cursor.copy_from(infile, destination)
+
+
 class PostgresConnection(object):
     def __init__(self, db_config, update_progress):
         """
@@ -24,8 +36,15 @@ class PostgresConnection(object):
         Creates a connection to the database.
         :return:
         """
-        connect_str = 'host={} dbname={} user={} password={}'.format(self.host, self.dbname, self.user, self.password)
+        connect_str = self.get_conn_str()
         self.conn = psycopg2.connect(connect_str)
+
+    def get_conn_str(self):
+        """
+        Create psycopg2 connection string based on properties.
+        :return: str: string for connecting to the database via psycopg2
+        """
+        return 'host={} dbname={} user={} password={}'.format(self.host, self.dbname, self.user, self.password)
 
     def execute(self, sql, params=()):
         """
@@ -39,10 +58,10 @@ class PostgresConnection(object):
             self.create_connection()
         self.cur = self.conn.cursor()
         if type(sql) is CopyCommand:
-            self.update_progress('Execute copy:' + sql.source_path)
+            #self.update_progress('Execute copy:' + sql.source_path)
             sql.run(self.cur)
         else:
-            self.update_progress('Execute sql:' + sql)
+            #self.update_progress('Execute sql:' + sql)
             self.cur.execute(sql, params)
         self.conn.commit()
         self.cur.close()
@@ -52,8 +71,9 @@ class PostgresConnection(object):
         """
         Cleanup database connection.
         """
-        self.conn.close()
-        self.conn = None
+        if self.conn:
+            self.conn.close()
+            self.conn = None
 
 
 class CopyCommand(object):
@@ -62,5 +82,4 @@ class CopyCommand(object):
         self.source_path = source_path
 
     def run(self, cursor):
-        with open(self.source_path) as infile:
-            cursor.copy_from(infile, self.destination)
+        copy_from(cursor, self.source_path, self.destination)
