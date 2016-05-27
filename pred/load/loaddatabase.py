@@ -77,7 +77,7 @@ class DatabaseLoader(object):
 
     def create_schema_and_base_tables(self):
         self.sql_builder.create_schema(self.genome, self.config.dbconfig.user)
-        self.sql_builder.create_base_tables(self.genome)
+        self.sql_builder.create_base_tables(self.genome, self.genome_data.get_model_types_str())
 
     def insert_genome_data_source(self):
         downloader = GenomeDownloader(self.config.download_dir,
@@ -210,8 +210,8 @@ class SQLBuilder(object):
     def create_schema(self, schema_prefix, user_name):
         self.add_template('create_schema.sql', {'schema_prefix': schema_prefix, 'user_name': user_name})
 
-    def create_base_tables(self, schema_prefix):
-        self.add_template('create_base_tables.sql', {'schema_prefix': schema_prefix})
+    def create_base_tables(self, schema_prefix, model_types_str):
+        self.add_template('create_base_tables.sql', {'schema_prefix': schema_prefix, 'model_types': model_types_str})
 
     def create_data_source(self):
         self.add_template('create_data_source.sql', {})

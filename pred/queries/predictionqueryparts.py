@@ -60,9 +60,9 @@ end""", [gene_list, model_name, upstream, downstream, downstream, upstream])
 def filter_common_name(custom_list_id, custom_list_filter, model_name, upstream, downstream):
     if custom_list_filter.strip().upper() == "ALL":
         custom_list_filter = ""
-    base_sql = """( common_name in (select gene_name from custom_gene_list where id = %s)
+    base_sql = """( upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)
 or
-name in (select gene_name from custom_gene_list where id = %s)
+upper(name) in (select upper(gene_name) from custom_gene_list where id = %s)
 )
 and
 model_name = %s

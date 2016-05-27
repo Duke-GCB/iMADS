@@ -6,8 +6,10 @@ from pred.config import parse_config_from_dict
 from load import run_sql_command
 from pred.load import loaddatabase
 from pred.load import postgres
-from pred.webserver.predictionsearch import get_predictions_with_guess, SearchArgs
+from pred.webserver.predictionsearch import get_predictions_with_guess, SearchArgs, CUSTOM_GENE_LIST
 from webserver import create_db_connection
+from pred.webserver.customlist import save_custom_file, GENE_LIST_TYPE
+
 
 DOCKER_NAME="TF_DNA_POSTGRES_TEST"
 
@@ -144,5 +146,82 @@ class TestWithDocker(TestCase):
             SearchArgs.PAGE: "1",
             SearchArgs.PER_PAGE: "10",
         }
-        predictions = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
         self.assertEqual(len(predictions), 3)
+
+    def test_custom_gene_list_no_results(self):
+        db = create_db_connection(TestWithDocker.config.dbconfig)
+        custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "cheese")
+        params = {
+            SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
+            SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
+            SearchArgs.MODEL: "E2F1_0001(JS)",
+            SearchArgs.UPSTREAM: "100",
+            SearchArgs.DOWNSTREAM: "100",
+            SearchArgs.PAGE: "1",
+            SearchArgs.PER_PAGE: "10",
+        }
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        self.assertEqual(len(predictions), 0)
+
+    def test_custom_gene_list_with_results(self):
+        db = create_db_connection(TestWithDocker.config.dbconfig)
+        custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "DDX11L1")
+        params = {
+            SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
+            SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
+            SearchArgs.MODEL: "E2F1_0001(JS)",
+            SearchArgs.UPSTREAM: "100",
+            SearchArgs.DOWNSTREAM: "100",
+            SearchArgs.PAGE: "1",
+            SearchArgs.PER_PAGE: "10",
+        }
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        self.assertEqual(len(predictions), 3)
+
+    def test_custom_gene_list_id_results(self):
+        db = create_db_connection(TestWithDocker.config.dbconfig)
+        custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "uc001aaa.3\nuc010nxr.1")
+        params = {
+            SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
+            SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
+            SearchArgs.MODEL: "E2F1_0001(JS)",
+            SearchArgs.UPSTREAM: "100",
+            SearchArgs.DOWNSTREAM: "100",
+            SearchArgs.PAGE: "1",
+            SearchArgs.PER_PAGE: "10",
+        }
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        self.assertEqual(len(predictions), 2)
+
+    def test_custom_gene_list_with_lc_results(self):
+        db = create_db_connection(TestWithDocker.config.dbconfig)
+        custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "ddx11l1")
+        params = {
+            SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
+            SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
+            SearchArgs.MODEL: "E2F1_0001(JS)",
+            SearchArgs.UPSTREAM: "100",
+            SearchArgs.DOWNSTREAM: "100",
+            SearchArgs.PAGE: "1",
+            SearchArgs.PER_PAGE: "10",
+        }
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        self.assertEqual(len(predictions), 3)
+
+    def test_custom_gene_list_id_uc(self):
+        db = create_db_connection(TestWithDocker.config.dbconfig)
+        custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "UC001AAA.3")
+        params = {
+            SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
+            SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
+            SearchArgs.MODEL: "E2F1_0001(JS)",
+            SearchArgs.UPSTREAM: "100",
+            SearchArgs.DOWNSTREAM: "100",
+            SearchArgs.PAGE: "1",
+            SearchArgs.PER_PAGE: "10",
+        }
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        self.assertEqual(len(predictions), 1)
+
+

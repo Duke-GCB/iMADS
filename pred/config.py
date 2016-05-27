@@ -105,6 +105,9 @@ class GenomeData(object):
             prediction = PredictionSettings(name, url, self.genomename, fix_script)
             self.prediction_lists.append(prediction)
 
+    def get_model_types_str(self):
+        return ','.join(["'{}'".format(data.name) for data in self.prediction_lists])
+
 
 class GeneInfoSettings(object):
     def __init__(self, genome, name, source_table, common_name, common_lookup_table=None, common_lookup_table_field=None):
