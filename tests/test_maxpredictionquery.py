@@ -83,7 +83,6 @@ else
 end
 and name in (select name from max_prediction_names)
 group by name
-order by max(value) desc, name
 ) as foo"""
 
 

@@ -29,8 +29,9 @@ class PredictionQuery(object):
             where(),
             filter_gene_list(self.gene_list, self.model_name, self.upstream, self.downstream),
             group_by_name(),
-            order_by_name()
         ]
+        if not self.count:
+            query_parts.append(order_by_name())
         if self.limit:
             query_parts.append(limit_and_offset(self.limit, self.offset))
         return query_parts

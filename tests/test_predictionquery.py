@@ -49,7 +49,6 @@ else
 (txend - %s) <= end_range and (txend + %s) >= end_range
 end
 group by name
-order by name
 ) as foo"""
 
 class TestPredictionQuery(TestCase):

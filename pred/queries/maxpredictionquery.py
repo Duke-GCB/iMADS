@@ -47,7 +47,8 @@ class MaxPredictionQuery(object):
             filter_gene_list(self.gene_list, self.model_name, self.upstream, self.downstream),
             name_in_max_prediction_names(),
             group_by_name(),
-            order_by_max_value_desc_name()
         ]
+        if not self.count:
+            query_parts.append(order_by_max_value_desc_name())
         return query_parts
 
