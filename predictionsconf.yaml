@@ -26,75 +26,27 @@ genome_data:
         fix_script: "bigBedToBed"
       -
         name: "E2F1_0003(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0003-E2F1-E2F1_250nM_Bound_filtered_normalized_34bp_GCGC_1a2a3mer_format.model.bb"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0003-E2F1.bb"
         fix_script: "bigBedToBed"
       -
-        name: "E2F1_0004(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0004-E2F1-E2F1_250nM_Bound_filtered_normalized_34bp_GCGG_1a2a3mer_format.model.bb"
+        name: "E2F4_0004(NS)"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0004-E2F4.bb"
         fix_script: "bigBedToBed"
       -
-        name: "E2F4_0005(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0005-E2F4-E2F4_500nM_Bound_filtered_normalized_34bp_GCGC_1a2a3mer_format.model.bb"
+        name: "ELK1_0005(NS)"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0005-ELK1.bb"
         fix_script: "bigBedToBed"
       -
-        name: "E2F4_0006(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0006-E2F4-E2F4_500nM_Bound_filtered_normalized_34bp_GCGG_1a2a3mer_format.model.bb"
+        name: "ETS1_0006(NS)"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0006-ETS1.bb"
         fix_script: "bigBedToBed"
       -
-        name: "ELK1_0007(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0007-ELK1-ELK1_100nM_Bound_filtered_normalized_GGAA_1a2a3mer_format.model.bb"
+        name: "HisMadMax_0007(NS)"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0007-HisMadMax.bb"
         fix_script: "bigBedToBed"
       -
-        name: "ELK1_0008(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0008-ELK1-ELK1_100nM_Bound_filtered_normalized_GGAT_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "ETS1_0009(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0009-ETS1-ETS1_100nM_Bound_filtered_normalized_GGAA_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "ETS1_0010(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0010-ETS1-ETS1_100nM_Bound_filtered_normalized_GGAT_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMadMax_0011(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0011-HisMadMax-HisMadMax_Bound_filtered_normalized_CACATG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMadMax_0012(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0012-HisMadMax-HisMadMax_Bound_filtered_normalized_CACGAG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMadMax_0013(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0013-HisMadMax-HisMadMax_Bound_filtered_normalized_CACGCG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMadMax_0014(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0014-HisMadMax-HisMadMax_Bound_filtered_normalized_CACGTG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMadMax_0015(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0015-HisMadMax-HisMadMax_Bound_filtered_normalized_CATGCG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMycMax_0016(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0016-HisMycMax-HisMycMax_Bound_filtered_normalized_CACATG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMycMax_0017(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0017-HisMycMax-HisMycMax_Bound_filtered_normalized_CACGAG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMycMax_0018(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0018-HisMycMax-HisMycMax_Bound_filtered_normalized_CACGCG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMycMax_0019(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0019-HisMycMax-HisMycMax_Bound_filtered_normalized_CACGTG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMycMax_0020(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0020-HisMycMax-HisMycMax_Bound_filtered_normalized_CATGCG_1a2a3mer_format.model.bb"
+        name: "HisMycMax_0008(NS)"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0008-HisMycMax.bb"
         fix_script: "bigBedToBed"
   -
     genome: "hg38"
@@ -136,73 +88,25 @@ genome_data:
         fix_script: "bigBedToBed"
       -
         name: "E2F1_0003(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0003-E2F1-E2F1_250nM_Bound_filtered_normalized_34bp_GCGC_1a2a3mer_format.model.bb"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0003-E2F1.bb"
         fix_script: "bigBedToBed"
       -
-        name: "E2F1_0004(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0004-E2F1-E2F1_250nM_Bound_filtered_normalized_34bp_GCGG_1a2a3mer_format.model.bb"
+        name: "E2F4_0004(NS)"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0004-E2F4.bb"
         fix_script: "bigBedToBed"
       -
-        name: "E2F4_0005(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0005-E2F4-E2F4_500nM_Bound_filtered_normalized_34bp_GCGC_1a2a3mer_format.model.bb"
+        name: "ELK1_0005(NS)"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0005-ELK1.bb"
         fix_script: "bigBedToBed"
       -
-        name: "E2F4_0006(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0006-E2F4-E2F4_500nM_Bound_filtered_normalized_34bp_GCGG_1a2a3mer_format.model.bb"
+        name: "ETS1_0006(NS)"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0006-ETS1.bb"
         fix_script: "bigBedToBed"
       -
-        name: "ELK1_0007(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0007-ELK1-ELK1_100nM_Bound_filtered_normalized_GGAA_1a2a3mer_format.model.bb"
+        name: "HisMadMax_0007(NS)"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0007-HisMadMax.bb"
         fix_script: "bigBedToBed"
       -
-        name: "ELK1_0008(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0008-ELK1-ELK1_100nM_Bound_filtered_normalized_GGAT_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "ETS1_0009(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0009-ETS1-ETS1_100nM_Bound_filtered_normalized_GGAA_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "ETS1_0010(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0010-ETS1-ETS1_100nM_Bound_filtered_normalized_GGAT_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMadMax_0011(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0011-HisMadMax-HisMadMax_Bound_filtered_normalized_CACATG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMadMax_0012(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0012-HisMadMax-HisMadMax_Bound_filtered_normalized_CACGAG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMadMax_0013(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0013-HisMadMax-HisMadMax_Bound_filtered_normalized_CACGCG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMadMax_0014(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0014-HisMadMax-HisMadMax_Bound_filtered_normalized_CACGTG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMadMax_0015(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0015-HisMadMax-HisMadMax_Bound_filtered_normalized_CATGCG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMycMax_0016(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0016-HisMycMax-HisMycMax_Bound_filtered_normalized_CACATG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMycMax_0017(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0017-HisMycMax-HisMycMax_Bound_filtered_normalized_CACGAG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMycMax_0018(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0018-HisMycMax-HisMycMax_Bound_filtered_normalized_CACGCG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMycMax_0019(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0019-HisMycMax-HisMycMax_Bound_filtered_normalized_CACGTG_1a2a3mer_format.model.bb"
-        fix_script: "bigBedToBed"
-      -
-        name: "HisMycMax_0020(NS)"
-        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0020-HisMycMax-HisMycMax_Bound_filtered_normalized_CATGCG_1a2a3mer_format.model.bb"
+        name: "HisMycMax_0008(NS)"
+        url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0008-HisMycMax.bb"
         fix_script: "bigBedToBed"
