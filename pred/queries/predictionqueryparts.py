@@ -32,7 +32,7 @@ group by seq""", [list_id, model_name])
 def select_prediction_values():
     return _query_part("""select
 common_name,
-string_agg(name, ', ') as name,
+string_agg(name, '; ') as name,
 round(max(value), 4) as max_value,
 chrom,
 strand,

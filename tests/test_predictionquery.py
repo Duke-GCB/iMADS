@@ -4,7 +4,7 @@ from pred.queries.predictionquery import PredictionQuery
 QUERY_BASE = """SET search_path TO %s,public;
 select
 common_name,
-string_agg(name, ', ') as name,
+string_agg(name, '; ') as name,
 round(max(value), 4) as max_value,
 chrom,
 strand,
@@ -31,7 +31,7 @@ COUNT_QUERY = """SET search_path TO %s,public;
 select count(*) from (
 select
 common_name,
-string_agg(name, ', ') as name,
+string_agg(name, '; ') as name,
 round(max(value), 4) as max_value,
 chrom,
 strand,

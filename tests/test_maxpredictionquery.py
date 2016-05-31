@@ -19,7 +19,7 @@ order by max(value) desc{}
 )
 select
 common_name,
-string_agg(name, ', ') as name,
+string_agg(name, '; ') as name,
 round(max(value), 4) as max_value,
 chrom,
 strand,
@@ -64,7 +64,7 @@ order by max(value) desc
 select count(*) from (
 select
 common_name,
-string_agg(name, ', ') as name,
+string_agg(name, '; ') as name,
 round(max(value), 4) as max_value,
 chrom,
 strand,
