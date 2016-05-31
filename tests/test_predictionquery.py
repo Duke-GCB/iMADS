@@ -3,12 +3,12 @@ from pred.queries.predictionquery import PredictionQuery
 
 QUERY_BASE = """SET search_path TO %s,public;
 select
-max(common_name) as common_name,
-name,
+common_name,
+string_agg(name, ', ') as name,
 round(max(value), 4) as max_value,
-max(chrom) as chrom,
-max(strand) as strand,
-max(case strand when '+' then txstart else txend end) as gene_start,
+chrom,
+strand,
+case strand when '+' then txstart else txend end as gene_start,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where
@@ -21,8 +21,8 @@ case strand when '+' then
 else
 (txend - %s) <= end_range and (txend + %s) >= end_range
 end
-group by name
-order by name{}"""
+group by common_name, chrom, strand, txstart, txend
+order by chrom, txstart{}"""
 
 GENE_LIST_FILTER_WITH_LIMIT = QUERY_BASE.format("\nlimit %s offset %s")
 GENE_LIST_FILTER = QUERY_BASE.format("")
@@ -30,12 +30,12 @@ GENE_LIST_FILTER = QUERY_BASE.format("")
 COUNT_QUERY = """SET search_path TO %s,public;
 select count(*) from (
 select
-max(common_name) as common_name,
-name,
+common_name,
+string_agg(name, ', ') as name,
 round(max(value), 4) as max_value,
-max(chrom) as chrom,
-max(strand) as strand,
-max(case strand when '+' then txstart else txend end) as gene_start,
+chrom,
+strand,
+case strand when '+' then txstart else txend end as gene_start,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where
@@ -48,7 +48,7 @@ case strand when '+' then
 else
 (txend - %s) <= end_range and (txend + %s) >= end_range
 end
-group by name
+group by common_name, chrom, strand, txstart, txend
 ) as foo"""
 
 class TestPredictionQuery(TestCase):

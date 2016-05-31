@@ -31,18 +31,18 @@ group by seq""", [list_id, model_name])
 
 def select_prediction_values():
     return _query_part("""select
-max(common_name) as common_name,
-name,
+common_name,
+string_agg(name, ', ') as name,
 round(max(value), 4) as max_value,
-max(chrom) as chrom,
-max(strand) as strand,
-max(case strand when '+' then txstart else txend end) as gene_start,
+chrom,
+strand,
+case strand when '+' then txstart else txend end as gene_start,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction""")
 
 
 def name_in_max_prediction_names():
-    return _query_part("and name in (select name from max_prediction_names)")
+    return _query_part("and common_name in (select common_name from max_prediction_names)")
 
 
 def filter_gene_list(gene_list, model_name, upstream, downstream):
@@ -95,7 +95,7 @@ gene.common_name = custom_gene_list.gene_name)"""
 
 def with_max_prediction_names():
     return _query_part("""with max_prediction_names as (
- select name from gene_prediction""")
+ select common_name from gene_prediction""")
 
 
 def end_with():
@@ -114,6 +114,10 @@ def group_by_name():
     return _query_part("group by name")
 
 
+def group_by_common_name_and_parts():
+    return _query_part("group by common_name, chrom, strand, txstart, txend")
+
+
 def order_by_name():
     return _query_part("order by name")
 
@@ -126,16 +130,16 @@ def order_by_common_name_and_name():
     return _query_part("order by common_name, name")
 
 
+def order_by_chrom_txstart():
+    return _query_part("order by chrom, txstart")
+
+
 def order_by_seq():
     return _query_part("order by seq")
 
 
 def order_by_max_value_desc():
     return _query_part("order by max(value) desc")
-
-
-def order_by_max_value_desc_name():
-    return _query_part("order by max(value) desc, name")
 
 
 def order_by_max_value_desc_common_name():

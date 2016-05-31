@@ -12,6 +12,7 @@ class DataCell extends React.Component {
 
 let defaultStyle = {
     display: 'inline-block',
+    whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     overflow: 'hidden',
     fontFamily: 'Roboto, sans-serif',

@@ -147,7 +147,7 @@ class TestWithDocker(TestCase):
             SearchArgs.PER_PAGE: "10",
         }
         predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
-        self.assertEqual(len(predictions), 3)
+        self.assertEqual(len(predictions), 1)
 
     def test_custom_gene_list_no_results(self):
         db = create_db_connection(TestWithDocker.config.dbconfig)
@@ -177,7 +177,7 @@ class TestWithDocker(TestCase):
             SearchArgs.PER_PAGE: "10",
         }
         predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
-        self.assertEqual(len(predictions), 3)
+        self.assertEqual(len(predictions), 1)
 
     def test_custom_gene_list_id_results(self):
         db = create_db_connection(TestWithDocker.config.dbconfig)
@@ -192,7 +192,7 @@ class TestWithDocker(TestCase):
             SearchArgs.PER_PAGE: "10",
         }
         predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
-        self.assertEqual(len(predictions), 2)
+        self.assertEqual(len(predictions), 1)
 
     def test_custom_gene_list_with_lc_results(self):
         db = create_db_connection(TestWithDocker.config.dbconfig)
@@ -207,7 +207,7 @@ class TestWithDocker(TestCase):
             SearchArgs.PER_PAGE: "10",
         }
         predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
-        self.assertEqual(len(predictions), 3)
+        self.assertEqual(len(predictions), 1)
 
     def test_custom_gene_list_id_uc(self):
         db = create_db_connection(TestWithDocker.config.dbconfig)

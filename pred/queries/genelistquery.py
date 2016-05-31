@@ -31,12 +31,13 @@ class GeneListQuery(object):
             select_prediction_values(),
             where(),
             filter_common_name(self.custom_list_id, self.custom_list_filter, self.model_name, self.upstream, self.downstream),
-            group_by_name(),
+            group_by_common_name_and_parts(),
         ]
-        if self.sort_by_max:
-            query_parts.append(order_by_max_value_desc_common_name())
-        else:
-            query_parts.append(order_by_common_name_and_name())
+        if not self.count:
+            if self.sort_by_max:
+                query_parts.append(order_by_max_value_desc_common_name())
+            else:
+                query_parts.append(order_by_common_name())
         if self.limit:
             query_parts.append(limit_and_offset(self.limit, self.offset))
         return query_parts
