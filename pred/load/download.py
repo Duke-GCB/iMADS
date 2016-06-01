@@ -316,7 +316,7 @@ class PredictionDownloader(object):
         """
         Create tab separated file from bed file.
         """
-        self.update_progress('Loading data source: ' + self.get_local_bed_path())
+        self.update_progress('Converting data source: ' + self.get_local_bed_path())
         temp_path = self.get_local_tsv_path()
         with open(self.get_local_bed_path(), 'r') as bedfile:
             with open(temp_path, 'w') as outfile:
