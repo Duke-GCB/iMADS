@@ -31,7 +31,7 @@ class PredictionQuery(object):
             group_by_common_name_and_parts(),
         ]
         if not self.count:
-            query_parts.append(order_by_chrom_txstart())
+            query_parts.append(order_by_common_name_and_parts())
         if self.limit:
             query_parts.append(limit_and_offset(self.limit, self.offset))
         return query_parts

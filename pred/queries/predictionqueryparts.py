@@ -118,6 +118,10 @@ def group_by_common_name_and_parts():
     return _query_part("group by common_name, chrom, strand, txstart, txend")
 
 
+def order_by_common_name_and_parts():
+    return _query_part("order by common_name, chrom, strand, txstart, txend")
+
+
 def order_by_name():
     return _query_part("order by name")
 

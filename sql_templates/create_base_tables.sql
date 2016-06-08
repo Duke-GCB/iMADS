@@ -22,7 +22,8 @@ CREATE TABLE {{ schema_prefix }}.gene (
   strand char(1) NOT NULL,
   txstart int NOT NULL,
   txend int NOT NULL,
-  range int4range
+  range int4range,
+  parent_name varchar
 );
 GRANT ALL PRIVILEGES ON {{ schema_prefix }}.gene TO pred_user;
 CREATE index gene_list_idx on {{ schema_prefix }}.gene(gene_list);

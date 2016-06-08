@@ -22,7 +22,7 @@ else
 (txend - %s) <= end_range and (txend + %s) >= end_range
 end
 group by common_name, chrom, strand, txstart, txend
-order by chrom, txstart{}"""
+order by common_name, chrom, strand, txstart, txend{}"""
 
 GENE_LIST_FILTER_WITH_LIMIT = QUERY_BASE.format("\nlimit %s offset %s")
 GENE_LIST_FILTER = QUERY_BASE.format("")
