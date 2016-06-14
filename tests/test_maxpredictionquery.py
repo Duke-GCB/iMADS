@@ -10,9 +10,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-(txstart - %s) <= start_range and (txstart + %s) >= start_range
+  (txstart + %s) >= start_range and end_range >= (txstart - %s)
 else
-(txend - %s) <= end_range and (txend + %s) >= end_range
+  (txend + %s) >= start_range and end_range >= (txend - %s)
 end{}
 group by common_name, chrom, strand, txstart, txend
 order by max(value) desc{}
@@ -32,9 +32,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-(txstart - %s) <= start_range and (txstart + %s) >= start_range
+  (txstart + %s) >= start_range and end_range >= (txstart - %s)
 else
-(txend - %s) <= end_range and (txend + %s) >= end_range
+  (txend + %s) >= start_range and end_range >= (txend - %s)
 end
 and common_name in (select common_name from max_prediction_names)
 group by common_name, chrom, strand, txstart, txend
@@ -54,9 +54,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-(txstart - %s) <= start_range and (txstart + %s) >= start_range
+  (txstart + %s) >= start_range and end_range >= (txstart - %s)
 else
-(txend - %s) <= end_range and (txend + %s) >= end_range
+  (txend + %s) >= start_range and end_range >= (txend - %s)
 end
 group by common_name, chrom, strand, txstart, txend
 order by max(value) desc
@@ -77,9 +77,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-(txstart - %s) <= start_range and (txstart + %s) >= start_range
+  (txstart + %s) >= start_range and end_range >= (txstart - %s)
 else
-(txend - %s) <= end_range and (txend + %s) >= end_range
+  (txend + %s) >= start_range and end_range >= (txend - %s)
 end
 and common_name in (select common_name from max_prediction_names)
 group by common_name, chrom, strand, txstart, txend
@@ -89,8 +89,8 @@ group by common_name, chrom, strand, txstart, txend
 class TestMaxPredictionQuery(TestCase):
     def test_max_with_guess_and_limit(self):
         expected_sql = MAX_QUERY_WITH_GUESS_WITH_LIMIT
-        expected_params = ["hg38", "refgene", "E2F4", "150", "250", "250", "150", "0.4", "100", "200",
-                           "refgene", "E2F4", "150", "250", "250", "150"]
+        expected_params = ["hg38", "refgene", "E2F4", "250", "150", "150", "250", "0.4", "100", "200",
+                           "refgene", "E2F4", "250", "150", "150", "250"]
         query = MaxPredictionQuery(
             schema="hg38",
             gene_list="refgene",
@@ -107,8 +107,8 @@ class TestMaxPredictionQuery(TestCase):
 
     def test_max_with_guess(self):
         expected_sql = MAX_QUERY_WITH_GUESS
-        expected_params = ["hg38", "refgene", "E2F4", "150", "250", "250", "150", "0.4",
-                           "refgene", "E2F4", "150", "250", "250", "150"]
+        expected_params = ["hg38", "refgene", "E2F4", "250", "150", "150", "250", "0.4",
+                           "refgene", "E2F4", "250", "150", "150", "250"]
         query = MaxPredictionQuery(
             schema="hg38",
             gene_list="refgene",
@@ -124,8 +124,8 @@ class TestMaxPredictionQuery(TestCase):
 
     def test_max_with_no_guess_and_limit(self):
         expected_sql = MAX_QUERY_NO_GUESS_WITH_LIMIT
-        expected_params = ["hg38", "refgene", "E2F4", "150", "250", "250", "150", "100", "200",
-                           "refgene", "E2F4", "150", "250", "250", "150"]
+        expected_params = ["hg38", "refgene", "E2F4", "250", "150", "150", "250", "100", "200",
+                           "refgene", "E2F4", "250", "150", "150", "250"]
         query = MaxPredictionQuery(
             schema="hg38",
             gene_list="refgene",
@@ -141,8 +141,8 @@ class TestMaxPredictionQuery(TestCase):
 
     def test_max_with_no_guess(self):
         expected_sql = MAX_QUERY_NO_GUESS
-        expected_params = ["hg38", "refgene", "E2F4", "150", "250", "250", "150",
-                           "refgene", "E2F4", "150", "250", "250", "150"]
+        expected_params = ["hg38", "refgene", "E2F4", "250", "150", "150", "250",
+                           "refgene", "E2F4", "250", "150", "150", "250"]
         query = MaxPredictionQuery(
             schema="hg38",
             gene_list="refgene",
@@ -156,8 +156,8 @@ class TestMaxPredictionQuery(TestCase):
 
     def test_max_count(self):
         expected_sql = COUNT_QUERY
-        expected_params = ["hg38", "refgene", "E2F4", "150", "250", "250", "150",
-                           "refgene", "E2F4", "150", "250", "250", "150"]
+        expected_params = ["hg38", "refgene", "E2F4", "250", "150", "150", "250",
+                           "refgene", "E2F4", "250", "150", "150", "250"]
         query = MaxPredictionQuery(
             schema="hg38",
             gene_list="refgene",

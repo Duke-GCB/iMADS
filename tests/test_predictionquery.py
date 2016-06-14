@@ -17,9 +17,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-(txstart - %s) <= start_range and (txstart + %s) >= start_range
+  (txstart + %s) >= start_range and end_range >= (txstart - %s)
 else
-(txend - %s) <= end_range and (txend + %s) >= end_range
+  (txend + %s) >= start_range and end_range >= (txend - %s)
 end
 group by common_name, chrom, strand, txstart, txend
 order by common_name, chrom, strand, txstart, txend{}"""
@@ -44,9 +44,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-(txstart - %s) <= start_range and (txstart + %s) >= start_range
+  (txstart + %s) >= start_range and end_range >= (txstart - %s)
 else
-(txend - %s) <= end_range and (txend + %s) >= end_range
+  (txend + %s) >= start_range and end_range >= (txend - %s)
 end
 group by common_name, chrom, strand, txstart, txend
 ) as foo"""
@@ -54,7 +54,7 @@ group by common_name, chrom, strand, txstart, txend
 class TestPredictionQuery(TestCase):
     def test_filter_with_limit(self):
         expected_sql = GENE_LIST_FILTER_WITH_LIMIT
-        expected_params = ["hg38", "knowngene", "E2F4", "150", "250", "250", "150", "100", "200"]
+        expected_params = ["hg38", "knowngene", "E2F4", "250", "150", "150", "250", "100", "200"]
         query = PredictionQuery(
             schema="hg38",
             gene_list="knowngene",
@@ -70,7 +70,7 @@ class TestPredictionQuery(TestCase):
 
     def test_filter(self):
         expected_sql = GENE_LIST_FILTER
-        expected_params = ["hg38", "knowngene", "E2F4", "150", "250", "250", "150"]
+        expected_params = ["hg38", "knowngene", "E2F4", "250", "150", "150", "250"]
         query = PredictionQuery(
             schema="hg38",
             gene_list="knowngene",
@@ -79,13 +79,13 @@ class TestPredictionQuery(TestCase):
             downstream="250",
         )
         sql, params = query.get_query_and_params()
+        self.maxDiff = None
         self.assertEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 
-
     def test_count(self):
         expected_sql = COUNT_QUERY
-        expected_params = ["hg38", "knowngene", "E2F4", "150", "250", "250", "150"]
+        expected_params = ["hg38", "knowngene", "E2F4", "250", "150", "150", "250"]
         query = PredictionQuery(
             schema="hg38",
             gene_list="knowngene",
