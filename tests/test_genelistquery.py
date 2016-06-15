@@ -20,9 +20,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-(txstart - %s) <= start_range and (txstart + %s) >= start_range
+  (txstart + %s) >= start_range and end_range >= (txstart - %s)
 else
-(txend - %s) <= end_range and (txend + %s) >= end_range
+  (txend + %s) >= start_range and end_range >= (txend - %s)
 end
 group by common_name, chrom, strand, txstart, txend
 order by common_name{}"""
@@ -50,9 +50,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-(txstart - %s) <= start_range and (txstart + %s) >= start_range
+  (txstart + %s) >= start_range and end_range >= (txstart - %s)
 else
-(txend - %s) <= end_range and (txend + %s) >= end_range
+  (txend + %s) >= start_range and end_range >= (txend - %s)
 end
 group by common_name, chrom, strand, txstart, txend
 ) as foo"""

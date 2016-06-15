@@ -92,24 +92,66 @@ FILENAME_TO_SQL = {
     """
 }
 
+
+def known_gene_line(name, chrom, strand, txStart, txEnd):
+    pattern = "{}	{}	{}	{}	{}	11873	11873	3	11873,12612,13220,	12227,12721,14409,	B7ZGX9	uc001aaa.3"
+    return pattern.format(name, chrom, strand, txStart, txEnd)
+
+
+def make_known_gene_data():
+    lines = [
+        known_gene_line("uc001aaa.3", "chr1", "+", 11873, 14409),
+        known_gene_line("uc010nxr.1", "chr1", "+", 11873, 14409),
+        known_gene_line("uc010nxq.1", "chr1", "+", 11873, 14409),
+    ]
+    return "\n".join(lines)
+
+
+def make_kg_line(name, common_name):
+    pattern = "{}	NR_046018			{}	NR_046018		Homo sapiens DEADRNA	a	b."
+    return pattern.format(name, common_name)
+
+
+def make_kg_xref_data():
+    lines = [
+        make_kg_line("uc001aaa.3", "DDX11L1"),
+        make_kg_line("uc010nxr.1", "DDX11L1"),
+        make_kg_line("uc010nxq.1", "DDX11L1"),
+    ]
+    return "\n".join(lines)
+
+
+def make_pred_line(chrom, start, stop, value, name):
+    pattern = "{}	{}	{}	{}	{}	[{},{}]"
+    return pattern.format(chrom, start, stop, value, name, start, stop)
+
+
+def make_prediction_data():
+    #gene starts at 11873
+    lines = [
+        make_pred_line("chr1", 11874, 11894, 0.4, "E2F1_0001(JS)"),
+        make_pred_line("chr1", 11753, 11773, 0.3, "E2F1_0001(JS)"), # far left edge of DDX11L1(11873) upstream 100
+        make_pred_line("chr1", 11752, 11772, 0.2, "E2F1_0001(JS)"), # just past far left edge of DDX11L1(11873) upstream 100
+        make_pred_line("chr1", 11923, 11943, 0.1, "E2F1_0001(JS)"),  # far right edge of DDX11L1(11873) downstream 50
+        make_pred_line("chr1", 11924, 11944, 0.5, "E2F1_0001(JS)"),  # far right edge of DDX11L1(11873) downstream 50
+    ]
+    return "\n".join(lines)
+
+
 FILENAME_TO_DATA = {
-    "/tmp/pred_data/hg19/knownGene.txt":
-        """uc001aaa.3	chr1	+	11873	14409	11873	11873	3	11873,12612,13220,	12227,12721,14409,	B7ZGX9	uc001aaa.3
-uc010nxr.1	chr1	+	11873	14409	11873	11873	3	11873,12645,13220,	12227,12697,14409,	B7ZGX9	uc010nxr.1
-uc010nxq.1	chr1	+	11873	14409	12189	13639	3	11873,12594,13402,	12227,12721,14409,	B7ZGX9	uc010nxq.1""",
-    "/tmp/pred_data/hg19/kgXref.txt":
-        """uc001aaa.3	NR_046018			DDX11L1	NR_046018		Homo sapiens DEADRNA	a	b.
-uc010nxr.1	AM992878			DDX11L1			Homo sapiens DEAD/H (Asp-G	a	b
-uc010nxq.1	AM992880	B7ZGX9	B7ZGX9_HUMAN	DDX11L1			Homo sapie	a	b""",
-    "/tmp/pred_data/hg19/hg19-0001-E2F1-E2F1-bestSVR.model.tsv":
-        """chr1	11874	11894	0.445804778406	E2F1_0001(JS)	[10613,10649]""",
+    "/tmp/pred_data/hg19/knownGene.txt": make_known_gene_data(),
+    "/tmp/pred_data/hg19/kgXref.txt": make_kg_xref_data(),
+    "/tmp/pred_data/hg19/hg19-0001-E2F1-E2F1-bestSVR.model.tsv": make_prediction_data(),
 }
+
 
 def fake_file_modified_time(filename):
     return 1000
 
+
 def fake_sql_from_filename(filename):
     return FILENAME_TO_SQL[filename]
+
 
 def fake_copy_from(cursor, filename, destination):
     data = FILENAME_TO_DATA[filename]
@@ -142,12 +184,20 @@ class TestWithDocker(TestCase):
             SearchArgs.GENE_LIST: "knowngene",
             SearchArgs.MODEL: "E2F1_0001(JS)",
             SearchArgs.UPSTREAM: "100",
-            SearchArgs.DOWNSTREAM: "100",
+            SearchArgs.DOWNSTREAM: "50",
             SearchArgs.PAGE: "1",
             SearchArgs.PER_PAGE: "10",
         }
         predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
+        first_pred = predictions[0]
+        self.assertEqual(first_pred['name'], 'uc001aaa.3; uc010nxq.1; uc010nxr.1')
+        values = first_pred['values']
+        self.assertEqual(len(values), 3)
+        pred_value_set = set([v['value'] for v in values])
+        self.assertIn(0.4, pred_value_set)
+        self.assertIn(0.3, pred_value_set)
+        self.assertIn(0.1, pred_value_set)
 
     def test_custom_gene_list_no_results(self):
         db = create_db_connection(TestWithDocker.config.dbconfig)

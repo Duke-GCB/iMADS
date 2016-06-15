@@ -65,6 +65,13 @@ end""", [gene_list, model_name, downstream, upstream, upstream, downstream])
 
 
 def filter_common_name(custom_list_id, custom_list_filter, model_name, upstream, downstream):
+    """
+    Overlapping range filter.
+    SQL Explanation:
+    The end of the prediction must come after the start of the gene
+    and the end of the gene must come after the start of the prediction.
+    http://nedbatchelder.com/blog/201310/range_overlap_in_two_compares.html
+    """
     if custom_list_filter.strip().upper() == "ALL":
         custom_list_filter = ""
     base_sql = """( upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)
@@ -75,9 +82,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-(txstart - %s) <= start_range and (txstart + %s) >= start_range
+  (txstart + %s) >= start_range and end_range >= (txstart - %s)
 else
-(txend - %s) <= end_range and (txend + %s) >= end_range
+  (txend + %s) >= start_range and end_range >= (txend - %s)
 end"""
     sql = base_sql
     params = [custom_list_id, custom_list_id, model_name, upstream, downstream, downstream, upstream]
