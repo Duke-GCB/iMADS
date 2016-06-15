@@ -199,6 +199,29 @@ class TestWithDocker(TestCase):
         self.assertIn(0.3, pred_value_set)
         self.assertIn(0.1, pred_value_set)
 
+    def test_prediction_max_sort_query(self):
+        #
+        db = create_db_connection(TestWithDocker.config.dbconfig)
+        params = {
+            SearchArgs.GENE_LIST: "knowngene",
+            SearchArgs.MAX_PREDICTION_SORT: "true",
+            SearchArgs.MODEL: "E2F1_0001(JS)",
+            SearchArgs.UPSTREAM: "100",
+            SearchArgs.DOWNSTREAM: "50",
+            SearchArgs.PAGE: "1",
+            SearchArgs.PER_PAGE: "10",
+        }
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        self.assertEqual(len(predictions), 1)
+        first_pred = predictions[0]
+        self.assertEqual(first_pred['name'], 'uc001aaa.3; uc010nxq.1; uc010nxr.1')
+        values = first_pred['values']
+        self.assertEqual(len(values), 3)
+        pred_value_set = set([v['value'] for v in values])
+        self.assertIn(0.4, pred_value_set)
+        self.assertIn(0.3, pred_value_set)
+        self.assertIn(0.1, pred_value_set)
+
     def test_custom_gene_list_no_results(self):
         db = create_db_connection(TestWithDocker.config.dbconfig)
         custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "cheese")
