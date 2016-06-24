@@ -219,13 +219,13 @@ class PredictionSearch(object):
                 start = row[PredictionQueryNames.RANGE_START]
                 end = row[PredictionQueryNames.RANGE_END]
             row = {
-                 'name': row[PredictionQueryNames.NAME],
+                 'name': self.unique_name_parts(row[PredictionQueryNames.NAME]),
                  'commonName': row[PredictionQueryNames.COMMON_NAME],
                  'chrom': row[PredictionQueryNames.CHROM],
                  'max': str(row[PredictionQueryNames.MAX_VALUE]),
                  'start': str(start),
                  'end': str(end),
-                 'values': row[PredictionQueryNames.PRED],
+                 'values': self.unique_predictions(row[PredictionQueryNames.PRED]),
                  'strand': strand,
             }
             #this messes up my counts can I push it into SQL
@@ -239,6 +239,23 @@ class PredictionSearch(object):
         if self.args.is_custom_gene_list():
             self.warning = self.query_for_unused_gene_names()
         return predictions
+
+    @staticmethod
+    def unique_name_parts(combined_name):
+        parts = sorted(set(combined_name.split("; ")))
+        return "; ".join(parts)
+
+    @staticmethod
+    def unique_predictions(preds):
+        results = []
+        starts = set()
+        for pred in preds:
+            start = pred['start']
+            if not start in starts:
+                starts.add(start)
+                results.append(pred)
+        return results
+
 
     @staticmethod
     def same_except_name(row, prev_row):

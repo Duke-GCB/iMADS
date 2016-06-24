@@ -5,11 +5,13 @@ create/run SQL to load the data into the database. Runs some SQL in parallel.
 """
 from __future__ import print_function
 import os
+import sys
 import datetime
 from multiprocessing import Pool
 from jinja2 import FileSystemLoader, Environment
 from pred.load.download import GenomeDownloader, GeneListDownloader, PredictionDownloader, GENE_LIST_HOST
 from pred.load.postgres import PostgresConnection, CopyCommand
+from psycopg2 import OperationalError
 
 SQL_TEMPLATE_DIR = 'sql_templates'
 
@@ -44,6 +46,27 @@ def create_pipeline_for_genome_version(database_loader):
     database_loader.delete_sql_for_gene_list_files()
 
 
+def get_modified_time_for_filename(filename):
+    """
+    Return the modified time for a filename.
+    This function exists to support unit testing.
+    :param filename: str: path to exiting file
+    :return: int: number of seconds since epoch
+    """
+    return os.path.getmtime(filename)
+
+
+def sql_from_filename(filename):
+    """
+    Given a filename return the SQL it contains.
+    This function exists to support unit testing.
+    :param filename:  path to exiting file containing SQL
+    :return: str: sql commands to execute
+    """
+    with open(filename, 'r') as infile:
+        return infile.read() + "\n"
+
+
 class DatabaseLoader(object):
     def __init__(self, config, genome_data, sql_builder, update_progress):
         self.config = config
@@ -54,7 +77,7 @@ class DatabaseLoader(object):
 
     def create_schema_and_base_tables(self):
         self.sql_builder.create_schema(self.genome, self.config.dbconfig.user)
-        self.sql_builder.create_base_tables(self.genome)
+        self.sql_builder.create_base_tables(self.genome, self.genome_data.get_model_types_str())
 
     def insert_genome_data_source(self):
         downloader = GenomeDownloader(self.config.download_dir,
@@ -187,8 +210,8 @@ class SQLBuilder(object):
     def create_schema(self, schema_prefix, user_name):
         self.add_template('create_schema.sql', {'schema_prefix': schema_prefix, 'user_name': user_name})
 
-    def create_base_tables(self, schema_prefix):
-        self.add_template('create_base_tables.sql', {'schema_prefix': schema_prefix})
+    def create_base_tables(self, schema_prefix, model_types_str):
+        self.add_template('create_base_tables.sql', {'schema_prefix': schema_prefix, 'model_types': model_types_str})
 
     def create_data_source(self):
         self.add_template('create_data_source.sql', {})
@@ -197,7 +220,7 @@ class SQLBuilder(object):
         self.add_template('create_custom_list.sql', {})
 
     def insert_data_source(self, url, description, data_source_type, filename):
-        date = datetime.datetime.fromtimestamp(os.path.getmtime(filename))
+        date = datetime.datetime.fromtimestamp(get_modified_time_for_filename(filename))
         downloaded = date.strftime("%Y-%m-%d %H:%M:%S)")
         self.add_template('insert_data_source.sql', {'url': url,
                                                      'description': description,
@@ -205,8 +228,7 @@ class SQLBuilder(object):
                                                      'downloaded': downloaded})
 
     def create_table_from_path(self, path):
-        with open(path, 'r') as infile:
-            self.add_sql(infile.read() + "\n")
+        self.add_sql(sql_from_filename(path))
 
     def copy_file_into_db(self, destination, source_path):
         self.add_sql(CopyCommand(destination, source_path))
@@ -295,23 +317,29 @@ class SqlRunner(object):
         pool = Pool()
         results = []
         for sql in sql_commands:
-            results.append(pool.apply_async(execute_sql, (self.db_config, sql)))  # runs in *only* one process
+            results.append(pool.apply_async(execute_sql, (self.db_config, sql)))
         pool.close()
         pool.join()
         for result in results:
-            if not result.get():
-                raise ValueError("SQL command failed.")
+            if result.get():
+                import time
+                raise ValueError("SQL command failed:{}".format(result.get()))
 
     def close(self):
         self.db.close()
 
 
 def create_connection(db_config):
-    return PostgresConnection(db_config, print)
+    conn = PostgresConnection(db_config, print)
+    conn.create_connection()
+    return conn
 
 
 def execute_sql(db_config, sql):
-    db = create_connection(db_config)
-    db.execute(sql)
-    db.close()
-    return True
+    try:
+        db = create_connection(db_config)
+        db.execute(sql)
+        db.close()
+    except Exception as err:
+        return str(err)
+    return ""

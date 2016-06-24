@@ -31,46 +31,60 @@ group by seq""", [list_id, model_name])
 
 def select_prediction_values():
     return _query_part("""select
-max(common_name) as common_name,
-name,
+common_name,
+string_agg(name, '; ') as name,
 round(max(value), 4) as max_value,
-max(chrom) as chrom,
-max(strand) as strand,
-max(case strand when '+' then txstart else txend end) as gene_start,
+chrom,
+strand,
+case strand when '+' then txstart else txend end as gene_start,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction""")
 
 
 def name_in_max_prediction_names():
-    return _query_part("and name in (select name from max_prediction_names)")
+    return _query_part("and common_name in (select common_name from max_prediction_names)")
 
 
 def filter_gene_list(gene_list, model_name, upstream, downstream):
+    """
+    Overlapping range filter.
+    SQL Explanation:
+    The end of the prediction must come after the start of the gene
+    and the end of the gene must come after the start of the prediction.
+    http://nedbatchelder.com/blog/201310/range_overlap_in_two_compares.html
+    """
     return QueryPart("""gene_list = %s
 and
 model_name = %s
 and
 case strand when '+' then
-(txstart - %s) <= start_range and (txstart + %s) >= start_range
+  (txstart + %s) >= start_range and end_range >= (txstart - %s)
 else
-(txend - %s) <= end_range and (txend + %s) >= end_range
-end""", [gene_list, model_name, upstream, downstream, downstream, upstream])
+  (txend + %s) >= start_range and end_range >= (txend - %s)
+end""", [gene_list, model_name, downstream, upstream, upstream, downstream])
 
 
 def filter_common_name(custom_list_id, custom_list_filter, model_name, upstream, downstream):
+    """
+    Overlapping range filter.
+    SQL Explanation:
+    The end of the prediction must come after the start of the gene
+    and the end of the gene must come after the start of the prediction.
+    http://nedbatchelder.com/blog/201310/range_overlap_in_two_compares.html
+    """
     if custom_list_filter.strip().upper() == "ALL":
         custom_list_filter = ""
-    base_sql = """( common_name in (select gene_name from custom_gene_list where id = %s)
+    base_sql = """( upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)
 or
-name in (select gene_name from custom_gene_list where id = %s)
+upper(name) in (select upper(gene_name) from custom_gene_list where id = %s)
 )
 and
 model_name = %s
 and
 case strand when '+' then
-(txstart - %s) <= start_range and (txstart + %s) >= start_range
+  (txstart + %s) >= start_range and end_range >= (txstart - %s)
 else
-(txend - %s) <= end_range and (txend + %s) >= end_range
+  (txend + %s) >= start_range and end_range >= (txend - %s)
 end"""
     sql = base_sql
     params = [custom_list_id, custom_list_id, model_name, upstream, downstream, downstream, upstream]
@@ -95,7 +109,7 @@ gene.common_name = custom_gene_list.gene_name)"""
 
 def with_max_prediction_names():
     return _query_part("""with max_prediction_names as (
- select name from gene_prediction""")
+ select common_name from gene_prediction""")
 
 
 def end_with():
@@ -114,6 +128,14 @@ def group_by_name():
     return _query_part("group by name")
 
 
+def group_by_common_name_and_parts():
+    return _query_part("group by common_name, chrom, strand, txstart, txend")
+
+
+def order_by_common_name_and_parts():
+    return _query_part("order by common_name, chrom, strand, txstart, txend")
+
+
 def order_by_name():
     return _query_part("order by name")
 
@@ -126,16 +148,16 @@ def order_by_common_name_and_name():
     return _query_part("order by common_name, name")
 
 
+def order_by_chrom_txstart():
+    return _query_part("order by chrom, txstart")
+
+
 def order_by_seq():
     return _query_part("order by seq")
 
 
 def order_by_max_value_desc():
     return _query_part("order by max(value) desc")
-
-
-def order_by_max_value_desc_name():
-    return _query_part("order by max(value) desc, name")
 
 
 def order_by_max_value_desc_common_name():

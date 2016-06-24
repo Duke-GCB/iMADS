@@ -129,8 +129,6 @@ class GenomeDownloader(object):
         self.ftp_path = ftp_path
         self.genome = genome
         self.update_progress = update_progress
-        if not os.path.exists(self.local_dir):
-            os.mkdir(self.local_dir)
 
     def download(self):
         """
@@ -145,6 +143,8 @@ class GenomeDownloader(object):
         :param out_filename: str: path where we should write the 2bit file.
         """
         self.update_progress('Downloading: ' + filename)
+        if not os.path.exists(self.local_dir):
+            os.mkdir(self.local_dir)
         ftp = FTP(self.ftp_host)
         ftp.login()
         ftp.cwd(self.get_ftp_dir())
@@ -179,8 +179,6 @@ class GeneListDownloader(object):
         self.ftp_path = ftp_path
         self.genome = genome
         self.update_progress = update_progress
-        if not os.path.exists(self.local_dir):
-            os.mkdir(self.local_dir)
 
     def get_description(self):
         """
@@ -212,6 +210,8 @@ class GeneListDownloader(object):
 
     def download_and_extract(self):
         self.update_progress('Downloading: ' + self.get_local_path())
+        if not os.path.exists(self.local_dir):
+            os.mkdir(self.local_dir)
         self._download_file(self.get_ftp_filename(), self.get_local_path())
         self.update_progress('Extracting: ' + self.get_local_path())
         self._extract()
@@ -316,7 +316,7 @@ class PredictionDownloader(object):
         """
         Create tab separated file from bed file.
         """
-        self.update_progress('Loading data source: ' + self.get_local_bed_path())
+        self.update_progress('Converting data source: ' + self.get_local_bed_path())
         temp_path = self.get_local_tsv_path()
         with open(self.get_local_bed_path(), 'r') as bedfile:
             with open(temp_path, 'w') as outfile:

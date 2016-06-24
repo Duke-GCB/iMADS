@@ -19,11 +19,15 @@ def parse_config(filename):
     config = None
     with open(filename) as data_file:
         data = load(data_file)
-        dbconfig = DBConfig()
-        config = Config(data, dbconfig)
-        genome_data_ary = data['genome_data']
-        for genome_data in genome_data_ary:
-            config.add_genome(GenomeData(config, genome_data))
+        return parse_config_from_dict(data)
+
+
+def parse_config_from_dict(data):
+    dbconfig = DBConfig()
+    config = Config(data, dbconfig)
+    genome_data_ary = data['genome_data']
+    for genome_data in genome_data_ary:
+        config.add_genome(GenomeData(config, genome_data))
     return config
 
 
@@ -100,6 +104,9 @@ class GenomeData(object):
             fix_script = prediction_data['fix_script']
             prediction = PredictionSettings(name, url, self.genomename, fix_script)
             self.prediction_lists.append(prediction)
+
+    def get_model_types_str(self):
+        return ','.join(["'{}'".format(data.name) for data in self.prediction_lists])
 
 
 class GeneInfoSettings(object):

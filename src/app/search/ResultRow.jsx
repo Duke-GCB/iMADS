@@ -121,7 +121,7 @@ export class ResultDetailRow extends React.Component {
             this.addTextValue(values, rowData.max);
         } else {
             this.addTextValue(values, rowData.commonName);
-            this.addTextValue(values, rowData.name, rowData.name.replace(/;/g,'\n'));
+            this.addTextValue(values, rowData.name, rowData.name.replace(/; /g,'\n'));
             this.addTextValue(values, rowData.strand);
             this.addTextValue(values, rowData.chrom + ':' + rowData.start + '-' + rowData.end);
             this.addTextValue(values, rowData.max);
