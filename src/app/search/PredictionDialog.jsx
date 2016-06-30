@@ -43,10 +43,10 @@ class PredictionDialog extends React.Component {
                 for (let i = 0; i < values.length; i++) {
                     let prediction = values[i];
                     let position = this.props.data.chrom + ":" + prediction.start + '-' + prediction.end;
+                    dnaSequences.addRangeRequest(position, this.props.data.chrom, prediction.start, prediction.end);
                     if (position in this.state.ranges) {
                         continue;
                     }
-                    dnaSequences.addRangeRequest(position, this.props.data.chrom, prediction.start, prediction.end);
                     needsToUpdate = true;
                 }
                 if (needsToUpdate) {
