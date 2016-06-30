@@ -118,7 +118,7 @@ class PredictionsStore {
         urlBuilder.appendParam('maxPredictionSort', searchSettings.maxPredictionSort);
 
         if (searchSettings.maxPredictionSort) {
-            urlBuilder.appendParam('maxPredictionGuess', '0.4');
+            urlBuilder.appendParam('maxPredictionGuess', '0.7');
         }
         if (page && perPage) {
             urlBuilder.appendParam('page', page);
