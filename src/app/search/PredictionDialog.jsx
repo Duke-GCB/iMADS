@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import HeatMap from './HeatMap.jsx';
 import GenomeBrowserURL from '../store/GenomeBrowserURL.js';
 import DnaSequences from '../store/DnaSequences.js';
+import ColorDNA from './ColorDNA.jsx';
 
 const customStyles = {
     content : {
@@ -86,7 +87,7 @@ class PredictionDialog extends React.Component {
                 <td>{prediction.start}</td>
                 <td>{prediction.end}</td>
                 <td>{prediction.value}</td>
-                <td><span className="PredictionDialog_dna_seq">{seq}</span></td>
+                <td><ColorDNA seq={seq} /></td>
             </tr>)
         }
         let genomeBrowserURL = new GenomeBrowserURL('human', this.props.data.trackHubUrl);
