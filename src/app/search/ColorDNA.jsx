@@ -3,10 +3,12 @@
 import React from 'react';
 
 const CHAR_TO_COLOR = {
-    'A': '#5050ff',
-    'T': '#e6e600',
-    'G': '#00c000',
-    'C': '#e00000'
+    'A': '#00CC00',
+    'C': '#0000CC',
+    'G': '#CCCC1A',
+    'T': '#CC001A',
+
+
 };
 const FONT_FAMILY = 'monospace';
 const FONT_SIZE = '12pt';
