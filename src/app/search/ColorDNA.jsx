@@ -7,8 +7,6 @@ const CHAR_TO_COLOR = {
     'C': '#0000CC',
     'G': '#CCCC1A',
     'T': '#CC001A',
-
-
 };
 const FONT_FAMILY = 'monospace';
 const FONT_SIZE = '12pt';
