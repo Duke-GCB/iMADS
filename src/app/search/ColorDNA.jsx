@@ -24,8 +24,8 @@ class ColorDNA extends React.Component {
         var color = this.determineColor(c);
         var style = {
             'color': color,
-            'font-family': FONT_FAMILY,
-            'font-size': FONT_SIZE,
+            'fontFamily': FONT_FAMILY,
+            'fontSize': FONT_SIZE,
         };
         return <span key={key} style={style}>{c}</span>;
     }
@@ -35,6 +35,7 @@ class ColorDNA extends React.Component {
         var letters = [];
         for (var i = 0; i < seq.length; i++) {
             var c = seq[i];
+            // reactjs requires a key for dynamic component lists
             var key = i + "_" + c;
             letters.push(this.coloredLetterSpan(key, c));
         }
