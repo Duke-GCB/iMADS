@@ -2,8 +2,11 @@ import React from 'react';
 
 class HeaderCell extends React.Component {
     render() {
-        let {width} = this.props;
+        let {width, centerText} = this.props;
         let combinedStyle = Object.assign({}, style, {width: width});
+        if (centerText) {
+            combinedStyle['textAlign'] = 'center';
+        }
         return <span style={combinedStyle}>
             {this.props.children}
         </span>

@@ -212,3 +212,7 @@
 .SearchResultsPanel__searchWarning {
     color: red;
 }
+
+#app {
+    min-width: 800px;
+}

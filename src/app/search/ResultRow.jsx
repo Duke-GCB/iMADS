@@ -32,7 +32,8 @@ const NormalColumnData = [
     {
         title:"Strand",
         wideWidth: '10%',
-        normalWidth: '8%'
+        normalWidth: '8%',
+        centerText: true
     },
     {
         title:"Location",
@@ -75,7 +76,8 @@ function getWidthAndTitle(columnInfo, wideMode) {
     }
     return {
         title: columnInfo.title,
-        width: width
+        width: width,
+        centerText: columnInfo.centerText
     };
 }
 
@@ -83,7 +85,8 @@ function getNormalWidthAndTitle(columnInfo) {
     let width = columnInfo.normalWidth;
     return {
         title: columnInfo.title,
-        width: width
+        width: width,
+        centerText: columnInfo.centerText
     };
 }
 
@@ -94,13 +97,14 @@ function getWideWidthAndTitle(columnInfo) {
     }
     return {
         title: columnInfo.title,
-        width: width
+        width: width,
+        centerText: columnInfo.centerText
     };
 }
 
 export class ResultHeaderRow extends React.Component {
     makeHeader(headerInfo) {
-        return <HeaderCell key={headerInfo.title} width={headerInfo.width}>{headerInfo.title}</HeaderCell>
+        return <HeaderCell key={headerInfo.title} centerText={headerInfo.centerText} width={headerInfo.width}>{headerInfo.title}</HeaderCell>
     }
     render() {
         let {rangeType, includeHeatMap} = this.props;
@@ -122,7 +126,7 @@ export class ResultDetailRow extends React.Component {
         } else {
             this.addTextValue(values, rowData.commonName);
             this.addTextValue(values, rowData.name, rowData.name.replace(/; /g,'\n'));
-            this.addTextValue(values, rowData.strand);
+            this.addCenteredTextValue(values, rowData.strand);
             this.addTextValue(values, rowData.chrom + ':' + rowData.start + '-' + rowData.end);
             this.addTextValue(values, rowData.max);
         }
@@ -132,11 +136,21 @@ export class ResultDetailRow extends React.Component {
         return values;
     }
 
+    addCenteredTextValue(values, text, title) {
+        if (!title) {
+            title = text;
+        }
+        let div = <div className="centerChildrenHorizontally">
+                <span title={title}>{text}</span>
+            </div>;
+        values.push(div);
+    }
+
     addTextValue(values, text, title) {
         if (!title) {
             title = text;
         }
-        let span = <span title={title}>{text}</span>
+        let span = <span title={title}>{text}</span>;
         values.push(span);
     }
 
@@ -157,6 +171,7 @@ export class ResultDetailRow extends React.Component {
             }
             if (i == 0) {
                 style['paddingLeft'] = DATA_CELL_LEFT_PADDING;
+                style['minWidth'] = '110px';
             }
             rows.push(<DataCell key={i} style={style}>{values[i]}</DataCell>);
         }
