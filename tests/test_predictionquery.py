@@ -22,7 +22,7 @@ else
   (txend + %s) >= start_range and end_range >= (txend - %s)
 end
 group by common_name, chrom, strand, txstart, txend
-order by common_name, chrom, strand, txstart, txend{}"""
+order by chrom, txstart{}"""
 
 GENE_LIST_FILTER_WITH_LIMIT = QUERY_BASE.format("\nlimit %s offset %s")
 GENE_LIST_FILTER = QUERY_BASE.format("")
@@ -79,7 +79,6 @@ class TestPredictionQuery(TestCase):
             downstream="250",
         )
         sql, params = query.get_query_and_params()
-        self.maxDiff = None
         self.assertEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 

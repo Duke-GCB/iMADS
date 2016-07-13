@@ -26,7 +26,6 @@ and custom_range_list.range && prediction.range
 and model_name = %s
 where
 custom_range_list.id = %s
-
 group by seq""", [model_name, list_id])
 
 
