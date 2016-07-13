@@ -20,13 +20,14 @@ json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end'
 max(lower(custom_range_list.range)) as range_start,
 max(upper(custom_range_list.range)) as range_end
 from custom_range_list
-inner join prediction
+left outer join prediction
 on prediction.chrom = custom_range_list.chrom
 and custom_range_list.range && prediction.range
+and model_name = %s
 where
 custom_range_list.id = %s
-and model_name = %s
-group by seq""", [list_id, model_name])
+
+group by seq""", [model_name, list_id])
 
 
 def select_prediction_values():
