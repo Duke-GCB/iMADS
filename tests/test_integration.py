@@ -15,7 +15,8 @@ DOCKER_NAME="TF_DNA_POSTGRES_TEST"
 
 
 def start_docker():
-    subprocess.check_call("eval $(docker-machine env default) && docker run "
+    #subprocess.check_call("eval $(docker-machine env default) && docker run "
+    subprocess.check_call("docker run "
                            "-d "
                            "-p " "5432:5432 "
                            "--name " + DOCKER_NAME +
@@ -25,7 +26,8 @@ def start_docker():
 
 
 def stop_docker():
-    subprocess.check_call("eval $(docker-machine env default) && docker rm -f -v " + DOCKER_NAME, shell=True)
+    #subprocess.check_call("eval $(docker-machine env default) && docker rm -f -v " + DOCKER_NAME, shell=True)
+    subprocess.check_call("docker rm -f -v " + DOCKER_NAME, shell=True)
 
 CONFIG_DATA = {
     "binding_max_offset": 5000,
@@ -169,7 +171,7 @@ class TestWithDocker(TestCase):
         start_docker()
         time.sleep(5)
         TestWithDocker.config = parse_config_from_dict(CONFIG_DATA)
-        TestWithDocker.config.dbconfig.host = subprocess.check_output('docker-machine ip', shell=True)
+        TestWithDocker.config.dbconfig.host = "localhost"
         TestWithDocker.config.dbconfig.dbname = 'pred'
         TestWithDocker.config.dbconfig.user = 'pred_user'
         run_sql_command(TestWithDocker.config)
