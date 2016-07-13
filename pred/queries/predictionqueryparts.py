@@ -74,10 +74,11 @@ def filter_common_name(custom_list_id, custom_list_filter, model_name, upstream,
     """
     if custom_list_filter.strip().upper() == "ALL":
         custom_list_filter = ""
-    base_sql = """( upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)
-or
-upper(name) in (select upper(gene_name) from custom_gene_list where id = %s)
-)
+
+    base_sql = """( common_name in
+(select common_name from gene where
+    upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)
+    or upper(name) in (select upper(gene_name) from custom_gene_list where id = %s)))
 and
 model_name = %s
 and

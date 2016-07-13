@@ -12,10 +12,10 @@ case strand when '+' then txstart else txend end as gene_start,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where{}
-( upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)
-or
-upper(name) in (select upper(gene_name) from custom_gene_list where id = %s)
-)
+( common_name in
+(select common_name from gene where
+    upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)
+    or upper(name) in (select upper(gene_name) from custom_gene_list where id = %s)))
 and
 model_name = %s
 and
@@ -42,10 +42,10 @@ case strand when '+' then txstart else txend end as gene_start,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where
-( upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)
-or
-upper(name) in (select upper(gene_name) from custom_gene_list where id = %s)
-)
+( common_name in
+(select common_name from gene where
+    upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)
+    or upper(name) in (select upper(gene_name) from custom_gene_list where id = %s)))
 and
 model_name = %s
 and
