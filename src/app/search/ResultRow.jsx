@@ -50,6 +50,13 @@ const ValuesColumnData = {
     normalWidth: '120px',
 };
 
+const DATA_CELL_ROW_HEIGHT = "20px";
+const FIRST_CELL_LEFT_PADDING = "10px";
+const FIRST_CELL_MIN_WIDTH = "110px";
+let DATA_CELL_DIV_STYLE = {
+    borderBottom: '1px solid grey'
+}
+
 function getTitles(rangeType, includeHeatMap) {
     let list = NormalColumnData.slice(0);
     if (rangeType) {
@@ -170,17 +177,11 @@ export class ResultDetailRow extends React.Component {
                 height: DATA_CELL_ROW_HEIGHT
             }
             if (i == 0) {
-                style['paddingLeft'] = DATA_CELL_LEFT_PADDING;
-                style['minWidth'] = '110px';
+                style['paddingLeft'] = FIRST_CELL_LEFT_PADDING;
+                style['minWidth'] = FIRST_CELL_MIN_WIDTH;
             }
             rows.push(<DataCell key={i} style={style}>{values[i]}</DataCell>);
         }
-        return <div style={dataCellStyle}>{rows}</div>
+        return <div style={DATA_CELL_DIV_STYLE}>{rows}</div>
     }
-}
-
-const DATA_CELL_ROW_HEIGHT = "20px";
-const DATA_CELL_LEFT_PADDING = "10px";
-let dataCellStyle = {
-    borderBottom: '1px solid grey'
 }

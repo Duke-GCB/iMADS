@@ -116,10 +116,6 @@ class PredictionsStore {
         urlBuilder.appendParam('downstream', searchSettings.downstream);
         urlBuilder.appendParam('includeAll', searchSettings.all);
         urlBuilder.appendParam('maxPredictionSort', searchSettings.maxPredictionSort);
-
-        if (searchSettings.maxPredictionSort) {
-            urlBuilder.appendParam('maxPredictionGuess', '0.7');
-        }
         if (page && perPage) {
             urlBuilder.appendParam('page', page);
             urlBuilder.appendParam('perPage', perPage);

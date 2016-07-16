@@ -10,11 +10,11 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (txstart + %s) >= start_range and end_range >= (txstart - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 else
-  (txend + %s) >= start_range and end_range >= (txend - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end{}
-group by common_name, chrom, strand, txstart, txend
+group by common_name, chrom, strand, gene_begin
 order by max(value) desc{}
 )
 select
@@ -23,7 +23,7 @@ string_agg(name, '; ') as name,
 round(max(value), 4) as max_value,
 chrom,
 strand,
-case strand when '+' then txstart else txend end as gene_start,
+gene_begin,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where
@@ -32,12 +32,12 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (txstart + %s) >= start_range and end_range >= (txstart - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 else
-  (txend + %s) >= start_range and end_range >= (txend - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end
 and common_name in (select common_name from max_prediction_names)
-group by common_name, chrom, strand, txstart, txend
+group by common_name, chrom, strand, gene_begin
 order by max(value) desc, common_name"""
 
 MAX_QUERY_WITH_GUESS_WITH_LIMIT = MAX_QUERY_BASE.format("\nand value > %s", "\nlimit %s offset %s")
@@ -54,11 +54,11 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (txstart + %s) >= start_range and end_range >= (txstart - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 else
-  (txend + %s) >= start_range and end_range >= (txend - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end
-group by common_name, chrom, strand, txstart, txend
+group by common_name, chrom, strand, gene_begin
 order by max(value) desc
 )
 select count(*) from (
@@ -68,7 +68,7 @@ string_agg(name, '; ') as name,
 round(max(value), 4) as max_value,
 chrom,
 strand,
-case strand when '+' then txstart else txend end as gene_start,
+gene_begin,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where
@@ -77,12 +77,12 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (txstart + %s) >= start_range and end_range >= (txstart - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 else
-  (txend + %s) >= start_range and end_range >= (txend - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end
 and common_name in (select common_name from max_prediction_names)
-group by common_name, chrom, strand, txstart, txend
+group by common_name, chrom, strand, gene_begin
 ) as foo"""
 
 

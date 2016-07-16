@@ -8,7 +8,7 @@ string_agg(name, '; ') as name,
 round(max(value), 4) as max_value,
 chrom,
 strand,
-case strand when '+' then txstart else txend end as gene_start,
+gene_begin,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where
@@ -17,12 +17,12 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (txstart + %s) >= start_range and end_range >= (txstart - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 else
-  (txend + %s) >= start_range and end_range >= (txend - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end
-group by common_name, chrom, strand, txstart, txend
-order by chrom, txstart{}"""
+group by common_name, chrom, strand, gene_begin
+order by chrom, gene_begin{}"""
 
 GENE_LIST_FILTER_WITH_LIMIT = QUERY_BASE.format("\nlimit %s offset %s")
 GENE_LIST_FILTER = QUERY_BASE.format("")
@@ -35,7 +35,7 @@ string_agg(name, '; ') as name,
 round(max(value), 4) as max_value,
 chrom,
 strand,
-case strand when '+' then txstart else txend end as gene_start,
+gene_begin,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where
@@ -44,11 +44,11 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (txstart + %s) >= start_range and end_range >= (txstart - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 else
-  (txend + %s) >= start_range and end_range >= (txend - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end
-group by common_name, chrom, strand, txstart, txend
+group by common_name, chrom, strand, gene_begin
 ) as foo"""
 
 class TestPredictionQuery(TestCase):
@@ -79,6 +79,7 @@ class TestPredictionQuery(TestCase):
             downstream="250",
         )
         sql, params = query.get_query_and_params()
+        self.maxDiff = None
         self.assertEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 
@@ -94,6 +95,7 @@ class TestPredictionQuery(TestCase):
             count=True,
         )
         sql, params = query.get_query_and_params()
+        self.maxDiff = None
         self.assertEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 

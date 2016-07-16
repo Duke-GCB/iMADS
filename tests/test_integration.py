@@ -55,6 +55,7 @@ CONFIG_DATA = {
                     "name": "E2F1_0001(JS)",
                     "url": "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0001-E2F1-E2F1-bestSVR.model.bb",
                     "fix_script": "bigBedToBed",
+                    "sort_max_guess": 0.6
                 }
             ]
         }

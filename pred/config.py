@@ -6,6 +6,7 @@ DEFAULT_DB_NAME = "pred"
 DEFAULT_DB_USER = "pred_user"
 DEFAULT_DB_PASS = "pred_pass"
 DEFAULT_MAX_BINDING_OFFSET = 5000
+DEFAULT_MAX_SORT_GUESS = 0.6
 
 DB_HOST_ENV = "DB_HOST"
 DB_NAME_ENV = "DB_NAME"
@@ -63,6 +64,13 @@ class Config(object):
             }
         return result
 
+    def get_max_sort_guess(self, genome, model_name):
+        for genome_data in self.genome_data_list:
+            for model in genome_data.prediction_lists:
+                if model.name == model_name:
+                    return model.sort_max_guess
+        return DEFAULT_MAX_SORT_GUESS
+
 
 class GenomeData(object):
     def __init__(self, config, genome_data):
@@ -102,7 +110,8 @@ class GenomeData(object):
             name = prediction_data['name']
             url = prediction_data['url']
             fix_script = prediction_data['fix_script']
-            prediction = PredictionSettings(name, url, self.genomename, fix_script)
+            sort_max_guess = prediction_data['sort_max_guess']
+            prediction = PredictionSettings(name, url, self.genomename, fix_script, sort_max_guess)
             self.prediction_lists.append(prediction)
 
     def get_model_types_str(self):
@@ -120,9 +129,10 @@ class GeneInfoSettings(object):
 
 
 class PredictionSettings(object):
-    def __init__(self, name, url, genome, fix_script):
+    def __init__(self, name, url, genome, fix_script, sort_max_guess):
         self.name = name
         self.url = url
         self.genome = genome
         self.fix_script = fix_script
+        self.sort_max_guess = sort_max_guess
 

@@ -17,7 +17,9 @@ def get_predictions_with_guess(db, config, genome, args):
     if search_args.is_last_page():
         last_page = determine_last_page(db, genome, search_args)
         search_args.set_page(last_page)
-    search = PredictionSearch(db, genome, search_args, enable_guess=True)
+    model = search_args.get_model_name()
+    max_sort_guess = config.get_max_sort_guess(genome, model)
+    search = PredictionSearch(db, genome, search_args, enable_guess=True, max_sort_guess=max_sort_guess)
     predictions = search.get_predictions()
     if search.has_max_prediction_guess():  # repeat without guess if we didn't get enough values
         per_page = search.get_per_page()
@@ -59,7 +61,7 @@ class PredictionQueryNames(object):
     MAX_VALUE = 'max_value'
     CHROM = 'chrom'
     STRAND = 'strand'
-    GENE_START = 'gene_start'
+    GENE_BEGIN = 'gene_begin'
     PRED = 'pred'
     RANGE_START = 'range_start'
     RANGE_END = 'range_end'
@@ -73,7 +75,6 @@ class SearchArgs(object):
     PAGE = 'page'
     PER_PAGE = 'perPage'
     MAX_PREDICTION_SORT = 'maxPredictionSort'
-    MAX_PREDICTION_GUESS = 'maxPredictionGuess'
     FORMAT = 'format'
     INCLUDE_ALL = 'includeAll'
     CUSTOM_LIST_DATA = 'customListData'
@@ -115,9 +116,6 @@ class SearchArgs(object):
 
     def get_sort_by_max(self):
         return "true" == self.args.get(self.MAX_PREDICTION_SORT)
-
-    def get_max_prediction_guess(self):
-        return self.args.get(self.MAX_PREDICTION_GUESS)
 
     def get_page_and_per_page(self):
         page = self.page
@@ -177,11 +175,12 @@ class PredictionToken(object):
 
 
 class PredictionSearch(object):
-    def __init__(self, db, genome, search_args, enable_guess=True):
+    def __init__(self, db, genome, search_args, enable_guess=True, max_sort_guess=None):
         self.db = db
         self.genome = genome
         self.args = search_args
         self.enable_guess = enable_guess
+        self.max_sort_guess = max_sort_guess
         self.warning = ''
 
     def get_count(self):
@@ -201,7 +200,7 @@ class PredictionSearch(object):
         predictions = []
         prev_row = None
         for row in cur.fetchall():
-            gene_start_str = row[PredictionQueryNames.GENE_START]
+            gene_start_str = row[PredictionQueryNames.GENE_BEGIN]
             gene_start = ""
             if gene_start_str:
                 gene_start = int(gene_start_str)
@@ -317,8 +316,8 @@ class PredictionSearch(object):
 
     def max_query(self, count):
         guess = None
-        if self.enable_guess:
-            guess = self.args.get_max_prediction_guess()
+        if self.enable_guess and self.max_sort_guess:
+            guess = self.max_sort_guess
         limit, offset = self.get_limit_and_offset(count)
         return MaxPredictionQuery(
             schema=self.genome,
@@ -353,7 +352,7 @@ class PredictionSearch(object):
         return None, None
 
     def has_max_prediction_guess(self):
-        return self.args.get_sort_by_max() and self.args.get_max_prediction_guess() != ''
+        return self.args.get_sort_by_max() and self.max_sort_guess
 
     def get_per_page(self):
         page, per_page = self.args.get_page_and_per_page()
