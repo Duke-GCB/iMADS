@@ -111,6 +111,8 @@ class CustomListParser(object):
 
     def _create_range_list_records(self, cur, list_id):
         for idx, (name, chrom, start, end) in enumerate(self.get_ranges_array()):
+            if not chrom.startswith("chr"):
+                chrom = "chr" + chrom
             insert, params = custom_range_insert(list_id, idx + 1, chrom, start, end)
             cur.execute(insert, params)
 
