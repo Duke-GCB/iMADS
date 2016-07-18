@@ -20,13 +20,13 @@ json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end'
 max(lower(custom_range_list.range)) as range_start,
 max(upper(custom_range_list.range)) as range_end
 from custom_range_list
-inner join prediction
+left outer join prediction
 on prediction.chrom = custom_range_list.chrom
 and custom_range_list.range && prediction.range
+and model_name = %s
 where
 custom_range_list.id = %s
-and model_name = %s
-group by seq""", [list_id, model_name])
+group by seq""", [model_name, list_id])
 
 
 def select_prediction_values():
@@ -36,7 +36,7 @@ string_agg(name, '; ') as name,
 round(max(value), 4) as max_value,
 chrom,
 strand,
-case strand when '+' then txstart else txend end as gene_start,
+gene_begin,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction""")
 
@@ -58,9 +58,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (txstart + %s) >= start_range and end_range >= (txstart - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 else
-  (txend + %s) >= start_range and end_range >= (txend - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end""", [gene_list, model_name, downstream, upstream, upstream, downstream])
 
 
@@ -83,9 +83,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (txstart + %s) >= start_range and end_range >= (txstart - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 else
-  (txend + %s) >= start_range and end_range >= (txend - %s)
+  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end"""
     sql = base_sql
     params = [custom_list_id, custom_list_id, model_name, upstream, downstream, downstream, upstream]
@@ -130,11 +130,11 @@ def group_by_name():
 
 
 def group_by_common_name_and_parts():
-    return _query_part("group by common_name, chrom, strand, txstart, txend")
+    return _query_part("group by common_name, chrom, strand, gene_begin")
 
 
-def order_by_common_name_and_parts():
-    return _query_part("order by common_name, chrom, strand, txstart, txend")
+def order_by_chrom_and_txstart():
+    return _query_part("order by chrom, gene_begin")
 
 
 def order_by_name():

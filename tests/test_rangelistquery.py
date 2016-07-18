@@ -12,12 +12,12 @@ json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end'
 max(lower(custom_range_list.range)) as range_start,
 max(upper(custom_range_list.range)) as range_end
 from custom_range_list
-inner join prediction
+left outer join prediction
 on prediction.chrom = custom_range_list.chrom
 and custom_range_list.range && prediction.range
+and model_name = %s
 where
 custom_range_list.id = %s
-and model_name = %s
 group by seq
 order by seq{}"""
 
@@ -35,12 +35,12 @@ json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end'
 max(lower(custom_range_list.range)) as range_start,
 max(upper(custom_range_list.range)) as range_end
 from custom_range_list
-inner join prediction
+left outer join prediction
 on prediction.chrom = custom_range_list.chrom
 and custom_range_list.range && prediction.range
+and model_name = %s
 where
 custom_range_list.id = %s
-and model_name = %s
 group by seq
 order by seq{}
 ) as foo"""
@@ -50,8 +50,8 @@ class TestRangeListQuery(TestCase):
     def test_range_list_filter_with_limit(self):
         expected_sql = QUERY_BASE.format(LIMIT_OFFSET)
         expected_params = ["hg38",
-                           12,
                            "E2F4",
+                           12,
                            "100", "200"]
         query = RangeListQuery(
             schema="hg38",
@@ -66,7 +66,7 @@ class TestRangeListQuery(TestCase):
 
     def test_range_list_filter_with_limit_multi_insert(self):
         expected_sql = QUERY_BASE.format(LIMIT_OFFSET)
-        expected_params = ["hg38", 22, "E2F4", "100", "200"]
+        expected_params = ["hg38", "E2F4", 22, "100", "200"]
         query = RangeListQuery(
             schema="hg38",
             custom_list_id=22,
@@ -80,7 +80,7 @@ class TestRangeListQuery(TestCase):
 
     def test_range_list_filter(self):
         expected_sql = QUERY_BASE.format("")
-        expected_params = ["hg38", 18, "E2F4"]
+        expected_params = ["hg38", "E2F4", 18]
         query = RangeListQuery(
             schema="hg38",
             custom_list_id=18,
@@ -92,7 +92,7 @@ class TestRangeListQuery(TestCase):
 
     def test_range_list_count(self):
         expected_sql = QUERY_WITH_COUNT.format("")
-        expected_params = ["hg38", 48, "E2F4"]
+        expected_params = ["hg38", "E2F4", 48]
         query = RangeListQuery(
             schema="hg38",
             custom_list_id=48,

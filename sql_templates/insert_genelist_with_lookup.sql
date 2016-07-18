@@ -3,8 +3,8 @@
 create index if not exists {{ common_lookup_table}}_idx
   on {{schema_prefix}}.{{common_lookup_table}}({{common_lookup_table_field}});
 
-insert into {{schema_prefix}}.gene(gene_list, name, chrom, strand, txstart, txend)
-      select '{{source_table}}', name, chrom, strand, txstart, txend
+insert into {{schema_prefix}}.gene(gene_list, name, chrom, strand, txstart, txend, gene_begin)
+      select '{{source_table}}', name, chrom, strand, txstart, txend, case strand when '+' then txstart else txend end
         from {{schema_prefix}}.{{source_table}};
 
 update {{schema_prefix}}.gene set common_name = (
