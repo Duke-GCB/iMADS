@@ -3,6 +3,8 @@ import {isCustomList} from '../store/CustomList.js'
 import StreamValue from './StreamValue.js'
 import URLBuilder from './URLBuilder.js'
 
+const GENE_NAMES_WARNING_PREFIX = "Gene names not in our database";
+
 class PredictionsStore {
     constructor(pageBatch, urlBuilder) {
         this.pageBatch = pageBatch;
@@ -141,6 +143,10 @@ class PredictionsStore {
         urlBuilder.appendParam('customListFilter', searchSettings.customListFilter, true);
         urlBuilder.appendParam('customListData', searchSettings.customListData, true);
         return urlBuilder.url;
+    }
+
+    isGeneWarningMessage(message) {
+        return message.startsWith(GENE_NAMES_WARNING_PREFIX);
     }
 
 }

@@ -73,4 +73,22 @@ describe('PredictionsStore', function () {
             request_page(ps, 1, [1,2,3,4], '', true, false);
         });
     });
+
+    describe('isGeneWarningMessage()', function() {
+        it('return true when "Gene names not in our database"', function () {
+            var ps = new PredictionsStore(pageBatch, builder, searchSettings);
+            var message = "Gene names not in our database: tom";
+            assert.equal(ps.isGeneWarningMessage(message), true);
+            message = "Gene names not in our database: this, that";
+            assert.equal(ps.isGeneWarningMessage(message), true);
+        });
+
+        it('return false when "Gene names not in our database"', function () {
+            var ps = new PredictionsStore(pageBatch, builder, searchSettings);
+            var message = "Something else is wrong";
+            assert.equal(ps.isGeneWarningMessage(message), false);
+            message = "Database connection failed.";
+            assert.equal(ps.isGeneWarningMessage(message), false);
+        });
+    });
 });

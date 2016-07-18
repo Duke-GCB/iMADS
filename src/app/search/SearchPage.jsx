@@ -27,6 +27,7 @@ class SearchPage extends React.Component {
              searchDataLoaded: searchDataLoaded,
              errorMessage: "",
              showCustomDialog: customListWithoutData,
+             showGeneNamesWarnings: true,
          };
          this.search = this.search.bind(this);
          this.downloadAll = this.downloadAll.bind(this);
@@ -63,27 +64,32 @@ class SearchPage extends React.Component {
             this.setErrorMessage(errorMessage);
             return;
         }
+        var sameState = searchSettings == this.state.searchSettings;
         this.setState({
             searchSettings: searchSettings,
             page: page,
             perPage: this.perPage,
             searchDataLoaded: false,
+            showGeneNamesWarnings: !sameState
         });
         this.predictionStore.requestPage(page, searchSettings, this.onSearchData, this.onError);
         browserHistory.push(this.predictionStore.makeLocalUrl(searchSettings));
     }
 
     onSearchData(predictions, pageNum, hasNextPages, warning) {
+        if (warning) {
+            if (!(this.predictionStore.isGeneWarningMessage(warning) && !this.state.showGeneNamesWarnings)) {
+                alert(warning);
+            }
+        }
         this.setState({
             searchResults: predictions,
             nextPages: hasNextPages,
             searchDataLoaded: true,
             page: pageNum,
             errorMessage: '',
+            showGeneNamesWarnings: false
         });
-        if (warning) {
-            alert(warning);
-        }
     }
 
     onError(err) {
