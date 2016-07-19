@@ -207,11 +207,12 @@ class SearchFilterPanel extends React.Component {
         });
     }
 
-    closeCustomDialog(customListData, customListFilter) {
+    closeCustomDialog(customListData, customListFilter, customGeneSearchType) {
         this.setState({
             showCustomDialog: false,
             customListData: customListData,
             customListFilter: customListFilter,
+            customGeneSearchType: customGeneSearchType,
         }, this.runSearch);
     }
 

@@ -1,5 +1,5 @@
 import {URL} from './AppSettings.js'
-import {isCustomList} from '../store/CustomList.js'
+import {isCustomList, CUSTOM_GENE_LIST} from '../store/CustomList.js'
 import StreamValue from './StreamValue.js'
 import URLBuilder from './URLBuilder.js'
 
@@ -114,6 +114,9 @@ class PredictionsStore {
         urlBuilder.appendParam('geneList', searchSettings.geneList);
         urlBuilder.appendParam('customListData', searchSettings.customListData);
         urlBuilder.appendParam('customListFilter', searchSettings.customListFilter, true);
+        if (searchSettings.geneList === CUSTOM_GENE_LIST) {
+            urlBuilder.appendParam('customGeneSearchType', searchSettings.customGeneSearchType);
+        }
         urlBuilder.appendParam('upstream', searchSettings.upstream);
         urlBuilder.appendParam('downstream', searchSettings.downstream);
         urlBuilder.appendParam('includeAll', searchSettings.all);

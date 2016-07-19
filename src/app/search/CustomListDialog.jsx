@@ -4,6 +4,7 @@ import Loader from 'react-loader';
 import { CustomListData } from '../store/CustomList.js';
 import FileUpload from '../store/FileUpload.js';
 import CustomFile from '../store/CustomFile.js';
+import GeneSearchType from './GeneSearchType.jsx'
 
 const customStyles = {
   content : {
@@ -24,6 +25,7 @@ class CustomListDialog extends React.Component {
             fileValue: '',
             file: undefined,
             geneList: 'All',
+            geneSearchType: 'gene_name',
         }
         this.changeUploadFile = this.changeUploadFile.bind(this);
         this.changeText = this.changeText.bind(this);
@@ -32,6 +34,13 @@ class CustomListDialog extends React.Component {
         this.closeReturningResult = this.closeReturningResult.bind(this);
         this.setText = this.setText.bind(this);
         this.exitDialog = this.exitDialog.bind(this);
+        this.setGeneSearchType = this.setGeneSearchType.bind(this);
+    }
+
+    setGeneSearchType(searchType) {
+        this.setState({
+            geneSearchType: searchType
+        })
     }
 
     componentWillReceiveProps(nextProps) {
@@ -104,7 +113,7 @@ class CustomListDialog extends React.Component {
     }
 
     exitDialog() {
-        this.props.onRequestClose('', this.state.geneList);
+        this.props.onRequestClose('', this.state.geneList, this.state.geneSearchType);
     }
 
     closeReturningResult(text) {
@@ -112,7 +121,9 @@ class CustomListDialog extends React.Component {
         let customListData = new CustomListData(customListDialog.props.type);
         let customFile = new CustomFile(customListData.isGeneList(), text);
         customFile.uploadFile(function(key) {
-            customListDialog.props.onRequestClose(key, customListDialog.state.geneList);
+            customListDialog.props.onRequestClose(key,
+                customListDialog.state.geneList,
+                customListDialog.state.geneSearchType);
         }, function(error){
             customListDialog.setState({
                 loading: false,
@@ -147,6 +158,9 @@ class CustomListDialog extends React.Component {
                 options.push(<option key={name}>{name}</option>)
             }
             geneListDropdown = <div>
+                                    <GeneSearchType
+                                        geneSearchType={this.state.geneSearchType}
+                                        setGeneSearchType={this.setGeneSearchType} />
                                     <label>Search Gene List:</label>
                                     <select className="form-control small_lower_margin"
                                             value={this.state.geneList}
