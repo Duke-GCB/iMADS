@@ -47,7 +47,7 @@ class GeneListQuery(object):
 
 
 class GeneListUnusedNames(object):
-    def __init__(self, schema, custom_list_id, custom_list_filter, custom_gene_name_type,):
+    def __init__(self, schema, custom_list_id, custom_list_filter, custom_gene_name_type):
         self.schema = schema
         self.custom_list_id = custom_list_id
         self.custom_list_filter = custom_list_filter

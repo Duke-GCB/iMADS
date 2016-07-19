@@ -6,7 +6,8 @@ from pred.config import parse_config_from_dict
 from load import run_sql_command
 from pred.load import loaddatabase
 from pred.load import postgres
-from pred.webserver.predictionsearch import get_predictions_with_guess, SearchArgs, CUSTOM_GENE_LIST, CUSTOM_RANGES_LIST
+from pred.webserver.predictionsearch import get_predictions_with_guess, SearchArgs, CUSTOM_GENE_LIST,\
+    CUSTOM_RANGES_LIST, CUSTOM_GENE_NAME_TYPE, CUSTOM_ID_TYPE
 from webserver import create_db_connection
 from pred.webserver.customlist import save_custom_file, GENE_LIST_TYPE, RANGE_TYPE, MAX_RANGE_ERROR_STR
 
@@ -261,6 +262,7 @@ class TestWithDocker(TestCase):
         params = {
             SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
             SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
+            SearchArgs.CUSTOM_GENE_SEARCH_TYPE: CUSTOM_ID_TYPE,
             SearchArgs.MODEL: "E2F1_0001(JS)",
             SearchArgs.UPSTREAM: "100",
             SearchArgs.DOWNSTREAM: "100",
