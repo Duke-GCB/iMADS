@@ -6,7 +6,7 @@ GENE_LIST_TYPE = 'gene_list'
 MAX_FILE_SIZE = 20 * 1024 * 1024
 MAX_FILE_SIZE_STR = "20MB"
 
-MAX_RANGE_SUM = g
+MAX_RANGE_SUM = 30 * 1000 * 1000
 MAX_RANGE_ERROR_STR = "You are only allowed {} in total ranges.".format(MAX_RANGE_SUM)
 
 def save_custom_file(db, user_info, type, content):
