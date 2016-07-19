@@ -6,9 +6,9 @@ from pred.config import parse_config_from_dict
 from load import run_sql_command
 from pred.load import loaddatabase
 from pred.load import postgres
-from pred.webserver.predictionsearch import get_predictions_with_guess, SearchArgs, CUSTOM_GENE_LIST
+from pred.webserver.predictionsearch import get_predictions_with_guess, SearchArgs, CUSTOM_GENE_LIST, CUSTOM_RANGES_LIST
 from webserver import create_db_connection
-from pred.webserver.customlist import save_custom_file, GENE_LIST_TYPE
+from pred.webserver.customlist import save_custom_file, GENE_LIST_TYPE, RANGE_TYPE, MAX_RANGE_ERROR_STR
 
 
 DOCKER_NAME="TF_DNA_POSTGRES_TEST"
@@ -285,11 +285,11 @@ class TestWithDocker(TestCase):
         predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
 
-    def test_custom_gene_list_id_uc(self):
+    def test_custom_range_list(self):
         db = create_db_connection(TestWithDocker.config.dbconfig)
-        custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "UC001AAA.3")
+        custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "chr1 11873 11883")
         params = {
-            SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
+            SearchArgs.GENE_LIST: CUSTOM_RANGES_LIST,
             SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
             SearchArgs.MODEL: "E2F1_0001(JS)",
             SearchArgs.UPSTREAM: "100",
@@ -299,5 +299,55 @@ class TestWithDocker(TestCase):
         }
         predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
+        self.assertEqual(0.4, float(predictions[0]['max']))
+
+    def test_custom_range_list_bad_range(self):
+        db = create_db_connection(TestWithDocker.config.dbconfig)
+        custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "chr1 91873 91883")
+        params = {
+            SearchArgs.GENE_LIST: CUSTOM_RANGES_LIST,
+            SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
+            SearchArgs.MODEL: "E2F1_0001(JS)",
+            SearchArgs.UPSTREAM: "100",
+            SearchArgs.DOWNSTREAM: "100",
+            SearchArgs.PAGE: "1",
+            SearchArgs.PER_PAGE: "10",
+        }
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        self.assertEqual(len(predictions), 1)
+        # we always return a record for range requests just with empty data for the matches
+        self.assertEqual('None', predictions[0]['max'])
+
+    def test_custom_range_list_no_chr(self):
+        db = create_db_connection(TestWithDocker.config.dbconfig)
+        custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "1 11873 11883")
+        params = {
+            SearchArgs.GENE_LIST: CUSTOM_RANGES_LIST,
+            SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
+            SearchArgs.MODEL: "E2F1_0001(JS)",
+            SearchArgs.UPSTREAM: "100",
+            SearchArgs.DOWNSTREAM: "100",
+            SearchArgs.PAGE: "1",
+            SearchArgs.PER_PAGE: "10",
+        }
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        self.assertEqual(len(predictions), 1)
+        # we always return a record for range requests just with empty data for the matches
+        self.assertEqual(0.4, float(predictions[0]['max']))
+
+
+    def test_custom_range_list_range_sum_too_big(self):
+        db = create_db_connection(TestWithDocker.config.dbconfig)
+        try:
+            custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "1 1000 30001001")
+            self.fail("Should have raised ValueError exception.")
+        except ValueError as err:
+            self.assertEqual(str(err), MAX_RANGE_ERROR_STR)
+
+    def test_custom_range_list_range_as_big_as_possible(self):
+        db = create_db_connection(TestWithDocker.config.dbconfig)
+        custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "1 1000 30001000")
+
+
 
 

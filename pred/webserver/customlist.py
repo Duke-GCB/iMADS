@@ -6,6 +6,8 @@ GENE_LIST_TYPE = 'gene_list'
 MAX_FILE_SIZE = 20 * 1024 * 1024
 MAX_FILE_SIZE_STR = "20MB"
 
+MAX_RANGE_SUM = 30 * 1000 * 1000
+MAX_RANGE_ERROR_STR = "You are only allowed {} in total ranges.".format(MAX_RANGE_SUM)
 
 def save_custom_file(db, user_info, type, content):
     if type != RANGE_TYPE and type != GENE_LIST_TYPE:
@@ -110,7 +112,14 @@ class CustomListParser(object):
             cur.execute(insert, params)
 
     def _create_range_list_records(self, cur, list_id):
+        total_size = 0
         for idx, (name, chrom, start, end) in enumerate(self.get_ranges_array()):
+            if not chrom.startswith("chr"):
+                chrom = "chr" + chrom
+            diff = int(end) - int(start)
+            total_size += max(0, diff)
+            if total_size > MAX_RANGE_SUM:
+                raise ValueError(MAX_RANGE_ERROR_STR)
             insert, params = custom_range_insert(list_id, idx + 1, chrom, start, end)
             cur.execute(insert, params)
 
