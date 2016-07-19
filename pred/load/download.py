@@ -145,8 +145,7 @@ class GenomeDownloader(object):
         self.update_progress('Downloading: ' + filename)
         if not os.path.exists(self.local_dir):
             os.mkdir(self.local_dir)
-        ftp = FTP(self.ftp_host)
-        ftp.login()
+        ftp = FTP(self.ftp_host, 'anonymous', 'gcb-contact@duke.edu')
         ftp.cwd(self.get_ftp_dir())
         with open(out_filename, 'wb') as outfile:
             ftp.retrbinary("RETR " + filename, outfile.write)
