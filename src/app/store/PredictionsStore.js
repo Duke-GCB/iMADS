@@ -62,6 +62,7 @@ class PredictionsStore {
                 showCustomDialog: false,
                 customListData: query.customListData,
                 customListFilter: query.customListFilter,
+                customGeneSearchType: query.customGeneSearchType,
             };
         }
         let customList = isCustomList(settings.geneList);
@@ -145,6 +146,9 @@ class PredictionsStore {
         urlBuilder.appendParam('maxPredictionSort', searchSettings.maxPredictionSort);
         urlBuilder.appendParam('customListFilter', searchSettings.customListFilter, true);
         urlBuilder.appendParam('customListData', searchSettings.customListData, true);
+        if (searchSettings.geneList === CUSTOM_GENE_LIST) {
+            urlBuilder.appendParam('customGeneSearchType', searchSettings.customGeneSearchType);
+        }
         return urlBuilder.url;
     }
 

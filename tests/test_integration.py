@@ -232,6 +232,7 @@ class TestWithDocker(TestCase):
         params = {
             SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
             SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
+            SearchArgs.CUSTOM_GENE_SEARCH_TYPE: CUSTOM_GENE_NAME_TYPE,
             SearchArgs.MODEL: "E2F1_0001(JS)",
             SearchArgs.UPSTREAM: "100",
             SearchArgs.DOWNSTREAM: "100",
@@ -247,6 +248,7 @@ class TestWithDocker(TestCase):
         params = {
             SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
             SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
+            SearchArgs.CUSTOM_GENE_SEARCH_TYPE: CUSTOM_GENE_NAME_TYPE,
             SearchArgs.MODEL: "E2F1_0001(JS)",
             SearchArgs.UPSTREAM: "100",
             SearchArgs.DOWNSTREAM: "100",
@@ -271,6 +273,11 @@ class TestWithDocker(TestCase):
         }
         predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
+        first_pred_name = predictions[0]['name']
+        first_pred_name_parts = first_pred_name.split("; ")
+        self.assertEqual(len(first_pred_name_parts), 2)
+        self.assertIn("uc001aaa.3", first_pred_name_parts)
+        self.assertIn("uc010nxr.1", first_pred_name_parts)
 
     def test_custom_gene_list_with_lc_results(self):
         db = create_db_connection(TestWithDocker.config.dbconfig)
@@ -278,6 +285,7 @@ class TestWithDocker(TestCase):
         params = {
             SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
             SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
+            SearchArgs.CUSTOM_GENE_SEARCH_TYPE: CUSTOM_GENE_NAME_TYPE,
             SearchArgs.MODEL: "E2F1_0001(JS)",
             SearchArgs.UPSTREAM: "100",
             SearchArgs.DOWNSTREAM: "100",

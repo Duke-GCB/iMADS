@@ -95,6 +95,10 @@ end""".format(inner_filter)
     if custom_list_filter:
         sql = "gene_list = %s\nand\n{}".format(base_sql)
         params.insert(0, custom_list_filter)
+    if not custom_gene_name_type:
+        sql += " and " + inner_filter
+        params.append(custom_list_id)
+
     return QueryPart(sql, params)
 
 

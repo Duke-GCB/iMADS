@@ -382,7 +382,10 @@ class PredictionSearch(object):
         )
         bad_names = self.get_name_set(unused_name_query.get_query_and_params())
         if bad_names:
-            return "Gene names not in our database:\n" + "\n".join(bad_names)
+            if self.args.is_custom_gene_name_search_type():
+                return "Gene names not in our database:\n" + "\n".join(bad_names)
+            else:
+                return "Gene IDs not in our database:\n" + "\n".join(bad_names)
         return ""
 
     def get_name_set(self, query_and_param):
