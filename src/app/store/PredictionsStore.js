@@ -1,7 +1,9 @@
 import {URL} from './AppSettings.js'
-import {isCustomList} from '../store/CustomList.js'
+import {isCustomList, CUSTOM_GENE_LIST} from '../store/CustomList.js'
 import StreamValue from './StreamValue.js'
 import URLBuilder from './URLBuilder.js'
+
+const GENE_NAMES_WARNING_PREFIX = "Gene names not in our database";
 
 class PredictionsStore {
     constructor(pageBatch, urlBuilder) {
@@ -60,6 +62,7 @@ class PredictionsStore {
                 showCustomDialog: false,
                 customListData: query.customListData,
                 customListFilter: query.customListFilter,
+                customGeneSearchType: query.customGeneSearchType,
             };
         }
         let customList = isCustomList(settings.geneList);
@@ -112,6 +115,9 @@ class PredictionsStore {
         urlBuilder.appendParam('geneList', searchSettings.geneList);
         urlBuilder.appendParam('customListData', searchSettings.customListData);
         urlBuilder.appendParam('customListFilter', searchSettings.customListFilter, true);
+        if (searchSettings.geneList === CUSTOM_GENE_LIST) {
+            urlBuilder.appendParam('customGeneSearchType', searchSettings.customGeneSearchType);
+        }
         urlBuilder.appendParam('upstream', searchSettings.upstream);
         urlBuilder.appendParam('downstream', searchSettings.downstream);
         urlBuilder.appendParam('includeAll', searchSettings.all);
@@ -140,7 +146,14 @@ class PredictionsStore {
         urlBuilder.appendParam('maxPredictionSort', searchSettings.maxPredictionSort);
         urlBuilder.appendParam('customListFilter', searchSettings.customListFilter, true);
         urlBuilder.appendParam('customListData', searchSettings.customListData, true);
+        if (searchSettings.geneList === CUSTOM_GENE_LIST) {
+            urlBuilder.appendParam('customGeneSearchType', searchSettings.customGeneSearchType);
+        }
         return urlBuilder.url;
+    }
+
+    isGeneWarningMessage(message) {
+        return message.startsWith(GENE_NAMES_WARNING_PREFIX);
     }
 
 }

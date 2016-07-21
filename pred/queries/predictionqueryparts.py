@@ -64,7 +64,7 @@ else
 end""", [gene_list, model_name, downstream, upstream, upstream, downstream])
 
 
-def filter_common_name(custom_list_id, custom_list_filter, model_name, upstream, downstream):
+def filter_common_name(custom_list_id, custom_list_filter, custom_gene_name_type, model_name, upstream, downstream):
     """
     Overlapping range filter.
     SQL Explanation:
@@ -75,10 +75,13 @@ def filter_common_name(custom_list_id, custom_list_filter, model_name, upstream,
     if custom_list_filter.strip().upper() == "ALL":
         custom_list_filter = ""
 
+    inner_filter = "upper(name) in (select upper(gene_name) from custom_gene_list where id = %s)"
+    if custom_gene_name_type:
+        inner_filter = "upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)"
+
     base_sql = """( common_name in
 (select common_name from gene where
-    upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)
-    or upper(name) in (select upper(gene_name) from custom_gene_list where id = %s)))
+    {}))
 and
 model_name = %s
 and
@@ -86,20 +89,26 @@ case strand when '+' then
   (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 else
   (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
-end"""
+end""".format(inner_filter)
     sql = base_sql
-    params = [custom_list_id, custom_list_id, model_name, upstream, downstream, downstream, upstream]
+    params = [custom_list_id, model_name, upstream, downstream, downstream, upstream]
     if custom_list_filter:
         sql = "gene_list = %s\nand\n{}".format(base_sql)
         params.insert(0, custom_list_filter)
+    if not custom_gene_name_type:
+        sql += " and " + inner_filter
+        params.append(custom_list_id)
+
     return QueryPart(sql, params)
 
 
-def items_not_in_gene_list(list_id, gene_list_filter):
+def items_not_in_gene_list(list_id, gene_list_filter, custom_gene_name_type):
+    inner_filter = "upper(gene.name) = upper(custom_gene_list.gene_name)"
+    if custom_gene_name_type:
+        inner_filter = "upper(gene.common_name) = upper(custom_gene_list.gene_name)"
     sql = """select gene_name from custom_gene_list
 where id = %s and not exists
-(select 1 from gene where (gene.name = custom_gene_list.gene_name OR
-gene.common_name = custom_gene_list.gene_name)"""
+(select 1 from gene where ({})""".format(inner_filter)
     params = [list_id]
     if gene_list_filter and gene_list_filter.upper() != "ALL":
         sql += "and gene_list = %s"

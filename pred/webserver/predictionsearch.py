@@ -11,6 +11,9 @@ from pred.queries.rangelistquery import RangeListQuery
 CUSTOM_GENE_LIST = 'Custom Gene List'
 CUSTOM_RANGES_LIST = 'Custom Ranges List'
 
+CUSTOM_GENE_NAME_TYPE = 'gene_name'
+CUSTOM_ID_TYPE = 'id'
+
 
 def get_predictions_with_guess(db, config, genome, args):
     search_args = SearchArgs(config.binding_max_offset, args)
@@ -79,6 +82,7 @@ class SearchArgs(object):
     INCLUDE_ALL = 'includeAll'
     CUSTOM_LIST_DATA = 'customListData'
     CUSTOM_LIST_FILTER = 'customListFilter'
+    CUSTOM_GENE_SEARCH_TYPE ='customGeneSearchType'
 
     def __init__(self, max_stream_val, args):
         self.max_stream_val = max_stream_val
@@ -160,6 +164,15 @@ class SearchArgs(object):
 
     def is_custom_ranges_list(self):
         return self.get_gene_list() == CUSTOM_RANGES_LIST
+
+    def get_custom_gene_search_type(self):
+        return self.args.get(self.CUSTOM_GENE_SEARCH_TYPE, 'gene_name')
+
+    def is_custom_gene_name_search_type(self):
+        return self.get_custom_gene_search_type() == CUSTOM_GENE_NAME_TYPE
+
+    def is_custom_gene_id_search_type(self):
+        return self.get_custom_gene_search_type() == CUSTOM_ID_TYPE
 
 
 class PredictionToken(object):
@@ -292,6 +305,7 @@ class PredictionSearch(object):
             schema=self.genome,
             custom_list_id=custom_list_key,
             custom_list_filter=custom_list_filter,
+            custom_gene_name_type=self.args.is_custom_gene_name_search_type(),
             model_name=self.args.get_model_name(),
             upstream=self.args.get_upstream(),
             downstream=self.args.get_downstream(),
@@ -364,10 +378,14 @@ class PredictionSearch(object):
             schema=self.genome,
             custom_list_id=custom_list_key,
             custom_list_filter=custom_list_filter,
+            custom_gene_name_type=self.args.is_custom_gene_name_search_type()
         )
         bad_names = self.get_name_set(unused_name_query.get_query_and_params())
         if bad_names:
-            return "Gene names not in our database:\n" + "\n".join(bad_names)
+            if self.args.is_custom_gene_name_search_type():
+                return "Gene names not in our database:\n" + "\n".join(bad_names)
+            else:
+                return "Gene IDs not in our database:\n" + "\n".join(bad_names)
         return ""
 
     def get_name_set(self, query_and_param):

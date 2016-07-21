@@ -3,11 +3,13 @@ from pred.queries.predictionqueryparts import *
 
 
 class GeneListQuery(object):
-    def __init__(self, schema, custom_list_id, custom_list_filter, model_name, upstream, downstream,
+    def __init__(self, schema, custom_list_id, custom_list_filter, custom_gene_name_type,
+                 model_name, upstream, downstream,
                  limit="", offset="", count=False, sort_by_max=False):
         self.schema = schema
         self.custom_list_id = custom_list_id
         self.custom_list_filter = custom_list_filter
+        self.custom_gene_name_type = custom_gene_name_type
         self.model_name = model_name
         self.upstream = upstream
         self.downstream = downstream
@@ -30,7 +32,8 @@ class GeneListQuery(object):
         query_parts = [
             select_prediction_values(),
             where(),
-            filter_common_name(self.custom_list_id, self.custom_list_filter, self.model_name, self.upstream, self.downstream),
+            filter_common_name(self.custom_list_id, self.custom_list_filter, self.custom_gene_name_type,
+                               self.model_name, self.upstream, self.downstream),
             group_by_common_name_and_parts(),
         ]
         if not self.count:
@@ -44,13 +47,16 @@ class GeneListQuery(object):
 
 
 class GeneListUnusedNames(object):
-    def __init__(self, schema, custom_list_id, custom_list_filter):
+    def __init__(self, schema, custom_list_id, custom_list_filter, custom_gene_name_type):
         self.schema = schema
         self.custom_list_id = custom_list_id
         self.custom_list_filter = custom_list_filter
+        self.custom_gene_name_type = custom_gene_name_type
 
     def get_query_and_params(self):
         builder = QueryBuilder()
         builder.set_schema.add_part(set_search_path(self.schema))
-        builder.query.add_parts([items_not_in_gene_list(self.custom_list_id, self.custom_list_filter)])
+        builder.query.add_parts([items_not_in_gene_list(self.custom_list_id,
+                                                        self.custom_list_filter,
+                                                        self.custom_gene_name_type)])
         return builder.get_query_and_params()
