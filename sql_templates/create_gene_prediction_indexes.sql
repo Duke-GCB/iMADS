@@ -4,4 +4,7 @@ create index if not exists gene_prediction_grouped_idx
 create index if not exists gene_prediction_value_idx
  on {{ schema_prefix }}.gene_prediction(gene_list, model_name, value DESC);
 
+create index if not exists gene_prediction_max_sort_idx
+ on {{ schema_prefix }}.gene_prediction(gene_list, model_name, common_name);
+
 analyze {{ schema_prefix }}.gene_prediction;
