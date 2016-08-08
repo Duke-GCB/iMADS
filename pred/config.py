@@ -16,6 +16,11 @@ DB_PASS_ENV = "DB_PASS"
 CONFIG_FILENAME = 'predictionsconf.yaml'
 
 
+class DataType(object):
+    PREDICTION = 'PREDICTION'
+    PREFERENCE = 'PREFERENCE'
+
+
 def parse_config(filename):
     config = None
     with open(filename) as data_file:
@@ -54,10 +59,11 @@ class Config(object):
         result = {}
         for genome_data in self.genome_data_list:
             genome = genome_data.genomename
-            model_names = [model.name for model in genome_data.prediction_lists]
+            model_data = [{'name': model.name, 'data_type': model.data_type} for model in genome_data.prediction_lists]
             gene_list_names = [gene_list.source_table for gene_list in genome_data.gene_lists]
             result[genome] = {
-                'models': model_names,
+                'models': [model['name'] for model in model_data],  # Backward compatible fix until we fix UI
+                'model_data': model_data,
                 'geneLists': gene_list_names,
                 'trackhubUrl': genome_data.trackhub_url,
                 'genomeFile' : genome_data.genome_file,
@@ -111,7 +117,8 @@ class GenomeData(object):
             url = prediction_data['url']
             fix_script = prediction_data['fix_script']
             sort_max_guess = prediction_data['sort_max_guess']
-            prediction = PredictionSettings(name, url, self.genomename, fix_script, sort_max_guess)
+            type = prediction_data.get('type', DataType.PREDICTION)
+            prediction = PredictionSettings(name, url, self.genomename, fix_script, sort_max_guess, type)
             self.prediction_lists.append(prediction)
 
     def get_model_types_str(self):
@@ -129,10 +136,11 @@ class GeneInfoSettings(object):
 
 
 class PredictionSettings(object):
-    def __init__(self, name, url, genome, fix_script, sort_max_guess):
+    def __init__(self, name, url, genome, fix_script, sort_max_guess, data_type):
         self.name = name
         self.url = url
         self.genome = genome
         self.fix_script = fix_script
         self.sort_max_guess = sort_max_guess
+        self.data_type = data_type
 
