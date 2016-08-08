@@ -3,7 +3,7 @@ Stores custom prediction/preference records.
 Part of the tables used for custom jobs.
 """
 import uuid
-from pred.queries.dbutil import update_database, read_database
+from pred.queries.dbutil import read_database
 
 SEQUENCE_NOT_FOUND = "Unable to find sequence for this name."
 
@@ -28,15 +28,18 @@ class CustomResultData(object):
         """
         Save data to the database as a record per row from the bed file.
         """
+        cur = self.db.cursor()
         for line in self.bed_data.split("\n"):
             parts = line.split("\t")
             chrom = parts[0]
             start = parts[1]
             end = parts[2]
             value = parts[3]
-            self.save_bed_row(chrom, start, end, value)
+            self.save_bed_row(cur, chrom, start, end, value)
+        cur.close()
+        self.db.commit()
 
-    def save_bed_row(self, chrom, start, end, value):
+    def save_bed_row(self, cur, chrom, start, end, value):
         """
         Insert a single row of bed data into the database.
         :param chrom: str: chromosome value(name)
@@ -47,7 +50,8 @@ class CustomResultData(object):
         insert_sql = """insert into custom_result(id, job_id, model_name, name, start, stop, value)
               values(%s, %s, %s, %s, %s, %s, %s) """
         params = [self.result_uuid, self.job_id, self.model_name, chrom, start, end, value]
-        update_database(self.db, insert_sql, params)
+        cur.execute(insert_sql, params)
+
 
     @staticmethod
     def new_uuid():
