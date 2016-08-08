@@ -1,0 +1,30 @@
+.ColorPicker_button {
+    height: 20px;
+    width: 20px;
+    margin-left: 6px;
+}
+
+.ColorPicker_popup {
+    min-width: 90px;
+    margin-left: 90px;
+}
+
+.ColorPicker_cell {
+    display: inline-block;
+    background-color: red;
+    height: 20px;
+    width: 20px;
+    margin: 4px;
+}
+
+.ColorPicker_red {
+    background-color: red;
+}
+
+.ColorPicker_green {
+    background-color: green;
+}
+
+.ColorPicker_blue {
+    background-color: blue;
+}

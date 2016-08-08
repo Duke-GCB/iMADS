@@ -9,6 +9,11 @@ let DATA_SOURCES_NAV= {
     label: 'DATA SOURCES',
 };
 
+let PREDICTION_NAV= {
+    path: '/prediction',
+    label: 'PREDICTION',
+};
+
 let ABOUT_NAV = {
     path: '/about',
     label: 'ABOUT',
@@ -16,9 +21,10 @@ let ABOUT_NAV = {
 
 let ALL_NAV = [
     SEARCH_NAV,
+    PREDICTION_NAV,
     DATA_SOURCES_NAV,
     ABOUT_NAV
 ];
 
-export {ALL_NAV, SEARCH_NAV, DATA_SOURCES_NAV, ABOUT_NAV}
+export {ALL_NAV, SEARCH_NAV, DATA_SOURCES_NAV, PREDICTION_NAV, ABOUT_NAV}
 

@@ -1,0 +1,15 @@
+.ArrowTooltip_Container {
+    position: absolute;
+    white-space: nowrap;
+    padding: 6px;
+    font-size: 14pt;
+}
+
+.ArrowTooltip_Arrow {
+    padding-top: 4px;
+    padding-right: 4px;
+}
+
+.ArrowTooltip_Label {
+
+}

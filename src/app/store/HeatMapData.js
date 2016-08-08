@@ -1,7 +1,5 @@
 // Transform prediction data into heat map data.
 
-const PREDICTION_WIDTH = 20;
-
 function sortByValue(a, b) {
     return a.value - b.value;
 }
@@ -11,21 +9,23 @@ function sortByX(a, b) {
 }
 
 class HeatMapData {
-    constructor(chrom, data, xOffset = 0, includeTitle = false) {
+    constructor(chrom, data, xOffset = 0, includeTitle = false, itemWidth = PREDICTION_WIDTH) {
         this.chrom = chrom;
         this.data = data;
         this.xOffset = xOffset;
         this.includeTitle = includeTitle;
+        this.itemWidth = itemWidth;
     }
 
-    static buildCellArray(chrom, inputArray, props) {
+    static buildCellArray(chrom, inputArray, props, predictionColor) {
         let results = [];
         let sortedArray = inputArray.slice();
         sortedArray.sort(sortByValue);
         for (let data of sortedArray) {
-            let hmd = new HeatMapData(chrom, data, props.xOffset, props.includeTitle);
+            let itemWidth = data.end - data.start;
+            let hmd = new HeatMapData(chrom, data, props.xOffset, props.includeTitle, itemWidth);
             results.push({
-                color: hmd.getColor(),
+                color: hmd.getColor(predictionColor),
                 x: hmd.getX(props.scale, props.strand, props.xOffsetEnd),
                 width: hmd.getWidth(props.scale),
                 height: props.height,
@@ -81,14 +81,28 @@ class HeatMapData {
         }
     }
 
-    getColor() {
+    getColor(predictionColor) {
         let value = this.data.value;
+        let primary = 255;
         let revColor = 1 - value;
-        let red = 255;
-        let green = parseInt(255 * revColor);
-        let blue = parseInt(255 * revColor);
-        let fill = "rgb(" + red + "," + green + "," + blue + ")";
-        return fill;
+        let secondary = parseInt(255 * revColor);
+        let red = primary;
+        let green = secondary;
+        let blue = secondary;
+        if (predictionColor == "blue") {
+            red = secondary;
+            green = secondary;
+            blue = primary;
+        }
+        if (predictionColor == "green") {
+            // Dark green is 0, 128, 0 instead of 0, 255, 0 (if it was similar red or blue)
+            let minGreen = Math.min(secondary + 30, 255);
+            let greenValue = Math.max(128, minGreen);
+            red = secondary;
+            green = greenValue;
+            blue = secondary;
+        }
+        return "rgb(" + red + "," + green + "," + blue + ")";
     }
 
     getX(scale, strand, xOffsetEnd) {
@@ -96,7 +110,7 @@ class HeatMapData {
         let value = this.data.value;
         if (strand === '-') {
             let x = start - this.xOffset;
-            x = (xOffsetEnd - this.xOffset) - x - PREDICTION_WIDTH;
+            x = (xOffsetEnd - this.xOffset) - x - this.itemWidth;
             return x * scale;
         } else {
             return parseInt((start - this.xOffset) * scale);    
@@ -104,12 +118,16 @@ class HeatMapData {
     }
 
     getWidth(scale) {
-        return Math.max(1, parseInt(PREDICTION_WIDTH * scale));
+        return Math.max(1, parseInt(this.itemWidth * scale));
     }
 
     getTitle() {
         if (this.includeTitle) {
-            return this.chrom + ":" + this.data.start + '-' + this.data.end + " -> " + this.data.value;
+            if (this.chrom) {
+                return this.chrom + ":" + this.data.start + '-' + this.data.end + " -> " + this.data.value;
+            } else {
+                return this.data.start + '-' + this.data.end + " -> " + this.data.value;
+            }
         }
         return '';
     }

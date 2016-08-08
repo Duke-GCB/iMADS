@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import os
+import base64
 import psycopg2
 import psycopg2.extras
 from flask import Flask, request, render_template, jsonify, g, make_response, Response
@@ -11,6 +12,9 @@ from pred.webserver.dbdatasource import DataSources
 from pred.webserver.predictionsearch import get_predictions_with_guess, get_all_values
 from pred.webserver.customlist import save_custom_file
 from pred.webserver.dnasequence import lookup_dna_sequence
+from pred.webserver.sequencelist import SequenceList
+from pred.webserver.customjob import CustomJob, JobStatus
+from pred.webserver.customresult import CustomResultData
 
 
 app = Flask(__name__)
@@ -53,6 +57,7 @@ def close_connection(exception):
 @app.route('/models', methods=['GET'])
 @app.route('/about', methods=['GET'])
 @app.route('/shared_link', methods=['GET'])
+@app.route('/prediction', methods=['GET'])
 def root():
     return render_template('index.html')
 
@@ -140,16 +145,129 @@ def get_sequences(genome):
         raise ValueError("Missing file for {}.".format(genome))
 
 
+@app.route('/api/v1/sequences/<sequence_id>', methods=['GET'])
+def get_custom_sequences_data(sequence_id):
+    seq = SequenceList(sequence_id)
+    seq.load(get_db())
+    return make_json_response({
+            "id": seq.seq_uuid,
+            "data": base64.b64encode(seq.content),
+            "created" : seq.created
+        })
+
+
+@app.route('/api/v1/sequences', methods=['POST'])
+def post_custom_sequences():
+    (data,) = get_required_json_props(request, ["data"])
+    decoded_data = base64.b64decode(data)
+    seq_uuid = SequenceList.create_with_content(get_db(), decoded_data)
+    return make_json_response({'status': 'ok', 'id': seq_uuid})
+
+
+@app.route('/api/v1/jobs', methods=['POST'])
+def post_jobs():
+    required_prop_names = ["sequence_id", "job_type", "model_name"]
+    (sequence_id, job_type, model_name) = get_required_json_props(request, required_prop_names)
+    job = CustomJob.find_existing_job(get_db(), job_type, sequence_id, model_name)
+    status_code = None
+    if not job:
+        status_code = None
+        job = CustomJob.create_job(get_db(), job_type, sequence_id, model_name)
+    return make_json_response({'status': 'ok', 'id': job.uuid}, status_code)
+
+
+@app.route('/api/v1/jobs', methods=['GET'])
+def get_jobs():
+    job_status = request.args.get("job_status")
+    result = []
+    for job in CustomJob.find_jobs(get_db(), job_status):
+        result.append(job.get_json())
+    return make_json_response({'result': result})
+
+
+@app.route('/api/v1/jobs/<job_uuid>', methods=['GET'])
+def get_job(job_uuid):
+    job = CustomJob(job_uuid)
+    job.load(get_db())
+    return make_json_response(job.get_json())
+
+
+@app.route('/api/v1/jobs/<job_uuid>', methods=['PUT'])
+def put_job(job_uuid):
+    db = get_db()
+    (job_status,) = get_required_json_props(request, ["job_status"])
+    error_message = request.get_json().get("error_message")
+    if job_status == JobStatus.RUNNING:
+        CustomJob.set_job_running(db, job_uuid)
+    elif job_status == JobStatus.COMPLETE:
+        CustomJob.set_job_complete(db, job_uuid)
+    elif job_status == JobStatus.ERROR:
+        CustomJob.set_job_as_error(db, job_uuid, error_message)
+    else:
+        raise ValueError("Invalid job status:{} for job:{}".format(job_status, job_uuid))
+    return json_ok_result()
+
+
+@app.route('/api/v1/custom_predictions', methods=['POST'])
+def post_custom_result():
+    required_prop_names = ["job_id", "bed_data", "model_name"]
+    (job_id, bed_data, model_name) = get_required_json_props(request, required_prop_names)
+    result_uuid = CustomResultData.new_uuid()
+    result_data = CustomResultData(get_db(), result_uuid, job_id, model_name, bed_data)
+    result_data.save()
+    return make_json_response({'result': 'ok', 'id': result_uuid})
+
+
+@app.route('/api/v1/custom_predictions/<result_id>/search', methods=['GET'])
+def search_custom_results(result_id):
+    args = request.args
+    sort_by_max = args.get('maxPredictionSort')
+    if sort_by_max == 'false':
+        sort_by_max = None
+    page = int(args.get('page'))
+    per_page = int(args.get('per_page'))
+    offset = (page - 1) * per_page
+
+    predictions = CustomResultData.get_predictions(get_db(), result_id, sort_by_max, per_page, offset)
+    return make_json_response({
+        'result': predictions,
+        'status': 'ok'})
+
+
+@app.route('/api/v1/custom_predictions/find_one', methods=['POST'])
+def find_custom_result():
+    sequence_id, model_name = get_required_json_props(request, ["sequence_id","model_name"])
+    custom_result_id = CustomResultData.find_one(get_db(), sequence_id, model_name)
+    return make_json_response({'id': custom_result_id})
+
+
+def get_required_json_props(request, params):
+    json_data = request.get_json()
+    if not json_data:
+        raise ValueError("Missing required json payload.")
+    values = []
+    for param in params:
+        value = json_data.get(param)
+        if not value:
+            raise ValueError("Missing required parameter {}.".format(param))
+        values.append(value)
+    return values
+
+
+def json_ok_result():
+    return make_json_response({'status':'ok'})
+
+
 @app.errorhandler(ValueError)
 def handle_invalid_usage(error):
-    response = jsonify({'message': str(error)})
+    response = jsonify({'result':'ERROR', 'message': str(error)})
     response.status_code = 500
     return response
 
 
-def make_json_response(props):
+def make_json_response(props, status_code=None):
     blob = jsonify(props)
-    return make_response(blob)
+    return make_response(blob, status_code)
 
 
 def make_predictions_csv_response(predictions, args):

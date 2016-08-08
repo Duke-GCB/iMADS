@@ -1,36 +1,41 @@
 import React from 'react';
 import StreamValue from '../store/StreamValue.js'
-import CustomListDialog from './CustomListDialog.jsx'
 import SelectItem from '../common/SelectItem.jsx'
-import StreamInput from '../common/StreamInput.jsx'
 import BooleanInput from '../common/BooleanInput.jsx'
+import ArrowTooltip from '../common/ArrowTooltip.jsx'
+import ColorPicker from '../common/ColorPicker.jsx'
+import UploadSequenceDialog from './UploadSequenceDialog.jsx'
+import {CustomSequenceList} from '../store/CustomSequence.js';
 
-const CUSTOM_GENE_LIST = 'Custom Gene List';
-const CUSTOM_RANGES_LIST = 'Custom Ranges List';
+const CUSTOM_SEQUENCE_LIST = 'Upload Custom Sequence';
+const FIRST_TIME_INSTRUCTIONS = "Select '" + CUSTOM_SEQUENCE_LIST + "' to upload your first sequence.";
 
-class SearchFilterPanel extends React.Component {
+class PredictionFilterPanel extends React.Component {
     constructor(props) {
         super(props);
+        this.customSeqenceList = new CustomSequenceList();
         let genomes = this.props.genomeData;
         let selectedGenome = '';
         let geneList = "";
         let model = "";
         let genomeNames = Object.keys(genomes);
-        if (this.props.searchSettings.genome) {
-            let newSettings = this.props.searchSettings;
+        if (this.props.predictionSettings.genome) {
+            let newSettings = this.props.predictionSettings;
             this.state = {
-                    genome: newSettings.genome,
-                    geneList: newSettings.geneList,
-                    model: newSettings.model,
-                    all: newSettings.all,
-                    upstream: newSettings.upstream,
-                    upstreamValid: true,
-                    downstream: newSettings.downstream,
-                    downstreamValid: true,
-                    maxPredictionSort: newSettings.maxPredictionSort,
-                    showCustomDialog: this.props.showCustomDialog,
-                    customListData: newSettings.customListData,
-                };
+                genome: newSettings.genome,
+                geneList: newSettings.geneList,
+                model: newSettings.model.name,
+                all: newSettings.all,
+                upstream: newSettings.upstream,
+                upstreamValid: true,
+                downstream: newSettings.downstream,
+                downstreamValid: true,
+                maxPredictionSort: newSettings.maxPredictionSort,
+                showCustomDialog: this.props.showCustomDialog,
+                customListData: newSettings.customListData,
+                customSequenceList: this.customSeqenceList.get(),
+                selectedSequence: this.customSeqenceList.getFirst(),
+            };
         } else {
             if (genomeNames.length > 0) {
                 selectedGenome = genomeNames[0];
@@ -50,6 +55,8 @@ class SearchFilterPanel extends React.Component {
                 maxPredictionSort: false,
                 showCustomDialog: this.props.showCustomDialog,
                 customListData: "",
+                customSequenceList: this.customSeqenceList.get(),
+                selectedSequence: this.customSeqenceList.getFirst(),
             };
         }
         this.onChangeGenome = this.onChangeGenome.bind(this);
@@ -78,21 +85,6 @@ class SearchFilterPanel extends React.Component {
             else {
                 this.setState(newState);
             }
-
-        }
-        if (nextProps.searchSettings.genome) {
-            let newSettings = nextProps.searchSettings;
-            this.setState(
-                {
-                    genome: newSettings.genome,
-                    geneList: newSettings.geneList,
-                    model: newSettings.model,
-                    all: newSettings.all,
-                    upstream: newSettings.upstream,
-                    downstream: newSettings.downstream,
-                    maxPredictionSort: newSettings.maxPredictionSort,
-                    customListData: newSettings.customListData,
-                });
         }
     }
 
@@ -103,15 +95,15 @@ class SearchFilterPanel extends React.Component {
 
     switchGenomeState(genomeData, genomeName) {
         return {
-                genome: genomeName,
-                geneList: genomeData[genomeName]['geneLists'][0],
-                model: genomeData[genomeName]['models'][0].name,
+            genome: genomeName,
+            geneList: genomeData[genomeName]['geneLists'][0],
+            model: genomeData[genomeName]['models'][0].name,
         };
     }
 
     onChangeGeneList(e) {
         let value = e.target.value;
-        let isCustom = value === CUSTOM_GENE_LIST || value === CUSTOM_RANGES_LIST;
+        let isCustom = value === CUSTOM_SEQUENCE_LIST;
         let customListFilter = this.state.customListFilter;
         let customListData = this.state.customListData;
         if (!isCustom) {
@@ -125,7 +117,7 @@ class SearchFilterPanel extends React.Component {
             func = Function.prototype
         }
         this.setState({
-            geneList: e.target.value,
+            selectedSequence: e.target.value,
             showCustomDialog: isCustom,
             customListData: customListData,
             customListFilter: customListFilter,
@@ -138,12 +130,14 @@ class SearchFilterPanel extends React.Component {
         });
     }
 
-    closeCustomDialog(customListData, customListFilter, customGeneSearchType) {
+    closeCustomDialog(seqId, errorMessage) {
+        if (seqId) {
+            this.customSeqenceList.add(seqId);
+        }
         this.setState({
             showCustomDialog: false,
-            customListData: customListData,
-            customListFilter: customListFilter,
-            customGeneSearchType: customGeneSearchType,
+            customSequenceList: this.customSeqenceList.get(),
+            selectedSequence: seqId
         }, this.runSearch);
     }
 
@@ -192,15 +186,18 @@ class SearchFilterPanel extends React.Component {
     }
 
     render() {
-        let secondGroupStyle = {marginLeft:'40px'};
-        let streamInputStyle = {display: 'inline', width:'4em', marginRight: '10px'};
-        let smallMargin = { margin: '10px' }
-        let smallMarginRight = { marginLeft: '10px' }
+        let {predictionColor, setPredictionColor} = this.props;
+
+        let secondGroupStyle = {marginLeft: '40px'};
+        let streamInputStyle = {display: 'inline', width: '4em', marginRight: '10px'};
+        let smallMargin = {margin: '10px'}
+        let smallMarginRight = {marginLeft: '10px'}
         let assemblyOptions = [];
         let proteinOptions = [];
         let geneListOptions = [];
         let currentGenome = this.state.genome;
         let geneListNames = [];
+
         if (this.props.genomeData) {
             let genomeTypes = Object.keys(this.props.genomeData);
             for (let i = 0; i < genomeTypes.length; i++) {
@@ -209,70 +206,51 @@ class SearchFilterPanel extends React.Component {
                 assemblyOptions.push(<option key={name} value={name}>{name}</option>);
                 if (name === currentGenome) {
                     genomeInfo.models.forEach(function (model) {
-                        proteinOptions.push(<option key={model.name}  value={model.name}>{model.name}</option>);
-                    });
-                    genomeInfo.geneLists.forEach(function (geneList) {
-                        geneListOptions.push(<option key={geneList}  value={geneList}>{geneList}</option>);
-                        geneListNames.push(geneList);
+                        proteinOptions.push(<option key={model.name} value={model.name}>{model.name}</option>);
                     });
                 }
             }
-            geneListOptions.push(<option key="customGeneList"  value={CUSTOM_GENE_LIST}>{CUSTOM_GENE_LIST}</option>)
-            geneListOptions.push(<option key="customRangeList"  value={CUSTOM_RANGES_LIST}>{CUSTOM_RANGES_LIST}</option>)
-        }
-        let geneListTitle = "Gene list:";
-        let customListButton = [];
-        if (this.state.geneList == CUSTOM_GENE_LIST || this.state.geneList == CUSTOM_RANGES_LIST) {
-            geneListTitle = <div>
-                Gene list:
-            </div>;
-            customListButton = <button type="button" className="btn btn-default btn-sm"
-                        style={{marginTop: '5px', marginBottom: '10px', width: '100%'}}
-                    onClick={this.setShowCustomDialog} >
-                    Update Custom List
-                </button>;
-        }
-        let disableUpstreamDownstream = false;
-        if (this.state.geneList == CUSTOM_RANGES_LIST) {
-            disableUpstreamDownstream = true;
-        }
-        return <div>
-                <h4>Filter</h4>
-                <SelectItem title="Assembly:" selected={this.state.genome} options={assemblyOptions}
-                            onChange={this.onChangeGenome}/>
-                <SelectItem title="Protein/Model:" selected={this.state.model} options={proteinOptions}
-                            onChange={this.onChangeModel}/>
-                <SelectItem title={geneListTitle} selected={this.state.geneList} options={geneListOptions}
-                            onChange={this.onChangeGeneList}
-                            />
-                {customListButton}
 
-                <StreamInput title="Bases upstream:" 
-                             value={this.state.upstream} 
-                             onChange={this.onChangeUpstream}
-                             maxBindingOffset={this.props.maxBindingOffset}
-                             isValid={this.state.upstreamValid}
-                             disabled={disableUpstreamDownstream}
-                              />
-                <StreamInput title="Bases downstream:"
-                             value={this.state.downstream} 
-                             onChange={this.onChangeDownstream}
-                             maxBindingOffset={this.props.maxBindingOffset}
-                             isValid={this.state.downstreamValid}
-                             disabled={disableUpstreamDownstream}
-                             />
-                <BooleanInput checked={this.state.maxPredictionSort} label="Sort by max value"
-                              onChange={this.onChangeMaxPredictionSort} />
-                <BooleanInput checked={this.state.all} label="Include all values"
-                              onChange={this.onChangeAll} />
-                <CustomListDialog type={this.state.geneList}
+        }
+        let idx = 1;
+        for (let value of this.state.customSequenceList) {
+            let label = "Custom Sequence " + idx;
+            geneListOptions.push(<option key={value} value={value}>{label}</option>);
+            idx++;
+        }
+
+        if (this.customSeqenceList.isEmpty()) {
+            geneListOptions.push(<option key=""></option>);
+        }
+        geneListOptions.push(<option key="customGeneList"  value={CUSTOM_SEQUENCE_LIST}>{CUSTOM_SEQUENCE_LIST}</option>);
+        let geneListTitle = <div>
+            Custom DNA:
+        </div>;
+        let disableUpstreamDownstream = false;
+        let uploadInstructions = <ArrowTooltip label={FIRST_TIME_INSTRUCTIONS}
+                                               visible={this.customSeqenceList.isEmpty()} />
+        return <div>
+            <h4>Filter</h4>
+            <SelectItem title="Protein/Model:" selected={this.state.model} options={proteinOptions}
+                        onChange={this.onChangeModel}/>
+            <SelectItem title={geneListTitle}
+                        selected={this.state.selectedSequence}
+                        options={geneListOptions}
+                        onChange={this.onChangeGeneList}
+                        labelControl={uploadInstructions} />
+            <BooleanInput checked={this.state.maxPredictionSort} label="Sort by max value"
+                          onChange={this.onChangeMaxPredictionSort}/>
+            <BooleanInput checked={this.state.all} label="All values (heatmap)"
+                          onChange={this.onChangeAll}/>
+            <ColorPicker label="Values Color:" color={predictionColor} setColor={setPredictionColor} />
+            <UploadSequenceDialog type={this.state.geneList}
                                   isOpen={this.state.showCustomDialog}
                                   onRequestClose={this.closeCustomDialog}
                                   geneListNames={geneListNames}
-
-                />
+            
+            />
         </div>
     }
 }
 
-export default SearchFilterPanel;
+export default PredictionFilterPanel;

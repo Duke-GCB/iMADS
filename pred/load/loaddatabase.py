@@ -26,6 +26,7 @@ def create_sql_pipeline(config, update_progress):
     sql_builder = SQLBuilder(SQL_TEMPLATE_DIR)
     sql_builder.create_data_source()
     sql_builder.create_custom_list()
+    sql_builder.custom_job_tables()
     for genome_data in config.genome_data_list:
         database_loader = DatabaseLoader(config, genome_data, sql_builder, update_progress)
         create_pipeline_for_genome_version(database_loader)
@@ -218,6 +219,9 @@ class SQLBuilder(object):
 
     def create_custom_list(self):
         self.add_template('create_custom_list.sql', {})
+
+    def custom_job_tables(self):
+        self.add_template('custom_job_tables.sql', {})
 
     def insert_data_source(self, url, description, data_source_type, filename):
         date = datetime.datetime.fromtimestamp(get_modified_time_for_filename(filename))

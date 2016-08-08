@@ -35,13 +35,17 @@ class URLBuilder {
 
     fetch(onData, onError, method = 'POST', dataType = 'json') {
         let url = this.url;
+        let data = this.data;
+        if (method != 'GET') {
+            data = JSON.stringify(this.data);
+        }
         this.fetchMethod({
             url: url,
             type: method,
             contentType: "application/json; charset=utf-8",
             dataType: dataType,
             cache: false,
-            data: JSON.stringify(this.data),
+            data: data,
             success: function (data) {
                 onData(data);
             },

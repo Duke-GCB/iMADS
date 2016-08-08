@@ -39,15 +39,17 @@ class HeatMap extends React.Component {
     }
 
     getHeatRects(scale) {
+        let {data, predictionColor} = this.props;
         let result = [];
-        let cells = HeatMapData.buildCellArray(this.props.data.chrom, this.props.data.values, {
+        let cells = HeatMapData.buildCellArray(data.chrom, data.values, {
             xOffset: this.props.data.start,
             xOffsetEnd: this.props.data.end,
             strand: this.props.data.strand,
             includeTitle: !this.props.showDetailsOnClick,
             scale: scale,
             height: this.props.height-2,
-        });
+            itemWidth: this.props.data.itemWidth
+        }, predictionColor);
         for (let i = 0; i < cells.length; i++) {
             result.push(this.makeHeatRect(i, cells[i]));
         }
