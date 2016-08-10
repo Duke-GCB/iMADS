@@ -5,9 +5,9 @@ class TestSequenceListItems(TestCase):
     def test_make_fasta(self):
         values = [
             #input      output
-            ("ACGT\n",    ">seq0001\nACGT"),
-            ("ACGT", ">seq0001\nACGT"),
-            ("ACGT\nAACC\n", ">seq0001\nACGT\n>seq0002\nAACC"),
+            ("ACGT\n",    ">seq1\nACGT"),
+            ("ACGT", ">seq1\nACGT"),
+            ("ACGT\nAACC\n", ">seq1\nACGT\n>seq2\nAACC"),
             (">stuff\nACGT\n", ">stuff\nACGT"),
         ]
         for in_value, out_value in values:
@@ -19,13 +19,13 @@ class TestSequenceListItems(TestCase):
         items = SequenceListItems.find_items(SequenceListItems.make_fasta(data))
         self.assertEqual(3, len(items))
         self.assertEqual(1, items[0]['idx'])
-        self.assertEqual('seq0001', items[0]['name'])
+        self.assertEqual('seq1', items[0]['name'])
         self.assertEqual('ACGT', items[0]['sequence'])
         self.assertEqual(2, items[1]['idx'])
-        self.assertEqual('seq0002', items[1]['name'])
+        self.assertEqual('seq2', items[1]['name'])
         self.assertEqual('AAACCCGGTT', items[1]['sequence'])
         self.assertEqual(3, items[2]['idx'])
-        self.assertEqual('seq0003', items[2]['name'])
+        self.assertEqual('seq3', items[2]['name'])
         self.assertEqual('TTTTTTTT', items[2]['sequence'])
 
     def test_find_items_fasta(self):

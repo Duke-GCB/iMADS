@@ -1,11 +1,12 @@
 /*
  * ResultHeaderRow and ResultDetailRow - together display table of results from a prediction query.
  * Contains settings so the headers in ResultHeaderRow match up with ResultDetailRow.
-*/
+ */
 import React from 'react';
 import ListHeader from '../common/ListHeader.jsx'
 import HeaderCell from '../common/HeaderCell.jsx'
 import DataCell from '../common/DataCell.jsx'
+require('./PredictionResultRow.css');
 
 const RangeColumnData = [
     {
@@ -16,17 +17,17 @@ const RangeColumnData = [
 
 const NormalColumnData = [
     {
-        title:"Name",
+        title: "Name",
         wideWidth: '18%',
         normalWidth: '16%'
     },
     {
-        title:"Sequence",
+        title: "Sequence",
         wideWidth: '24%',
         normalWidth: '20%'
     },
     {
-        title:"Max",
+        title: "Max",
         normalWidth: '10%'
     },
 ];
@@ -97,8 +98,10 @@ function getWideWidthAndTitle(columnInfo) {
 
 export class PredictionResultHeaderRow extends React.Component {
     makeHeader(headerInfo) {
-        return <HeaderCell key={headerInfo.title} centerText={headerInfo.centerText} width={headerInfo.width}>{headerInfo.title}</HeaderCell>
+        return <HeaderCell key={headerInfo.title} centerText={headerInfo.centerText}
+                           width={headerInfo.width}>{headerInfo.title}</HeaderCell>
     }
+
     render() {
         let {rangeType, includeHeatMap} = this.props;
         let cells = getTitles(rangeType, includeHeatMap).map(this.makeHeader);
@@ -127,8 +130,8 @@ export class PredictionResultDetailRow extends React.Component {
             title = text;
         }
         let div = <div className="centerChildrenHorizontally">
-                <span title={title}>{text}</span>
-            </div>;
+            <span title={title}>{text}</span>
+        </div>;
         values.push(div);
     }
 
@@ -145,7 +148,7 @@ export class PredictionResultDetailRow extends React.Component {
     }
 
     render() {
-        let {rangeType, includeHeatMap} = this.props;
+        let {rangeType, includeHeatMap, } = this.props;
         let values = this.determineValues();
         let widths = getColumnWidths(rangeType, includeHeatMap);
 
@@ -159,7 +162,12 @@ export class PredictionResultDetailRow extends React.Component {
                 style['paddingLeft'] = FIRST_CELL_LEFT_PADDING;
                 style['minWidth'] = FIRST_CELL_MIN_WIDTH;
             }
-            rows.push(<DataCell key={i} style={style}>{values[i]}</DataCell>);
+            let classNameStr = "PredictionResultRow_" + values[i].title;
+            rows.push(<DataCell key={i}
+                                style={style}
+                                classNameStr={classNameStr} >
+                            {values[i]}
+                        </DataCell>);
         }
         return <div style={DATA_CELL_DIV_STYLE}>{rows}</div>
     }

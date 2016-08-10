@@ -1,9 +1,10 @@
 // Splits a batch of items up into pages.
+import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from './AppSettings.js'
 
 class PageBatch {
     constructor(pagesInBatch, itemPerPage) {
-        this.pagesInBatch = pagesInBatch;
-        this.itemPerPage = itemPerPage;
+        this.pagesInBatch = pagesInBatch || NUM_PAGE_BUTTONS;
+        this.itemPerPage = itemPerPage || ITEMS_PER_PAGE;
         this.pageToItems = {}
         this.hasMore = false;
     }

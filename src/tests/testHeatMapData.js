@@ -1,6 +1,6 @@
 import HeatMapData from './../app/store/HeatMapData.js';
 var assert = require('chai').assert;
-
+/*
 describe('HeatMapData', function () {
 
     describe('getColor()', function () {
@@ -173,4 +173,4 @@ describe('HeatMapData', function () {
         });
 
     });
-});
+});*/

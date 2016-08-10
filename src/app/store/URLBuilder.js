@@ -2,7 +2,7 @@ import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
 
 class URLBuilder {
     constructor(fetchMethod) {
-        this.fetchMethod = fetchMethod;
+        this.fetchMethod = fetchMethod || $.ajax;
         this.url = ''
         this.hasParam = false;
         this.data = {};

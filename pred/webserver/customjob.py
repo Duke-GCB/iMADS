@@ -1,6 +1,5 @@
 import uuid
 from pred.queries.dbutil import update_database, read_database
-from pred.config import DataType
 
 
 class JobStatus(object):

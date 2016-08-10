@@ -3,6 +3,7 @@ import Popup from '../common/Popup.jsx'
 import SingleFileUpload from '../common/SingleFileUpload.jsx'
 import LoadingButton from '../common/LoadingButton.jsx'
 import LargeTextarea from '../common/LargeTextarea.jsx'
+import TextEdit from '../common/TextEdit.jsx'
 import FileUpload from '../store/FileUpload.js';
 import {CustomSequence} from '../store/CustomSequence.js';
 
@@ -17,6 +18,7 @@ const DEFAULT_STATE = {
     file: undefined,
     fileValue: undefined,
     textValue: '',
+    sequenceName: '',
 };
 
 class UploadSequenceDialog extends React.Component {
@@ -67,19 +69,20 @@ class UploadSequenceDialog extends React.Component {
             this.setState({
                 loading: false
             });
-            let customSequence = new CustomSequence(data);
+            let title = this.state.sequenceName || this.props.defaultSequenceName;
+            let customSequence = new CustomSequence(data, title);
             customSequence.upload(this.onUploadedSequence, this.onUploadedSequenceFailed)
         }
     }
 
-    onUploadedSequence(seqId) {
+    onUploadedSequence(seqId, title) {
         let {onRequestClose} = this.props;
         this.resetState();
-        onRequestClose(seqId, undefined);
+        onRequestClose(seqId, undefined, title);
     }
 
     onUploadedSequenceFailed(errorMessage) {
-        onRequestClose(undefined, errorMessage);
+        onRequestClose(undefined, errorMessage, '');
     }
 
     resetState() {
@@ -89,7 +92,13 @@ class UploadSequenceDialog extends React.Component {
     onCloseNoSave() {
         let {onRequestClose} = this.props;
         this.resetState();
-        onRequestClose(undefined, undefined);
+        onRequestClose(undefined, undefined, '');
+    }
+
+    setSequenceName = (evt) => {
+        this.setState({
+            sequenceName: evt.target.value
+        });
     }
 
     render() {
@@ -100,6 +109,12 @@ class UploadSequenceDialog extends React.Component {
                       title={TITLE}>
             <p>{INSTRUCTIONS}</p>
             <p>{PURGE_WARNING}</p>
+            <TextEdit title="Title: "
+                      value={this.state.sequenceName}
+                      placeholder={this.props.defaultSequenceName}
+                      onChange={this.setSequenceName}
+                      size="30"
+            />
             <LargeTextarea placeholder={TEXTAREA_PLACEHOLDER_TEXT}
                            value={this.state.textValue}
                            onChange={this.onChangeTextValue}

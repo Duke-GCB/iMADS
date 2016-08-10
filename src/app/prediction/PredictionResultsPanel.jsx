@@ -6,9 +6,9 @@ import HeatMap from '../search/HeatMap.jsx'
 import ErrorPanel from '../search/ErrorPanel.jsx'
 import {PredictionResultHeaderRow, PredictionResultDetailRow} from './PredictionResultRow.jsx'
 import SearchResultsFooter from '../search/SearchResultsFooter.jsx'
+import DataGrid from '../common/DataGrid.jsx'
 
-import GenomeData from '../store/GenomeData.js'
-import {CUSTOM_RANGES_LIST} from '../store/CustomList.js'
+require('./PredictionResultsPanel.css')
 
 class PredictionResultsPanel extends React.Component {
     constructor(props) {
@@ -99,19 +99,57 @@ class PredictionResultsPanel extends React.Component {
             </LabeledLoader>;
     }
 
+    makeGridColumnInfo() {
+        let {predictionSettings} = this.props;
+        let columnInfo = [
+            {fieldName: 'name', title: 'Name', type: 'text'},
+            {fieldName: 'sequence', title: 'Sequence', type: 'text'},
+            {fieldName: 'max', title: 'Max', type: 'text'},
+        ];
+        if (predictionSettings.all) {
+            columnInfo.push({fieldName: 'values', title: 'Values', type: 'heatmap', makeControlFunc: this.makeHeatmapCell});
+        }
+        return columnInfo;
+    }
+    
+    makeHeatmapCell = (rowData) => {
+        let {predictionColor} = this.props;
+        let heatMapValues = {
+                title: rowData.name,
+                values: rowData.values,
+                start: 0,
+                end: rowData.sequence.length,
+                strand: '',
+                chrom: '',
+                trackHubUrl: '',
+                isCustomRange: true,
+                sequence: rowData.sequence,
+        };
+        return <HeatMap width="120" height="20"
+                               onClickHeatmap={this.showPredictionDetails}
+                               data={heatMapValues}
+                               scaleFactor={1.0}
+                               predictionColor={predictionColor} />
+    }
+    
     render() {
-        let {predictionSettings, searchResults, searchDataLoaded, searchOperations, page, predictionStore} = this.props;
+        let {errorMessage, predictionSettings, searchResults, searchDataLoaded, loadingStatusLabel,
+            searchOperations, page, predictionStore} = this.props;
         let rangeType = false;
         let includeHeatMap = predictionSettings.all === true;
         let listContent = this.makeListContent();
         let showPredictionDetails = Boolean(this.state.predictionData);
+        let gridColumnInfo = this.makeGridColumnInfo();
+        let gridRows = searchResults;
         return <div>
-            <PredictionResultHeaderRow rangeType={rangeType} includeHeatMap={includeHeatMap}/>
-
-            <div id="resultsGridContainer" className="SearchResultsPanel__resultsGridContainer">
-                {listContent}
-            </div>
-
+                 <DataGrid
+                        classNamePrefix="PredictionResultsPanel_DataGrid_"
+                        columnInfo={gridColumnInfo}
+                        rows={gridRows}
+                        searchDataLoaded={searchDataLoaded}
+                        loadingStatusLabel={loadingStatusLabel}
+                        errorMessage={errorMessage}
+                    />
             <SearchResultsFooter
                 searchSettings={predictionSettings}
                 searchResults={searchResults}

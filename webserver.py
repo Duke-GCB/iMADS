@@ -158,9 +158,9 @@ def get_custom_sequences_data(sequence_id):
 
 @app.route('/api/v1/sequences', methods=['POST'])
 def post_custom_sequences():
-    (data,) = get_required_json_props(request, ["data"])
+    (data, title) = get_required_json_props(request, ["data", "title"])
     decoded_data = base64.b64decode(data)
-    seq_uuid = SequenceList.create_with_content(get_db(), decoded_data)
+    seq_uuid = SequenceList.create_with_content_and_title(get_db(), decoded_data, title)
     return make_json_response({'status': 'ok', 'id': seq_uuid})
 
 
@@ -221,17 +221,66 @@ def post_custom_result():
 @app.route('/api/v1/custom_predictions/<result_id>/search', methods=['GET'])
 def search_custom_results(result_id):
     args = request.args
+    format = args.get('format')
     sort_by_max = args.get('maxPredictionSort')
     if sort_by_max == 'false':
         sort_by_max = None
-    page = int(args.get('page'))
-    per_page = int(args.get('per_page'))
-    offset = (page - 1) * per_page
+    all_values = args.get('all')
+    page = get_optional_int(args, 'page')
+    per_page = get_optional_int(args, 'per_page')
+    offset = None
+    if page and per_page:
+        offset = (page - 1) * per_page
 
     predictions = CustomResultData.get_predictions(get_db(), result_id, sort_by_max, per_page, offset)
-    return make_json_response({
-        'result': predictions,
-        'status': 'ok'})
+    if format == 'tsv' or format == 'csv':
+        filename = "custom_result.{}".format(format)
+        separator = ','
+        if format == 'tsv':
+            separator = '\t'
+        return download_file_response(filename, make_download_custom_result(separator, all_values, predictions))
+    else:
+        return make_json_response({
+            'result': predictions,
+            'status': 'ok'})
+
+
+@app.route('/api/v1/custom_predictions/<result_id>/data', methods=['GET'])
+def get_custom_result_raw_data(result_id):
+    bed_file_contents = CustomResultData.bed_file_contents(get_db(), result_id)
+    def gen():
+        yield bed_file_contents
+    return download_file_response("data.bed", gen())
+
+
+def download_file_response(filename, gen):
+    content_disposition = 'attachment; filename="{}"'.format(filename)
+    headers = {'Content-Disposition': content_disposition}
+    r = Response(gen, mimetype='application/octet-stream', headers=headers)
+    return r
+
+
+def make_download_custom_result(separator, include_all, predictions):
+    headers = ['Name', 'Sequence', 'Max']
+    if include_all:
+        headers.append('Values')
+    yield separator.join(headers) + '\n'
+    for prediction in predictions:
+        items = [
+            prediction['name'],
+            prediction['sequence'],
+            str(prediction['max'])
+        ]
+        if include_all:
+            items.extend(get_all_values(prediction, len(prediction['sequence'])))
+        yield separator.join(items) + '\n'
+
+
+def get_optional_int(args, arg_name):
+    value = args.get(arg_name)
+    if value:
+        return int(value)
+    return None
 
 
 @app.route('/api/v1/custom_predictions/find_one', methods=['POST'])

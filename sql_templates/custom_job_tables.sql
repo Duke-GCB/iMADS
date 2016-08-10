@@ -1,3 +1,4 @@
+-- noinspection SqlNoDataSourceInspectionForFile
 CREATE TYPE job_status AS ENUM ('NEW', 'RUNNING', 'COMPLETE', 'ERROR');
 CREATE TYPE job_type AS ENUM ('PREDICTION', 'PREFERENCE');
 
@@ -5,7 +6,8 @@ CREATE TYPE job_type AS ENUM ('PREDICTION', 'PREFERENCE');
 create table sequence_list (
   id uuid PRIMARY KEY,
   created timestamp with time zone default current_timestamp NOT NULL,
-  data text NOT NULL  --fasta format data
+  data text NOT NULL,  --fasta format data
+  title varchar NOT NULL -- user specified name of the sequence
 );
 
 -- Single sequence from the DNA sequences uploaded by a user

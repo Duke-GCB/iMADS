@@ -211,3 +211,7 @@
 #app {
     min-width: 800px;
 }
+
+.expandWidth {
+    width: 100%;
+}

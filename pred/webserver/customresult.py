@@ -88,3 +88,13 @@ class CustomResultData(object):
             return row[0]
         return None
 
+    @staticmethod
+    def bed_file_contents(db, result_id):
+        select_sql = "select name, start, stop, value from custom_result " \
+                     " where id = %s"
+        result = ""
+        for row in read_database(db, select_sql, [result_id]):
+            name, start, stop, value = row
+            line = '\t'.join([name, str(start), str(stop), str(value)])
+            result += line + '\n'
+        return result

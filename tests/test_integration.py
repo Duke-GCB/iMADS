@@ -371,12 +371,13 @@ CGGGGGGCCTTGGATCCAGGGCGATTCAGAGGGCCCCGGTCGGAGCTGTCGGAGATTGAGCGCGCGCGGTCCCGG"""
         FASTA_DATA2 = """>stuff
 AAACCCGGGG"""
         db = create_db_connection(TestWithDocker.config.dbconfig)
-        sequence_list1_uuid = SequenceList.create_with_content(db, FASTA_DATA1)
-        sequence_list2_uuid = SequenceList.create_with_content(db, FASTA_DATA2)
+        sequence_list1_uuid = SequenceList.create_with_content_and_title(db, FASTA_DATA1, "mystuff")
+        sequence_list2_uuid = SequenceList.create_with_content_and_title(db, FASTA_DATA2, "mystuff2")
         seq_list1 = SequenceList.read_list(db, sequence_list1_uuid)
         seq_list2 = SequenceList.read_list(db, sequence_list2_uuid)
         self.assertEqual(FASTA_DATA1, seq_list1.content)
-        self.assertEqual(FASTA_DATA2, seq_list2.content)
+        self.assertEqual("mystuff", seq_list1.title)
+        self.assertEqual("mystuff2", seq_list2.title)
 
     def test_customjob(self):
         FASTA_DATA1 = """>stuff\nAAACCCGGGGTT"""
@@ -393,8 +394,8 @@ AAACCCGGGG"""
         self.assertEqual(len(jobs), 0)
 
         # create a new job that should be NEW status
-        sequence_list = SequenceList.create_with_content(db, FASTA_DATA1)
-        job_uuid = CustomJob.create_job(db, DataType.PREDICTION, sequence_list, model_name="E2f1").id
+        sequence_list = SequenceList.create_with_content_and_title(db, FASTA_DATA1, "somelist")
+        job_uuid = CustomJob.create_job(db, DataType.PREDICTION, sequence_list, model_name="E2f1").uuid
         job = CustomJob.read_job(db, job_uuid)
         self.assertEqual(job_uuid, job.uuid)
         self.assertEqual(JobStatus.NEW, job.status)
@@ -452,9 +453,9 @@ AAACCCGGGG"""
         FASTA_DATA1 = """>someseq\nAAACCCGGGGTT\n>someseq2\nAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTT"""
         db = create_db_connection(TestWithDocker.config.dbconfig)
         # upload FASTA file
-        sequence_list = SequenceList.create_with_content(db, FASTA_DATA1)
+        sequence_list = SequenceList.create_with_content_and_title(db, FASTA_DATA1, "sometitle")
         # create a job to determine predictions for a sequence_list
-        job_uuid = CustomJob.create_job(db, DataType.PREDICTION, sequence_list, model_name="E2f1").id
+        job_uuid = CustomJob.create_job(db, DataType.PREDICTION, sequence_list, model_name="E2f1").uuid
         # mark job as running
         CustomJob.set_job_running(db, job_uuid)
         # upload file
@@ -466,37 +467,38 @@ someseq2\t60\t75\t15.5
         result_uuid = CustomResultData.new_uuid()
         result = CustomResultData(db, result_uuid, job_uuid, model_name='E2f1', bed_data=BED_DATA)
         result.save()
+        self.assertEqual(BED_DATA, CustomResultData.bed_file_contents(db, result_uuid).strip())
 
         predictions = CustomResultData.get_predictions(db, result_uuid, sort_max_value=False,
                                                        limit=None, offset=None)
         self.assertEqual(2, len(predictions))
         first = predictions[0]
         self.assertEqual('someseq', first['name'])
-        self.assertEqual(12.5, float(first['max_value']))
-        self.assertEqual([{u'start': 0, u'end': 10, u'value': 12.5}], first['pred'])
+        self.assertEqual(12.5, float(first['max']))
+        self.assertEqual([{u'start': 0, u'end': 10, u'value': 12.5}], first['values'])
         self.assertEqual('AAACCCGGGGTT', first['sequence'])
 
         second = predictions[1]
         self.assertEqual('someseq2', second['name'])
-        self.assertEqual(15.5, float(second['max_value']))
+        self.assertEqual(15.5, float(second['max']))
         self.assertEqual('AAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTT', second['sequence'])
 
         predictions = CustomResultData.get_predictions(db, result_uuid, sort_max_value=True,
                                                        limit=None, offset=None)
         self.assertEqual(2, len(predictions))
-        self.assertEqual(15.5, float(predictions[0]['max_value']))
-        self.assertEqual(12.5, float(predictions[1]['max_value']))
+        self.assertEqual(15.5, float(predictions[0]['max']))
+        self.assertEqual(12.5, float(predictions[1]['max']))
 
         predictions = CustomResultData.get_predictions(db, result_uuid, sort_max_value=True,
                                                        limit=1, offset=1)
         self.assertEqual(1, len(predictions))
-        self.assertEqual(12.5, float(predictions[0]['max_value']))
+        self.assertEqual(12.5, float(predictions[0]['max']))
 
     def test_custom_job_missing_names(self):
         FASTA_DATA1 = """>noidea\nAAACCCGGGGTT"""
         db = create_db_connection(TestWithDocker.config.dbconfig)
         # upload FASTA file
-        sequence_list = SequenceList.create_with_content(db, FASTA_DATA1)
+        sequence_list = SequenceList.create_with_content_and_title(db, FASTA_DATA1, "somelist")
         # create a job to determine predictions for a sequence_list
         job_uuid = CustomJob.create_job(db, DataType.PREDICTION, sequence_list, model_name='E2f1').uuid
         # mark job as running
@@ -512,8 +514,8 @@ someseq2\t60\t75\t15.5
         self.assertEqual(1, len(predictions))
         first = predictions[0]
         self.assertEqual('someseq', first['name'])
-        self.assertEqual(12.5, float(first['max_value']))
-        self.assertEqual([{u'start': 0, u'end': 10, u'value': 12.5}], first['pred'])
+        self.assertEqual(12.5, float(first['max']))
+        self.assertEqual([{u'start': 0, u'end': 10, u'value': 12.5}], first['values'])
         self.assertEqual(SEQUENCE_NOT_FOUND, first['sequence'])
 
 

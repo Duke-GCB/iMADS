@@ -1,7 +1,7 @@
 import "babel-polyfill";
 import React from 'react';
 import {render} from 'react-dom';
-import { browserHistory, Router, Route } from 'react-router';
+import { browserHistory, Router, Route, fetchComponent} from 'react-router';
 import SearchPage from './search/SearchPage.jsx'
 import DataSourcesPage from './datasources/DataSourcesPage.jsx'
 import PredictionPage from './prediction/PredictionPage.jsx'
@@ -15,10 +15,12 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 // https://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin();
 
+
+//component={PredictionPage}/>
 render((
   <Router history={browserHistory}>
       <Route path={SEARCH_NAV.path} component={SearchPage}/>
-      <Route path={PREDICTION_NAV.path} component={PredictionPage}/>
+      <Route path={PREDICTION_NAV.path} component={PredictionPage} />
       <Route path={DATA_SOURCES_NAV.path} component={DataSourcesPage}/>
       <Route path={ABOUT_NAV.path} component={AboutPage}/>
   </Router>

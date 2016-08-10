@@ -29,7 +29,8 @@ export default class PredictionDetailsDialog extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            ranges: {}
+            ranges: {},
+            selectedIndex: undefined,
         }
         this.onDnaRangesResponse = this.onDnaRangesResponse.bind(this);
         this.onDnaRangesError = this.onDnaRangesError.bind(this);
@@ -48,7 +49,14 @@ export default class PredictionDetailsDialog extends React.Component {
         alert(error);
     }
 
+    setSelectedIndex = (idx) => {
+        this.setState({
+            selectedIndex: idx
+        });
+    }
+
     render() {
+        let {selectedIndex} = this.state;
         if (!this.props.data) {
             return <div></div>;
         }
@@ -60,7 +68,11 @@ export default class PredictionDetailsDialog extends React.Component {
             let prediction = values[i];
             let position = this.props.data.chrom + ":" + prediction.start  + '-' + prediction.end;
             let seq = this.props.data.sequence.substring(prediction.start, prediction.end);
-            details.push(<tr>
+            let rowClassName = "";
+            if (i == selectedIndex) {
+                rowClassName = "active";
+            }
+            details.push(<tr className={rowClassName}>
                 <td>{prediction.start}</td>
                 <td>{prediction.end}</td>
                 <td>{prediction.value}</td>
@@ -85,6 +97,7 @@ export default class PredictionDetailsDialog extends React.Component {
                                      height="40"
                                      data={rowData}
                                      predictionColor={this.props.predictionColor}
+                                     setSelectedIndex={this.setSelectedIndex}
                             />
                             
                             <h5>Details</h5>

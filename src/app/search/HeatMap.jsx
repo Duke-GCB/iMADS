@@ -75,13 +75,29 @@ class HeatMap extends React.Component {
     }
 
     drillDown(evt) {
-        let url = evt.target.getAttribute('data-url');
-        window.open(url);
+        let {setSelectedIndex} = this.props;
+        if (this.genomeBrowserURL.trackHubUrl) {
+            let url = evt.target.getAttribute('data-url');
+            window.open(url);
+        } else {
+            if (setSelectedIndex) {
+                let idx = evt.target.getAttribute('data-idx');
+                setSelectedIndex(idx);
+            }
+        }
     }
 
     viewInGenomeBrowser() {
-        let data = this.props.data;
-        window.open(this.genomeBrowserURL.getGeneURL(data.genome, data.chrom, data.start, data.end));
+        let {setSelectedIndex} = this.props;
+        if (this.genomeBrowserURL.trackHubUrl) {
+            let data = this.props.data;
+            window.open(this.genomeBrowserURL.getGeneURL(data.genome, data.chrom, data.start, data.end));
+        } else {
+            if (setSelectedIndex) {
+                setSelectedIndex(undefined);
+            }
+        }
+
     }
 
     render() {

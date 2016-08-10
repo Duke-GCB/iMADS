@@ -29,15 +29,17 @@ class SequenceList(object):
         """
         if not self.content:
             raise ValueError("SequenceList content property must be filled in before calling save.")
+        if not self.title:
+            raise ValueError("SequenceList title property must be filled in before calling save.")
         item_list = SequenceListItems(self.content)
         cur = db.cursor()
-        self._insert_data(cur, item_list)
+        self._insert_data(cur, item_list, self.title)
         cur.close()
         db.commit()
 
-    def _insert_data(self, cur, item_list):
-        cur.execute("insert into sequence_list(id, data) values(%s, %s)",
-                    [self.seq_uuid, item_list.data])
+    def _insert_data(self, cur, item_list, title):
+        cur.execute("insert into sequence_list(id, data, title) values(%s, %s, %s)",
+                    [self.seq_uuid, item_list.data, title])
         for item in item_list.items:
             cur.execute("insert into sequence_list_item(seq_id, idx, name, sequence) values(%s, %s, %s, %s)",
                         [self.seq_uuid, item['idx'], item['name'], item['sequence']])
@@ -47,13 +49,14 @@ class SequenceList(object):
         Load self.contents from the database based on self.seq_uuid.
         :param db: database connection
         """
-        rows = read_database(db, "select data, created from sequence_list where id = %s", [self.seq_uuid])
+        rows = read_database(db, "select data, created, title from sequence_list where id = %s", [self.seq_uuid])
         first_row = rows[0]
         self.content = first_row[0]
         self.created = first_row[1]
+        self.title = first_row[2]
 
     @staticmethod
-    def create_with_content(db, content):
+    def create_with_content_and_title(db, content, title):
         """
         Saves content into the database under a new uuid.
         :param db: database connection
@@ -62,6 +65,7 @@ class SequenceList(object):
         """
         sequence_list = SequenceList(str(uuid.uuid1()))
         sequence_list.content = content
+        sequence_list.title = title
         sequence_list.insert(db)
         return sequence_list.seq_uuid
 
@@ -77,6 +81,7 @@ class SequenceList(object):
         sequence_list.load(db)
         return sequence_list
 
+
 class SequenceListItems(object):
     def __init__(self, data):
         self.data = SequenceListItems.make_fasta(data.strip())
@@ -90,7 +95,7 @@ class SequenceListItems(object):
             cnt = 1
             for line in data.split('\n'):
                 if line:
-                    result += ">seq{0:04d}\n".format(cnt)
+                    result += ">seq{}\n".format(cnt)
                     result += line
                     result += "\n"
                     cnt += 1

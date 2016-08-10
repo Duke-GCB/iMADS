@@ -7,5 +7,5 @@ export let URL = {
    genomes: BASE_URL + 'genomes',
 };
 
-export const ITEMS_PER_PAGE = 20;
+export const ITEMS_PER_PAGE = 18;
 export const NUM_PAGE_BUTTONS = 5;
