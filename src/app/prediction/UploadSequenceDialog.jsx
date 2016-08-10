@@ -34,6 +34,21 @@ class UploadSequenceDialog extends React.Component {
         this.onUploadedSequenceFailed = this.onUploadedSequenceFailed.bind(this);
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.sequenceData.id != this.props.sequenceData.id) {
+            let customSequence = new CustomSequence();
+            customSequence.fetch(nextProps.sequenceData.id, this.onSequenceInfo, this.onSequenceInfoError);
+        }
+    }
+
+    onSequenceInfo = (sequenceInfo) => {
+        this.onChangeTextValue(atob(sequenceInfo.data));
+    }
+
+    onSequenceInfoError = (err) => {
+        alert(err.message);
+    }
+
     onChangeTextValue(value) {
         this.setState({
             canUpload: true,
@@ -69,10 +84,14 @@ class UploadSequenceDialog extends React.Component {
             this.setState({
                 loading: false
             });
-            let title = this.state.sequenceName || this.props.defaultSequenceName;
-            let customSequence = new CustomSequence(data, title);
-            customSequence.upload(this.onUploadedSequence, this.onUploadedSequenceFailed)
+            let customSequence = new CustomSequence();
+            customSequence.upload(data, this.determineTitle(),
+                this.onUploadedSequence, this.onUploadedSequenceFailed);
         }
+    }
+
+    determineTitle = () => {
+        return this.state.sequenceName || this.props.sequenceData.title || this.props.defaultSequenceName;
     }
 
     onUploadedSequence(seqId, title) {
@@ -102,7 +121,11 @@ class UploadSequenceDialog extends React.Component {
     }
 
     render() {
-        let {isOpen} = this.props;
+        let {isOpen, sequenceData} = this.props;
+        let title = this.state.sequenceName;
+        if (sequenceData.title) {
+            title = sequenceData.title;
+        }
 
         return <Popup isOpen={this.props.isOpen}
                       onRequestClose={this.onCloseNoSave}
@@ -110,7 +133,7 @@ class UploadSequenceDialog extends React.Component {
             <p>{INSTRUCTIONS}</p>
             <p>{PURGE_WARNING}</p>
             <TextEdit title="Title: "
-                      value={this.state.sequenceName}
+                      value={title}
                       placeholder={this.props.defaultSequenceName}
                       onChange={this.setSequenceName}
                       size="30"

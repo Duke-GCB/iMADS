@@ -92,10 +92,14 @@ class PredictionPage extends React.Component {
         }, this.search);
     };
 
-    addCustomSeqenceList = (seqId, title) => {
+    addCustomSeqenceList = (seqId, title, prexistingSequence) => {
         let currentPredictionSettings = this.state.predictionSettings;
         currentPredictionSettings.selectedSequence = seqId;
-        this.customSequenceList.add(seqId, title);
+        if (this.customSequenceList.containsId(prexistingSequence.id)) {
+            this.customSequenceList.replace(seqId, title, prexistingSequence.id);
+        } else {
+            this.customSequenceList.add(seqId, title);
+        }
         this.setState({
             selectedSequence: seqId,
             predictionSettings: currentPredictionSettings

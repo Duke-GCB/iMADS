@@ -1,22 +1,26 @@
 import URLBuilder from './URLBuilder.js';
 
 export class CustomSequence {
-    constructor(data, title) {
-        this.data = data;
-        this.title = title;
-    }
-
-    upload(onData, onError) {
-        let title = this.title;
+    upload(data, title, onData, onError) {
         let urlBuilder = new URLBuilder($.ajax);
         urlBuilder.reset('api/v1/sequences');
-        urlBuilder.addToData('data', btoa(this.data));
+        urlBuilder.addToData('data', btoa(data));
         urlBuilder.addToData('title', title);
         urlBuilder.fetch(function(data) {
             onData(data.id, title);
         }.bind(this), function(data) {
             onError(data.message);
         }.bind(this));
+    }
+
+    fetch(sequenceId, onData, onError) {
+        let urlBuilder = new URLBuilder($.ajax);
+        urlBuilder.reset('api/v1/sequences/' + sequenceId);
+        urlBuilder.fetch(function(data) {
+            onData(data);
+        }.bind(this), function(data) {
+            onError(data.message);
+        }.bind(this), 'GET');
     }
 
 }
@@ -38,7 +42,34 @@ export class CustomSequenceList {
             id: seqId,
             title: title
         });
+        this.saveChanges();
+    }
+
+    saveChanges() {
         localStorage.setItem(CUSTOM_SEQ_LIST_NAME, JSON.stringify(this.list));
+    }
+
+    containsId(seqId) {
+        for (let item of this.list) {
+            if (item.id == seqId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    replace(seqId, title, oldSeqId) {
+        for (let i = 0; i < this.list.length; i++) {
+            let item = this.list[i];
+            if (item.id == oldSeqId) {
+                this.list[i] = {
+                    id: seqId,
+                    title: title
+                };
+                this.saveChanges();
+                break;
+            }
+        }
     }
 
     addIfNecessary(id) {
@@ -49,6 +80,7 @@ export class CustomSequenceList {
         }
         this.add(id, 'Custom Sequence');
     }
+
 
     get() {
         return this.list;

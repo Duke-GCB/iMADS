@@ -18,7 +18,8 @@ class PredictionFilterPanel extends React.Component {
         super(props);
         this.state = {
             showCustomDialog: false,
-            defaultCustomSequenceName: ""
+            defaultCustomSequenceName: "",
+            sequenceData: {}
         }
     }
 
@@ -35,8 +36,25 @@ class PredictionFilterPanel extends React.Component {
         this.setState({
             showCustomDialog: true,
             defaultCustomSequenceName: this.makeDefaultCustomSequenceName(),
+            sequenceData: {}
         });
     };
+
+    editExistingSequence = () => {
+        let {customSequenceList, predictionSettings} = this.props;
+        let editSeqData = {};
+        for (let seqData of customSequenceList) {
+            if (seqData.id == predictionSettings.selectedSequence) {
+                editSeqData = seqData;
+                break;
+            }
+        }
+        this.setState({
+            showCustomDialog: true,
+            defaultCustomSequenceName: this.makeDefaultCustomSequenceName(),
+            sequenceData: editSeqData
+        });
+    }
 
     makeDefaultCustomSequenceName = () => {
         return "Sequence " + moment().format('MM/DD HH:mm');
@@ -44,7 +62,7 @@ class PredictionFilterPanel extends React.Component {
 
     closeCustomDialog = (seqId, errorMessage, title) => {
         if (seqId) {
-            this.props.addCustomSeqenceList(seqId, title);
+            this.props.addCustomSeqenceList(seqId, title, this.state.sequenceData);
         }
         this.setState({
             showCustomDialog: false,
@@ -106,7 +124,14 @@ class PredictionFilterPanel extends React.Component {
         let modelOptions = this.makeModelOptions();
         let sequenceListOptions = this.makeSequenceListOptions();
         let uploadInstructions = <ArrowTooltip label={FIRST_TIME_INSTRUCTIONS}
-                                               visible={customSequenceList.length == 0} />
+                                               visible={customSequenceList.length == 0} />;
+
+        let editSequenceButton = [];
+        if (predictionSettings.selectedSequence) {
+            editSequenceButton = <button type="button" className="btn btn-default btn-sm"
+                                        style={{marginTop: '5px', marginBottom: '10px', width: '100%'}}
+                                        onClick={this.editExistingSequence} >Edit Sequence</button>;
+        }
         return <div>
             <h4>Filter</h4>
             <SelectItem title="Protein/Model:"
@@ -118,6 +143,7 @@ class PredictionFilterPanel extends React.Component {
                         options={sequenceListOptions}
                         onChange={this.onChangeSequence}
                         labelControl={uploadInstructions} />
+            {editSequenceButton}
             <BooleanInput checked={predictionSettings.maxPredictionSort}
                           label="Sort by max value"
                           onChange={this.onChangeMaxPredictionSort}/>
@@ -128,6 +154,7 @@ class PredictionFilterPanel extends React.Component {
                          setColor={setPredictionColor} />
             <UploadSequenceDialog isOpen={this.state.showCustomDialog}
                                   defaultSequenceName={this.state.defaultCustomSequenceName}
+                                  sequenceData={this.state.sequenceData}
                                   onRequestClose={this.closeCustomDialog} />
         </div>
     }
