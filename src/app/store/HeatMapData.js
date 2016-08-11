@@ -82,19 +82,24 @@ class HeatMapData {
     }
 
     getColor(predictionColor) {
-        let value = this.data.value;
+        let value = Math.abs(this.data.value);
+        let negative = this.data.value < 0;
+        let colorToCheck = predictionColor.color1;
+        if (this.data.value < 0) {
+            colorToCheck = predictionColor.color2;
+        }
         let primary = 255;
         let revColor = 1 - value;
         let secondary = parseInt(255 * revColor);
         let red = primary;
         let green = secondary;
         let blue = secondary;
-        if (predictionColor.color1 == "blue") {
+        if (colorToCheck == "blue") {
             red = secondary;
             green = secondary;
             blue = primary;
         }
-        if (predictionColor.color1 == "green") {
+        if (colorToCheck == "green") {
             // Dark green is 0, 128, 0 instead of 0, 255, 0 (if it was similar red or blue)
             let minGreen = Math.min(secondary + 30, 255);
             let greenValue = Math.max(128, minGreen);
