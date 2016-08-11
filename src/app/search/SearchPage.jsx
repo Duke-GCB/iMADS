@@ -28,6 +28,7 @@ class SearchPage extends React.Component {
              errorMessage: "",
              showCustomDialog: customListWithoutData,
              showGeneNamesWarnings: true,
+             predictionColor: "red",
          };
          this.search = this.search.bind(this);
          this.downloadAll = this.downloadAll.bind(this);
@@ -104,6 +105,12 @@ class SearchPage extends React.Component {
         return this.predictionStore.getDownloadURL(format, this.state.searchSettings);
     }
 
+    setPredictionColor = (colorName) => {
+        this.setState({
+            predictionColor: colorName
+        })
+    };
+
     render () {
         let searchOperations = {
             search: this.search,
@@ -128,6 +135,8 @@ class SearchPage extends React.Component {
                                         maxBindingOffset={this.state.maxBindingOffset}
                                         setErrorMessage={this.setErrorMessage}
                                         showCustomDialog={this.state.showCustomDialog}
+                                        predictionColor={this.state.predictionColor}
+                                        setPredictionColor={this.setPredictionColor}
                                 />
                         </div>
                         <div className="col-md-10 col-sm-10 col-xs-10" >
@@ -145,6 +154,7 @@ class SearchPage extends React.Component {
 
                                 predictionStore={this.predictionStore}
                                 searchOperations={searchOperations}
+                                predictionColor={this.state.predictionColor}
                             />
                         </div>
 

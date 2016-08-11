@@ -4,6 +4,7 @@ import CustomListDialog from './CustomListDialog.jsx'
 import SelectItem from '../common/SelectItem.jsx'
 import StreamInput from '../common/StreamInput.jsx'
 import BooleanInput from '../common/BooleanInput.jsx'
+import ColorPicker from '../common/ColorPicker.jsx'
 
 const CUSTOM_GENE_LIST = 'Custom Gene List';
 const CUSTOM_RANGES_LIST = 'Custom Ranges List';
@@ -192,6 +193,7 @@ class SearchFilterPanel extends React.Component {
     }
 
     render() {
+        let {predictionColor, setPredictionColor} = this.props;
         let secondGroupStyle = {marginLeft:'40px'};
         let streamInputStyle = {display: 'inline', width:'4em', marginRight: '10px'};
         let smallMargin = { margin: '10px' }
@@ -271,6 +273,9 @@ class SearchFilterPanel extends React.Component {
                                   geneListNames={geneListNames}
 
                 />
+                <ColorPicker label="Values Color:"
+                         color={predictionColor}
+                         setColor={setPredictionColor}/>
         </div>
     }
 }
