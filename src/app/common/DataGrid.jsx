@@ -50,7 +50,7 @@ export default class DataGrid extends React.Component {
     };
 
     makeTableContent = (dataGridContent) => {
-        let {errorMessage, searchDataLoaded, loadingStatusLabel} = this.props;
+        let {errorMessage, searchDataLoaded, loadingStatusLabel, showBlankWhenEmpty} = this.props;
         let numColumns = dataGridContent.getNumColumns() + 1;
         if (!searchDataLoaded) {
             return <TallRow numColumns={numColumns}>
@@ -67,9 +67,13 @@ export default class DataGrid extends React.Component {
         }
         let rowContent = dataGridContent.getRows();
         if (rowContent.length == 0) {
+            let message = "No results found.";
+            if (showBlankWhenEmpty) {
+                message = "";
+            }
             return <TallRow numColumns={numColumns}>
                 <div className="centerChildrenHorizontally">
-                    <span className="centerVertically">No results found.</span>
+                    <span className="centerVertically">{message}</span>
                 </div>
             </TallRow>;
         }

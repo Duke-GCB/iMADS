@@ -1,5 +1,7 @@
 import URLBuilder from './URLBuilder.js';
 
+const CUTOFF_MS = 58 * 60 * 60 * 1000; //58 hours
+
 export class CustomSequence {
     upload(data, title, onData, onError) {
         let urlBuilder = new URLBuilder($.ajax);
@@ -40,7 +42,8 @@ export class CustomSequenceList {
         console.log(title);
         this.list.push({
             id: seqId,
-            title: title
+            title: title,
+            createdMS: new Date().getTime()
         });
         this.saveChanges();
     }
@@ -64,12 +67,38 @@ export class CustomSequenceList {
             if (item.id == oldSeqId) {
                 this.list[i] = {
                     id: seqId,
-                    title: title
+                    title: title,
+                    createdMS: new Date().getTime()
                 };
                 this.saveChanges();
                 break;
             }
         }
+    }
+
+    remove(seqId) {
+        for (let i = 0; i < this.list.length; i++) {
+            let item = this.list[i];
+            if (item.id == seqId) {
+                this.list.splice(i);
+            }
+        }
+        this.saveChanges();
+    }
+
+    /**
+     * Remove any sequences older than 58 hours (the server retains them for 48 hours).
+     */
+    removeOld() {
+        let newList = [];
+        let currentMS = new Date().getTime();
+        for (let item of this.list) {
+            if (currentMS - item.createdMS <= CUTOFF_MS) {
+                newList.push(item);
+            }
+        }
+        this.list = newList;
+        this.saveChanges();
     }
 
     addIfNecessary(id) {

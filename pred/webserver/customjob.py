@@ -1,5 +1,6 @@
 import uuid
 from pred.queries.dbutil import update_database, read_database
+from pred.webserver.customresult import CustomResultData
 
 
 class JobStatus(object):
@@ -34,6 +35,9 @@ class CustomJob(object):
                              "must be filled in before calling insert.")
         insert_sql = "insert into job(id, type, model_name, seq_id, status) values(%s, %s, %s, %s, %s)"
         update_database(db, insert_sql, [self.uuid, self.type, self.model_name, self.sequence_list, self.status])
+
+    def delete(self, cur):
+        cur.execute("delete from job where id = %s", [self.uuid])
 
     def load(self, db):
         select_sql = "select {} from job where id = %s".format(self.NON_KEY_FIELDS)
@@ -119,3 +123,21 @@ class CustomJob(object):
             job._load_non_key(row[1:])
             return job
         return None
+
+    @staticmethod
+    def find_old_jobs(cur, hours):
+        result = []
+        select_sql = "select id, {} from job " \
+                     "where CURRENT_TIMESTAMP  - finished > interval '{} hours'".format(CustomJob.NON_KEY_FIELDS, hours)
+        cur.execute(select_sql, [])
+        for row in cur.fetchall():
+            job = CustomJob(row[0])
+            job._load_non_key(row[1:])
+            result.append(job)
+        return result
+
+    @staticmethod
+    def delete_old_jobs(cur, hours):
+        for old_job in CustomJob.find_old_jobs(cur, hours):
+            CustomResultData.delete_for_job(cur, old_job.uuid)
+            old_job.delete(cur)

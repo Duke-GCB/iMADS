@@ -13,6 +13,7 @@ import {fetchPredictionSettings} from '../store/PredictionSettings.js'
 import CustomResultSearch from '../store/CustomResultSearch.js';
 import {CustomSequenceList} from '../store/CustomSequence.js';
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../store/AppSettings.js'
+import {SEQUENCE_NOT_FOUND} from '../store/Errors.js';
 
 
 class PredictionPage extends React.Component {
@@ -21,6 +22,7 @@ class PredictionPage extends React.Component {
         let pageBatch = new PageBatch(NUM_PAGE_BUTTONS, ITEMS_PER_PAGE);
         this.predictionStore = new PredictionsStore(pageBatch, new URLBuilder());
         this.customSequenceList = new CustomSequenceList();
+        this.customSequenceList.removeOld();
         this.customResultSearch = new CustomResultSearch(this, pageBatch);
         let predictionSettings = this.customResultSearch.makeSettingsFromQuery(props.location.query);
         if (!predictionSettings.selectedSequence) {
@@ -144,10 +146,26 @@ class PredictionPage extends React.Component {
     };
 
     onError = (err)=> {
-        this.setErrorMessage(err.message);
+        console.log(err);
+        let message = err.message;
+        if (err.errorType == SEQUENCE_NOT_FOUND) {
+            window.setTimeout(() => {
+                this.removeExpiredSequence(err.errorData);
+            }, 2000);
+        }
+        this.setErrorMessage(message);
+
     };
 
-
+    removeExpiredSequence = (sequenceId) => {
+        this.customSequenceList.remove(sequenceId);
+        let predictionSettings = this.state.predictionSettings;
+        predictionSettings.selectedSequence = this.customSequenceList.getFirst();
+        this.setState({
+            customSequenceList: this.customSequenceList.get(),
+            predictionSettings: predictionSettings
+        }, this.search);
+    };
 
     downloadAll = (format) => {
         return this.customResultSearch.getDownloadURL(format, this.state.predictionSettings);
@@ -165,6 +183,7 @@ class PredictionPage extends React.Component {
             downloadRawData: this.downloadRawData,
             setErrorMessage: this.setErrorMessage
         };
+        let noSequences = this.state.customSequenceList.length == 0;
         let topPanel = <PageTitle>Custom DNA Predictions</PageTitle>;
         let leftPanel = <PredictionFilterPanel genomeData={this.state.genomeData}
                                                customSequenceList={this.state.customSequenceList}
@@ -189,6 +208,7 @@ class PredictionPage extends React.Component {
                                                  predictionStore={this.predictionStore}
                                                  searchOperations={searchOperations}
                                                  predictionColor={this.state.predictionColor}
+                                                 showBlankWhenEmpty={noSequences}
         />;
         return <div>
             <NavBar selected={PREDICTION_NAV.path}/>

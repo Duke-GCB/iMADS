@@ -15,6 +15,7 @@ from pred.webserver.dnasequence import lookup_dna_sequence
 from pred.webserver.sequencelist import SequenceList
 from pred.webserver.customjob import CustomJob, JobStatus
 from pred.webserver.customresult import CustomResultData
+from pred.webserver.errors import ClientException, ServerException, ErrorType
 
 
 app = Flask(__name__)
@@ -152,7 +153,7 @@ def get_custom_sequences_data(sequence_id):
     return make_json_response({
             "id": seq.seq_uuid,
             "data": base64.b64encode(seq.content),
-            "created" : seq.created
+            "created": seq.created
         })
 
 
@@ -168,6 +169,13 @@ def post_custom_sequences():
 def post_jobs():
     required_prop_names = ["sequence_id", "job_type", "model_name"]
     (sequence_id, job_type, model_name) = get_required_json_props(request, required_prop_names)
+    try:
+        seq = SequenceList(sequence_id)
+        seq.load(get_db())
+    except KeyError as ex:
+        raise ClientException("Unable to find sequence. It may have purged.",
+                            ErrorType.SEQUENCE_NOT_FOUND,
+                            error_data=sequence_id)
     job = CustomJob.find_existing_job(get_db(), job_type, sequence_id, model_name)
     status_code = None
     if not job:
@@ -309,9 +317,13 @@ def json_ok_result():
 
 @app.errorhandler(ValueError)
 def handle_invalid_usage(error):
-    response = jsonify({'result':'ERROR', 'message': str(error)})
-    response.status_code = 500
-    return response
+    system_error = ServerException((str(error), ErrorType.GENERIC_ERROR))
+    return system_error.json_response(jsonify)
+
+
+@app.errorhandler(ClientException)
+def handle_user_exception(error):
+    return error.json_response(jsonify)
 
 
 def make_json_response(props, status_code=None):

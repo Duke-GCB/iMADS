@@ -4,21 +4,31 @@ import sys
 import time
 from pred.config import parse_config, CONFIG_FILENAME
 from webserver import create_db_connection
+from pred.webserver.customjob import CustomJob
+from pred.webserver.sequencelist import SequenceList
 
-DELETE_AFTER_DAYS = "2";
-BASE_SQL = "delete from custom_list where extract('days' from (current_timestamp - uploaded)) >= {}"
-DELETE_OLD_LISTS_SQL = BASE_SQL.format(DELETE_AFTER_DAYS)
+DELETE_AFTER_HOURS = "48"
+BASE_SQL = "delete from custom_list where current_timestamp - uploaded > interval '{} hours'"
+DELETE_OLD_LISTS_SQL = BASE_SQL.format(DELETE_AFTER_HOURS)
 
 
 def connect_and_delete_old_lists():
-    print("Deleting old custom lists.")
     config = parse_config(CONFIG_FILENAME)
     db = create_db_connection(config.dbconfig)
     cur = db.cursor()
-    cur.execute(DELETE_OLD_LISTS_SQL, [])
+    delete_old_items(cur)
     cur.close()
     db.commit()
     db.close()
+
+
+def delete_old_items(cur):
+    print("Deleting old custom lists.")
+    cur.execute(DELETE_OLD_LISTS_SQL, [])
+    print("Deleting old jobs.")
+    CustomJob.delete_old_jobs(cur, DELETE_AFTER_HOURS)
+    print("Deleting old custom sequences.")
+    SequenceList.delete_old_and_unattached(cur, DELETE_AFTER_HOURS)
 
 
 def delete_and_wait(wait_minutes):

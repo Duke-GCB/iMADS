@@ -98,3 +98,7 @@ class CustomResultData(object):
             line = '\t'.join([name, str(start), str(stop), str(value)])
             result += line + '\n'
         return result
+
+    @staticmethod
+    def delete_for_job(cur, job_id):
+        cur.execute("delete from custom_result where job_id = %s", [job_id])

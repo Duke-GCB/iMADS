@@ -55,6 +55,7 @@ class URLBuilder {
                     url: url,
                     status: status,
                     message: errorMessage,
+                    response: xhr.responseJSON,
                 });
             }
         });

@@ -1,11 +1,12 @@
 import URLBuilder from './URLBuilder.js';
+import {makeErrorObject} from './Errors.js';
 
 const STATUS_MESSAGES = {
     'NEW': 'Your predictions have been queued for processing.',
     'RUNNING': 'Your predictions are running.',
     'COMPLETE': 'Your predictions are ready.',
     'ERROR': 'Error:'
-}
+};
 
 //onSearchData(predictions, pageNum, hasNextPages, warning)
 
@@ -13,10 +14,10 @@ class CustomResultSearch {
     constructor(statusLabelObj, pageBatch) {
         this.urlBuilder = new URLBuilder($.ajax);
         this.resultIdCache = new ResultIdCache();
-        this.currentRequest = {}
+        this.currentRequest = {};
         this.statusLabelObj = statusLabelObj;
         this.setStatusLabel = this.setStatusLabel.bind(this);
-        this.log = console.log
+        this.log = console.log;
         this.active = true;
         this.currentJobId = 0;
         this.pageBatch = pageBatch;
@@ -27,13 +28,11 @@ class CustomResultSearch {
         this.active = false;
     }
 
-    showError(message) {
+    showError(error) {
         if (this.currentRequest) {
-            this.currentRequest.onError({
-                message: message
-            })
+            this.currentRequest.onError(makeErrorObject(error));
         } else {
-            alert(message);
+            alert(error.message);
         }
     }
     
@@ -96,7 +95,7 @@ class CustomResultSearch {
             // delay so user can see the progress indicator
             //window.setTimeout(this.currentRequest.onSearchData, 300, data.result);
         }.bind(this), function (error) {
-            this.showError(error.message);
+            this.showError(error);
         }.bind(this), 'GET');
     }
 
@@ -121,7 +120,7 @@ class CustomResultSearch {
                 }
             }
         }.bind(this), function (error) {
-            this.showError(error.message);
+            this.showError(error);
         }.bind(this));
     }
 
@@ -140,7 +139,7 @@ class CustomResultSearch {
                 console.log("Failed to create job.");
             }
         }.bind(this), function (error) {
-            this.showError(error.message);
+            this.showError(error);
         }.bind(this));
     }
 
@@ -160,7 +159,7 @@ class CustomResultSearch {
                 if (this.active) {
                     let message = this.getJobStatusMsg(data);
                     if (data.status == "ERROR") {
-                        this.showError(message);
+                        this.showError({'message': message});
                     } else {
                         this.setStatusLabel(message);
                         this.log("Waiting and checking " + jobId + " again.");
@@ -169,7 +168,7 @@ class CustomResultSearch {
                 }
             }
         }.bind(this), function (error) {
-            this.showError(error.message);
+            this.showError(error);
         }.bind(this), 'GET');
     }
 

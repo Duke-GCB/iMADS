@@ -134,7 +134,7 @@ class PredictionResultsPanel extends React.Component {
     
     render() {
         let {errorMessage, predictionSettings, searchResults, searchDataLoaded, loadingStatusLabel,
-            searchOperations, page, predictionStore} = this.props;
+            searchOperations, page, predictionStore, showBlankWhenEmpty} = this.props;
         let rangeType = false;
         let includeHeatMap = predictionSettings.all === true;
         let listContent = this.makeListContent();
@@ -149,6 +149,7 @@ class PredictionResultsPanel extends React.Component {
                         searchDataLoaded={searchDataLoaded}
                         loadingStatusLabel={loadingStatusLabel}
                         errorMessage={errorMessage}
+                        showBlankWhenEmpty={showBlankWhenEmpty}
                     />
             <SearchResultsFooter
                 searchSettings={predictionSettings}

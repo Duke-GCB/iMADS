@@ -50,6 +50,8 @@ class SequenceList(object):
         :param db: database connection
         """
         rows = read_database(db, "select data, created, title from sequence_list where id = %s", [self.seq_uuid])
+        if not rows:
+            raise KeyError("Unable to find sequence for {}".format(self.seq_uuid))
         first_row = rows[0]
         self.content = first_row[0]
         self.created = first_row[1]
@@ -80,6 +82,20 @@ class SequenceList(object):
         sequence_list = SequenceList(seq_uuid)
         sequence_list.load(db)
         return sequence_list
+
+    @staticmethod
+    def delete_old_and_unattached(cur, hours):
+        result = []
+        select_sql = "select sequence_list.id from sequence_list " \
+                     " left outer join job on sequence_list.id = job.seq_id " \
+                     " where job.id is null " \
+                     " and CURRENT_TIMESTAMP  - sequence_list.created > interval '{} hours'".format(hours)
+        cur.execute(select_sql, [])
+        for row in cur.fetchall():
+            seq_id = row[0]
+            cur.execute("delete from sequence_list_item where seq_id = %s", [seq_id])
+            cur.execute("delete from sequence_list where id = %s", [seq_id])
+        return result
 
 
 class SequenceListItems(object):

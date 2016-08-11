@@ -35,7 +35,7 @@ class UploadSequenceDialog extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.sequenceData.id != this.props.sequenceData.id) {
+        if (nextProps.sequenceData.id  && nextProps.sequenceData.id != this.props.sequenceData.id) {
             let customSequence = new CustomSequence();
             customSequence.fetch(nextProps.sequenceData.id, this.onSequenceInfo, this.onSequenceInfoError);
         }
