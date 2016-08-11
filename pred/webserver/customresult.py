@@ -40,7 +40,11 @@ class CustomResultData(object):
         params = [result_uuid]
         select_sql = """select
             custom_result.name as name,
-            round(max(value),4) as max_value,
+            case WHEN max(value) > abs(min(value)) THEN
+              round(max(value), 4)
+            ELSE
+              round(min(value), 4)
+            end as max_value,
             json_agg(json_build_object('value', round(value, 4), 'start', start, 'end', stop)),
             max(sequence_list_item.sequence)
             as pred
@@ -51,7 +55,7 @@ class CustomResultData(object):
             where custom_result.id = %s
             group by custom_result.name """
         if sort_max_value:
-            select_sql += " order by max(custom_result.value) DESC "
+            select_sql += " order by max(abs(custom_result.value)) DESC "
         else:
             select_sql += " order by max(sequence_list_item.idx) "
         if limit:
