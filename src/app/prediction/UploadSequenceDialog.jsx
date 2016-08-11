@@ -4,13 +4,17 @@ import SingleFileUpload from '../common/SingleFileUpload.jsx'
 import LoadingButton from '../common/LoadingButton.jsx'
 import LargeTextarea from '../common/LargeTextarea.jsx'
 import TextEdit from '../common/TextEdit.jsx'
+import LoadSampleLink from '../common/LoadSampleLink.jsx'
 import FileUpload from '../store/FileUpload.js';
 import {CustomSequence} from '../store/CustomSequence.js';
+
 
 const TITLE = "Custom DNA Sequence";
 const INSTRUCTIONS = "Enter Sequence/FASTA data or choose a file in that format. (Max file size 20MB)";
 const PURGE_WARNING = "DNA Lists will be purged after 48 hours.";
-const TEXTAREA_PLACEHOLDER_TEXT = "CGATCGATG"
+const TEXTAREA_PLACEHOLDER_TEXT = "CGATCGATG";
+const LOAD_SAMPLE_DATA = "Load Sample Data";
+
 
 const DEFAULT_STATE = {
     loading: false,
@@ -20,6 +24,14 @@ const DEFAULT_STATE = {
     textValue: '',
     sequenceName: '',
 };
+
+const SAMPLE_DATA = `>sequence1
+TCCTGGGATCCCCACAATATACGCTGGGGCACTCGGAAGAGTCAAATCCGGTTCGCGGGA
+AAATACTCCGTATCCCAGACTTATGACTGCCTATGGCAAC
+
+>sequence2
+GTGCCTCGATTGTCGCTGAGATGAACTATCCTTGTCCAATATTGATTTCACCCGCAGTTT
+CCGAACACACCTTATACTCTGCGTGGCAGCGACTATCAGG`;
 
 class UploadSequenceDialog extends React.Component {
     constructor(props) {
@@ -35,19 +47,28 @@ class UploadSequenceDialog extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.sequenceData.id  && nextProps.sequenceData.id != this.props.sequenceData.id) {
+        console.log(nextProps);
+        if (nextProps.sequenceData.id) {
             let customSequence = new CustomSequence();
             customSequence.fetch(nextProps.sequenceData.id, this.onSequenceInfo, this.onSequenceInfoError);
         }
+        // reset state each time this dialog is shown
+        if (nextProps.isOpen && !this.props.isOpen) {
+            this.setState(DEFAULT_STATE);
+        }
+    }
+
+    componentWillUnmount() {
+        console.log("UNMOUNT!");
     }
 
     onSequenceInfo = (sequenceInfo) => {
         this.onChangeTextValue(atob(sequenceInfo.data));
-    }
+    };
 
     onSequenceInfoError = (err) => {
         alert(err.message);
-    }
+    };
 
     onChangeTextValue(value) {
         this.setState({
@@ -95,23 +116,19 @@ class UploadSequenceDialog extends React.Component {
     }
 
     onUploadedSequence(seqId, title) {
-        let {onRequestClose} = this.props;
-        this.resetState();
-        onRequestClose(seqId, undefined, title);
+        this.closeDialog(seqId, undefined, title);
     }
 
     onUploadedSequenceFailed(errorMessage) {
-        onRequestClose(undefined, errorMessage, '');
+        this.closeDialog(undefined, errorMessage, '');
     }
 
-    resetState() {
-        this.setState(DEFAULT_STATE);
-    }
+    closeDialog = (seqId, errorMessage, title) => {
+        this.props.onRequestClose(seqId, errorMessage, title);
+    };
 
     onCloseNoSave() {
-        let {onRequestClose} = this.props;
-        this.resetState();
-        onRequestClose(undefined, undefined, '');
+        this.closeDialog(undefined, undefined, '');
     }
 
     setSequenceName = (evt) => {
@@ -120,24 +137,36 @@ class UploadSequenceDialog extends React.Component {
         });
     }
 
+    loadSampleData = () => {
+        this.onChangeTextValue(SAMPLE_DATA);
+    };
+
     render() {
         let {isOpen, sequenceData} = this.props;
         let title = this.state.sequenceName;
+        let isNew = true;
         if (sequenceData.title) {
             title = sequenceData.title;
+            isNew = false;
         }
-
         return <Popup isOpen={this.props.isOpen}
                       onRequestClose={this.onCloseNoSave}
                       title={TITLE}>
             <p>{INSTRUCTIONS}</p>
             <p>{PURGE_WARNING}</p>
-            <TextEdit title="Title: "
-                      value={title}
-                      placeholder={this.props.defaultSequenceName}
-                      onChange={this.setSequenceName}
-                      size="30"
-            />
+
+            <div className="largeLeftInlineBlock">
+                <TextEdit title="Title: "
+                              value={title}
+                              placeholder={this.props.defaultSequenceName}
+                              onChange={this.setSequenceName}
+                              size="30"
+                    />
+            </div>
+            <div className="smallRightInlineBlock">
+                <LoadSampleLink onClick={this.loadSampleData} hidden={!isNew}/>
+            </div>
+
             <LargeTextarea placeholder={TEXTAREA_PLACEHOLDER_TEXT}
                            value={this.state.textValue}
                            onChange={this.onChangeTextValue}

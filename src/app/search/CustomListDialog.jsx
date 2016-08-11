@@ -5,6 +5,23 @@ import { CustomListData } from '../store/CustomList.js';
 import FileUpload from '../store/FileUpload.js';
 import CustomFile from '../store/CustomFile.js';
 import GeneSearchType from './GeneSearchType.jsx'
+import LoadSampleLink from '../common/LoadSampleLink.jsx'
+
+const GENE_LIST_SAMPLE = `SLC3A2
+CCND2
+MYL9
+UBL3
+GJA1
+IFI27
+FBN1
+ANPEP`;
+
+const RANGE_LIST_SAMPLE = `chr2    133021766       133035246
+chr15   41951996        41954481
+chr7    915704  916415
+chr19   41902920        41904063
+chr4    57301199        57302843
+chr17   38255037        38257434`;
 
 const customStyles = {
   content : {
@@ -132,23 +149,55 @@ class CustomListDialog extends React.Component {
         })
     }
 
+    loadSampleData = () => {
+        let customListData = new CustomListData(this.props.type);
+        if (customListData.isGeneList()) {
+            this.setText(GENE_LIST_SAMPLE);
+        } else {
+            this.setText(RANGE_LIST_SAMPLE);
+        }
+    };
+
     render() {
         let customListData = new CustomListData(this.props.type);
         let instructions = [];
         let sampleData = customListData.sampleData;
-        let purgeWarning = <p className="CustomListDialog__delete_warning">Uploaded data will be deleted after 48 hours.</p>;
+        let purgeWarning = <span className="CustomListDialog__delete_warning">Uploaded data will be deleted after 48 hours.</span>;
         if (customListData.isGeneList()) {
             instructions = <div>
-                    <p>Enter a list of gene symbols/ID or choose a file in that format. (Max file size 20MB)</p>
-                    {purgeWarning}
+                    <p >Enter a list of gene symbols/ID or choose a file in that format. (Max file size 20MB)</p>
+                    <div className="largeLeftInlineBlock" >
+                        {purgeWarning}
+                    </div>
+                    <div className="smallRightInlineBlock">
+                        <LoadSampleLink onClick={this.loadSampleData} />
+                    </div>
                 </div>;
         } else {
             instructions = <div>
                     <p>Enter a list of tab or space separated values or choose a file in that format. (Max size 20MB)</p>
                     {purgeWarning}
-                    <p>Format is: "CHROMOSOME START END".</p>
+                    <div className="largeLeftInlineBlock" >
+                        <span>Format is: "CHROMOSOME START END".</span>
+                    </div>
+                    <div className="smallRightInlineBlock">
+                        <LoadSampleLink onClick={this.loadSampleData} />
+                    </div>
                 </div>;
         }
+        /*
+            <div className="largeLeftInlineBlock">
+                <TextEdit title="Title: "
+                              value={title}
+                              placeholder={this.props.defaultSequenceName}
+                              onChange={this.setSequenceName}
+                              size="30"
+                    />
+            </div>
+            <div className="smallRightInlineBlock">
+                <LoadSampleLink onClick={this.loadSampleData} hidden={!isNew}/>
+            </div>
+         */
         let disableSearch = !this.state.text && !this.state.file;
         let hasText = this.state.text.length > 0;
         let geneListDropdown = [];
