@@ -7,6 +7,7 @@ import TextEdit from '../common/TextEdit.jsx'
 import LoadSampleLink from '../common/LoadSampleLink.jsx'
 import FileUpload from '../store/FileUpload.js';
 import {CustomSequence} from '../store/CustomSequence.js';
+import {SEQUENCE_SAMPLE} from '../store/SampleData.js'
 
 
 const TITLE = "Custom DNA Sequence";
@@ -25,13 +26,6 @@ const DEFAULT_STATE = {
     sequenceName: '',
 };
 
-const SAMPLE_DATA = `>sequence1
-TCCTGGGATCCCCACAATATACGCTGGGGCACTCGGAAGAGTCAAATCCGGTTCGCGGGA
-AAATACTCCGTATCCCAGACTTATGACTGCCTATGGCAAC
-
->sequence2
-GTGCCTCGATTGTCGCTGAGATGAACTATCCTTGTCCAATATTGATTTCACCCGCAGTTT
-CCGAACACACCTTATACTCTGCGTGGCAGCGACTATCAGG`;
 
 class UploadSequenceDialog extends React.Component {
     constructor(props) {
@@ -138,7 +132,7 @@ class UploadSequenceDialog extends React.Component {
     }
 
     loadSampleData = () => {
-        this.onChangeTextValue(SAMPLE_DATA);
+        this.onChangeTextValue(SEQUENCE_SAMPLE);
     };
 
     render() {
