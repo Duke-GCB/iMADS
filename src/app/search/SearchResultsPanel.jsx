@@ -5,7 +5,7 @@ import PredictionDialog from './PredictionDialog.jsx'
 import HeatMap from './HeatMap.jsx'
 import ErrorPanel from './ErrorPanel.jsx'
 
-import GenomeData from '../store/GenomeData.js'
+import {getTrackHubUrl} from '../store/GenomeData.js';
 import {CUSTOM_RANGES_LIST} from '../store/CustomList.js'
 import {ResultHeaderRow, ResultDetailRow} from './ResultRow.jsx'
 import SearchResultsFooter from './SearchResultsFooter.jsx'
@@ -48,8 +48,7 @@ class SearchResultsPanel extends React.Component {
         if (searchSettings.all === true) {
             let combinedName = rowData.commonName + " (" + rowData.name + ") ";
             let offsetsStr = " upstream:" + searchSettings.upstream + " downstream:" + searchSettings.downstream;
-            let genomeDataObj = new GenomeData(this.props.genomeData);
-            let trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettings.genome);
+            let trackHubUrl = getTrackHubUrl(this.props.genomeData, searchSettings.genome);
             let title = combinedName + " " + offsetsStr;
             if (rangeType) {
                 title = rowData.chrom + ":" + rowData.start + "-" + rowData.end;

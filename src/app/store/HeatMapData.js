@@ -89,12 +89,12 @@ class HeatMapData {
         let red = primary;
         let green = secondary;
         let blue = secondary;
-        if (predictionColor == "blue") {
+        if (predictionColor.color1 == "blue") {
             red = secondary;
             green = secondary;
             blue = primary;
         }
-        if (predictionColor == "green") {
+        if (predictionColor.color1 == "green") {
             // Dark green is 0, 128, 0 instead of 0, 255, 0 (if it was similar red or blue)
             let minGreen = Math.min(secondary + 30, 255);
             let greenValue = Math.max(128, minGreen);

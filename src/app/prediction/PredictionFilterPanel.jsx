@@ -2,7 +2,7 @@ import React from 'react';
 import SelectItem from '../common/SelectItem.jsx'
 import BooleanInput from '../common/BooleanInput.jsx'
 import ArrowTooltip from '../common/ArrowTooltip.jsx'
-import ColorPicker from '../common/ColorPicker.jsx'
+import TFColorPickers from '../common/TFColorPickers.jsx'
 import UploadSequenceDialog from './UploadSequenceDialog.jsx'
 let moment = require('moment');
 
@@ -120,7 +120,8 @@ class PredictionFilterPanel extends React.Component {
     }
 
     render() {
-        let {predictionColor, setPredictionColor, predictionSettings, customSequenceList} = this.props;
+        let {predictionColor, setPredictionColor, predictionSettings,
+            customSequenceList, preferenceMode} = this.props;
         let modelOptions = this.makeModelOptions();
         let sequenceListOptions = this.makeSequenceListOptions();
         let uploadInstructions = <ArrowTooltip label={FIRST_TIME_INSTRUCTIONS}
@@ -149,9 +150,9 @@ class PredictionFilterPanel extends React.Component {
                           onChange={this.onChangeMaxPredictionSort}/>
             <BooleanInput checked={predictionSettings.all} label="All values (heatmap)"
                           onChange={this.onChangeAll}/>
-            <ColorPicker label="Values Color:"
-                         color={predictionColor}
-                         setColor={setPredictionColor} />
+            <TFColorPickers showTwoPickers={preferenceMode}
+                            predictionColor={predictionColor}
+                            setPredictionColor={setPredictionColor} />
             <UploadSequenceDialog isOpen={this.state.showCustomDialog}
                                   defaultSequenceName={this.state.defaultCustomSequenceName}
                                   sequenceData={this.state.sequenceData}

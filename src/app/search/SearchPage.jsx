@@ -5,11 +5,14 @@ import {SEARCH_NAV} from '../store/Navigation.js'
 import SearchResultsPanel from './SearchResultsPanel.jsx'
 import PageTitle from '../common/PageTitle.jsx'
 import SearchFilterPanel from './SearchFilterPanel.jsx'
+import TFColorPickers from '../common/TFColorPickers.jsx';
 import PredictionsStore from '../store/PredictionsStore.js'
 import URLBuilder from '../store/URLBuilder.js'
 import PageBatch from '../store/PageBatch.js'
 import {fetchPredictionSettings} from '../store/PredictionSettings.js'
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../store/AppSettings.js'
+import {isPreferenceModel} from '../store/GenomeData.js';
+
 
 class SearchPage extends React.Component {
      constructor(props) {
@@ -28,7 +31,8 @@ class SearchPage extends React.Component {
              errorMessage: "",
              showCustomDialog: customListWithoutData,
              showGeneNamesWarnings: true,
-             predictionColor: "red",
+             predictionColor: TFColorPickers.defaultColorObj(),
+             preferenceMode: false,
          };
          this.search = this.search.bind(this);
          this.downloadAll = this.downloadAll.bind(this);
@@ -105,13 +109,16 @@ class SearchPage extends React.Component {
         return this.predictionStore.getDownloadURL(format, this.state.searchSettings);
     }
 
-    setPredictionColor = (colorName) => {
+    setPredictionColor = (colorObject) => {
         this.setState({
-            predictionColor: colorName
+            predictionColor: colorObject
         })
     };
 
     render () {
+        let preferenceMode = isPreferenceModel(this.state.genomeData,
+            this.state.searchSettings.genome,
+            this.state.searchSettings.model);
         let searchOperations = {
             search: this.search,
             changePage: this.changePage,
@@ -137,6 +144,7 @@ class SearchPage extends React.Component {
                                         showCustomDialog={this.state.showCustomDialog}
                                         predictionColor={this.state.predictionColor}
                                         setPredictionColor={this.setPredictionColor}
+                                        preferenceMode={preferenceMode}
                                 />
                         </div>
                         <div className="col-md-10 col-sm-10 col-xs-10" >
@@ -155,6 +163,7 @@ class SearchPage extends React.Component {
                                 predictionStore={this.predictionStore}
                                 searchOperations={searchOperations}
                                 predictionColor={this.state.predictionColor}
+                                preferenceMode={preferenceMode}
                             />
                         </div>
 

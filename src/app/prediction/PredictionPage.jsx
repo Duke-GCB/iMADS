@@ -6,6 +6,7 @@ import ThreePanelPane from '../common/ThreePanelPane.jsx'
 import PageTitle from '../common/PageTitle.jsx'
 import PredictionFilterPanel from './PredictionFilterPanel.jsx'
 import PredictionResultsPanel from './PredictionResultsPanel.jsx'
+import TFColorPickers from '../common/TFColorPickers.jsx';
 import PredictionsStore from '../store/PredictionsStore.js'
 import URLBuilder from '../store/URLBuilder.js'
 import PageBatch from '../store/PageBatch.js'
@@ -14,7 +15,7 @@ import CustomResultSearch from '../store/CustomResultSearch.js';
 import {CustomSequenceList} from '../store/CustomSequence.js';
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../store/AppSettings.js'
 import {SEQUENCE_NOT_FOUND} from '../store/Errors.js';
-
+import {isPreferenceModel, getFirstGenomeName} from '../store/GenomeData.js';
 
 class PredictionPage extends React.Component {
     constructor(props) {
@@ -41,7 +42,8 @@ class PredictionPage extends React.Component {
             showCustomDialog: false,
             showGeneNamesWarnings: true,
             loadingStatusLabel: "",
-            predictionColor: "red",
+            predictionColor: TFColorPickers.defaultColorObj(),
+            preferenceMode: false,
             customSequenceList: this.customSequenceList.get(),
         };
     }
@@ -67,9 +69,9 @@ class PredictionPage extends React.Component {
         this.customResultSearch.cancel();
     }
 
-    setPredictionColor = (colorName) => {
+    setPredictionColor = (colorObject) => {
         this.setState({
-            predictionColor: colorName
+            predictionColor: colorObject
         })
     };
 
@@ -176,6 +178,9 @@ class PredictionPage extends React.Component {
     }
 
     render() {
+        let preferenceMode = isPreferenceModel(this.state.genomeData,
+            getFirstGenomeName(this.state.genomeData),
+            this.state.predictionSettings.model);
         let searchOperations = {
             search: this.search,
             changePage: this.changePage,
@@ -194,6 +199,7 @@ class PredictionPage extends React.Component {
                                                showCustomDialog={this.state.showCustomDialog}
                                                predictionColor={this.state.predictionColor}
                                                setPredictionColor={this.setPredictionColor}
+                                               preferenceMode={preferenceMode}
         />;
         let rightPanel = <PredictionResultsPanel genomeData={this.state.genomeData}
                                                  predictionSettings={this.state.predictionSettings}
@@ -209,6 +215,7 @@ class PredictionPage extends React.Component {
                                                  searchOperations={searchOperations}
                                                  predictionColor={this.state.predictionColor}
                                                  showBlankWhenEmpty={noSequences}
+                                                 preferenceMode={preferenceMode}
         />;
         return <div>
             <NavBar selected={PREDICTION_NAV.path}/>

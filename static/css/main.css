@@ -226,3 +226,7 @@
     width: 30%;
     text-align: right;
 }
+
+.disabledLabel {
+    color: grey;
+}
