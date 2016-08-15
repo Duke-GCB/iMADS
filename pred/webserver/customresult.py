@@ -30,12 +30,13 @@ class CustomResultData(object):
         """
         cur = self.db.cursor()
         for line in self.bed_data.split("\n"):
-            parts = line.split("\t")
-            chrom = parts[0]
-            start = parts[1]
-            end = parts[2]
-            value = parts[3]
-            self.save_bed_row(cur, chrom, start, end, value)
+            parts = line.split()
+            if parts:
+                chrom = parts[0]
+                start = parts[1]
+                end = parts[2]
+                value = parts[3]
+                self.save_bed_row(cur, chrom, start, end, value)
         cur.close()
         self.db.commit()
 
