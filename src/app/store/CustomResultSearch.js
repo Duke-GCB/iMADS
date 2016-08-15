@@ -121,7 +121,7 @@ class CustomResultSearch {
             }
         }.bind(this), function (error) {
             this.showError(error);
-        }.bind(this));
+        }.bind(this), 'GET');
     }
 
     createJob(model, sequenceId) {
@@ -209,7 +209,7 @@ class CustomResultSearch {
         let urlBuilder = new URLBuilder();
         urlBuilder.reset('api/v1/custom_predictions/' + this.lastResultId + "/search");
         urlBuilder.appendParam('maxPredictionSort', predictionSettings.maxPredictionSort);
-        urlBuilder.appendParam('includeAll', predictionSettings.all);
+        urlBuilder.appendParam('all', predictionSettings.all);
         urlBuilder.appendParam('format', format);
         return urlBuilder.url;
     }

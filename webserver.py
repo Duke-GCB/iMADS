@@ -291,9 +291,10 @@ def get_optional_int(args, arg_name):
     return None
 
 
-@app.route('/api/v1/custom_predictions/find_one', methods=['POST'])
+@app.route('/api/v1/custom_predictions/find_one', methods=['GET'])
 def find_custom_result():
-    sequence_id, model_name = get_required_json_props(request, ["sequence_id","model_name"])
+    sequence_id = request.args['sequence_id']
+    model_name = request.args['model_name']
     custom_result_id = CustomResultData.find_one(get_db(), sequence_id, model_name)
     return make_json_response({'id': custom_result_id})
 
