@@ -15,12 +15,16 @@ else
   (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end{}
 group by common_name, chrom, strand, gene_begin
-order by max(value) desc{}
+order by max(abs(value)) desc{}
 )
 select
 common_name,
 string_agg(name, '; ') as name,
-round(max(value), 4) as max_value,
+case WHEN max(value) > abs(min(value)) THEN
+  round(max(value), 4)
+ELSE
+  round(min(value), 4)
+end as max_value,
 chrom,
 strand,
 gene_begin,
@@ -38,10 +42,10 @@ else
 end
 and common_name in (select common_name from max_prediction_names)
 group by common_name, chrom, strand, gene_begin
-order by max(value) desc, common_name"""
+order by max(abs(value)) desc, common_name"""
 
-MAX_QUERY_WITH_GUESS_WITH_LIMIT = MAX_QUERY_BASE.format("\nand value > %s", "\nlimit %s offset %s")
-MAX_QUERY_WITH_GUESS = MAX_QUERY_BASE.format("\nand value > %s", "")
+MAX_QUERY_WITH_GUESS_WITH_LIMIT = MAX_QUERY_BASE.format("\nand abs(value) > %s", "\nlimit %s offset %s")
+MAX_QUERY_WITH_GUESS = MAX_QUERY_BASE.format("\nand abs(value) > %s", "")
 MAX_QUERY_NO_GUESS_WITH_LIMIT = MAX_QUERY_BASE.format("", "\nlimit %s offset %s")
 MAX_QUERY_NO_GUESS = MAX_QUERY_BASE.format("", "")
 
@@ -59,13 +63,17 @@ else
   (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end
 group by common_name, chrom, strand, gene_begin
-order by max(value) desc
+order by max(abs(value)) desc
 )
 select count(*) from (
 select
 common_name,
 string_agg(name, '; ') as name,
-round(max(value), 4) as max_value,
+case WHEN max(value) > abs(min(value)) THEN
+  round(max(value), 4)
+ELSE
+  round(min(value), 4)
+end as max_value,
 chrom,
 strand,
 gene_begin,
@@ -102,6 +110,7 @@ class TestMaxPredictionQuery(TestCase):
             offset="200",
         )
         sql, params = query.get_query_and_params()
+        self.maxDiff = None
         self.assertEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 

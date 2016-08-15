@@ -15,7 +15,11 @@ def custom_range_list_query(list_id, model_name):
 max(custom_range_list.chrom) as chrom,
 '' as strand,
 '' as gene_begin,
- round(max(abs(value)),4) as max_value,
+case WHEN max(value) > abs(min(value)) THEN
+  round(max(value), 4)
+ELSE
+  round(min(value), 4)
+end as max_value,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred,
 max(lower(custom_range_list.range)) as range_start,
 max(upper(custom_range_list.range)) as range_end
