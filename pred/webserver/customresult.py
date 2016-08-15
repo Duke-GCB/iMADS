@@ -36,6 +36,8 @@ class CustomResultData(object):
             end = parts[2]
             value = parts[3]
             self.save_bed_row(cur, chrom, start, end, value)
+        cur.close()
+        self.db.commit()
 
     def save_bed_row(self, cur, chrom, start, end, value):
         """

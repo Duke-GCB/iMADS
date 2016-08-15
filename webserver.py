@@ -346,7 +346,8 @@ def find_custom_result():
     request['model_name'] str: name of the model we are looking for a
     :return: json response with id field that is either None or the uuid of the custom_predictions/custom_preferences.
     """
-    sequence_id, model_name = get_required_json_props(request, ["sequence_id", "model_name"])
+    sequence_id = request.args['sequence_id']
+    model_name = request.args['model_name']
     custom_result_id = CustomResultData.find_one(get_db(), sequence_id, model_name)
     return make_ok_json_response({'id': custom_result_id})
 
