@@ -148,6 +148,11 @@ def get_sequences(genome):
 
 @app.route('/api/v1/sequences/<sequence_id>', methods=['GET'])
 def get_custom_sequences_data(sequence_id):
+    """
+    Get base64 encoded contents and other properties of a custom sequence(DNA).
+    :param sequence_id: str: uuid associated with a particular sequence
+    :return: json response
+    """
     seq = SequenceList(sequence_id)
     seq.load(get_db())
     return make_json_response({
@@ -162,11 +167,18 @@ def post_custom_sequences():
     (data, title) = get_required_json_props(request, ["data", "title"])
     decoded_data = base64.b64decode(data)
     seq_uuid = SequenceList.create_with_content_and_title(get_db(), decoded_data, title)
-    return make_json_response({'status': 'ok', 'id': seq_uuid})
+    return make_ok_json_response({'id': seq_uuid})
 
 
 @app.route('/api/v1/jobs', methods=['POST'])
 def post_jobs():
+    """
+    Create a job to create preferences/predictions for a custom sequence using the specified model(model_name).
+    request['sequence_id'] str: uuid of the custom sequence to process
+    request['job_type'] str: see config.DataType properties for values
+    request['model_name'] str: name of the model to use
+    :return: json response with id of the job
+    """
     required_prop_names = ["sequence_id", "job_type", "model_name"]
     (sequence_id, job_type, model_name) = get_required_json_props(request, required_prop_names)
     try:
@@ -181,27 +193,43 @@ def post_jobs():
     if not job:
         status_code = None
         job = CustomJob.create_job(get_db(), job_type, sequence_id, model_name)
-    return make_json_response({'status': 'ok', 'id': job.uuid}, status_code)
+    return make_ok_json_response({'id': job.uuid}, status_code)
 
 
 @app.route('/api/v1/jobs', methods=['GET'])
 def get_jobs():
+    """
+    Return a list of jobs with optional job_status filter.
+    request['job_status'] str: see customjob.JobStatus properties for values
+    :return: json response with 'result' array of jobs.
+    """
     job_status = request.args.get("job_status")
     result = []
     for job in CustomJob.find_jobs(get_db(), job_status):
-        result.append(job.get_json())
+        result.append(job.get_dict())
     return make_json_response({'result': result})
 
 
 @app.route('/api/v1/jobs/<job_uuid>', methods=['GET'])
 def get_job(job_uuid):
+    """
+    Retrieve details about a specific job.
+    :param job_uuid: str: uuid of the job returned from the POST to /jobs.
+    :return: json response
+    """
     job = CustomJob(job_uuid)
     job.load(get_db())
-    return make_json_response(job.get_json())
+    return make_json_response(job.get_dict())
 
 
 @app.route('/api/v1/jobs/<job_uuid>', methods=['PUT'])
 def put_job(job_uuid):
+    """
+    Update job status.
+    request['job_status'] str: value from customjob.JobStatus properties
+    :param job_uuid: str: uuid of the job we want to update status
+    :return: json response
+    """
     db = get_db()
     (job_status,) = get_required_json_props(request, ["job_status"])
     error_message = request.get_json().get("error_message")
@@ -217,7 +245,15 @@ def put_job(job_uuid):
 
 
 @app.route('/api/v1/custom_predictions', methods=['POST'])
+@app.route('/api/v1/custom_preferences', methods=['POST'])
 def post_custom_result():
+    """
+    Save custom prediction/preferences results.
+    request['job_id'] - str: uuid of the job associated with these results
+    request['bed_data'] - str: data that makes up the results
+    request['model_name'] - str: name of the model used to build these results
+    :return: json response with uuid of result stored in 'id' field
+    """
     required_prop_names = ["job_id", "bed_data", "model_name"]
     (job_id, bed_data, model_name) = get_required_json_props(request, required_prop_names)
     result_uuid = CustomResultData.new_uuid()
@@ -227,7 +263,17 @@ def post_custom_result():
 
 
 @app.route('/api/v1/custom_predictions/<result_id>/search', methods=['GET'])
+@app.route('/api/v1/custom_preferences/<result_id>/search', methods=['GET'])
 def search_custom_results(result_id):
+    """
+    Search a result for predictions.
+    request['maxPredictionSort'] - when true sort by max prediction
+    request['all'] - include values in download
+    request['page'] - which page of results to show
+    request['perPage'] - items per page to show
+    :param result_id: str: uuid of the custom_predictions/custom_preferences we want to search
+    :return: json response with 'result' property containing an array of predictions
+    """
     args = request.args
     format = args.get('format')
     sort_by_max = args.get('maxPredictionSort')
@@ -248,12 +294,12 @@ def search_custom_results(result_id):
             separator = '\t'
         return download_file_response(filename, make_download_custom_result(separator, all_values, predictions))
     else:
-        return make_json_response({
-            'result': predictions,
-            'status': 'ok'})
+        return make_ok_json_response({
+            'result': predictions})
 
 
 @app.route('/api/v1/custom_predictions/<result_id>/data', methods=['GET'])
+@app.route('/api/v1/custom_preferences/<result_id>/data', methods=['GET'])
 def get_custom_result_raw_data(result_id):
     bed_file_contents = CustomResultData.bed_file_contents(get_db(), result_id)
     def gen():
@@ -292,14 +338,26 @@ def get_optional_int(args, arg_name):
 
 
 @app.route('/api/v1/custom_predictions/find_one', methods=['GET'])
+@app.route('/api/v1/custom_preferences/find_one', methods=['GET'])
 def find_custom_result():
-    sequence_id = request.args['sequence_id']
-    model_name = request.args['model_name']
+    """
+    Find a single prediction for a sequence_id and model_name.
+    request['sequence_id'] str: uuid of the custom sequence to look for
+    request['model_name'] str: name of the model we are looking for a
+    :return: json response with id field that is either None or the uuid of the custom_predictions/custom_preferences.
+    """
+    sequence_id, model_name = get_required_json_props(request, ["sequence_id", "model_name"])
     custom_result_id = CustomResultData.find_one(get_db(), sequence_id, model_name)
-    return make_json_response({'id': custom_result_id})
+    return make_ok_json_response({'id': custom_result_id})
 
 
 def get_required_json_props(request, params):
+    """
+    Pull required fields from request or raise ValueError if they are missing.
+    :param request: request we should check
+    :param params: [str] list of names we should get values for
+    :return: [value] list of values associated with the params.
+    """
     json_data = request.get_json()
     if not json_data:
         raise ValueError("Missing required json payload.")
@@ -327,7 +385,31 @@ def handle_user_exception(error):
     return error.json_response(jsonify)
 
 
+@app.errorhandler(ValueError)
+def handle_invalid_usage(error):
+    response = jsonify({'status':'ERROR', 'message': str(error)})
+    response.status_code = 500
+    return response
+
+
+def make_ok_json_response(props={}, status_code=None):
+    """
+    Make a json response with status='ok' property.
+    :param props: base properties (shouldn't include status)
+    :param status_code: status code to return
+    :return: json response
+    """
+    props['status'] = 'ok'
+    return make_json_response(props, status_code)
+
+
 def make_json_response(props, status_code=None):
+    """
+    Make a json response from dictionary props.
+    :param props: dictionary of values to be jsonified
+    :param status_code: status code to return
+    :return: json response
+    """
     blob = jsonify(props)
     return make_response(blob, status_code)
 

@@ -16,7 +16,7 @@ class TestSequenceListItems(TestCase):
 
     def test_find_items_simple(self):
         data = "ACGT\nAAACCCGGTT\nTTTTTTTT"
-        items = SequenceListItems.find_items(SequenceListItems.make_fasta(data))
+        items = SequenceListItems.find_sequence_items(SequenceListItems.make_fasta(data))
         self.assertEqual(3, len(items))
         self.assertEqual(1, items[0]['idx'])
         self.assertEqual('seq1', items[0]['name'])
@@ -37,7 +37,7 @@ CCACTGCACTCACCGCACCCGGCCAATTTTTGTGTTTTTAGTAGAGACTAAATACCATATAGTGAACACCTAAGA
 CGGGGGGCCTTGGATCCAGGGCGATTCAGAGGGCCCCGGTCGGAGCTGTCGGAGATTGAGCGCGCGCGGTCCCGG
 GATCTCCGACGAGGCCCTGGACCCCCGGGCGGCGAAGCTGCGGCGCGGCGCCCCCTGGAGGCCGCGGGACCCCTG
 GCCGGTCCGCGCAGGCGCAGCGGGGTCGCAGGGCGCGGCGGGTTCCAGCGCGGGGATGGCGCTGTCCGCGGAGGA"""
-        items = SequenceListItems.find_items(SequenceListItems.make_fasta(data))
+        items = SequenceListItems.find_sequence_items(SequenceListItems.make_fasta(data))
         self.assertEqual(2, len(items))
         self.assertEqual(1, items[0]['idx'])
         self.assertEqual('HSBGPG', items[0]['name'])

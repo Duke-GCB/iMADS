@@ -21,6 +21,7 @@ class SequenceList(object):
         self.seq_uuid = seq_uuid
         self.content = None
         self.created = None
+        self.title = None
 
     def insert(self, db):
         """
@@ -31,9 +32,9 @@ class SequenceList(object):
             raise ValueError("SequenceList content property must be filled in before calling save.")
         if not self.title:
             raise ValueError("SequenceList title property must be filled in before calling save.")
-        item_list = SequenceListItems(self.content)
+        seq_item_list = SequenceListItems(self.content)
         cur = db.cursor()
-        self._insert_data(cur, item_list, self.title)
+        self._insert_data(cur, seq_item_list, self.title)
         cur.close()
         db.commit()
 
@@ -99,12 +100,21 @@ class SequenceList(object):
 
 
 class SequenceListItems(object):
+    """
+    Record per sequence name in SequenceList.
+    Used to lookup sequence for results.
+    """
     def __init__(self, data):
         self.data = SequenceListItems.make_fasta(data.strip())
-        self.items = SequenceListItems.find_items(self.data)
+        self.items = SequenceListItems.find_sequence_items(self.data)
 
     @staticmethod
     def make_fasta(data):
+        """
+        Convert string to FASTA if necessary.
+        :param data: str: input value either FASTA or newline separated sequences
+        :return: str: FASTA data
+        """
         result = data
         if not data.startswith(">"):
             result = ""
@@ -118,7 +128,12 @@ class SequenceListItems(object):
         return result.strip()
 
     @staticmethod
-    def find_items(data):
+    def find_sequence_items(data):
+        """
+        Parse FASTA data and return a list of {idx, name, sequence}.
+        :param data: str: FASTA data to parse
+        :return: [dict]: sequences in the FASTA data
+        """
         results = []
         cnt = 1
         seqs = SeqIO.parse(StringIO(data), 'fasta')

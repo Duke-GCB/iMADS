@@ -1,4 +1,3 @@
--- noinspection SqlNoDataSourceInspectionForFile
 CREATE TYPE job_status AS ENUM ('NEW', 'RUNNING', 'COMPLETE', 'ERROR');
 CREATE TYPE job_type AS ENUM ('PREDICTION', 'PREFERENCE');
 

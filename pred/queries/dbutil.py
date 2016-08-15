@@ -1,3 +1,7 @@
+"""
+Utility methods for use with psycopg2 connection.
+"""
+
 
 def update_database(db, query, params):
     """
@@ -6,6 +10,7 @@ def update_database(db, query, params):
     :param db: database connection
     :param query: str: query to execute
     :param params: [object]: list of parameters to use with query
+    :return int number of rows effected by update
     """
     cur = db.cursor()
     cur.execute(query, params)
@@ -21,6 +26,7 @@ def read_database(db, query, params):
     :param db: database connection
     :param query: str: query to execute
     :param params: [object]: list of parameters to use with query
+    :return [object] rows returned from query
     """
     rows = []
     cur = db.cursor()

@@ -163,3 +163,4 @@ class PredictionSettings(object):
             'preference_min': self.preference_min,
             'preference_max': self.preference_max
         }
+
