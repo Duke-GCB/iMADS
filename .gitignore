@@ -7,3 +7,4 @@ dist/
 .eggs
 node_modules
 env/
+.env

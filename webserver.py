@@ -256,8 +256,9 @@ def post_custom_result():
     """
     required_prop_names = ["job_id", "bed_data", "model_name"]
     (job_id, bed_data, model_name) = get_required_json_props(request, required_prop_names)
+    decoded_bed_data = base64.b64decode(bed_data)
     result_uuid = CustomResultData.new_uuid()
-    result_data = CustomResultData(get_db(), result_uuid, job_id, model_name, bed_data)
+    result_data = CustomResultData(get_db(), result_uuid, job_id, model_name, decoded_bed_data)
     result_data.save()
     return make_json_response({'result': 'ok', 'id': result_uuid})
 
