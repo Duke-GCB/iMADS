@@ -1,5 +1,6 @@
 var webpack = require('webpack');
 var path = require('path');
+require('es6-promise').polyfill();
 
 var BUILD_DIR = path.resolve(__dirname, 'src/build');
 var APP_DIR = path.resolve(__dirname, 'src/app');
