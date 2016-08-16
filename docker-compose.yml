@@ -2,6 +2,7 @@ version: '2'
 services:
   web:
     image: jbradley/tfpred
+    build: .
     env_file: .env
     ports:
       - "80:80"
@@ -18,3 +19,13 @@ services:
     depends_on:
       - db
     command: python vacuum.py 2880
+  predictions_worker:
+    image: dukegcb/predict-tf-binding-worker
+    env_file: .env
+    depends_on:
+      - web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
+      - /pred_data/models:/pred_data/models:ro
+      - /pred_data/work:/pred_data/work:rw
