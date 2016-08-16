@@ -13,7 +13,14 @@ DB_NAME_ENV = "DB_NAME"
 DB_USER_ENV = "DB_USER"
 DB_PASS_ENV = "DB_PASS"
 
+JOB_RUNNER_PASS_ENV = "JOB_RUNNER_PASS"
+
 CONFIG_FILENAME = 'predictionsconf.yaml'
+
+
+class DataType(object):
+    PREDICTION = 'PREDICTION'
+    PREFERENCE = 'PREFERENCE'
 
 
 def parse_config(filename):
@@ -46,6 +53,7 @@ class Config(object):
         self.download_dir = data['download_dir']
         self.genome_data_list = []
         self.dbconfig = dbconfig
+        self.job_runner_password = os.environ.get(JOB_RUNNER_PASS_ENV, None)
 
     def add_genome(self, genome_data):
         self.genome_data_list.append(genome_data)
@@ -54,13 +62,13 @@ class Config(object):
         result = {}
         for genome_data in self.genome_data_list:
             genome = genome_data.genomename
-            model_names = [model.name for model in genome_data.prediction_lists]
+            model_data = [model.get_data() for model in genome_data.prediction_lists]
             gene_list_names = [gene_list.source_table for gene_list in genome_data.gene_lists]
             result[genome] = {
-                'models': model_names,
+                'models': model_data,
                 'geneLists': gene_list_names,
                 'trackhubUrl': genome_data.trackhub_url,
-                'genomeFile' : genome_data.genome_file,
+                'genomeFile': genome_data.genome_file,
             }
         return result
 
@@ -102,7 +110,7 @@ class GenomeData(object):
             common_lookup_table = gene_list.get("common_lookup_table", None)
             common_lookup_table_field = gene_list.get("common_lookup_table_field", None)
             gene_info = GeneInfoSettings(self.genomename, name, source_table, common_name,
-                                 common_lookup_table, common_lookup_table_field)
+                                         common_lookup_table, common_lookup_table_field)
             self.gene_lists.append(gene_info)
 
     def _load_prediction_lists(self, prediction_data_ary):
@@ -111,7 +119,11 @@ class GenomeData(object):
             url = prediction_data['url']
             fix_script = prediction_data['fix_script']
             sort_max_guess = prediction_data['sort_max_guess']
-            prediction = PredictionSettings(name, url, self.genomename, fix_script, sort_max_guess)
+            type = prediction_data.get('type', 'PREDICTION')
+            preference_min = prediction_data.get('preference_min', None)
+            preference_max = prediction_data.get('preference_max', None)
+            prediction = PredictionSettings(name, url, self.genomename, fix_script, sort_max_guess, type,
+                                            preference_min, preference_max)
             self.prediction_lists.append(prediction)
 
     def get_model_types_str(self):
@@ -119,7 +131,8 @@ class GenomeData(object):
 
 
 class GeneInfoSettings(object):
-    def __init__(self, genome, name, source_table, common_name, common_lookup_table=None, common_lookup_table_field=None):
+    def __init__(self, genome, name, source_table, common_name, common_lookup_table=None,
+                 common_lookup_table_field=None):
         self.genome = genome
         self.name = name
         self.source_table = source_table
@@ -129,10 +142,25 @@ class GeneInfoSettings(object):
 
 
 class PredictionSettings(object):
-    def __init__(self, name, url, genome, fix_script, sort_max_guess):
+    def __init__(self, name, url, genome, fix_script, sort_max_guess, data_type, preference_min, preference_max):
         self.name = name
         self.url = url
         self.genome = genome
         self.fix_script = fix_script
         self.sort_max_guess = sort_max_guess
+        self.data_type = data_type
+        self.preference_min = preference_min
+        self.preference_max = preference_max
+
+    def get_data(self):
+        """
+        Creates a dictionary of data for sending out to client.
+        :return: dict
+        """
+        return {
+            'name': self.name,
+            'data_type': self.data_type,
+            'preference_min': self.preference_min,
+            'preference_max': self.preference_max
+        }
 

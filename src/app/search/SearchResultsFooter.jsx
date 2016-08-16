@@ -41,6 +41,13 @@ class SearchResultsFooter extends React.Component {
         return this.searchOperations().downloadAll('tsv');
     }
 
+    downloadRawDataURL() {
+        if (this.searchOperations().downloadRawData) {
+            return this.searchOperations().downloadRawData();
+        }
+        return '';
+    }
+
     showGetLinkDialog() {
         this.setState({
             showGetUrlDialog: true
@@ -68,7 +75,8 @@ class SearchResultsFooter extends React.Component {
                     &nbsp;
                     <DownloadButton
                         tabDelimitedURL={this.downloadTabDelimited()}
-                        csvDelimitedURL={this.downloadCsv()}/>
+                        csvDelimitedURL={this.downloadCsv()}
+                        rawDataURL={this.downloadRawDataURL()} />
                     <button className="btn btn-default" type="button"
                             style={{verticalAlign:'top', marginLeft:'20px', marginTop:'20px'}}
                             onClick={this.showGetLinkDialog} >Share</button>

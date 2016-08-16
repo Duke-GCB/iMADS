@@ -71,6 +71,7 @@ class PredictionDialog extends React.Component {
         if (!this.props.data) {
             return <div></div>;
         }
+        let {predictionColor} = this.props;
         let rowData = this.props.data;
         let details = [];
         let values = rowData.values.slice();
@@ -117,7 +118,8 @@ class PredictionDialog extends React.Component {
 
                             </h5>
                             <HeatMap width="800" height="40"
-                                     data={rowData}/>
+                                     data={rowData}
+                                     predictionColor={predictionColor} />
                             <h5>Details</h5>
                             <table className="table" style={{width: 300}}>
                                 <thead>

@@ -2,9 +2,9 @@ import React from 'react';
 
 class DataCell extends React.Component {
     render() {
-        let {style} = this.props;
+        let {style, classNameStr} = this.props;
         let combinedStyle = Object.assign({}, defaultStyle, style);
-        return <div style={combinedStyle}>
+        return <div className={classNameStr} style={combinedStyle}>
             {this.props.children}
         </div>
     }

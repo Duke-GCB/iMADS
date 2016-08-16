@@ -1,0 +1,7 @@
+.LargeTextarea {
+    width: 100%;
+    height: 35%;
+    font-family: Monaco, monospace;
+    font-size: 10pt;
+    white-space: pre;
+}

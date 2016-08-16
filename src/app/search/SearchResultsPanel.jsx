@@ -5,7 +5,7 @@ import PredictionDialog from './PredictionDialog.jsx'
 import HeatMap from './HeatMap.jsx'
 import ErrorPanel from './ErrorPanel.jsx'
 
-import GenomeData from '../store/GenomeData.js'
+import {getTrackHubUrl} from '../store/GenomeData.js';
 import {CUSTOM_RANGES_LIST} from '../store/CustomList.js'
 import {ResultHeaderRow, ResultDetailRow} from './ResultRow.jsx'
 import SearchResultsFooter from './SearchResultsFooter.jsx'
@@ -42,14 +42,13 @@ class SearchResultsPanel extends React.Component {
     }
 
     makeHeatMap(rowData) {
-        let searchSettings = this.props.searchSettings;
+        let {searchSettings, predictionColor} = this.props;
         let rangeType = searchSettings.geneList === CUSTOM_RANGES_LIST;
         let heatMap = <span></span>;
         if (searchSettings.all === true) {
             let combinedName = rowData.commonName + " (" + rowData.name + ") ";
             let offsetsStr = " upstream:" + searchSettings.upstream + " downstream:" + searchSettings.downstream;
-            let genomeDataObj = new GenomeData(this.props.genomeData);
-            let trackHubUrl = genomeDataObj.getTrackHubUrl(searchSettings.genome);
+            let trackHubUrl = getTrackHubUrl(this.props.genomeData, searchSettings.genome);
             let title = combinedName + " " + offsetsStr;
             if (rangeType) {
                 title = rowData.chrom + ":" + rowData.start + "-" + rowData.end;
@@ -71,6 +70,7 @@ class SearchResultsPanel extends React.Component {
                                onClickHeatmap={this.showPredictionDetails}
                                data={heatMapValues}
                                scaleFactor={1.0}
+                               predictionColor={predictionColor}
             />
         }
         return heatMap;
@@ -106,7 +106,8 @@ class SearchResultsPanel extends React.Component {
     }
 
     render() {
-        let {searchSettings, searchResults, searchDataLoaded, searchOperations, page, predictionStore} = this.props;
+        let {searchSettings, searchResults, searchDataLoaded, searchOperations,
+            page, predictionStore, predictionColor} = this.props;
         let rangeType = searchSettings.geneList === CUSTOM_RANGES_LIST;
         let includeHeatMap = searchSettings.all === true;
         let listContent = this.makeListContent();
@@ -128,7 +129,9 @@ class SearchResultsPanel extends React.Component {
             />
             <PredictionDialog isOpen={showPredictionDetails}
                               onRequestClose={this.hidePredictionDetails}
-                              data={this.state.predictionData}/>
+                              data={this.state.predictionData}
+                              predictionColor={predictionColor}
+            />
         </div>
     }
 }

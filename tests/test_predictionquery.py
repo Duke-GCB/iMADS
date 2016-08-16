@@ -5,7 +5,11 @@ QUERY_BASE = """SET search_path TO %s,public;
 select
 common_name,
 string_agg(name, '; ') as name,
-round(max(value), 4) as max_value,
+case WHEN max(value) > abs(min(value)) THEN
+  round(max(value), 4)
+ELSE
+  round(min(value), 4)
+end as max_value,
 chrom,
 strand,
 gene_begin,
@@ -32,7 +36,11 @@ select count(*) from (
 select
 common_name,
 string_agg(name, '; ') as name,
-round(max(value), 4) as max_value,
+case WHEN max(value) > abs(min(value)) THEN
+  round(max(value), 4)
+ELSE
+  round(min(value), 4)
+end as max_value,
 chrom,
 strand,
 gene_begin,

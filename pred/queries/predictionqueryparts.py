@@ -15,7 +15,11 @@ def custom_range_list_query(list_id, model_name):
 max(custom_range_list.chrom) as chrom,
 '' as strand,
 '' as gene_begin,
- round(max(value),4) as max_value,
+case WHEN max(value) > abs(min(value)) THEN
+  round(max(value), 4)
+ELSE
+  round(min(value), 4)
+end as max_value,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred,
 max(lower(custom_range_list.range)) as range_start,
 max(upper(custom_range_list.range)) as range_end
@@ -33,7 +37,11 @@ def select_prediction_values():
     return _query_part("""select
 common_name,
 string_agg(name, '; ') as name,
-round(max(value), 4) as max_value,
+case WHEN max(value) > abs(min(value)) THEN
+  round(max(value), 4)
+ELSE
+  round(min(value), 4)
+end as max_value,
 chrom,
 strand,
 gene_begin,
@@ -131,7 +139,7 @@ def where():
 
 
 def value_greater_than(value):
-    return QueryPart("and value > %s", [value])
+    return QueryPart("and abs(value) > %s", [value])
 
 
 def group_by_name():
@@ -167,11 +175,11 @@ def order_by_seq():
 
 
 def order_by_max_value_desc():
-    return _query_part("order by max(value) desc")
+    return _query_part("order by max(abs(value)) desc")
 
 
 def order_by_max_value_desc_common_name():
-    return _query_part("order by max(value) desc, common_name")
+    return _query_part("order by max(abs(value)) desc, common_name")
 
 
 def limit_and_offset(limit, offset):

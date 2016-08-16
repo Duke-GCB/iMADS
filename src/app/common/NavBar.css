@@ -1,0 +1,26 @@
+
+.NavBar_app_title {
+    letter-spacing: 0.05em;
+    font-size: 14pt;
+    font-family: "Open Sans", sans-serif;
+}
+
+.NavBar_menu_item {
+    letter-spacing: 0.07em;
+    font-size: 11pt;
+    font-family: "Open Sans", sans-serif;
+}
+
+.NavBar_logo_container {
+    position: absolute;
+    width: 100%;
+}
+
+.NavBar_logo_parent {
+    float: right;
+}
+
+.NavBar_logo_image {
+    margin-top: 24px;
+    height: 60px;
+}

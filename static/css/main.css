@@ -209,5 +209,24 @@
 }
 
 #app {
-    min-width: 800px;
+    min-width: 700px;
+}
+
+.expandWidth {
+    width: 100%;
+}
+
+.largeLeftInlineBlock {
+    display: inline-block;
+    width: 70%;
+}
+
+.smallRightInlineBlock {
+    display: inline-block;
+    width: 30%;
+    text-align: right;
+}
+
+.disabledLabel {
+    color: grey;
 }

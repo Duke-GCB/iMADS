@@ -5,6 +5,9 @@ import { CustomListData } from '../store/CustomList.js';
 import FileUpload from '../store/FileUpload.js';
 import CustomFile from '../store/CustomFile.js';
 import GeneSearchType from './GeneSearchType.jsx'
+import LoadSampleLink from '../common/LoadSampleLink.jsx'
+import {GENE_LIST_SAMPLE, RANGE_LIST_SAMPLE} from '../store/SampleData.js'
+
 
 const customStyles = {
   content : {
@@ -132,21 +135,40 @@ class CustomListDialog extends React.Component {
         })
     }
 
+    loadSampleData = () => {
+        let customListData = new CustomListData(this.props.type);
+        if (customListData.isGeneList()) {
+            this.setText(GENE_LIST_SAMPLE);
+        } else {
+            this.setText(RANGE_LIST_SAMPLE);
+        }
+    };
+
     render() {
         let customListData = new CustomListData(this.props.type);
         let instructions = [];
         let sampleData = customListData.sampleData;
-        let purgeWarning = <p className="CustomListDialog__delete_warning">Uploaded data will be deleted after 48 hours.</p>;
+        let purgeWarning = <span className="CustomListDialog__delete_warning">Uploaded data will be deleted after 48 hours.</span>;
         if (customListData.isGeneList()) {
             instructions = <div>
-                    <p>Enter a list of gene symbols/ID or choose a file in that format. (Max file size 20MB)</p>
-                    {purgeWarning}
+                    <p >Enter a list of gene symbols/ID or choose a file in that format. (Max file size 20MB)</p>
+                    <div className="largeLeftInlineBlock" >
+                        {purgeWarning}
+                    </div>
+                    <div className="smallRightInlineBlock">
+                        <LoadSampleLink onClick={this.loadSampleData} />
+                    </div>
                 </div>;
         } else {
             instructions = <div>
                     <p>Enter a list of tab or space separated values or choose a file in that format. (Max size 20MB)</p>
                     {purgeWarning}
-                    <p>Format is: "CHROMOSOME START END".</p>
+                    <div className="largeLeftInlineBlock" >
+                        <span>Format is: "CHROMOSOME START END".</span>
+                    </div>
+                    <div className="smallRightInlineBlock">
+                        <LoadSampleLink onClick={this.loadSampleData} />
+                    </div>
                 </div>;
         }
         let disableSearch = !this.state.text && !this.state.file;

@@ -44,7 +44,9 @@ def get_all_values(prediction, size):
     if not size:
         size = int(prediction['end']) - int(prediction['start'])
     values = [0] * size
-    offset = int(prediction['start'])
+    offset = 0
+    if 'start' in prediction:
+        offset = int(prediction['start'])
     for data in prediction['values']:
         start = int(data['start'])
         value = data['value']
@@ -53,8 +55,9 @@ def get_all_values(prediction, size):
             if value > values[idx]:
                 values[idx] = value
     result = [str(val) for val in values]
-    if prediction['strand'] == '-':
-        return result[::-1]
+    if 'strand' in prediction:
+        if prediction['strand'] == '-':
+            return result[::-1]
     return result
 
 

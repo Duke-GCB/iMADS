@@ -1,0 +1,46 @@
+.PredictionResultsPanel_DataGrid_table {
+    width: 100%;
+    table-layout: fixed;
+    min-height: 60%;
+    min-width: 700px;
+}
+
+.PredictionResultsPanel_DataGrid_headerCell {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    font-size: 16px;
+    background-color: #235f9c;
+    color: white;
+    font-family: Roboto, sans-serif;
+    letter-spacing: 0.0625em;
+}
+
+.PredictionResultsPanel_DataGrid_header_name {
+    width: 15%;
+}
+
+.PredictionResultsPanel_DataGrid_header_sequence {
+    width: 30%;
+}
+
+.PredictionResultsPanel_DataGrid_header_max {
+    width: 12%;
+}
+
+.PredictionResultsPanel_DataGrid_header_values {
+    min-width: 200px;
+}
+
+.PredictionResultsPanel_DataGrid_dataCell {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid grey;
+    font-size: 14px;
+    height: 26px;
+    white-space: nowrap;
+}
+

@@ -1,81 +1,14 @@
 import React from 'react';
 import StreamValue from '../store/StreamValue.js'
 import CustomListDialog from './CustomListDialog.jsx'
+import SelectItem from '../common/SelectItem.jsx'
+import StreamInput from '../common/StreamInput.jsx'
+import BooleanInput from '../common/BooleanInput.jsx'
+import TFColorPickers from '../common/TFColorPickers.jsx'
+import {getFirstGenomeName} from '../store/GenomeData.js';
 
 const CUSTOM_GENE_LIST = 'Custom Gene List';
 const CUSTOM_RANGES_LIST = 'Custom Ranges List';
-
-class SelectItem extends React.Component {
-    render() {
-        let sel = this.props.selected;
-        if (sel === "") {
-            sel = 'ok';
-        }
-        return <div>
-                    <label>
-                        {this.props.title}
-                    </label>
-                        <select className="form-control" value={sel} onChange={this.props.onChange}>
-                            {this.props.options}
-                        </select>
-                </div>
-    }
-}
-
-class StreamInput extends React.Component {
-    constructor(props) {
-        super(props);
-        this.onChange = this.onChange.bind(this);
-        this.state = {
-            isValid: true,
-        }
-    }
-
-    onChange(evt) {
-        let streamValue = new StreamValue(this.props.maxBindingOffset)
-        let isValid = streamValue.isValid(evt.target.value);
-        this.setState({
-            isValid: isValid,
-        })
-        this.props.onChange(evt);
-     }
-
-    render() {
-        let className = "form-control";
-        if (!this.state.isValid) {
-            className += " badValue"
-        }
-        return <div>
-                    <label>{this.props.title}
-                        <input type="text"
-                               disabled={this.props.disabled}
-                               className={className}
-                               defaultValue={this.props.value}
-                               onBlur={this.onChange}
-                        />
-
-                    </label>
-                </div>
-    }
-}
-
-class BooleanInput extends React.Component {
-    constructor(props) {
-        super(props);
-        this.onChange = this.onChange.bind(this);
-
-    }
-    onChange(evt) {
-        this.props.onChange(evt.target.checked);
-    }
-    render() {
-        return <label>
-                    <input type="checkbox"
-                           checked={this.props.checked} onChange={this.onChange}
-                    /> {this.props.label}
-            </label>
-    }
-}
 
 class SearchFilterPanel extends React.Component {
     constructor(props) {
@@ -105,7 +38,7 @@ class SearchFilterPanel extends React.Component {
                 selectedGenome = genomeNames[0];
                 let genomeData = genomes[selectedGenome];
                 geneList = genomeData.geneLists[0];
-                model = genomeData.models[0];
+                model = genomeData.models[0].name;
             }
             this.state = {
                 genome: selectedGenome,
@@ -139,7 +72,7 @@ class SearchFilterPanel extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.genomeData) {
-            let genomeName = Object.keys(nextProps.genomeData)[0];
+            let genomeName = getFirstGenomeName(nextProps.genomeData);
             let newState = this.switchGenomeState(nextProps.genomeData, genomeName);
             if (this.state.genome == '') {
                 this.setState(newState, this.runSearch);
@@ -174,7 +107,7 @@ class SearchFilterPanel extends React.Component {
         return {
                 genome: genomeName,
                 geneList: genomeData[genomeName]['geneLists'][0],
-                model: genomeData[genomeName]['models'][0],
+                model: genomeData[genomeName]['models'][0].name,
         };
     }
 
@@ -261,6 +194,7 @@ class SearchFilterPanel extends React.Component {
     }
 
     render() {
+        let {predictionColor, setPredictionColor, preferenceMode} = this.props;
         let secondGroupStyle = {marginLeft:'40px'};
         let streamInputStyle = {display: 'inline', width:'4em', marginRight: '10px'};
         let smallMargin = { margin: '10px' }
@@ -278,7 +212,7 @@ class SearchFilterPanel extends React.Component {
                 assemblyOptions.push(<option key={name} value={name}>{name}</option>);
                 if (name === currentGenome) {
                     genomeInfo.models.forEach(function (model) {
-                        proteinOptions.push(<option key={model}  value={model}>{model}</option>);
+                        proteinOptions.push(<option key={model.name}  value={model.name}>{model.name}</option>);
                     });
                     genomeInfo.geneLists.forEach(function (geneList) {
                         geneListOptions.push(<option key={geneList}  value={geneList}>{geneList}</option>);
@@ -340,6 +274,9 @@ class SearchFilterPanel extends React.Component {
                                   geneListNames={geneListNames}
 
                 />
+                <TFColorPickers showTwoPickers={preferenceMode}
+                                predictionColor={predictionColor}
+                                setPredictionColor={setPredictionColor} />
         </div>
     }
 }
