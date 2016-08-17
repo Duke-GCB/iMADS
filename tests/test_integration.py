@@ -14,6 +14,7 @@ from pred.webserver.sequencelist import SequenceList
 from pred.webserver.customjob import CustomJob, JobStatus
 from pred.webserver.customresult import CustomResultData, SEQUENCE_NOT_FOUND
 from pred.queries.dbutil import update_database
+import json
 
 
 DOCKER_NAME="TF_DNA_POSTGRES_TEST"
@@ -517,6 +518,10 @@ someseq2\t60\t75\t15.5
         self.assertEqual(12.5, float(first['max']))
         self.assertEqual([{u'start': 0, u'end': 10, u'value': 12.5}], first['values'])
         self.assertEqual(SEQUENCE_NOT_FOUND, first['sequence'])
+        # Make sure we can convert predictions to JSON
+        json_version = json.dumps({'data': predictions})
+        self.assertEqual('{"data', json_version[:6])
+
 
 
 
