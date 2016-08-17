@@ -378,7 +378,7 @@ def json_ok_result():
 
 @app.errorhandler(ValueError)
 def handle_invalid_usage(error):
-    system_error = ServerException((str(error), ErrorType.GENERIC_ERROR))
+    system_error = ServerException(str(error), ErrorType.GENERIC_ERROR)
     return system_error.json_response(jsonify)
 
 
