@@ -17,7 +17,7 @@ class CustomResultSearch {
         this.currentRequest = {};
         this.statusLabelObj = statusLabelObj;
         this.setStatusLabel = this.setStatusLabel.bind(this);
-        this.log = console.log;
+        this.log = (str) => (console.log(str));
         this.active = true;
         this.currentJobId = 0;
         this.pageBatch = pageBatch;
