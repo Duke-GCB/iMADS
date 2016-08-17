@@ -130,7 +130,7 @@ def error_next_job():
 def create_job():
     # upload sequence
     url = make_url("sequences")
-    data = {'data': base64.b64encode('>myseq\nAACCGGTT')}
+    data = {'data': base64.b64encode('>myseq\nAACCGGTT'), 'title':'MySeq'}
     r = requests.post(url, json=data)
     r.raise_for_status()
     sequence_id = r.json()['id']

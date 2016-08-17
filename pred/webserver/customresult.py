@@ -116,7 +116,7 @@ class CustomResultData(object):
                 sequence = SEQUENCE_NOT_FOUND
             result.append({
                 'name': name,
-                'max': max_value,
+                'max': str(max_value),
                 'values': pred,
                 'sequence': sequence
             })
