@@ -21,7 +21,7 @@ class ColorDNA extends React.Component {
     }
 
     coloredLetterSpan(key, c) {
-        var color = this.determineColor(c);
+        var color = this.determineColor(c.toUpperCase());
         var style = {
             'color': color,
             'fontFamily': FONT_FAMILY,

@@ -254,8 +254,9 @@ def post_custom_result():
     request['model_name'] - str: name of the model used to build these results
     :return: json response with uuid of result stored in 'id' field
     """
-    required_prop_names = ["job_id", "bed_data", "model_name"]
-    (job_id, bed_data, model_name) = get_required_json_props(request, required_prop_names)
+    required_prop_names = ["job_id", "model_name"]
+    (job_id, model_name) = get_required_json_props(request, required_prop_names)
+    bed_data = request.get_json().get('bed_data')
     decoded_bed_data = base64.b64decode(bed_data)
     result_uuid = CustomResultData.new_uuid()
     result_data = CustomResultData(get_db(), result_uuid, job_id, model_name, decoded_bed_data)
@@ -376,22 +377,9 @@ def json_ok_result():
     return make_json_response({'status':'ok'})
 
 
-@app.errorhandler(ValueError)
-def handle_invalid_usage(error):
-    system_error = ServerException(str(error), ErrorType.GENERIC_ERROR)
-    return system_error.json_response(jsonify)
-
-
 @app.errorhandler(ClientException)
 def handle_user_exception(error):
     return error.json_response(jsonify)
-
-
-@app.errorhandler(ValueError)
-def handle_invalid_usage(error):
-    response = jsonify({'status':'ERROR', 'message': str(error)})
-    response.status_code = 500
-    return response
 
 
 def make_ok_json_response(props={}, status_code=None):

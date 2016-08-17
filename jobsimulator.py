@@ -58,7 +58,7 @@ def save_custom_predictions(job, bed_file_data):
     r = requests.post(url, json={
         'job_id': job['id'],
         'model_name': job['model_name'],
-        'bed_data': bed_file_data,
+        'bed_data': base64.b64encode(bed_file_data),
     })
     r.raise_for_status()
 
