@@ -34,17 +34,21 @@ create table job (
 
 -- Result of job requested by a user
 create table custom_result (
-  id uuid,
+  id uuid PRIMARY KEY,
   job_id uuid references job(id) NOT NULL,
-  model_name varchar NOT NULL,
+  model_name varchar NOT NULL
+);
+
+create index custom_result_search_idx on custom_result(model_name, job_id, id);
+
+create table custom_result_row (
+  result_id uuid references custom_result(id),
   name varchar NOT NULL,
   start integer NOT NULL,
   stop integer NOT NULL,
   value numeric NOT NULL
 );
 
-create index custom_result_name_idx on custom_result(id, name);
+create index custom_result_row_name_idx on custom_result_row(result_id, name);
+create index custom_result_row_value_idx on custom_result_row(result_id, abs(value) DESC);
 
-create index custom_result_value_idx on custom_result(id, abs(value) DESC);
-
-create index custom_result_search_idx on custom_result(model_name, job_id, id);

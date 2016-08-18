@@ -29,6 +29,7 @@ class CustomResultData(object):
         Save data to the database as a record per row from the bed file.
         """
         cur = self.db.cursor()
+        self.save_main_record(cur)
         for line in self.bed_data.split("\n"):
             parts = line.split()
             if parts:
@@ -40,17 +41,27 @@ class CustomResultData(object):
         cur.close()
         self.db.commit()
 
+    def save_main_record(self, cur):
+        """
+        Save the custom_result parent record so save_bed_row can save to custom_result_row.
+        :param cur: database cursor
+        """
+        insert_sql = "insert into custom_result(id, job_id, model_name) values (%s, %s, %s)"
+        params = [self.result_uuid, self.job_id, self.model_name]
+        cur.execute(insert_sql, params)
+
     def save_bed_row(self, cur, chrom, start, end, value):
         """
         Insert a single row of bed data into the database.
+        :param cur: database cursor
         :param chrom: str: chromosome value(name)
         :param start: str: start location of the value
         :param end: str: end location of the value
         :param value: str: value across start-end
         """
-        insert_sql = """insert into custom_result(id, job_id, model_name, name, start, stop, value)
-              values(%s, %s, %s, %s, %s, %s, %s) """
-        params = [self.result_uuid, self.job_id, self.model_name, chrom, start, end, value]
+        insert_sql = """insert into custom_result_row(result_id, name, start, stop, value)
+              values(%s, %s, %s, %s, %s) """
+        params = [self.result_uuid, chrom, start, end, value]
         cur.execute(insert_sql, params)
 
     @staticmethod
@@ -69,23 +80,25 @@ class CustomResultData(object):
         """
         params = [result_uuid]
         select_sql = """select
-            custom_result.name as name,
+            sequence_list_item.name as name,
             case WHEN max(value) > abs(min(value)) THEN
               round(max(value), 4)
             ELSE
               round(min(value), 4)
             end as max_value,
-            json_agg(json_build_object('value', round(value, 4), 'start', start, 'end', stop)),
-            max(sequence_list_item.sequence)
-            as pred
+            json_agg(json_build_object('value', round(value, 4), 'start', start, 'end', stop)) as pred,
+            max(sequence_list_item.sequence) as sequence_value
             from custom_result
-            inner join job on job.id = custom_result.job_id
-            left outer join sequence_list_item on sequence_list_item.seq_id = job.seq_id
-                and custom_result.name = sequence_list_item.name
+            inner join job on custom_result.job_id = job.id
+            left outer join sequence_list_item
+              on sequence_list_item.seq_id = job.seq_id
+            left outer join custom_result_row
+              on custom_result_row.name = sequence_list_item.name
+              and custom_result.id = custom_result_row.result_id
             where custom_result.id = %s
-            group by custom_result.name """
+            group by sequence_list_item.name """
         if sort_max_value:
-            select_sql += " order by max(abs(custom_result.value)) DESC "
+            select_sql += " order by max(abs(custom_result_row.value)) DESC "
         else:
             select_sql += " order by max(sequence_list_item.idx) "
         if limit:
@@ -114,6 +127,8 @@ class CustomResultData(object):
             name, max_value, pred, sequence = row
             if not sequence:
                 sequence = SEQUENCE_NOT_FOUND
+            if CustomResultData.is_none_prediction_values(pred):
+                pred = []
             result.append({
                 'name': name,
                 'max': str(max_value),
@@ -121,6 +136,12 @@ class CustomResultData(object):
                 'sequence': sequence
             })
         return result
+
+    @staticmethod
+    def is_none_prediction_values(pred):
+        if len(pred) == 1:
+            return pred[0]['value'] == None
+        return False
 
     @staticmethod
     def find_one(db, sequence_id, model_name):
@@ -131,7 +152,7 @@ class CustomResultData(object):
         :param model_name: str: name of the model to search for
         :return: int value of custom_result or None if not found
         """
-        select_sql = "select distinct custom_result.id from custom_result " \
+        select_sql = "select custom_result.id from custom_result " \
                      " inner join job on job.id = job_id " \
                      " where seq_id = %s and custom_result.model_name = %s"
         for row in read_database(db, select_sql, [sequence_id, model_name]):
@@ -140,8 +161,8 @@ class CustomResultData(object):
 
     @staticmethod
     def bed_file_contents(db, result_id):
-        select_sql = "select name, start, stop, value from custom_result " \
-                     " where id = %s"
+        select_sql = "select name, start, stop, value from custom_result_row " \
+                     " where result_id = %s"
         result = ""
         for row in read_database(db, select_sql, [result_id]):
             name, start, stop, value = row
@@ -151,4 +172,5 @@ class CustomResultData(object):
 
     @staticmethod
     def delete_for_job(cur, job_id):
+        cur.execute("delete from custom_result_row where job_id = %s", [job_id])
         cur.execute("delete from custom_result where job_id = %s", [job_id])

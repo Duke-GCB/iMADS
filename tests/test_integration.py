@@ -385,6 +385,7 @@ AAACCCGGGG"""
         db = create_db_connection(TestWithDocker.config.dbconfig)
 
         update_database(db, """
+          delete from custom_result_row;
           delete from custom_result;
           delete from job;
           delete from sequence_list_item;
@@ -495,8 +496,12 @@ someseq2\t60\t75\t15.5
         self.assertEqual(1, len(predictions))
         self.assertEqual(12.5, float(predictions[0]['max']))
 
-    def test_custom_job_missing_names(self):
-        FASTA_DATA1 = """>noidea\nAAACCCGGGGTT"""
+        # Make sure we can convert predictions to JSON
+        json_version = json.dumps({'data': predictions})
+        self.assertEqual('{"data', json_version[:6])
+
+    def test_custom_job_no_data(self):
+        FASTA_DATA1 = """>someseq\nAAACCCGGGGTT"""
         db = create_db_connection(TestWithDocker.config.dbconfig)
         # upload FASTA file
         sequence_list = SequenceList.create_with_content_and_title(db, FASTA_DATA1, "somelist")
@@ -505,7 +510,7 @@ someseq2\t60\t75\t15.5
         # mark job as running
         CustomJob.set_job_running(db, job_uuid)
         # upload file
-        BED_DATA = """someseq\t0\t10\t12.5"""
+        BED_DATA = ''
         result_uuid = CustomResultData.new_uuid()
         result = CustomResultData(db, result_uuid, job_uuid, model_name='E2f1', bed_data=BED_DATA)
         result.save()
@@ -515,14 +520,11 @@ someseq2\t60\t75\t15.5
         self.assertEqual(1, len(predictions))
         first = predictions[0]
         self.assertEqual('someseq', first['name'])
-        self.assertEqual(12.5, float(first['max']))
-        self.assertEqual([{u'start': 0, u'end': 10, u'value': 12.5}], first['values'])
-        self.assertEqual(SEQUENCE_NOT_FOUND, first['sequence'])
+        self.assertEqual('None', first['max'])
+        self.assertEqual([], first['values'])
+        self.assertEqual('AAACCCGGGGTT', first['sequence'])
         # Make sure we can convert predictions to JSON
         json_version = json.dumps({'data': predictions})
         self.assertEqual('{"data', json_version[:6])
-
-
-
 
 
