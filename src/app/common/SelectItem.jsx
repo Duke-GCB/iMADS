@@ -6,9 +6,11 @@ class SelectItem extends React.Component {
     render() {
         let {title, selected, options, onChange, labelControl} = this.props;
         return <div className="SelectItem_container" >
-            <label>
+            <div>
+                <label>
                 {title}
-            </label>
+                </label>
+            </div>
             <select className="form-control SelectItem_select"
                     value={selected}
                     onChange={onChange}>
