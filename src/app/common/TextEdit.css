@@ -1,3 +1,12 @@
 .TextEdit_label {
     font-weight: normal;
 }
+
+.TextEdit_errorMessage {
+    color: red;
+    margin-left: 0.5em;
+}
+
+.TextEdit_label_error {
+    background-color: red;
+}

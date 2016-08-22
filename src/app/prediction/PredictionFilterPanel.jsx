@@ -57,7 +57,7 @@ class PredictionFilterPanel extends React.Component {
     }
 
     makeDefaultCustomSequenceName = () => {
-        return "Sequence " + moment().format('MM/DD HH:mm');
+        return "Sequence List " + moment().format('MM/DD HH:mm');
     };
 
     closeCustomDialog = (seqId, errorMessage, title) => {

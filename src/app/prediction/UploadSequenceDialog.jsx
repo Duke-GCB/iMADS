@@ -6,7 +6,7 @@ import LargeTextarea from '../common/LargeTextarea.jsx'
 import TextEdit from '../common/TextEdit.jsx'
 import LoadSampleLink from '../common/LoadSampleLink.jsx'
 import FileUpload from '../store/FileUpload.js';
-import {CustomSequence} from '../store/CustomSequence.js';
+import {CustomSequence, CustomSequenceList} from '../store/CustomSequence.js';
 import {SEQUENCE_SAMPLE} from '../store/SampleData.js'
 
 
@@ -14,7 +14,6 @@ const TITLE = "Custom DNA Sequence";
 const INSTRUCTIONS = "Enter Sequence/FASTA data or choose a file in that format. (Max file size 20MB)";
 const PURGE_WARNING = "DNA Lists will be purged after 48 hours.";
 const TEXTAREA_PLACEHOLDER_TEXT = "CGATCGATG";
-const LOAD_SAMPLE_DATA = "Load Sample Data";
 
 
 const DEFAULT_STATE = {
@@ -24,6 +23,7 @@ const DEFAULT_STATE = {
     fileValue: undefined,
     textValue: '',
     sequenceName: '',
+    titleErrorMessage: '',
 };
 
 
@@ -41,7 +41,6 @@ class UploadSequenceDialog extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
         if (nextProps.sequenceData.id) {
             let customSequence = new CustomSequence();
             customSequence.fetch(nextProps.sequenceData.id, this.onSequenceInfo, this.onSequenceInfoError);
@@ -118,6 +117,12 @@ class UploadSequenceDialog extends React.Component {
     }
 
     closeDialog = (seqId, errorMessage, title) => {
+        if (seqId) {
+            if (this.state.titleErrorMessage) {
+                // user clicked upload really quick (before we could disable the upload button)
+                return;
+            }
+        }
         this.props.onRequestClose(seqId, errorMessage, title);
     };
 
@@ -126,9 +131,20 @@ class UploadSequenceDialog extends React.Component {
     }
 
     setSequenceName = (evt) => {
+        let sequenceName = evt.target.value;
+        let titleErrorMessage = undefined;
+        if (this.isDuplicateTitle(sequenceName)) {
+            titleErrorMessage = "This title is already taken.";
+        }
         this.setState({
-            sequenceName: evt.target.value
+            sequenceName: sequenceName,
+            titleErrorMessage: titleErrorMessage
         });
+    };
+
+    isDuplicateTitle = (sequenceName) => {
+        let customListObj = new CustomSequenceList();
+        return customListObj.isTitleDuplicate(this.uploadSequence.id, sequenceName);
     }
 
     loadSampleData = () => {
@@ -139,9 +155,13 @@ class UploadSequenceDialog extends React.Component {
         let {isOpen, sequenceData} = this.props;
         let title = this.state.sequenceName;
         let isNew = true;
+        let canUpload = this.state.canUpload;
         if (sequenceData.title) {
             title = sequenceData.title;
             isNew = false;
+        }
+        if (this.state.titleErrorMessage) {
+            canUpload = false;
         }
         return <Popup isOpen={this.props.isOpen}
                       onRequestClose={this.onCloseNoSave}
@@ -151,10 +171,12 @@ class UploadSequenceDialog extends React.Component {
 
             <div className="largeLeftInlineBlock">
                 <TextEdit title="Title: "
-                              value={title}
-                              placeholder={this.props.defaultSequenceName}
-                              onChange={this.setSequenceName}
-                              size="30"
+                          value={title}
+                          placeholder={this.props.defaultSequenceName}
+                          onChange={this.setSequenceName}
+                          size="30"
+                          maxlength="50"
+                          errorMessage={this.state.titleErrorMessage}
                     />
             </div>
             <div className="smallRightInlineBlock">
@@ -173,7 +195,7 @@ class UploadSequenceDialog extends React.Component {
             />
             <LoadingButton label="Upload"
                            loading={this.state.loading}
-                           disabled={!this.state.canUpload}
+                           disabled={!canUpload}
                            onClick={this.onClickUpload}
             />
         </Popup>

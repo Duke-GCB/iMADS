@@ -7,10 +7,6 @@ export function getFirstGenomeName(genomeData) {
 }
 
 export function isPreferenceModel(genomeData, genomeName, modelName) {
-    console.log("isPreferenceModel");
-    console.log(genomeData);
-    console.log(genomeName);
-    console.log(modelName);
     let genomeObj = genomeData[genomeName];
     if (!genomeObj) {
         return false;
