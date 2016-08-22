@@ -1,3 +1,6 @@
 machine:
   services:
     - docker
+machine:
+  environment:
+    TF_TEST_WITH_DOCKER: true
