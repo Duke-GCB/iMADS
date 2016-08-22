@@ -1,8 +1,6 @@
 machine:
-  services:
-    - docker
   environment:
-    TF_TEST_WITH_DOCKER: true
+    TF_TEST_WITH_POSTGRES: true
 database:
   override:
     - createdb pred
