@@ -1,6 +1,7 @@
 machine:
-  services:
-    - docker
-machine:
   environment:
-    TF_TEST_WITH_DOCKER: true
+    TF_TEST_WITH_POSTGRES: true
+database:
+  override:
+    - createdb pred
+    - createuser -s -w pred_user

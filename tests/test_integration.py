@@ -20,24 +20,7 @@ import json
 
 
 DOCKER_NAME="TF_DNA_POSTGRES_TEST"
-TEST_WITH_DOCKER="TF_TEST_WITH_DOCKER"
-
-
-def start_docker():
-    #subprocess.check_call("eval $(docker-machine env default) && docker run "
-    subprocess.check_call("docker run "
-                           "-d "
-                           "-p " "5432:5432 "
-                           "--name " + DOCKER_NAME +
-                           " -e " "POSTGRES_DB=pred "
-                           " -e " "POSTGRES_USER=pred_user "
-                           "postgres", shell=True)
-
-
-def stop_docker():
-    #subprocess.check_call("eval $(docker-machine env default) && docker rm -f -v " + DOCKER_NAME, shell=True)
-    subprocess.check_call("docker rm -f -v " + DOCKER_NAME, shell=True)
-
+TEST_WITH_POSTGRES="TF_TEST_WITH_POSTGRES"
 CONFIG_DATA = {
     "binding_max_offset": 5000,
     "download_dir": "/tmp/pred_data",
@@ -175,30 +158,31 @@ loaddatabase.sql_from_filename = fake_sql_from_filename
 postgres.copy_from = fake_copy_from
 
 
-def skip_docker_tests():
-    return os.environ.get(TEST_WITH_DOCKER) != "true"
+def skip_postgres_tests():
+    """
+    Determines if we are setup to run postgres tests (postgres is running with the proper database/user).
+    (eg: docker run -d -p 5432:5432 --name TF_DNA_POSTGRES_TEST -e POSTGRES_DB=pred -e POSTGRES_USER=pred_user postgres)
+    After you nosetests remove and delete TF_DNA_POSTGRES_TEST
+    (eg: docker rm -f -v TF_DNA_POSTGRES_TEST)
+    See circle.yml for how this is used in integration testing.
+    :return: True if the environment variable for testing with postgres is set
+    """
+    return os.environ.get(TEST_WITH_POSTGRES) != "true"
 
 
-@unittest.skipIf(skip_docker_tests(), "Docker testing env variable not set.")
-class TestWithDocker(unittest.TestCase):
+@unittest.skipIf(skip_postgres_tests(), "Postgres testing env variable not set.")
+class TestWithPostgres(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        if not skip_docker_tests():
-            start_docker()
-            time.sleep(5)
-            TestWithDocker.config = parse_config_from_dict(CONFIG_DATA)
-            TestWithDocker.config.dbconfig.host = "localhost"
-            TestWithDocker.config.dbconfig.dbname = 'pred'
-            TestWithDocker.config.dbconfig.user = 'pred_user'
-            run_sql_command(TestWithDocker.config)
-
-    @classmethod
-    def tearDownClass(cls):
-        if not skip_docker_tests():
-            stop_docker()
+        if not skip_postgres_tests():
+            TestWithPostgres.config = parse_config_from_dict(CONFIG_DATA)
+            TestWithPostgres.config.dbconfig.host = "localhost"
+            TestWithPostgres.config.dbconfig.dbname = 'pred'
+            TestWithPostgres.config.dbconfig.user = 'pred_user'
+            run_sql_command(TestWithPostgres.config)
 
     def test_prediction_query(self):
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         params = {
             SearchArgs.GENE_LIST: "knowngene",
             SearchArgs.MODEL: "E2F1_0001(JS)",
@@ -207,7 +191,7 @@ class TestWithDocker(unittest.TestCase):
             SearchArgs.PAGE: "1",
             SearchArgs.PER_PAGE: "10",
         }
-        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
         first_pred = predictions[0]
         self.assertEqual(first_pred['name'], 'uc001aaa.3; uc010nxq.1; uc010nxr.1')
@@ -220,7 +204,7 @@ class TestWithDocker(unittest.TestCase):
 
     def test_prediction_max_sort_query(self):
         #
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         params = {
             SearchArgs.GENE_LIST: "knowngene",
             SearchArgs.MAX_PREDICTION_SORT: "true",
@@ -230,7 +214,7 @@ class TestWithDocker(unittest.TestCase):
             SearchArgs.PAGE: "1",
             SearchArgs.PER_PAGE: "10",
         }
-        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
         first_pred = predictions[0]
         self.assertEqual(first_pred['name'], 'uc001aaa.3; uc010nxq.1; uc010nxr.1')
@@ -242,7 +226,7 @@ class TestWithDocker(unittest.TestCase):
         self.assertIn(0.1, pred_value_set)
 
     def test_custom_gene_list_no_results(self):
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "cheese")
         params = {
             SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
@@ -254,11 +238,11 @@ class TestWithDocker(unittest.TestCase):
             SearchArgs.PAGE: "1",
             SearchArgs.PER_PAGE: "10",
         }
-        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
         self.assertEqual(len(predictions), 0)
 
     def test_custom_gene_list_with_results(self):
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "DDX11L1")
         params = {
             SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
@@ -270,11 +254,11 @@ class TestWithDocker(unittest.TestCase):
             SearchArgs.PAGE: "1",
             SearchArgs.PER_PAGE: "10",
         }
-        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
 
     def test_custom_gene_list_id_results(self):
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "uc001aaa.3\nuc010nxr.1")
         params = {
             SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
@@ -286,7 +270,7 @@ class TestWithDocker(unittest.TestCase):
             SearchArgs.PAGE: "1",
             SearchArgs.PER_PAGE: "10",
         }
-        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
         first_pred_name = predictions[0]['name']
         first_pred_name_parts = first_pred_name.split("; ")
@@ -295,7 +279,7 @@ class TestWithDocker(unittest.TestCase):
         self.assertIn("uc010nxr.1", first_pred_name_parts)
 
     def test_custom_gene_list_with_lc_results(self):
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "ddx11l1")
         params = {
             SearchArgs.GENE_LIST: CUSTOM_GENE_LIST,
@@ -307,11 +291,11 @@ class TestWithDocker(unittest.TestCase):
             SearchArgs.PAGE: "1",
             SearchArgs.PER_PAGE: "10",
         }
-        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
 
     def test_custom_range_list(self):
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "chr1 11873 11883")
         params = {
             SearchArgs.GENE_LIST: CUSTOM_RANGES_LIST,
@@ -322,12 +306,12 @@ class TestWithDocker(unittest.TestCase):
             SearchArgs.PAGE: "1",
             SearchArgs.PER_PAGE: "10",
         }
-        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
         self.assertEqual(0.4, float(predictions[0]['max']))
 
     def test_custom_range_list_bad_range(self):
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "chr1 91873 91883")
         params = {
             SearchArgs.GENE_LIST: CUSTOM_RANGES_LIST,
@@ -338,13 +322,13 @@ class TestWithDocker(unittest.TestCase):
             SearchArgs.PAGE: "1",
             SearchArgs.PER_PAGE: "10",
         }
-        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
         # we always return a record for range requests just with empty data for the matches
         self.assertEqual('None', predictions[0]['max'])
 
     def test_custom_range_list_no_chr(self):
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "1 11873 11883")
         params = {
             SearchArgs.GENE_LIST: CUSTOM_RANGES_LIST,
@@ -355,13 +339,13 @@ class TestWithDocker(unittest.TestCase):
             SearchArgs.PAGE: "1",
             SearchArgs.PER_PAGE: "10",
         }
-        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithDocker.config, "hg19", params)
+        predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
         self.assertEqual(len(predictions), 1)
         # we always return a record for range requests just with empty data for the matches
         self.assertEqual(0.4, float(predictions[0]['max']))
 
     def test_custom_range_list_range_sum_too_big(self):
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         try:
             custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "1 1000 30001001")
             self.fail("Should have raised ValueError exception.")
@@ -369,7 +353,7 @@ class TestWithDocker(unittest.TestCase):
             self.assertEqual(str(err), MAX_RANGE_ERROR_STR)
 
     def test_custom_range_list_range_as_big_as_possible(self):
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "1 1000 30001000")
 
     def test_sequence_list(self):
@@ -381,7 +365,7 @@ CCACTGCACTCACCGCACCCGGCCAATTTTTGTGTTTTTAGTAGAGACTAAATACCATATAGTGAACACCTAAGA
 CGGGGGGCCTTGGATCCAGGGCGATTCAGAGGGCCCCGGTCGGAGCTGTCGGAGATTGAGCGCGCGCGGTCCCGG"""
         FASTA_DATA2 = """>stuff
 AAACCCGGGG"""
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         sequence_list1_uuid = SequenceList.create_with_content_and_title(db, FASTA_DATA1, "mystuff")
         sequence_list2_uuid = SequenceList.create_with_content_and_title(db, FASTA_DATA2, "mystuff2")
         seq_list1 = SequenceList.read_list(db, sequence_list1_uuid)
@@ -392,7 +376,7 @@ AAACCCGGGG"""
 
     def test_customjob(self):
         FASTA_DATA1 = """>stuff\nAAACCCGGGGTT"""
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
 
         update_database(db, """
           delete from custom_result_row;
@@ -463,7 +447,7 @@ AAACCCGGGG"""
 
     def test_custom_job_normal_workflow(self):
         FASTA_DATA1 = """>someseq\nAAACCCGGGGTT\n>someseq2\nAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTT"""
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         # upload FASTA file
         sequence_list = SequenceList.create_with_content_and_title(db, FASTA_DATA1, "sometitle")
         # create a job to determine predictions for a sequence_list
@@ -512,7 +496,7 @@ someseq2\t60\t75\t15.5
 
     def test_custom_job_no_data(self):
         FASTA_DATA1 = """>someseq\nAAACCCGGGGTT"""
-        db = create_db_connection(TestWithDocker.config.dbconfig)
+        db = create_db_connection(TestWithPostgres.config.dbconfig)
         # upload FASTA file
         sequence_list = SequenceList.create_with_content_and_title(db, FASTA_DATA1, "somelist")
         # create a job to determine predictions for a sequence_list
