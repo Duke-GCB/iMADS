@@ -21,23 +21,6 @@ import json
 
 DOCKER_NAME="TF_DNA_POSTGRES_TEST"
 TEST_WITH_DOCKER="TF_TEST_WITH_DOCKER"
-
-
-def start_docker():
-    #subprocess.check_call("eval $(docker-machine env default) && docker run "
-    subprocess.check_call("docker run "
-                           "-d "
-                           "-p " "5432:5432 "
-                           "--name " + DOCKER_NAME +
-                           " -e " "POSTGRES_DB=pred "
-                           " -e " "POSTGRES_USER=pred_user "
-                           "postgres", shell=True)
-
-
-def stop_docker():
-    #subprocess.check_call("eval $(docker-machine env default) && docker rm -f -v " + DOCKER_NAME, shell=True)
-    subprocess.check_call("docker rm -f -v " + DOCKER_NAME, shell=True)
-
 CONFIG_DATA = {
     "binding_max_offset": 5000,
     "download_dir": "/tmp/pred_data",
@@ -176,6 +159,15 @@ postgres.copy_from = fake_copy_from
 
 
 def skip_docker_tests():
+    """
+    Determines if we are setup to run docker tests.
+    Setup required for docker tests:
+    Starting postgres before running nosetests:
+    (eg: docker run -d -p 5432:5432 --name TF_DNA_POSTGRES_TEST -e POSTGRES_DB=pred -e POSTGRES_USER=pred_user postgres)
+    After you nosetests remove and delete TF_DNA_POSTGRES_TEST (docker rm -f -v TF_DNA_POSTGRES_TEST)
+    See circle.yml for how this is used in integration testing.
+    :return: True if the environment variable for testing with docker is set
+    """
     return os.environ.get(TEST_WITH_DOCKER) != "true"
 
 
@@ -184,18 +176,11 @@ class TestWithDocker(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         if not skip_docker_tests():
-            start_docker()
-            time.sleep(5)
             TestWithDocker.config = parse_config_from_dict(CONFIG_DATA)
             TestWithDocker.config.dbconfig.host = "localhost"
             TestWithDocker.config.dbconfig.dbname = 'pred'
             TestWithDocker.config.dbconfig.user = 'pred_user'
             run_sql_command(TestWithDocker.config)
-
-    @classmethod
-    def tearDownClass(cls):
-        if not skip_docker_tests():
-            stop_docker()
 
     def test_prediction_query(self):
         db = create_db_connection(TestWithDocker.config.dbconfig)
