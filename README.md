@@ -1,4 +1,4 @@
-# TF-DNA-PredictionsDB
+# TF-DNA-PredictionsDB [![CircleCI](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB.svg?style=svg)](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB)
 Tool for viewing prediction values for genes.
 Currently requires bigWigToBedGraph installed in your path.
 It can be downloaded from http://hgdownload.soe.ucsc.edu/admin/exe.
