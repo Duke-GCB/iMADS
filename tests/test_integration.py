@@ -1,4 +1,6 @@
 from unittest import TestCase
+import unittest
+import os
 import subprocess
 import time
 from StringIO import StringIO
@@ -18,6 +20,7 @@ import json
 
 
 DOCKER_NAME="TF_DNA_POSTGRES_TEST"
+TEST_WITH_DOCKER="TF_TEST_WITH_DOCKER"
 
 
 def start_docker():
@@ -172,20 +175,27 @@ loaddatabase.sql_from_filename = fake_sql_from_filename
 postgres.copy_from = fake_copy_from
 
 
-class TestWithDocker(TestCase):
+def skip_docker_tests():
+    return os.environ.get(TEST_WITH_DOCKER) != "true"
+
+
+@unittest.skipIf(skip_docker_tests(), "Docker testing env variable not set.")
+class TestWithDocker(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        start_docker()
-        time.sleep(5)
-        TestWithDocker.config = parse_config_from_dict(CONFIG_DATA)
-        TestWithDocker.config.dbconfig.host = "localhost"
-        TestWithDocker.config.dbconfig.dbname = 'pred'
-        TestWithDocker.config.dbconfig.user = 'pred_user'
-        run_sql_command(TestWithDocker.config)
+        if not skip_docker_tests():
+            start_docker()
+            time.sleep(5)
+            TestWithDocker.config = parse_config_from_dict(CONFIG_DATA)
+            TestWithDocker.config.dbconfig.host = "localhost"
+            TestWithDocker.config.dbconfig.dbname = 'pred'
+            TestWithDocker.config.dbconfig.user = 'pred_user'
+            run_sql_command(TestWithDocker.config)
 
     @classmethod
     def tearDownClass(cls):
-        stop_docker()
+        if not skip_docker_tests():
+            stop_docker()
 
     def test_prediction_query(self):
         db = create_db_connection(TestWithDocker.config.dbconfig)

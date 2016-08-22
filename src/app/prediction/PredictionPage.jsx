@@ -156,7 +156,6 @@ class PredictionPage extends React.Component {
             }, 2000);
         }
         this.setErrorMessage(message);
-
     };
 
     removeExpiredSequence = (sequenceId) => {

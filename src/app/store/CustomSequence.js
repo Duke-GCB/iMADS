@@ -29,9 +29,19 @@ export class CustomSequence {
 
 const CUSTOM_SEQ_LIST_NAME = "customSequenceList";
 
+export class CustomSequenceStorage {
+    load() {
+        return JSON.parse(localStorage.getItem(CUSTOM_SEQ_LIST_NAME));
+    }
+    save(values) {
+        localStorage.setItem(CUSTOM_SEQ_LIST_NAME, JSON.stringify(values));
+    }
+}
+
 export class CustomSequenceList {
-    constructor() {
-        let list = JSON.parse(localStorage.getItem(CUSTOM_SEQ_LIST_NAME));
+    constructor(storage) {
+        this.storage = storage || new CustomSequenceStorage();
+        let list = this.storage.load();
         if (list == null) {
             list = [];
         }
@@ -49,12 +59,21 @@ export class CustomSequenceList {
     }
 
     saveChanges() {
-        localStorage.setItem(CUSTOM_SEQ_LIST_NAME, JSON.stringify(this.list));
+        this.storage.save(this.list);
     }
 
     containsId(seqId) {
         for (let item of this.list) {
             if (item.id == seqId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    isTitleDuplicate(seqId, title) {
+        for (let item of this.list) {
+            if (item.title == title && item.id != seqId) {
                 return true;
             }
         }

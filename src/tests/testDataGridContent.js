@@ -13,6 +13,7 @@ describe('DataGridContent', function () {
             let expected = [
                 {
                     fieldName: 'name',
+                    "makeControlFunc": undefined,
                     title: 'Seq Name',
                     type: 'text',
                 }
@@ -26,11 +27,13 @@ describe('DataGridContent', function () {
             let expected = [
                 {
                     fieldName: 'name',
+                    "makeControlFunc": undefined,
                     title: 'Seq Name',
                     type: 'text',
                 },
                 {
                     fieldName: 'chrom',
+                    "makeControlFunc": undefined,
                     title: 'Chrom',
                     type: 'text',
                 },
@@ -44,11 +47,13 @@ describe('DataGridContent', function () {
             let expected = [
                 {
                     fieldName: 'name',
+                    "makeControlFunc": undefined,
                     title: 'Seq Name',
                     type: 'text',
                 },
                 {
                     fieldName: 'values',
+                    "makeControlFunc": undefined,
                     title: 'Values',
                     type: 'heatmap',
                 },
@@ -99,12 +104,10 @@ describe('DataGridContent', function () {
 
             assert.equal(rows[0][0].value, "seq01");
             assert.equal(rows[0][0].column.title, "Seq Name");
-            assert.equal(rows[0][1].value, "HEATMAPDATA1");
             assert.equal(rows[0][1].column.title, "Values");
 
             assert.equal(rows[1][0].value, "otherseq");
             assert.equal(rows[1][0].column.type, TEXT_TYPE);
-            assert.equal(rows[1][1].value, "HEATMAPDATA2");
             assert.equal(rows[1][1].column.type, HEATMAP_TYPE);
 
         });
