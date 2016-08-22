@@ -3,8 +3,7 @@ machine:
     - docker
   environment:
     TF_TEST_WITH_DOCKER: true
-test:
-  pre:
-    - docker run -d -p 15432:5432 --name TF_DNA_POSTGRES_TEST -e POSTGRES_DB=pred -e POSTGRES_USER=pred_user postgres
-  post:
-    - docker rm -f -v TF_DNA_POSTGRES_TEST
+database:
+  override:
+    - createdb pred
+    - createuser -s -w pred_user

@@ -177,7 +177,7 @@ class TestWithDocker(unittest.TestCase):
     def setUpClass(cls):
         if not skip_docker_tests():
             TestWithDocker.config = parse_config_from_dict(CONFIG_DATA)
-            TestWithDocker.config.dbconfig.host = "localhost:15432"
+            TestWithDocker.config.dbconfig.host = "localhost:5432"
             TestWithDocker.config.dbconfig.dbname = 'pred'
             TestWithDocker.config.dbconfig.user = 'pred_user'
             run_sql_command(TestWithDocker.config)
