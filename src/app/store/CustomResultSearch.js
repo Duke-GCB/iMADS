@@ -174,8 +174,7 @@ class CustomResultSearch {
 
     getJobStatusMsg(data) {
         let status = data.status;
-        let message = STATUS_MESSAGES[status] || "Unknown";
-        return message;
+        return STATUS_MESSAGES[status] || "Unknown";
     }
 
     makeLocalUrl(predictionSettings) {
