@@ -50,13 +50,14 @@ export default class DataGrid extends React.Component {
     };
 
     makeTableContent = (dataGridContent) => {
-        let {errorMessage, searchDataLoaded, loadingStatusLabel, showBlankWhenEmpty} = this.props;
+        let {errorMessage, searchDataLoaded, loadingStatusLabel, startedSearch, showBlankWhenEmpty} = this.props;
         let numColumns = dataGridContent.getNumColumns() + 1;
         if (!searchDataLoaded) {
             return <TallRow numColumns={numColumns}>
                 <LabeledLoader loaded={searchDataLoaded}
                                loadingStatusLabel={loadingStatusLabel}
-                               zIndex={100}>
+                               zIndex={100}
+                               startedDate={startedSearch} >
                 </LabeledLoader>
             </TallRow>;
         }

@@ -2,9 +2,9 @@ import URLBuilder from './URLBuilder.js';
 import {makeErrorObject} from './Errors.js';
 
 const STATUS_MESSAGES = {
-    'NEW': 'Your predictions have been queued for processing.',
-    'RUNNING': 'Your predictions are running.',
-    'COMPLETE': 'Your predictions are ready.',
+    'NEW': 'Queued',
+    'RUNNING': 'Running Predictions',
+    'COMPLETE': 'Complete',
     'ERROR': 'There was an error running your job. Error details have been recorded.'
 };
 
