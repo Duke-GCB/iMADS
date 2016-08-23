@@ -1,29 +1,8 @@
 import React from 'react';
-import Modal from 'react-modal';
+import Popup from '../common/Popup.jsx';
 import HeatMap from '../search/HeatMap.jsx';
-import GenomeBrowserURL from '../store/GenomeBrowserURL.js';
-import DnaSequences from '../store/DnaSequences.js';
-import ColorDNA from '../search/ColorDNA.jsx';
-
-const customStyles = {
-    content : {
-
-    },
-    overlay : {
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 100,
-    }
-};
-
-function sortByStart(a, b) {
-  if (a.start < b.start) {
-    return -1;
-  }
-  if (a.start > b.start) {
-    return 1;
-  }
-  return 0;
-}
+import PredictionDetailTable from '../common/PredictionDetailTable.jsx';
+import PredictionDetail from '../store/PredictionDetail.js';
 
 export default class PredictionDetailsDialog extends React.Component {
     constructor(props) {
@@ -32,21 +11,7 @@ export default class PredictionDetailsDialog extends React.Component {
             ranges: {},
             selectedIndex: undefined,
         }
-        this.onDnaRangesResponse = this.onDnaRangesResponse.bind(this);
-        this.onDnaRangesError = this.onDnaRangesError.bind(this);
-    }
-
-    componentDidUpdate() {
-    }
-
-    onDnaRangesResponse(ranges) {
-        this.setState({
-            'ranges': ranges
-        })
-    }
-
-    onDnaRangesError(error) {
-        alert(error);
+        this.predictionDetail = new PredictionDetail();
     }
 
     setSelectedIndex = (idx) => {
@@ -57,60 +22,32 @@ export default class PredictionDetailsDialog extends React.Component {
 
     render() {
         let {selectedIndex} = this.state;
-        if (!this.props.data) {
+        let {data} = this.props;
+        if (!data) {
             return <div></div>;
         }
-        let rowData = this.props.data;
-        let details = [];
-        let values = rowData.values.slice();
-        values.sort(sortByStart);
-        for (let i = 0; i < values.length; i++) {
-            let prediction = values[i];
-            let position = this.props.data.chrom + ":" + prediction.start  + '-' + prediction.end;
-            let seq = this.props.data.sequence.substring(prediction.start, prediction.end);
-            let rowClassName = "";
-            if (i == selectedIndex) {
-                rowClassName = "active";
-            }
-            details.push(<tr className={rowClassName}>
-                <td>{prediction.start}</td>
-                <td>{prediction.end}</td>
-                <td>{prediction.value}</td>
-                <td><ColorDNA seq={seq} /></td>
-            </tr>)
+        let detailList = [];
+        for (let detailObj of this.predictionDetail.getDetails(data, data.chrom, selectedIndex)) {
+            let {rowClassName, start, end, value} = detailObj;
+            let seq = this.predictionDetail.getSeqFromParentSequence(detailObj, data.sequence);
+            detailObj.seq = seq;
+            detailList.push(detailObj);
         }
-        return <Modal className="Modal__Bootstrap modal-dialog modal-lg"
-                      isOpen={this.props.isOpen}
+        let title = "Predictions for " + data.title;
+        return <Popup isOpen={this.props.isOpen}
                       onRequestClose={this.props.onRequestClose}
-                      style={customStyles} >
-                    <div >
-                        <div className="modal-header">
-                          <button type="button" className="close" onClick={this.props.onRequestClose}>
-                            <span aria-hidden="true">&times;</span>
-                            <span className="sr-only">Close</span>
-                          </button>
-                          <h4 className="modal-title">Predictions for {rowData.title}</h4>
-                        </div>
-                        <div className="modal-body">
-                            <h5>Values</h5>
-                            <HeatMap width="800"
-                                     height="40"
-                                     data={rowData}
-                                     predictionColor={this.props.predictionColor}
-                                     setSelectedIndex={this.setSelectedIndex}
-                            />
-                            
-                            <h5>Details</h5>
-                            <table className="table" style={{width: 300}}>
-                                <thead>
-                                    <tr><th>Start</th><th>End</th><th>Value</th><th>Sequence</th></tr>
-                                </thead>
-                                <tbody>
-                                    {details}
-                                </tbody>
-                            </table>
-                        </div>
-                  </div>
-                </Modal>
+                      title={title}>
+            <h5>Values</h5>
+            <HeatMap width="800"
+                     height="40"
+                     data={data}
+                     predictionColor={this.props.predictionColor}
+                     setSelectedIndex={this.setSelectedIndex} />
+            <h5>Details</h5>
+            <PredictionDetailTable
+                showChromosomeColumn={false}
+                detailList={detailList}
+            />
+        </Popup>;
     }
 }

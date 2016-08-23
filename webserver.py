@@ -142,8 +142,8 @@ def get_sequences(genome):
     try:
         sequences = lookup_dna_sequence(g_config, genome, ranges)
         return make_json_response({'sequences': sequences})
-    except FileNotFoundError:
-        raise ValueError("Missing file for {}.".format(genome))
+    except IOError as err:
+        raise ValueError("Missing file for {}:{}.".format(genome, err))
 
 
 @app.route('/api/v1/sequences/<sequence_id>', methods=['GET'])
