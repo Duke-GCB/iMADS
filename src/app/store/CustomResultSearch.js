@@ -5,7 +5,7 @@ const STATUS_MESSAGES = {
     'NEW': 'Your predictions have been queued for processing.',
     'RUNNING': 'Your predictions are running.',
     'COMPLETE': 'Your predictions are ready.',
-    'ERROR': 'Error:'
+    'ERROR': 'There was an error running your job. Error details have been recorded.'
 };
 
 //onSearchData(predictions, pageNum, hasNextPages, warning)
@@ -174,11 +174,7 @@ class CustomResultSearch {
 
     getJobStatusMsg(data) {
         let status = data.status;
-        let message = STATUS_MESSAGES[status] || "Unknown";
-        if (status == "ERROR") {
-            return message + data['error_msg'];
-        }
-        return message;
+        return STATUS_MESSAGES[status] || "Unknown";
     }
 
     makeLocalUrl(predictionSettings) {
