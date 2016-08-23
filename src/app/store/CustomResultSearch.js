@@ -3,7 +3,7 @@ import {makeErrorObject} from './Errors.js';
 
 const STATUS_MESSAGES = {
     'NEW': 'Queued',
-    'RUNNING': 'Running Predictions',
+    'RUNNING': 'Running predictions...',
     'COMPLETE': 'Complete',
     'ERROR': 'There was an error running your job. Error details have been recorded.'
 };

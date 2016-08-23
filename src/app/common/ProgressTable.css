@@ -1,7 +1,8 @@
 .ProgressTable_table {
-    background-color: #CFEDED;
-    border: 2px solid grey;
-    width: 100%;
+    background-color: #CFEDFF;
+    border: 2px solid lightgray;
+    margin: 0 auto;
+    width: 300px;
 }
 
 .ProgressTable_tr_odd {
