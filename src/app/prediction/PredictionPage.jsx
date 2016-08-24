@@ -82,6 +82,12 @@ class PredictionPage extends React.Component {
         });
     };
 
+    setJobStarted = (started) => {
+        this.setState({
+            startedSearch: started,
+        });
+    };
+
     setErrorMessage = (msg) => {
         this.setState({
             errorMessage: msg,

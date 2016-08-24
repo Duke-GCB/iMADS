@@ -7,6 +7,7 @@ const STATUS_MESSAGES = {
     'COMPLETE': 'Complete',
     'ERROR': 'There was an error running your job. Error details have been recorded.'
 };
+const WAIT_FOR_JOB_MS = 1000;
 
 //onSearchData(predictions, pageNum, hasNextPages, warning)
 
@@ -38,6 +39,10 @@ class CustomResultSearch {
     
     setStatusLabel(label) {
         this.statusLabelObj.setLoadingStatusLabel(label);
+    }
+
+    setJobStarted(dateTime) {
+        this.statusLabelObj.setJobStarted(dateTime);
     }
 
     requestPage(page, predictionSettings, onSearchData, onError) {
@@ -162,8 +167,9 @@ class CustomResultSearch {
                         this.showError({'message': message});
                     } else {
                         this.setStatusLabel(message);
+                        this.setJobStarted(data.created);
                         this.log("Waiting and checking " + jobId + " again.");
-                        window.setTimeout(this.waitForJob, 1000, jobId);
+                        window.setTimeout(this.waitForJob, WAIT_FOR_JOB_MS, jobId);
                     }
                 }
             }

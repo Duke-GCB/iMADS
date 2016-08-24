@@ -43,6 +43,26 @@ class PredictionResultsPanel extends React.Component {
         return columnInfo;
     }
 
+    makeHeatmapCell = (rowData) => {
+        let {predictionColor} = this.props;
+        let heatMapValues = {
+                title: rowData.name,
+                values: rowData.values,
+                start: 0,
+                end: rowData.sequence.length,
+                strand: '',
+                chrom: '',
+                trackHubUrl: '',
+                isCustomRange: true,
+                sequence: rowData.sequence,
+        };
+        return <HeatMap width="120" height="20"
+                               onClickHeatmap={this.showPredictionDetails}
+                               data={heatMapValues}
+                               scaleFactor={1.0}
+                               predictionColor={predictionColor} />
+    };
+
     render() {
         let {errorMessage, predictionSettings, searchResults, searchDataLoaded, loadingStatusLabel,
             searchOperations, page, predictionStore, showBlankWhenEmpty, startedSearch} = this.props;
