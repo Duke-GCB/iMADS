@@ -45,6 +45,7 @@ class PredictionPage extends React.Component {
             predictionColor: TFColorPickers.defaultColorObj(),
             preferenceMode: false,
             customSequenceList: this.customSequenceList.get(),
+            startedSearch: undefined,
         };
     }
 
@@ -78,6 +79,12 @@ class PredictionPage extends React.Component {
     setLoadingStatusLabel = (label) => {
         this.setState({
             loadingStatusLabel: label,
+        });
+    };
+
+    setJobStarted = (started) => {
+        this.setState({
+            startedSearch: started,
         });
     };
 
@@ -127,6 +134,7 @@ class PredictionPage extends React.Component {
         if (model && selectedSequence) {
             this.setState({
                 searchDataLoaded: false,
+                startedSearch: '' + new Date(),
             });
             this.customResultSearch.requestPage(page, predictionSettings, this.onSearchData, this.onError);
             browserHistory.push(this.customResultSearch.makeLocalUrl(predictionSettings));
@@ -215,6 +223,7 @@ class PredictionPage extends React.Component {
                                                  predictionColor={this.state.predictionColor}
                                                  showBlankWhenEmpty={noSequences}
                                                  preferenceMode={preferenceMode}
+                                                 startedSearch={this.state.startedSearch}
         />;
         return <div>
             <NavBar selected={PREDICTION_NAV.path}/>

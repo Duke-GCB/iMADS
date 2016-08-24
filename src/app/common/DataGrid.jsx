@@ -2,6 +2,7 @@ import React from 'react';
 import {DataGridContent, TEXT_TYPE} from '../store/DataGridContent.js'
 import LabeledLoader from '../common/LabeledLoader.jsx'
 import ErrorPanel from '../search/ErrorPanel.jsx'
+import ProgressTable from '../common/ProgressTable.jsx'
 
 /**
  * Row that fills the body of the DataGrid.
@@ -50,14 +51,11 @@ export default class DataGrid extends React.Component {
     };
 
     makeTableContent = (dataGridContent) => {
-        let {errorMessage, searchDataLoaded, loadingStatusLabel, showBlankWhenEmpty} = this.props;
+        let {errorMessage, searchDataLoaded, loadingStatusLabel, startedSearch, showBlankWhenEmpty} = this.props;
         let numColumns = dataGridContent.getNumColumns() + 1;
         if (!searchDataLoaded) {
             return <TallRow numColumns={numColumns}>
-                <LabeledLoader loaded={searchDataLoaded}
-                               loadingStatusLabel={loadingStatusLabel}
-                               zIndex={100}>
-                </LabeledLoader>
+                <ProgressTable startedDate={startedSearch} status={loadingStatusLabel} />
             </TallRow>;
         }
         if (errorMessage) {

@@ -13,91 +13,22 @@ require('./PredictionResultsPanel.css')
 class PredictionResultsPanel extends React.Component {
     constructor(props) {
         super(props);
-        this.showPredictionDetails = this.showPredictionDetails.bind(this);
-        this.hidePredictionDetails = this.hidePredictionDetails.bind(this);
         this.state = {
             predictionData: undefined,
         }
     }
 
-    componentWillUpdate() {
-        /*
-         if (this.scrollToTop) {
-         let resultsGridContainer = document.getElementById('resultsGridContainer');
-         resultsGridContainer.scrollTop = 0;
-         this.scrollToTop = false;
-         }*/
-    }
-
-    showPredictionDetails(predictionData) {
+    showPredictionDetails = (predictionData) => {
         this.setState({
             predictionData: predictionData,
         })
-    }
+    };
 
-    hidePredictionDetails(predictionData) {
+    hidePredictionDetails = (predictionData) => {
         this.setState({
             predictionData: undefined,
         })
-    }
-
-    makeHeatMap(rowData) {
-        let {predictionSettings, predictionColor} = this.props;
-        let heatMap = <span></span>;
-        if (predictionSettings.all === true) {
-            let title = rowData.name;
-
-            let heatMapValues = {
-                title: title,
-                values: rowData.values,
-                start: 0,
-                end: rowData.sequence.length,
-                strand: rowData.strand,
-                chrom: rowData.chrom,
-                trackHubUrl: '',
-                isCustomRange: true,
-                sequence: rowData.sequence,
-            };
-            heatMap = <HeatMap width="120" height="20"
-                               onClickHeatmap={this.showPredictionDetails}
-                               data={heatMapValues}
-                               scaleFactor={1.0}
-                               predictionColor={predictionColor}
-            />
-        }
-        return heatMap;
-    }
-
-    makeListContent() {
-        let {errorMessage, searchResults, searchDataLoaded, hasSequences} = this.props;
-        if (errorMessage) {
-            return <ErrorPanel message={errorMessage}/>;
-        }
-        if (searchResults.length == 0 && searchDataLoaded && hasSequences) {
-            return <div className="centerChildrenHorizontally">
-                    <span className="SearchResultsPanel__no_results_found centerVertically">No results found.</span>
-                </div>
-        }
-        return this.makeListRowsContent();
-    }
-
-    makeListRowsContent() {
-        let {predictionSettings, searchResults, searchDataLoaded, loadingStatusLabel} = this.props;
-        let rangeType = false;
-        let includeHeatMap = predictionSettings.all === true;
-        let rows = [];
-        for (let i = 0; i < searchResults.length; i++) {
-            let rowData = searchResults[i];
-            let heatMap = this.makeHeatMap(rowData);
-            rows.push(<PredictionResultDetailRow rowData={rowData} key={i} heatMap={heatMap}
-                                       rangeType={rangeType} includeHeatMap={includeHeatMap}/>)
-        }
-        return <LabeledLoader loaded={searchDataLoaded}
-                              loadingStatusLabel={loadingStatusLabel}
-                              zIndex={100}>
-                {rows}
-            </LabeledLoader>;
-    }
+    };
 
     makeGridColumnInfo() {
         let {predictionSettings} = this.props;
@@ -111,7 +42,7 @@ class PredictionResultsPanel extends React.Component {
         }
         return columnInfo;
     }
-    
+
     makeHeatmapCell = (rowData) => {
         let {predictionColor} = this.props;
         let heatMapValues = {
@@ -130,14 +61,13 @@ class PredictionResultsPanel extends React.Component {
                                data={heatMapValues}
                                scaleFactor={1.0}
                                predictionColor={predictionColor} />
-    }
-    
+    };
+
     render() {
         let {errorMessage, predictionSettings, searchResults, searchDataLoaded, loadingStatusLabel,
-            searchOperations, page, predictionStore, showBlankWhenEmpty} = this.props;
+            searchOperations, page, predictionStore, showBlankWhenEmpty, startedSearch} = this.props;
         let rangeType = false;
         let includeHeatMap = predictionSettings.all === true;
-        let listContent = this.makeListContent();
         let showPredictionDetails = Boolean(this.state.predictionData);
         let gridColumnInfo = this.makeGridColumnInfo();
         let gridRows = searchResults;
@@ -148,8 +78,10 @@ class PredictionResultsPanel extends React.Component {
                         rows={gridRows}
                         searchDataLoaded={searchDataLoaded}
                         loadingStatusLabel={loadingStatusLabel}
+                        startedSearch={startedSearch}
                         errorMessage={errorMessage}
                         showBlankWhenEmpty={showBlankWhenEmpty}
+
                     />
             <SearchResultsFooter
                 searchSettings={predictionSettings}

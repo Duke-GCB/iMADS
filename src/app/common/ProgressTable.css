@@ -1,0 +1,16 @@
+.ProgressTable_table {
+    background-color: #CFEDFF;
+    border: 2px solid lightgray;
+    margin: 0 auto;
+    width: 300px;
+}
+
+.ProgressTable_tr_odd {
+    background-color: white;
+}
+
+.ProgressTable_td {
+    padding: 10px;
+    white-space: nowrap;
+    font-size: 11pt;
+}
