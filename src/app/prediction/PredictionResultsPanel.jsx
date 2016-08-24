@@ -65,7 +65,7 @@ class PredictionResultsPanel extends React.Component {
 
     render() {
         let {errorMessage, predictionSettings, searchResults, searchDataLoaded, loadingStatusLabel,
-            searchOperations, page, predictionStore, showBlankWhenEmpty, startedSearch} = this.props;
+            searchOperations, page, predictionStore, showBlankWhenEmpty, jobDates} = this.props;
         let rangeType = false;
         let includeHeatMap = predictionSettings.all === true;
         let showPredictionDetails = Boolean(this.state.predictionData);
@@ -78,7 +78,7 @@ class PredictionResultsPanel extends React.Component {
                         rows={gridRows}
                         searchDataLoaded={searchDataLoaded}
                         loadingStatusLabel={loadingStatusLabel}
-                        startedSearch={startedSearch}
+                        jobDates={jobDates}
                         errorMessage={errorMessage}
                         showBlankWhenEmpty={showBlankWhenEmpty}
 
