@@ -51,11 +51,12 @@ export default class DataGrid extends React.Component {
     };
 
     makeTableContent = (dataGridContent) => {
-        let {errorMessage, searchDataLoaded, loadingStatusLabel, startedSearch, showBlankWhenEmpty} = this.props;
+        let {errorMessage, searchDataLoaded, loadingStatusLabel, jobDates,
+            showBlankWhenEmpty} = this.props;
         let numColumns = dataGridContent.getNumColumns() + 1;
         if (!searchDataLoaded) {
             return <TallRow numColumns={numColumns}>
-                <ProgressTable startedDate={startedSearch} status={loadingStatusLabel} />
+                <ProgressTable startedDate={jobDates.started} currentDate={jobDates.current} status={loadingStatusLabel} />
             </TallRow>;
         }
         if (errorMessage) {

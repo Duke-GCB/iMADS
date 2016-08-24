@@ -41,8 +41,11 @@ class CustomResultSearch {
         this.statusLabelObj.setLoadingStatusLabel(label);
     }
 
-    setJobStarted(dateTime) {
-        this.statusLabelObj.setJobStarted(dateTime);
+    setJobDates(started, current) {
+        this.statusLabelObj.setJobDates({
+            started: started,
+            current: current,
+        });
     }
 
     requestPage(page, predictionSettings, onSearchData, onError) {
@@ -167,7 +170,7 @@ class CustomResultSearch {
                         this.showError({'message': message});
                     } else {
                         this.setStatusLabel(message);
-                        this.setJobStarted(data.created);
+                        this.setJobDates(data.created, data.current_time);
                         this.log("Waiting and checking " + jobId + " again.");
                         window.setTimeout(this.waitForJob, WAIT_FOR_JOB_MS, jobId);
                     }

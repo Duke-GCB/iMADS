@@ -45,7 +45,7 @@ class PredictionPage extends React.Component {
             predictionColor: TFColorPickers.defaultColorObj(),
             preferenceMode: false,
             customSequenceList: this.customSequenceList.get(),
-            startedSearch: undefined,
+            jobDates: {},
         };
     }
 
@@ -82,9 +82,9 @@ class PredictionPage extends React.Component {
         });
     };
 
-    setJobStarted = (started) => {
+    setJobDates = (jobDates) => {
         this.setState({
-            startedSearch: started,
+            jobDates: jobDates,
         });
     };
 
@@ -134,7 +134,6 @@ class PredictionPage extends React.Component {
         if (model && selectedSequence) {
             this.setState({
                 searchDataLoaded: false,
-                startedSearch: '' + new Date(),
             });
             this.customResultSearch.requestPage(page, predictionSettings, this.onSearchData, this.onError);
             browserHistory.push(this.customResultSearch.makeLocalUrl(predictionSettings));
@@ -223,7 +222,7 @@ class PredictionPage extends React.Component {
                                                  predictionColor={this.state.predictionColor}
                                                  showBlankWhenEmpty={noSequences}
                                                  preferenceMode={preferenceMode}
-                                                 startedSearch={this.state.startedSearch}
+                                                 jobDates={this.state.jobDates}
         />;
         return <div>
             <NavBar selected={PREDICTION_NAV.path}/>

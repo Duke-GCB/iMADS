@@ -4,6 +4,7 @@ Jobs include creating predictions or preferences for a custom sequence.
 """
 
 import uuid
+import datetime
 from pred.queries.dbutil import update_database, read_database
 from pred.webserver.customresult import CustomResultData
 
@@ -72,7 +73,8 @@ class CustomJob(object):
             'created': self.created,
             'finished': self.finished,
             'error_msg': self.error_msg,
-            'model_name': self.model_name
+            'model_name': self.model_name,
+            'current_time': datetime.datetime.utcnow(),
         }
 
     @staticmethod
