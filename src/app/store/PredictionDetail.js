@@ -38,7 +38,7 @@ export default class PredictionDetail {
                 rowClassName: rowClassName,
                 position: position,
                 chrom: chrom,
-                start: parseInt(prediction.start) + 1,
+                start: start,
                 end: prediction.end,
                 value: prediction.value,
             };
@@ -57,7 +57,8 @@ export default class PredictionDetail {
     getSeqFromParentSequence(detailObject, parentSequence) {
         let start = detailObject.start;
         let end = detailObject.end;
-        return parentSequence.substring(start, end);
+        // substring get back to original start
+        return parentSequence.substring(start - 1, end);
     }
 
 }

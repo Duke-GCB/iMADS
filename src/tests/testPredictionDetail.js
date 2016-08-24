@@ -64,7 +64,7 @@ describe('PredictionDetail', function () {
             }
             let predDetail = new PredictionDetail();
             let seq = predDetail.getSeqFromParentSequence(detailObject, parentSequence);
-            assert.equal('CGTA', seq);
+            assert.equal('ACGTA', seq);
         });
     });
 });
