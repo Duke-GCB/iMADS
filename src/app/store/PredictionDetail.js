@@ -16,13 +16,17 @@ export default class PredictionDetail {
     }
 
     // return array of details for each value in rowData
-    getDetails(rowData, chrom, selectedIndex) {
+    getDetails(rowData, chrom, selectedIndexList) {
         let result = [];
         let sortedValues = rowData.values.slice();
         sortedValues.sort(sortByStart);
         for (let i = 0; i < sortedValues.length; i++) {
             let prediction = sortedValues[i];
-            result.push(this.makeDetail(prediction, chrom, i == selectedIndex));
+            let isSelected = false;
+            if (selectedIndexList) {
+                isSelected = selectedIndexList.indexOf(i) != -1;
+            }
+            result.push(this.makeDetail(prediction, chrom, isSelected));
         }
         return result;
     }

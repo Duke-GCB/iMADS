@@ -1,15 +1,20 @@
 // Transform prediction data into heat map data.
+import ColorBlender from './ColorBlender.js';
 
-function sortByValue(a, b) {
-    return a.value - b.value;
+function compareNumbers(a, b) {
+  return a - b;
 }
 
-function sortByX(a, b) {
-    return a.x - b.x;
+function sortByStart(a, b) {
+  return a.start - b.start;
+}
+
+function sortByAbsValue(a, b) {
+  return Math.abs(a.start) - Math.abs(b.start);
 }
 
 class HeatMapData {
-    constructor(chrom, data, xOffset = 0, includeTitle = false, itemWidth = PREDICTION_WIDTH) {
+    constructor(chrom, data, xOffset = 0, includeTitle = false, itemWidth) {
         this.chrom = chrom;
         this.data = data;
         this.xOffset = xOffset;
@@ -17,124 +22,148 @@ class HeatMapData {
         this.itemWidth = itemWidth;
     }
 
+    static makeTitle(chrom, item, props) {
+        let result = '';
+        let prefix = '';
+        if (props.includeTitle) {
+            for (let child of item.children) {
+                result += prefix;
+                let start = child.start + 1;
+                if (chrom) {
+                    result += chrom + ":" + start + '-' + child.end + " -> " + child.value;
+                } else {
+                    result += start + '-' + child.end + " -> " + child.value;
+                }
+                prefix = "\n";
+            }
+        }
+        return result;
+    }
+
     static buildCellArray(chrom, inputArray, props, predictionColor) {
         let results = [];
-        let sortedArray = inputArray.slice();
-        sortedArray.sort(sortByValue);
-        for (let data of sortedArray) {
-            let itemWidth = data.end - data.start;
+        let idx = 0;
+        let sortedInputArray = inputArray.slice();
+        sortedInputArray.sort(sortByAbsValue);
+        for (let item of sortedInputArray) {
+            item.idx = idx;
+            idx += 1;
+        }
+        let itemArray = new OverlappingList(inputArray).flatten();
+        itemArray.sort(sortByAbsValue);
+        for (let item of itemArray) {
+            let itemWidth = item.end - item.start + 1;
+            let data = {
+                start: item.start,
+                end: item.end,
+                value: item.value,
+            };
             let hmd = new HeatMapData(chrom, data, props.xOffset, props.includeTitle, itemWidth);
+            let color = new ColorBlender(data.value, predictionColor).getColor();
             results.push({
-                color: hmd.getColor(predictionColor),
+                color: color,
                 x: hmd.getX(props.scale, props.strand, props.xOffsetEnd),
                 width: hmd.getWidth(props.scale),
                 height: props.height,
-                title: hmd.getTitle(),
+                title: HeatMapData.makeTitle(chrom, item, props),
                 start: data.start,
                 end: data.end,
+                idxList: HeatMapData.getIdxArrayFromChildren(item.children),
             });
-        }
-        if (props.includeTitle) {
-            HeatMapData.combineOverlappingTitles(results);
         }
         return results;
     }
 
-    static combineOverlappingTitles(cells) {
-        let prev = undefined;
-        let group = [];
-        let sortedArray = cells.slice();
-        sortedArray.sort(sortByX);
-        for (let cell of sortedArray) {
-            if (prev) {
-                let prevEnd = prev.x + prev.width;
-                if (prevEnd > cell.x) {
-                    if (group.length === 0) {
-                        group.push(prev);
-                    }
-                    group.push(cell);
-                } else {
-                    if (group.length > 0) {
-                        HeatMapData.mergeTitles(group);
-                        group = [];
-                    }
-                }
-            }
-            prev = cell;
+    static maxValueFromChildren(children) {
+        let max = children[0].value;
+        let min = children[0].value;
+        for (let child of children) {
+            max = Math.max(child.value, max);
+            min = Math.min(child.value, min);
         }
-        if (group.length > 0) {
-            HeatMapData.mergeTitles(group);
-            group = [];
+        if (Math.abs(min) > max) {
+            return min;
         }
+        return max;
     }
 
-    static mergeTitles(cells) {
-        let combinedTitle = '';
-        let prefix = '';
-        for (let cell of cells) {
-            combinedTitle += prefix;
-            combinedTitle += cell.title;
-            prefix = "\n";
+    static getIdxArrayFromChildren(children) {
+        let result = [];
+        for (let child of children) {
+            result.push(child.idx);
         }
-        for (let cell of cells) {
-            cell.title = combinedTitle;
-        }
-    }
-
-    getColor(predictionColor) {
-        let value = Math.abs(this.data.value);
-        let negative = this.data.value < 0;
-        let colorToCheck = predictionColor.color1;
-        if (this.data.value < 0) {
-            colorToCheck = predictionColor.color2;
-        }
-        let primary = 255;
-        let revColor = 1 - value;
-        let secondary = parseInt(255 * revColor);
-        let red = primary;
-        let green = secondary;
-        let blue = secondary;
-        if (colorToCheck == "blue") {
-            red = secondary;
-            green = secondary;
-            blue = primary;
-        }
-        if (colorToCheck == "green") {
-            // Dark green is 0, 128, 0 instead of 0, 255, 0 (if it was similar red or blue)
-            let minGreen = Math.min(secondary + 30, 255);
-            let greenValue = Math.max(128, minGreen);
-            red = secondary;
-            green = greenValue;
-            blue = secondary;
-        }
-        return "rgb(" + red + "," + green + "," + blue + ")";
+        return result;
     }
 
     getX(scale, strand, xOffsetEnd) {
         let start = this.data.start;
         let value = this.data.value;
+        let scaledX;
         if (strand === '-') {
             let x = start - this.xOffset;
             x = (xOffsetEnd - this.xOffset) - x - this.itemWidth;
-            return x * scale;
+            scaledX = x * scale;
         } else {
-            return parseInt((start - this.xOffset) * scale);    
+            scaledX = (start - this.xOffset) * scale;
         }
+        return parseInt(Math.round(scaledX));
     }
 
     getWidth(scale) {
-        return Math.max(1, parseInt(this.itemWidth * scale));
-    }
-
-    getTitle() {
-        if (this.includeTitle) {
-            if (this.chrom) {
-                return this.chrom + ":" + this.data.start + '-' + this.data.end + " -> " + this.data.value;
-            } else {
-                return this.data.start + '-' + this.data.end + " -> " + this.data.value;
-            }
-        }
-        return '';
+        return Math.max(1, parseInt(Math.round(this.itemWidth * scale)));
     }
 }
+
+
+export class OverlappingList {
+    constructor(items) {
+        this.items = items || [];
+    }
+
+    add(item) {
+        this.items.push(item);
+    }
+
+    flatten() {
+        this.addChildren();
+        return this.items;
+    }
+
+    toString() {
+        return OverlappingList.itemAryToString(this.items);
+    }
+
+    static itemAryToString(items) {
+        let result = '';
+        for (let item of items) {
+            result += OverlappingList.itemToString(item);
+        }
+        return result;
+    }
+
+    static itemToString(item) {
+        let result = '';
+        result += "[" + item.start + "," + item.end + " children_len:" + item.children.length;
+        result += "]  ";
+        return result;
+    }
+
+    static itemsOverlap(x, y) {
+        return x.start < y.end && y.start < x.end
+    }
+
+    addChildren() {
+        for (let item of this.items) {
+            let children = [];
+            for (let sibling of this.items) {
+                if (OverlappingList.itemsOverlap(item, sibling)) {
+                    children.push(sibling);
+                }
+            }
+            children.sort(sortByStart);
+            item.children = children;
+        }
+    }
+}
+
 export default HeatMapData;

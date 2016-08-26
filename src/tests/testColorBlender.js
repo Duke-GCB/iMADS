@@ -3,23 +3,6 @@ import ColorBlender, {RED_COLOR_NAME, GREEN_COLOR_NAME, BLUE_COLOR_NAME,  YELLOW
 var assert = require('chai').assert;
 
 describe('ColorBlender', function () {
-    describe('lookupAlternateColorName()', function () {
-        it('follow color wheel when given known items', function () {
-            assert.equal(YELLOW_COLOR_NAME, ColorBlender.lookupAlternateColorName(RED_COLOR_NAME, GREEN_COLOR_NAME));
-            assert.equal(YELLOW_COLOR_NAME, ColorBlender.lookupAlternateColorName(GREEN_COLOR_NAME, RED_COLOR_NAME));
-
-            assert.equal(MAGENTA_COLOR_NAME, ColorBlender.lookupAlternateColorName(RED_COLOR_NAME, BLUE_COLOR_NAME));
-            assert.equal(MAGENTA_COLOR_NAME, ColorBlender.lookupAlternateColorName(BLUE_COLOR_NAME, RED_COLOR_NAME));
-
-            assert.equal(CYAN_COLOR_NAME, ColorBlender.lookupAlternateColorName(BLUE_COLOR_NAME, GREEN_COLOR_NAME));
-            assert.equal(CYAN_COLOR_NAME, ColorBlender.lookupAlternateColorName(GREEN_COLOR_NAME, BLUE_COLOR_NAME));
-        });
-        it('return first color when given unknown groups', function () {
-            assert.equal(RED_COLOR_NAME, ColorBlender.lookupAlternateColorName(RED_COLOR_NAME, RED_COLOR_NAME));
-            assert.equal(RED_COLOR_NAME, ColorBlender.lookupAlternateColorName(RED_COLOR_NAME, 'anything'));
-        });
-    });
-
     describe('isNegative()', function () {
         it('true for values < 0', function () {
             assert.equal(true, new ColorBlender(-1).isNegative());
@@ -33,21 +16,13 @@ describe('ColorBlender', function () {
     });
 
     describe('determineColorName()', function () {
-        it('returns useAlternateColor ignoring value', function () {
+        it('returns color based on value', function () {
             let predictionColor = {
                 color1: RED_COLOR_NAME,
                 color2: BLUE_COLOR_NAME,
             };
-            assert.equal(MAGENTA_COLOR_NAME, new ColorBlender(1, predictionColor, true).determineColorName());
-            assert.equal(MAGENTA_COLOR_NAME, new ColorBlender(-1, predictionColor, true).determineColorName());
-        });
-        it('returns color based on value when not useAlternateColor', function () {
-            let predictionColor = {
-                color1: RED_COLOR_NAME,
-                color2: BLUE_COLOR_NAME,
-            };
-            assert.equal(RED_COLOR_NAME, new ColorBlender(1, predictionColor, false).determineColorName());
-            assert.equal(BLUE_COLOR_NAME, new ColorBlender(-1, predictionColor, false).determineColorName());
+            assert.equal(RED_COLOR_NAME, new ColorBlender(1, predictionColor).determineColorName());
+            assert.equal(BLUE_COLOR_NAME, new ColorBlender(-1, predictionColor).determineColorName());
         });
     });
 
@@ -74,15 +49,12 @@ describe('ColorBlender', function () {
                 color2: BLUE_COLOR_NAME,
             };
             //test red values
-            assert.equal('rgb(255,0,0)', new ColorBlender(1.0, predictionColor, false).getColor());
-            assert.equal('rgb(255,128,128)', new ColorBlender(0.5, predictionColor, false).getColor());
-            assert.equal('rgb(255,255,255)', new ColorBlender(0.0, predictionColor, false).getColor());
+            assert.equal('rgb(255,0,0)', new ColorBlender(1.0, predictionColor).getColor());
+            assert.equal('rgb(255,128,128)', new ColorBlender(0.5, predictionColor).getColor());
+            assert.equal('rgb(255,255,255)', new ColorBlender(0.0, predictionColor).getColor());
             //test blue values
-            assert.equal('rgb(0,0,255)', new ColorBlender(-1.0, predictionColor, false).getColor());
-            assert.equal('rgb(128,128,255)', new ColorBlender(-0.5, predictionColor, false).getColor());
-            //test magenta values
-            assert.equal('rgb(255,0,255)', new ColorBlender(1.0, predictionColor, true).getColor());
-            assert.equal('rgb(255,128,255)', new ColorBlender(0.5, predictionColor, true).getColor());
+            assert.equal('rgb(0,0,255)', new ColorBlender(-1.0, predictionColor).getColor());
+            assert.equal('rgb(128,128,255)', new ColorBlender(-0.5, predictionColor).getColor());
 
         });
     });

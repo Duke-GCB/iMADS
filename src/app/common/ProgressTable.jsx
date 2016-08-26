@@ -31,6 +31,9 @@ export default class ProgressTable extends React.Component {
         let started = moment(new Date(startedDate));
         let current = moment(new Date(currentDate));
         let elapsed = this.getEllapsed(started, current);
+        if (!startedDate) {
+            return <div></div>;
+        }
         return <table className="ProgressTable_table">
             <tbody>
             <tr className="ProgressTable_tr_even">

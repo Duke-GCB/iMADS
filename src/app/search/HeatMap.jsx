@@ -68,7 +68,7 @@ class HeatMap extends React.Component {
         }
         return <g>
             {title}
-            <rect data-idx={idx} x={heatCell.x} y={0} width={heatCell.width} height={heatCell.height} style={{fill:heatCell.color}}
+            <rect data-idxlist={heatCell.idxList} x={heatCell.x} y={0} width={heatCell.width} height={heatCell.height} style={{fill:heatCell.color}}
                   onClick={this.drillDown} data-url={url}
             />
         </g>
@@ -81,8 +81,9 @@ class HeatMap extends React.Component {
             window.open(url);
         } else {
             if (setSelectedIndex) {
-                let idx = evt.target.getAttribute('data-idx');
-                setSelectedIndex(idx);
+                let indexListStr = evt.target.getAttribute('data-idxlist');
+                let indexes = indexListStr.split(",").map(function(x) { return parseInt(x);});
+                setSelectedIndex(indexes);
             }
         }
     }

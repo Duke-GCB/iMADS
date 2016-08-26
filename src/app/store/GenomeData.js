@@ -1,3 +1,5 @@
+const PREFERENCE_TYPE = 'PREFERENCE';
+
 export function getTrackHubUrl(genomeData, genomeName) {
     return genomeData[genomeName].trackhubUrl;
 }
@@ -6,15 +8,25 @@ export function getFirstGenomeName(genomeData) {
     return Object.keys(genomeData)[0];
 }
 
-export function isPreferenceModel(genomeData, genomeName, modelName) {
+export function getPreferenceSettings(genomeData, genomeName, modelName) {
     let genomeObj = genomeData[genomeName];
     if (!genomeObj) {
-        return false;
+        return {
+            isPreference: false,
+        };
     }
     for (let modelObj of genomeObj.models) {
         if (modelObj.name == modelName) {
-            return modelObj.data_type == "PREFERENCE";
+            if (modelObj.data_type == PREFERENCE_TYPE) {
+                return {
+                    isPreference: true,
+                    preferenceMin: modelObj.preference_min,
+                    preferenceMax: modelObj.preference_max,
+                }
+            }
         }
     }
-    return false;
+    return {
+        isPreference: false,
+    }
 }

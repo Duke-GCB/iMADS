@@ -121,7 +121,7 @@ class PredictionFilterPanel extends React.Component {
 
     render() {
         let {predictionColor, setPredictionColor, predictionSettings,
-            customSequenceList, preferenceMode} = this.props;
+            customSequenceList, showTwoColorPickers} = this.props;
         let modelOptions = this.makeModelOptions();
         let sequenceListOptions = this.makeSequenceListOptions();
         let uploadInstructions = <ArrowTooltip label={FIRST_TIME_INSTRUCTIONS}
@@ -150,7 +150,7 @@ class PredictionFilterPanel extends React.Component {
                           onChange={this.onChangeMaxPredictionSort}/>
             <BooleanInput checked={predictionSettings.all} label="All values (heatmap)"
                           onChange={this.onChangeAll}/>
-            <TFColorPickers showTwoPickers={preferenceMode}
+            <TFColorPickers showTwoPickers={showTwoColorPickers}
                             predictionColor={predictionColor}
                             setPredictionColor={setPredictionColor} />
             <UploadSequenceDialog isOpen={this.state.showCustomDialog}

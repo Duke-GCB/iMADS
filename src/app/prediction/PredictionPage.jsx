@@ -15,7 +15,7 @@ import CustomResultSearch from '../store/CustomResultSearch.js';
 import {CustomSequenceList} from '../store/CustomSequence.js';
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../store/AppSettings.js'
 import {SEQUENCE_NOT_FOUND} from '../store/Errors.js';
-import {isPreferenceModel, getFirstGenomeName} from '../store/GenomeData.js';
+import {getPreferenceSettings, getFirstGenomeName} from '../store/GenomeData.js';
 
 class PredictionPage extends React.Component {
     constructor(props) {
@@ -43,7 +43,6 @@ class PredictionPage extends React.Component {
             showGeneNamesWarnings: true,
             loadingStatusLabel: "",
             predictionColor: TFColorPickers.defaultColorObj(),
-            preferenceMode: false,
             customSequenceList: this.customSequenceList.get(),
             jobDates: {},
         };
@@ -181,12 +180,16 @@ class PredictionPage extends React.Component {
 
     downloadRawData = () => {
         return this.customResultSearch.getRawDownloadURL();
-    }
+    };
 
     render() {
-        let preferenceMode = isPreferenceModel(this.state.genomeData,
+        // Add preference min/max to color settings.
+        let preferenceSettings = getPreferenceSettings(this.state.genomeData,
             getFirstGenomeName(this.state.genomeData),
             this.state.predictionSettings.model);
+        let predictionColor = Object.assign({}, this.state.predictionColor);
+        Object.assign(predictionColor, preferenceSettings);
+
         let searchOperations = {
             search: this.search,
             changePage: this.changePage,
@@ -203,9 +206,9 @@ class PredictionPage extends React.Component {
                                                setPredictionSettings={this.setPredictionSettings}
                                                setErrorMessage={this.setErrorMessage}
                                                showCustomDialog={this.state.showCustomDialog}
-                                               predictionColor={this.state.predictionColor}
+                                               predictionColor={predictionColor}
                                                setPredictionColor={this.setPredictionColor}
-                                               preferenceMode={preferenceMode}
+                                               showTwoColorPickers={preferenceSettings.isPreference}
         />;
         let rightPanel = <PredictionResultsPanel genomeData={this.state.genomeData}
                                                  predictionSettings={this.state.predictionSettings}
@@ -219,9 +222,8 @@ class PredictionPage extends React.Component {
                                                  showCustomDialog={this.state.showCustomDialog}
                                                  predictionStore={this.predictionStore}
                                                  searchOperations={searchOperations}
-                                                 predictionColor={this.state.predictionColor}
+                                                 predictionColor={predictionColor}
                                                  showBlankWhenEmpty={noSequences}
-                                                 preferenceMode={preferenceMode}
                                                  jobDates={this.state.jobDates}
         />;
         return <div>
