@@ -49,7 +49,7 @@ class PredictionDialog extends React.Component {
     }
 
     render() {
-        let {data, predictionColor} = this.props;
+        let {data, predictionColor, coreRange} = this.props;
         if (!data) {
             return <div></div>;
         }
@@ -82,6 +82,9 @@ class PredictionDialog extends React.Component {
             <PredictionDetailTable
                 showChromosomeColumn={true}
                 detailList={detailList}
+                coreOffset={coreRange.coreOffset}
+                coreLength={coreRange.coreLength}
+
             />
         </Popup>
     }

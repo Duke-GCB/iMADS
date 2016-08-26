@@ -65,7 +65,7 @@ class PredictionResultsPanel extends React.Component {
 
     render() {
         let {errorMessage, predictionSettings, searchResults, searchDataLoaded, loadingStatusLabel,
-            searchOperations, page, predictionStore, showBlankWhenEmpty, jobDates} = this.props;
+            searchOperations, page, predictionStore, showBlankWhenEmpty, jobDates, coreRange} = this.props;
         let rangeType = false;
         let includeHeatMap = predictionSettings.all === true;
         let showPredictionDetails = Boolean(this.state.predictionData);
@@ -95,6 +95,8 @@ class PredictionResultsPanel extends React.Component {
                                      onRequestClose={this.hidePredictionDetails}
                                      data={this.state.predictionData}
                                      predictionColor={this.props.predictionColor}
+                                     coreOffset={coreRange.coreOffset}
+                                     coreLength={coreRange.coreLength}
             />
         </div>
     }

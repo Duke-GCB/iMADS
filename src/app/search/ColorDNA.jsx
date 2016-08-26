@@ -20,24 +20,31 @@ class ColorDNA extends React.Component {
         return color;
     }
 
-    coloredLetterSpan(key, c) {
+    coloredLetterSpan(key, c, underscore) {
         var color = this.determineColor(c.toUpperCase());
         var style = {
             'color': color,
             'fontFamily': FONT_FAMILY,
             'fontSize': FONT_SIZE,
         };
+        if (underscore) {
+            style['borderBottom'] = '1px solid black';
+        }
         return <span key={key} style={style}>{c}</span>;
     }
 
     render() {
-        var seq = this.props.seq;
+        var {seq, coreOffset, coreLength} = this.props;
         var letters = [];
         for (var i = 0; i < seq.length; i++) {
             var c = seq[i];
             // reactjs requires a key for dynamic component lists
             var key = i + "_" + c;
-            letters.push(this.coloredLetterSpan(key, c));
+            let underscore = false;
+            if (coreOffset && coreLength) {
+                underscore = i >= coreOffset && i < coreOffset + coreLength;
+            }
+            letters.push(this.coloredLetterSpan(key, c, underscore));
         }
         return <div>
             {letters}

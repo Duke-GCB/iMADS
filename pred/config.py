@@ -122,8 +122,10 @@ class GenomeData(object):
             type = prediction_data.get('type', 'PREDICTION')
             preference_min = prediction_data.get('preference_min', None)
             preference_max = prediction_data.get('preference_max', None)
+            core_offset = prediction_data.get('core_offset', None)
+            core_length = prediction_data.get('core_length', None)
             prediction = PredictionSettings(name, url, self.genomename, fix_script, sort_max_guess, type,
-                                            preference_min, preference_max)
+                                            preference_min, preference_max, core_offset, core_length)
             self.prediction_lists.append(prediction)
 
     def get_model_types_str(self):
@@ -142,7 +144,8 @@ class GeneInfoSettings(object):
 
 
 class PredictionSettings(object):
-    def __init__(self, name, url, genome, fix_script, sort_max_guess, data_type, preference_min, preference_max):
+    def __init__(self, name, url, genome, fix_script, sort_max_guess, data_type, preference_min, preference_max,
+                 core_offset, core_length):
         self.name = name
         self.url = url
         self.genome = genome
@@ -151,6 +154,8 @@ class PredictionSettings(object):
         self.data_type = data_type
         self.preference_min = preference_min
         self.preference_max = preference_max
+        self.core_offset = core_offset
+        self.core_length = core_length
 
     def get_data(self):
         """
@@ -161,6 +166,8 @@ class PredictionSettings(object):
             'name': self.name,
             'data_type': self.data_type,
             'preference_min': self.preference_min,
-            'preference_max': self.preference_max
+            'preference_max': self.preference_max,
+            'core_offset': self.core_offset,
+            'core_length': self.core_length,
         }
 

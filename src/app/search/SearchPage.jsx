@@ -11,7 +11,7 @@ import URLBuilder from '../store/URLBuilder.js'
 import PageBatch from '../store/PageBatch.js'
 import {fetchPredictionSettings} from '../store/PredictionSettings.js'
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../store/AppSettings.js'
-import {getPreferenceSettings} from '../store/GenomeData.js';
+import {getPreferenceSettings, getCoreRange} from '../store/GenomeData.js';
 
 
 class SearchPage extends React.Component {
@@ -121,6 +121,11 @@ class SearchPage extends React.Component {
             this.state.searchSettings.model);
         let predictionColor = Object.assign({}, this.state.predictionColor);
         Object.assign(predictionColor, preferenceSettings);
+
+        let coreRange = getCoreRange(this.state.genomeData,
+            this.state.searchSettings.genome,
+            this.state.searchSettings.model);
+
         let searchOperations = {
             search: this.search,
             changePage: this.changePage,
@@ -166,6 +171,7 @@ class SearchPage extends React.Component {
                                 searchOperations={searchOperations}
                                 predictionColor={predictionColor}
                                 preferenceSettings={preferenceSettings}
+                                coreRange={coreRange}
                             />
                         </div>
 

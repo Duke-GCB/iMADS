@@ -107,7 +107,7 @@ class SearchResultsPanel extends React.Component {
 
     render() {
         let {searchSettings, searchResults, searchDataLoaded, searchOperations,
-            page, predictionStore, predictionColor} = this.props;
+            page, predictionStore, predictionColor, coreRange} = this.props;
         let rangeType = searchSettings.geneList === CUSTOM_RANGES_LIST;
         let includeHeatMap = searchSettings.all === true;
         let listContent = this.makeListContent();
@@ -131,6 +131,7 @@ class SearchResultsPanel extends React.Component {
                               onRequestClose={this.hidePredictionDetails}
                               data={this.state.predictionData}
                               predictionColor={predictionColor}
+                              coreRange={coreRange}
             />
         </div>
     }
