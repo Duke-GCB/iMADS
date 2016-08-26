@@ -194,7 +194,7 @@ class SearchFilterPanel extends React.Component {
     }
 
     render() {
-        let {predictionColor, setPredictionColor, preferenceMode} = this.props;
+        let {predictionColor, setPredictionColor, preferenceSettings} = this.props;
         let secondGroupStyle = {marginLeft:'40px'};
         let streamInputStyle = {display: 'inline', width:'4em', marginRight: '10px'};
         let smallMargin = { margin: '10px' }
@@ -274,7 +274,7 @@ class SearchFilterPanel extends React.Component {
                                   geneListNames={geneListNames}
 
                 />
-                <TFColorPickers showTwoPickers={preferenceMode}
+                <TFColorPickers showTwoPickers={preferenceSettings.isPreference}
                                 predictionColor={predictionColor}
                                 setPredictionColor={setPredictionColor} />
         </div>

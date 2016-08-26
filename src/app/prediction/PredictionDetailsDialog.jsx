@@ -8,26 +8,33 @@ export default class PredictionDetailsDialog extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            ranges: {},
-            selectedIndex: undefined,
-        }
+            selectedIndexList: []
+        };
         this.predictionDetail = new PredictionDetail();
     }
 
-    setSelectedIndex = (idx) => {
+    setSelectedIndex = (idxList) => {
         this.setState({
-            selectedIndex: idx
+            selectedIndexList: idxList
         });
+    };
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.data) {
+            this.setState({
+                selectedIndexList: []
+            });
+        }
     }
 
     render() {
-        let {selectedIndex} = this.state;
+        let {selectedIndexList} = this.state;
         let {data} = this.props;
         if (!data) {
             return <div></div>;
         }
         let detailList = [];
-        for (let detailObj of this.predictionDetail.getDetails(data, data.chrom, selectedIndex)) {
+        for (let detailObj of this.predictionDetail.getDetails(data, data.chrom, selectedIndexList)) {
             let {rowClassName, start, end, value} = detailObj;
             let seq = this.predictionDetail.getSeqFromParentSequence(detailObj, data.sequence);
             detailObj.seq = seq;
@@ -42,7 +49,8 @@ export default class PredictionDetailsDialog extends React.Component {
                      height="40"
                      data={data}
                      predictionColor={this.props.predictionColor}
-                     setSelectedIndex={this.setSelectedIndex} />
+                     setSelectedIndex={this.setSelectedIndex}
+                     />
             <h5>Details</h5>
             <PredictionDetailTable
                 showChromosomeColumn={false}

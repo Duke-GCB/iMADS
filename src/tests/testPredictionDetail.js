@@ -16,7 +16,7 @@ describe('PredictionDetail', function () {
                 }]
             }
             let predDetail = new PredictionDetail();
-            let detailAry = predDetail.getDetails(rowData, 'chr1', 0);
+            let detailAry = predDetail.getDetails(rowData, 'chr1', [0]);
             assert.equal(2, detailAry.length);
 
             // FIRST ROW
