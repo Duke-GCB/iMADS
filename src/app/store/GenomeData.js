@@ -30,3 +30,19 @@ export function getPreferenceSettings(genomeData, genomeName, modelName) {
         isPreference: false,
     }
 }
+
+export function getCoreRange(genomeData, genomeName, modelName) {
+    let genomeObj = genomeData[genomeName];
+    if (!genomeObj) {
+        return {};
+    }
+    for (let modelObj of genomeObj.models) {
+        if (modelObj.name == modelName) {
+            return {
+                coreOffset: modelObj.core_offset,
+                coreLength: modelObj.core_length,
+            }
+        }
+    }
+    return {}
+}

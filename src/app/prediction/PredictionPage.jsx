@@ -15,7 +15,7 @@ import CustomResultSearch from '../store/CustomResultSearch.js';
 import {CustomSequenceList} from '../store/CustomSequence.js';
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../store/AppSettings.js'
 import {SEQUENCE_NOT_FOUND} from '../store/Errors.js';
-import {getPreferenceSettings, getFirstGenomeName} from '../store/GenomeData.js';
+import {getPreferenceSettings, getCoreRange, getFirstGenomeName} from '../store/GenomeData.js';
 
 class PredictionPage extends React.Component {
     constructor(props) {
@@ -190,6 +190,10 @@ class PredictionPage extends React.Component {
         let predictionColor = Object.assign({}, this.state.predictionColor);
         Object.assign(predictionColor, preferenceSettings);
 
+        let coreRange = getCoreRange(this.state.genomeData,
+            getFirstGenomeName(this.state.genomeData),
+            this.state.predictionSettings.model);
+
         let searchOperations = {
             search: this.search,
             changePage: this.changePage,
@@ -225,6 +229,7 @@ class PredictionPage extends React.Component {
                                                  predictionColor={predictionColor}
                                                  showBlankWhenEmpty={noSequences}
                                                  jobDates={this.state.jobDates}
+                                                 coreRange={coreRange}
         />;
         return <div>
             <NavBar selected={PREDICTION_NAV.path}/>

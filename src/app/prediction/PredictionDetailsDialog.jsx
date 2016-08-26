@@ -29,7 +29,7 @@ export default class PredictionDetailsDialog extends React.Component {
 
     render() {
         let {selectedIndexList} = this.state;
-        let {data} = this.props;
+        let {data, coreOffset, coreLength} = this.props;
         if (!data) {
             return <div></div>;
         }
@@ -55,6 +55,9 @@ export default class PredictionDetailsDialog extends React.Component {
             <PredictionDetailTable
                 showChromosomeColumn={false}
                 detailList={detailList}
+                coreOffset={coreOffset}
+                coreLength={coreLength}
+
             />
         </Popup>;
     }

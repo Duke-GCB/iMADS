@@ -38,21 +38,22 @@ export default class PredictionDetailTable extends React.Component {
     }
 
     makeRow(rowClassName, chrom, start, end, value, sequence) {
-        let {showChromosomeColumn} = this.props;
+        let {showChromosomeColumn, coreOffset, coreLength} = this.props;
+        let colorDna = <ColorDNA seq={sequence} coreOffset={coreOffset} coreLength={coreLength} />;
         if (showChromosomeColumn) {
             return <tr className={rowClassName}>
                 <td>{chrom}</td>
                 <td>{start}</td>
                 <td>{end}</td>
                 <td>{value}</td>
-                <td><ColorDNA seq={sequence} /></td>
+                <td>{colorDna}</td>
             </tr>;
         } else {
             return <tr className={rowClassName}>
                 <td>{start}</td>
                 <td>{end}</td>
                 <td>{value}</td>
-                <td><ColorDNA seq={sequence} /></td>
+                <td>{colorDna}</td>
             </tr>;
         }
     }
