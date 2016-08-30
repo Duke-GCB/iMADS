@@ -4,10 +4,6 @@ MAINTAINER john.bradley@duke.edu
 RUN apt-get update \
   && apt-get install -y apache2 libapache2-mod-wsgi\
   && apt-get clean
-RUN pip install supervisor supervisor-stdout
-
-# Configure supervisor
-ADD supervisord.conf /etc/supervisord.conf
 
 # Configure Apache
 ADD tfpredictions.conf /etc/apache2/sites-available/tfpredictions.conf
@@ -24,4 +20,4 @@ VOLUME /etc/external/
 EXPOSE 80
 EXPOSE 443
 
-CMD supervisord -c /etc/supervisord.conf -n
+CMD apache2 -DFOREGROUND
