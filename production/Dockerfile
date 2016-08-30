@@ -20,4 +20,4 @@ VOLUME /etc/external/
 EXPOSE 80
 EXPOSE 443
 
-CMD apache2 -DFOREGROUND
+CMD apachectl -DFOREGROUND
