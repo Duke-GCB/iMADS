@@ -85,3 +85,4 @@ Rebuild prediction based on trackup:
 curl http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/trackDb.txt | grep 'track\|bigDataUrl' | sed -e 's/^track /name: "/' -e 's/$/"/' | sed -e 's/^bigDataUrl /url: "/'
 ```
 Then add these to the appropriate section of the yaml file.
+
