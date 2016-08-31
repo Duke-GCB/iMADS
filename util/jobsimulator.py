@@ -74,7 +74,7 @@ def make_predictions(job):
 
 
 def make_predictions_for_seq(name, seq):
-    pred_width = 5
+    pred_width = 26
     bed_data = []
     preds = random.randint(1, 5)
     width = len(seq)
@@ -82,9 +82,7 @@ def make_predictions_for_seq(name, seq):
 
         start = random.randint(0, max(width - pred_width,1))
         end = start + pred_width
-        value = random.random()
-        if value < 0.2:
-            value = 0.2
+        value = (random.random() - 0.5) * 15
         bed_data.append("{}\t{}\t{}\t{}".format(name, start, end, value))
     return bed_data
 
