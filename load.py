@@ -35,7 +35,7 @@ def download_files_command(config):
 def download_models_command(config):
     """
     Subset of download_files_command - just download models based on track_url.
-    :param config:
+    :param config: pred.Config: global configuration containing which models to download.
     """
     update_progress("STAGE: Downloading tracks.")
     download_models(config, update_progress)
