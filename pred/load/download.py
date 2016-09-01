@@ -7,9 +7,10 @@ from ftplib import FTP
 import gzip
 import requests
 import subprocess
+import yaml
 
 GENE_LIST_HOST = 'hgdownload.cse.ucsc.edu'
-DOWNLOAD_CHUNK_SIZE = 16 * 1024
+DOWNLOAD_URL_CHUNK_SIZE = 16 * 1024
 
 
 def download_and_convert(config, update_progress):
@@ -23,6 +24,123 @@ def download_and_convert(config, update_progress):
         genome_files.download_genome()
         genome_files.download_gene_list_files()
         genome_files.download_prediction_files()
+    download_models(config, update_progress)
+
+
+def download_models(config, update_progress):
+    """
+    Download models to config.download_dir based on config.model_tracks_url
+    :param config: Config: global configuration settings
+    :param update_progress: func(str): called with messages related to progress
+    :return:
+    """
+    model_files = ModelFiles(config)
+    models_dir = model_files.models_dir
+
+    local_tracks_filename = '{}/tracks.yaml'.format(models_dir)
+    download_url(config.model_tracks_url, local_tracks_filename, update_progress)
+
+    for filename in model_files.get_model_filenames():
+        url = model_files.get_model_url(filename)
+
+        local_path = model_files.get_local_path(filename)
+        download_url(url, local_path, update_progress)
+
+
+def download_url(url, local_path, update_progress):
+    """
+    Download a remote file into a local path optionally printing progress out.
+    :param url: str: url we should download
+    :param local_path: str: where we should download the file to
+    :param update_progress: func(str): called with messages related to progress
+    :return:
+    """
+    update_progress('Downloading: {}'.format(url))
+    r = requests.get(url, stream=True)
+    with open(local_path, 'wb') as f:
+        for chunk in r.iter_content(chunk_size=DOWNLOAD_URL_CHUNK_SIZE):
+            if chunk:  # filter out keep-alive new chunks
+                f.write(chunk)
+
+
+class ModelFiles(object):
+    """
+    Retrieves data related to models used in the predictions specified in config.
+    """
+    def __init__(self, config):
+        """
+        Setup with config specifying where to get and store model files and tracks.yml.
+        :param config: Config: settings used to retrieve model info
+        """
+        self.model_base_url = config.model_base_url
+        self.model_tracks_url = config.model_tracks_url
+        self.models_dir = '{}/models'.format(config.download_dir)
+
+    def get_model_filenames(self):
+        """
+        Returns unique list of filenames from YAML downloaded from model_tracks_url passed in config.
+        :return: [str] list of filenames of model filenames
+        """
+        model_filenames = []
+        for item in self._get_tracks_data():
+            for filename in item['model_filenames']:
+                model_filenames.append(filename)
+        return set(model_filenames)
+
+    def _get_tracks_data(self):
+        """
+        Returns YAML data based on model_tracks_url property
+        :return: object: array of model info
+        """
+        if self.model_tracks_url:
+            resp = requests.get(self.model_tracks_url)
+            resp.raise_for_status()
+            return yaml.safe_load(resp.text)
+        return []
+
+    def get_model_url(self, filename):
+        """
+        Transform a model filename from get_model_filenames into a url we can download.
+        :param filename: filename base for url
+        :return: str: url to download model
+        """
+        return '{}/{}'.format(self.model_base_url, filename)
+
+    def get_local_path(self, filename):
+        """
+        Transform a model filename from get_model_filenames into a local path.
+        :param filename: filename base for path
+        :return: str: path to where the model file should live
+        """
+        return '{}/{}'.format(self.models_dir, filename)
+
+    def get_model_desc(self, filename):
+        """
+        Transform a model filename into a simpler user description.
+        :param filename: filename to simplify
+        :return: str: description
+        """
+        desc = filename
+        remove_parts = [
+            "_Bound",
+            "_filtered",
+            "_normalized",
+            "_logistic",
+            "_transformed",
+            "_format",
+            ".model",
+        ]
+        for remove_part in remove_parts:
+            desc = desc.replace(remove_part, "")
+        return desc.replace("_"," ")
+
+    def get_model_url_path_and_desc(self, filename):
+        """
+        Based on a filename return tuple of url, path and description.
+        :param filename: filename to make data for
+        :return: (str,str,str): url, local_path, description
+        """
+        return self.get_model_url(filename), self.get_local_path(filename), self.get_model_desc(filename)
 
 
 class GenomeFiles(object):
@@ -299,12 +417,7 @@ class PredictionDownloader(object):
         :return:
         """
         local_filename = self.get_local_bigbed_path()
-        self.update_progress('Downloading: ' + self.url)
-        r = requests.get(self.url, stream=True)
-        with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk: # filter out keep-alive new chunks
-                    f.write(chunk)
+        download_url(self.url, local_filename, self.update_progress)
         self.update_progress('Converting: ' + local_filename)
         ret = subprocess.call([self.fix_script, local_filename, self.get_local_bed_path()])
         if ret != 0:
