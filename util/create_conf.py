@@ -35,6 +35,8 @@ SORT_MAX_GUESS_DEFAULT = yaml_config['SORT_MAX_GUESS_DEFAULT']
 SORT_MAX_GUESS = yaml_config['SORT_MAX_GUESS']
 CORE_SETTINGS_DEFAULT = yaml_config['CORE_SETTINGS_DEFAULT']
 CORE_SETTINGS = yaml_config['CORE_SETTINGS']
+MODEL_TRACKS_URL = yaml_config['MODEL_TRACKS_URL']
+MODEL_BASE_URL = yaml_config['MODEL_BASE_URL']
 
 
 def create_config_file(trackhub_data, output_filename):
@@ -69,6 +71,8 @@ def create_config_file(trackhub_data, output_filename):
     config_data = {
         'binding_max_offset': BINDING_MAX_OFFSET,
         'download_dir': '/tmp/pred_data',
+        'model_tracks_url': MODEL_TRACKS_URL,
+        'model_base_url': MODEL_BASE_URL,
         'genome_data': genome_data,
     }
     with open(output_filename, 'w') as outfile:

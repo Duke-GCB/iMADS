@@ -9,11 +9,19 @@ import sys
 import datetime
 from multiprocessing import Pool
 from jinja2 import FileSystemLoader, Environment
-from pred.load.download import GenomeDownloader, GeneListDownloader, PredictionDownloader, GENE_LIST_HOST
+from pred.load.download import GenomeDownloader, GeneListDownloader, PredictionDownloader, ModelFiles, GENE_LIST_HOST
 from pred.load.postgres import PostgresConnection, CopyCommand
 from psycopg2 import OperationalError
 
 SQL_TEMPLATE_DIR = 'sql_templates'
+
+
+def create_sql_builder():
+    """
+    Create object for building a SQL pipeline that uses jinjatemplates based on SQL_TEMPLATE_DIR.
+    :return: SQLBuilder: SQL pipeline builder object
+    """
+    return SQLBuilder(SQL_TEMPLATE_DIR)
 
 
 def create_sql_pipeline(config, update_progress):
@@ -23,14 +31,28 @@ def create_sql_pipeline(config, update_progress):
     :param update_progress: func(str): will be called with progress messages
     :return: SQLBuilder: containing a SQL pipeline that can be run with run_sql
     """
-    sql_builder = SQLBuilder(SQL_TEMPLATE_DIR)
+    sql_builder = create_sql_builder()
     sql_builder.create_data_source()
     sql_builder.create_custom_list()
     sql_builder.custom_job_tables()
     for genome_data in config.genome_data_list:
         database_loader = DatabaseLoader(config, genome_data, sql_builder, update_progress)
         create_pipeline_for_genome_version(database_loader)
+
+    create_sql_for_model_files(config, sql_builder)
     return sql_builder.sql_pipeline
+
+
+def create_sql_for_model_files(config, sql_builder):
+    """
+    Insert records into the database for the model files we have in config.
+    :param config: pred.Config: contains the trackhub setup that specifies our models
+    :param sql_builder: builder to add our sql commands to
+    """
+    model_files = ModelFiles(config)
+    for filename in model_files.get_model_filenames():
+        url, local_path, description = model_files.get_model_url_path_and_desc(filename)
+        sql_builder.insert_data_source(url, description, 'model', local_path)
 
 
 def create_pipeline_for_genome_version(database_loader):

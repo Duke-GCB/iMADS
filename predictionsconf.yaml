@@ -171,3 +171,5 @@ genome_data:
     sort_max_guess: 0.6
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38-0011-HisMax.bb
   trackhub_url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt
+model_base_url: http://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models
+model_tracks_url: https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks.yaml?dest=/pred_data/models/tracks.yaml

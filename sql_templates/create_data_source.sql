@@ -1,6 +1,6 @@
 {# creates data_source tables in public schema #}
 
-CREATE TYPE data_source_type AS ENUM ('prediction', 'genelist');
+CREATE TYPE data_source_type AS ENUM ('prediction', 'genelist', 'model');
 
 create table public.data_source (
   url varchar NOT NULL,
