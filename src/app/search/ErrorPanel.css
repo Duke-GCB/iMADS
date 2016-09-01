@@ -1,0 +1,35 @@
+.ErrorPanel_topContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60%;
+}
+
+.ErrorPanel_top_row {
+    align-self: flex-start;
+}
+
+.ErrorPanel_row {
+    max-width: 90%;
+}
+
+.ErrorPanel_errorCell {
+    border: 1px solid black;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.ErrorPanel_errorText {
+    font-size: 12pt;
+    height: 30px;
+}
+
+.ErrorPanel_errorIcon {
+    height: 60px;
+}
+
+
+.ErrorPanel_bottom_row {
+    align-self: flex-end;
+}
