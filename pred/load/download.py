@@ -28,6 +28,12 @@ def download_and_convert(config, update_progress):
 
 
 def download_models(config, update_progress):
+    """
+    Download models to config.download_dir based on config.model_tracks_url
+    :param config: Config: global configuration settings
+    :param update_progress: func(str): called with messages related to progress
+    :return:
+    """
     model_files = ModelFiles(config)
     models_dir = model_files.models_dir
 
@@ -42,6 +48,13 @@ def download_models(config, update_progress):
 
 
 def download_url(url, local_path, update_progress):
+    """
+    Download a remote file into a local path optionally printing progress out.
+    :param url: str: url we should download
+    :param local_path: str: where we should download the file to
+    :param update_progress: func(str): called with messages related to progress
+    :return:
+    """
     update_progress('Downloading: {}'.format(url))
     r = requests.get(url, stream=True)
     with open(local_path, 'wb') as f:

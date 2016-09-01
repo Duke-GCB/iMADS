@@ -7,6 +7,8 @@ import yaml
 from collections import OrderedDict
 
 
+# Hack to make yaml print out somewhat in order
+
 class UnsortableList(list):
     def sort(self, *args, **kwargs):
         pass
@@ -16,8 +18,9 @@ class UnsortableOrderedDict(OrderedDict):
     def items(self, *args, **kwargs):
         return UnsortableList(OrderedDict.items(self, *args, **kwargs))
 
-# Hack to make yaml print out somewhat in order
+
 yaml.add_representer(UnsortableOrderedDict, yaml.representer.SafeRepresenter.represent_dict)
+
 
 FIX_SCRIPT = 'bigBedToBed'
 YAML_CONFIG_FILE = 'create_conf.yaml'
@@ -40,6 +43,11 @@ MODEL_BASE_URL = yaml_config['MODEL_BASE_URL']
 
 
 def create_config_file(trackhub_data, output_filename):
+    """
+    Write out a config file based on trackhub_data and global configuration.
+    :param trackhub_data: object: data downloaded from trackhub
+    :param output_filename: str: filename to save to
+    """
     genome_data = []
     genome_to_track = trackhub_data.get_genomes()
     for genome in sorted(genome_to_track.keys()):
@@ -80,19 +88,12 @@ def create_config_file(trackhub_data, output_filename):
     print("Wrote config file to {}".format(output_filename))
 
 
-def get_genomes(remote_data):
-    genome = ''
-    genome_to_track = {}
-    lines = remote_data.get_lines_for_path(GENOMES_FILENAME)
-    for name, value in get_key_value_list(lines):
-        if name == 'genome':
-            genome = value
-        if name == 'trackDb':
-            genome_to_track[genome] = '{}/{}'.format(remote_data.data_source_url, value)
-    return genome_to_track
-
-
 def get_key_value_list(lines):
+    """
+    Split lines at the first space.
+    :param lines: lines from trackhub file
+    :return: [(name, value)] where name is before first space and value is after first space
+    """
     result = []
     for line in lines:
         line = line.strip()
@@ -105,10 +106,18 @@ def get_key_value_list(lines):
 
 
 class TrackHubData(object):
+    """
+    Data from trackhub related to genomes and their predictions stored there.
+    """
     def __init__(self, data_source_url):
         self.remote_data = RemoteData(data_source_url)
 
     def get_genomes(self):
+        """
+        Create genome version to trackDB dictionary.
+        :param remote_data: lines from trackhub file
+        :return: dict: genome to trackDB URL.
+        """
         genome = ''
         genome_to_track = {}
         lines = self.remote_data.get_lines_for_path(GENOMES_FILENAME)
@@ -120,6 +129,11 @@ class TrackHubData(object):
         return genome_to_track
 
     def get_track_data(self, track_filename):
+        """
+        Given track filename return list of tracks, url.
+        :param track_filename: filename to lookup track data for.
+        :return: [(track_name, url)] list of tracks and their urls
+        """
         result = []
         track = ''
         lines = self.remote_data.get_lines_for_path(track_filename)
@@ -133,19 +147,41 @@ class TrackHubData(object):
 
 
 class RemoteData(object):
+    """
+    Retrieves data in trackhub format.
+    """
     def __init__(self, data_source_url):
+        """
+        Setup base url.
+        :param data_source_url: str: base url all requests are prefixed with
+        """
         self.data_source_url = data_source_url
 
     def get_text_for_path(self, path):
+        """
+        Return text for url built from path.
+        :param path: str: suffix of url added to data_source_url and fetched
+        :return: text of request
+        """
         url = self.create_url(path)
         response = requests.get(url)
         response.raise_for_status()
         return response.text
 
     def get_lines_for_path(self, path):
+        """
+        Return lines for url built from path.
+        :param path: str: suffix of url added to data_source_url and fetched
+        :return: [str]: lines from request
+        """
         return self.get_text_for_path(path).split('\n')
 
     def create_url(self, suffix):
+        """
+        Join data_source_url and suffix.
+        :param suffix: str: end of url
+        :return: str: combined url
+        """
         return '{}/{}'.format(self.data_source_url, suffix)
 
 
