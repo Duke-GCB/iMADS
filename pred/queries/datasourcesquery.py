@@ -1,6 +1,6 @@
 FETCH_DATA_SOURCES_SQL = "select description, downloaded, url, data_source_type " \
                          "from data_source " \
-                         "order by downloaded;"
+                         "order by description;"
 
 
 class DataSourcesQueryNames(object):

@@ -3,6 +3,7 @@ import {URL} from './AppSettings.js'
 
 const PREDICTION_NAME = 'prediction';
 const GENELIST_NAME = 'genelist';
+const MODEL_NAME = 'model';
 
 class DataSourceData {
     fetchData(onData, onError) {
@@ -15,7 +16,8 @@ class DataSourceData {
                 let results = data.results;
                 onData(
                     this.formatData(PREDICTION_NAME, results),
-                    this.formatData(GENELIST_NAME, results)
+                    this.formatData(GENELIST_NAME, results),
+                    this.formatData(MODEL_NAME, results)
                 );
             }.bind(this),
             error: function (xhr, status, err) {

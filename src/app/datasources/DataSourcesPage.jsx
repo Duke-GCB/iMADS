@@ -11,7 +11,8 @@ class DataSourcesPage extends React.Component {
         this.state = {
             predictions: [],
             genelists: [],
-        }
+            models: [],
+        };
         this.onData = this.onData.bind(this);
         this.onError = this.onError.bind(this);
         this.dataSourceData = new DataSourceData();
@@ -21,10 +22,11 @@ class DataSourcesPage extends React.Component {
         this.dataSourceData.fetchData(this.onData, this.onError);
     }
 
-    onData(predictions, genelists) {
+    onData(predictions, genelists, models) {
         this.setState({
             predictions: predictions,
             genelists: genelists,
+            models: models
         });
     }
 
@@ -33,13 +35,15 @@ class DataSourcesPage extends React.Component {
     }
 
     render() {
-        let {predictions, genelists} = this.state;
+        let {predictions, genelists, models} = this.state;
         return <div>
             <NavBar selected={DATA_SOURCES_NAV.path}/>
             <PageContent>
                 <DataSource title="Predictions" content={predictions}/>
                 <br />
                 <DataSource title="Gene Lists" content={genelists}/>
+                <br />
+                <DataSource title="Models" content={models}/>
             </PageContent>
         </div>;
     }

@@ -1,0 +1,70 @@
+
+# Base url we will download prediciton data from
+DATA_SOURCE_URL: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions
+
+# Where we save our result to
+CONFIG_FILENAME: ../predictionsconf.yaml
+
+# File in DATA_SOURCE_URL  that lists genomes
+GENOMES_FILENAME: genomes.txt
+
+# Maximum offset allowed when searching predicitons
+BINDING_MAX_OFFSET: 5000
+
+# Settings to speed up order by max
+SORT_MAX_GUESS_DEFAULT: 0.6
+SORT_MAX_GUESS:
+  'ELK1_0005(NS)': 0.8,
+  'ETS1_0006(NS)': 0.8,
+
+# Array of offset, length for determining where the core is in a prediction
+# this causes the underline in the prediction details screen
+CORE_SETTINGS_DEFAULT: [8, 4]
+CORE_SETTINGS:
+  'E2F1_0001(JS)': [16, 4]
+  'E2F1_0002(JS)': [16, 4]
+
+MODEL_TRACKS_URL: https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks.yaml?dest=/pred_data/models/tracks.yaml
+MODEL_BASE_URL: http://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models
+
+# Gene lists and other static data for each genome
+GENOME_SPECIFIC_DATA:
+  hg19:
+    trackhub_url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt"
+    ftp_files:
+      - "goldenPath/hg19/database/knownGene.txt.gz"
+      - "goldenPath/hg19/database/kgXref.txt.gz"
+    gene_lists:
+      -
+        name: "UCSC Known Genes"
+        source_table: "knowngene"
+        common_name: "genesymbol"
+        common_lookup_table: "kgxref"
+        common_lookup_table_field: "kgid"
+  hg38:
+    trackhub_url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt"
+    ftp_files:
+      - "goldenPath/hg38/database/wgEncodeGencodeBasicV23.txt.gz"
+      - "goldenPath/hg38/database/wgEncodeGencodeCompV23.txt.gz"
+      - "goldenPath/hg38/database/knownGene.txt.gz"
+      - "goldenPath/hg38/database/kgXref.txt.gz"
+      - "goldenPath/hg38/database/refGene.txt.gz"
+    gene_lists:
+      -
+        name: "UCSC Known Genes"
+        source_table: "knowngene"
+        common_name: "genesymbol"
+        common_lookup_table: "kgxref"
+        common_lookup_table_field: "kgid"
+      -
+        name: "Reference Genes"
+        source_table: "refgene"
+        common_name: "name2"
+      -
+        name: "Gencode V23 Basic Genes"
+        source_table: "wgEncodeGencodeBasicV23"
+        common_name: "name2"
+      -
+        name: "Gencode V23 Comprehensive Genes"
+        source_table: "wgEncodeGencodeCompV23"
+        common_name: "name2"
