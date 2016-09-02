@@ -1,60 +1,46 @@
 # TF-DNA-PredictionsDB [![CircleCI](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB.svg?style=svg)](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB)
-Tool for viewing prediction values for genes.
-Currently requires bigWigToBedGraph installed in your path.
-It can be downloaded from http://hgdownload.soe.ucsc.edu/admin/exe.
+Website for viewing transcription factor predictions for gene lists and custom DNA sequences.
 
-###Setup for Postgres
+## Major Components
+__Predictions Config File__ 
 
-Create a postgres database:
+predictionsconf.yaml - this config file determines what will be downloaded and how prediction database will work
 
-```
-create database pred;
-CREATE ROLE pred_user WITH LOGIN PASSWORD <PASSWORD>;
-```
+__Predictions Database__
 
-Update the config file: predictionsconf.json
+Postgres database contains indexed gene lists, custom user data and predicitions data for use by webserver.py
 
-Populate the database with the:
+__Database Loading Script__
 
-Load database with prediction data:
-```
-python load.py 
-```
+load.py - downloads files and loads the database based on predictionsconf.yaml
 
-Run web server:
-```
-# TODO
-```
-Open: <http://localhost:5000>
+__Webserver__
 
-### Note:
-We use schemas to seperate the different versions of the genome.
-So if you want to see the hg38 tables in psql you must first do:
-```
-SET search_path TO hg38,public;
-```
+webserver.py serves web portal and API for accessing the 'pred' database
 
+__Database Vacuum Script__
 
-### Setup to run dev webserver:
-```
-npm install
-npm run webpack
-```
-In another window:
-```
-python predictions.py
-```
+vacuum.py deletes old user data from the 'pred' database
 
+__Web Portal__
 
-### To rebuild the docker image:
-```
-docker build -t jbradley/tfpred .
-docker push jbradley/tfpred 
-```
+Directory portal/ contains the reactjs project that builds static/js/bunde.js for webserver.py to serve.
 
-### To run production via docker-compose:
+__Custom Prediction/Preference Worker__
+
+Calculates predictions and preferences for user uploaded sequences.
+https://github.com/Duke-GCB/Predict-TF-Binding-Worker
+
+## Running:
+
+__Deployment__
+
+We use playbook tf_dna_predictions.yml from https://github.com/Duke-GCB/gcb-ansible.
+
+__Run via docker-compose__
+
 Download `docker-compose.yml` and `.env_sample`.
-Rename `.env_sample` to `.env_`
+Rename `.env_sample` to `.env`
 Change DB_PASS_ENV and POSTGRES_PASSWORD to be whatever password you want.
 Start the database and webserver.
 ```
@@ -65,24 +51,36 @@ Populate the database. (This will take quite a while depending upon predictionsc
 docker-compose run --no-deps --rm web python load.py 
 ```
 
-### Javascript unit tests:
+
+## Javascript unit tests:
 Requires mocha and chai.
-Currently installing mocha globally per their docs(not sure if it is necessary).
 Setup:
 ```
+cd portal
 npm install -g mocha
 npm install --dev
 ```
 
 To run:
 ```
+cd portal
 npm run test
 ```
 
-### Config file updates:
-Rebuild prediction based on trackup:
+## Python unit tests:
+From the root directory run this:
 ```
-curl http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/trackDb.txt | grep 'track\|bigDataUrl' | sed -e 's/^track /name: "/' -e 's/$/"/' | sed -e 's/^bigDataUrl /url: "/'
+nosetests
 ```
-Then add these to the appropriate section of the yaml file.
+Integration tests are skipped (they are run by circleci).
+See tests/test_integration.py skip_postgres_tests for instructions for running them manually.
 
+## Config file updates:
+Under the `util` directory there is a python script for updating the config file.
+It can be run like so:
+```
+cd util
+python create_conf.py
+```
+This will lookup the latest predictions based on the __DATA_SOURCE_URL__ in create_conf.yaml.
+If you want to add a new gene list you will need to update __GENOME_SPECIFIC_DATA__ in create_conf.yaml.
