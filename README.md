@@ -1,5 +1,5 @@
 # TF-DNA-PredictionsDB [![CircleCI](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB.svg?style=svg)](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB)
-Tool for viewing transcription factor prediction for gene lists and custom DNA sequences.
+Website for viewing transcription factor predictions for gene lists and custom DNA sequences.
 
 ### Major Components
 * __predictionsconf.yaml__ - this config file determines what will be downloaded and how prediction database will work
@@ -7,7 +7,7 @@ Tool for viewing transcription factor prediction for gene lists and custom DNA s
 * __load.py__ - downloads files and loads the database based on predictionsconf.yaml
 * __webserver.py__ - serves web portal and API for accessing the 'pred' database
 * __vacuum.py__ - deletes old data from the 'pred' database
-* __portal__ - reactjs project that builds static/js/bunde.js for webserver.py to serve
+* __portal/__ - reactjs project that builds static/js/bunde.js for webserver.py to serve
 
 
 ### Running:
