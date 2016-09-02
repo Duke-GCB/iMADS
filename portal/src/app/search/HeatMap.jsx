@@ -1,6 +1,6 @@
 import React from 'react';
-import HeatMapData from '../store/HeatMapData.js'
-import GenomeBrowserURL from '../store/GenomeBrowserURL.js'
+import HeatMapData from '../models/HeatMapData.js'
+import GenomeBrowserURL from '../models/GenomeBrowserURL.js'
 
 class HeatMap extends React.Component {
     constructor(props) {

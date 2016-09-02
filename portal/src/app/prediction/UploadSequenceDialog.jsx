@@ -5,9 +5,9 @@ import LoadingButton from '../common/LoadingButton.jsx'
 import LargeTextarea from '../common/LargeTextarea.jsx'
 import TextEdit from '../common/TextEdit.jsx'
 import LoadSampleLink from '../common/LoadSampleLink.jsx'
-import FileUpload from '../store/FileUpload.js';
-import {CustomSequence, CustomSequenceList} from '../store/CustomSequence.js';
-import {SEQUENCE_SAMPLE} from '../store/SampleData.js'
+import FileUpload from '../models/FileUpload.js';
+import {CustomSequence, CustomSequenceList} from '../models/CustomSequence.js';
+import {SEQUENCE_SAMPLE} from '../models/SampleData.js'
 
 
 const TITLE = "Custom DNA Sequence";

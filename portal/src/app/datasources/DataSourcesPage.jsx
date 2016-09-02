@@ -1,9 +1,9 @@
 import React from 'react';
 import NavBar from '../common/NavBar.jsx'
-import {DATA_SOURCES_NAV} from '../store/Navigation.js'
+import {DATA_SOURCES_NAV} from '../models/Navigation.js'
 import PageContent from '../common/PageContent.jsx'
 import DataSource from './DataSource.jsx'
-import DataSourceData from '../store/DataSourceData.js'
+import DataSourceData from '../models/DataSourceData.js'
 
 class DataSourcesPage extends React.Component {
     constructor(props) {

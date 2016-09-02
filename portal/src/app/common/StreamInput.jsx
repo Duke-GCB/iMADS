@@ -1,5 +1,5 @@
 import React from 'react';
-import StreamValue from '../store/StreamValue.js'
+import StreamValue from '../models/StreamValue.js'
 
 class StreamInput extends React.Component {
     constructor(props) {

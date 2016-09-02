@@ -2,9 +2,9 @@ import React from 'react';
 import Popup from '../common/Popup.jsx';
 import HeatMap from './HeatMap.jsx';
 import PredictionDetailTable from '../common/PredictionDetailTable.jsx';
-import GenomeBrowserURL from '../store/GenomeBrowserURL.js';
-import DnaSequences from '../store/DnaSequences.js';
-import PredictionDetail from '../store/PredictionDetail.js';
+import GenomeBrowserURL from '../models/GenomeBrowserURL.js';
+import DnaSequences from '../models/DnaSequences.js';
+import PredictionDetail from '../models/PredictionDetail.js';
 
 class PredictionDialog extends React.Component {
     constructor(props) {

@@ -1,17 +1,17 @@
 import React from 'react';
 import { browserHistory } from 'react-router'
 import NavBar from '../common/NavBar.jsx'
-import {SEARCH_NAV} from '../store/Navigation.js'
+import {SEARCH_NAV} from '../models/Navigation.js'
 import SearchResultsPanel from './SearchResultsPanel.jsx'
 import PageTitle from '../common/PageTitle.jsx'
 import SearchFilterPanel from './SearchFilterPanel.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx';
-import PredictionsStore from '../store/PredictionsStore.js'
-import URLBuilder from '../store/URLBuilder.js'
-import PageBatch from '../store/PageBatch.js'
-import {fetchPredictionSettings} from '../store/PredictionSettings.js'
-import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../store/AppSettings.js'
-import {getPreferenceSettings, getCoreRange} from '../store/GenomeData.js';
+import PredictionsStore from '../models/PredictionsStore.js'
+import URLBuilder from '../models/URLBuilder.js'
+import PageBatch from '../models/PageBatch.js'
+import {fetchPredictionSettings} from '../models/PredictionSettings.js'
+import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../models/AppSettings.js'
+import {getPreferenceSettings, getCoreRange} from '../models/GenomeData.js';
 
 
 class SearchPage extends React.Component {

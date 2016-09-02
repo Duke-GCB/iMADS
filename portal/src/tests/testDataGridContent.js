@@ -1,4 +1,4 @@
-import {DataGridContent, TEXT_TYPE, HEATMAP_TYPE} from './../app/store/DataGridContent.js';
+import {DataGridContent, TEXT_TYPE, HEATMAP_TYPE} from './../app/models/DataGridContent.js';
 var assert = require('chai').assert;
 
 describe('DataGridContent', function () {

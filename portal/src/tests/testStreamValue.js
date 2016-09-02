@@ -1,4 +1,4 @@
-import StreamValue from './../app/store/StreamValue.js';
+import StreamValue from './../app/models/StreamValue.js';
 var assert = require('chai').assert;
 
 describe('StreamValue', function () {

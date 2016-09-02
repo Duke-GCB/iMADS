@@ -1,12 +1,12 @@
 import React from 'react';
 import Modal from 'react-modal';
 import Loader from 'react-loader';
-import { CustomListData } from '../store/CustomList.js';
-import FileUpload from '../store/FileUpload.js';
-import CustomFile from '../store/CustomFile.js';
+import { CustomListData } from '../models/CustomList.js';
+import FileUpload from '../models/FileUpload.js';
+import CustomFile from '../models/CustomFile.js';
 import GeneSearchType from './GeneSearchType.jsx'
 import LoadSampleLink from '../common/LoadSampleLink.jsx'
-import {GENE_LIST_SAMPLE, RANGE_LIST_SAMPLE} from '../store/SampleData.js'
+import {GENE_LIST_SAMPLE, RANGE_LIST_SAMPLE} from '../models/SampleData.js'
 require('./CustomListDialog.css');
 
 

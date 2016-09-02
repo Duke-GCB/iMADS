@@ -1,5 +1,5 @@
 import React from 'react';
-import {DataGridContent, TEXT_TYPE} from '../store/DataGridContent.js'
+import {DataGridContent, TEXT_TYPE} from '../models/DataGridContent.js'
 import LabeledLoader from '../common/LabeledLoader.jsx'
 import ErrorPanel from '../search/ErrorPanel.jsx'
 import ProgressTable from '../common/ProgressTable.jsx'

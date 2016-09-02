@@ -2,7 +2,7 @@ import React from 'react';
 import Popup from '../common/Popup.jsx';
 import HeatMap from '../search/HeatMap.jsx';
 import PredictionDetailTable from '../common/PredictionDetailTable.jsx';
-import PredictionDetail from '../store/PredictionDetail.js';
+import PredictionDetail from '../models/PredictionDetail.js';
 
 export default class PredictionDetailsDialog extends React.Component {
     constructor(props) {

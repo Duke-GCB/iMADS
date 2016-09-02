@@ -1,5 +1,5 @@
 import ColorBlender, {RED_COLOR_NAME, GREEN_COLOR_NAME, BLUE_COLOR_NAME,  YELLOW_COLOR_NAME,
-    CYAN_COLOR_NAME, MAGENTA_COLOR_NAME} from './../app/store/ColorBlender.js';
+    CYAN_COLOR_NAME, MAGENTA_COLOR_NAME} from './../app/models/ColorBlender.js';
 var assert = require('chai').assert;
 
 describe('ColorBlender', function () {

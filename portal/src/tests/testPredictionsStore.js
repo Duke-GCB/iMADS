@@ -1,6 +1,6 @@
-import PredictionsStore from './../app/store/PredictionsStore.js';
-import PageBatch from './../app/store/PageBatch.js';
-import URLBuilder from './../app/store/URLBuilder.js';
+import PredictionsStore from './../app/models/PredictionsStore.js';
+import PageBatch from './../app/models/PageBatch.js';
+import URLBuilder from './../app/models/URLBuilder.js';
 
 var assert = require('chai').assert;
 

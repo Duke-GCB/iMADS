@@ -1,8 +1,7 @@
-import URLBuilder from './../app/store/URLBuilder.js';
+import URLBuilder from './../app/models/URLBuilder.js';
 
 var assert = require('chai').assert;
 var good_ajax_response = true;
-
 
 function fake_ajax(fetchData) {
     if (good_ajax_response) {

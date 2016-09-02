@@ -1,6 +1,6 @@
 import React from 'react';
 import NavBar from '../common/NavBar.jsx'
-import {ABOUT_NAV} from '../store/Navigation.js'
+import {ABOUT_NAV} from '../models/Navigation.js'
 import PageContent from '../common/PageContent.jsx'
 import PageTitle from '../common/PageTitle.jsx'
 import AboutContent from './AboutContent.jsx'

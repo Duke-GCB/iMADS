@@ -1,11 +1,11 @@
 import React from 'react';
-import StreamValue from '../store/StreamValue.js'
+import StreamValue from '../models/StreamValue.js'
 import CustomListDialog from './CustomListDialog.jsx'
 import SelectItem from '../common/SelectItem.jsx'
 import StreamInput from '../common/StreamInput.jsx'
 import BooleanInput from '../common/BooleanInput.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx'
-import {getFirstGenomeName} from '../store/GenomeData.js';
+import {getFirstGenomeName} from '../models/GenomeData.js';
 
 const CUSTOM_GENE_LIST = 'Custom Gene List';
 const CUSTOM_RANGES_LIST = 'Custom Ranges List';

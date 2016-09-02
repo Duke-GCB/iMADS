@@ -5,8 +5,8 @@ import PredictionDialog from './PredictionDialog.jsx'
 import HeatMap from './HeatMap.jsx'
 import ErrorPanel from './ErrorPanel.jsx'
 
-import {getTrackHubUrl} from '../store/GenomeData.js';
-import {CUSTOM_RANGES_LIST} from '../store/CustomList.js'
+import {getTrackHubUrl} from '../models/GenomeData.js';
+import {CUSTOM_RANGES_LIST} from '../models/CustomList.js'
 import {ResultHeaderRow, ResultDetailRow} from './ResultRow.jsx'
 import SearchResultsFooter from './SearchResultsFooter.jsx'
 require('./SearchResultsPanel.css')
