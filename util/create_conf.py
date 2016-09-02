@@ -55,7 +55,7 @@ def create_config_file(trackhub_data, output_filename):
         track_filename = genome_to_track[genome]
         track_data = []
         prediction_lists = []
-        for track, url in trackhub_data.get_track_data(track_filename):
+        for track, url in trackhub_data.get_track_data(genome, track_filename):
             sort_max_guess = SORT_MAX_GUESS.get(track, SORT_MAX_GUESS_DEFAULT)
             core_settings = CORE_SETTINGS.get(track, CORE_SETTINGS_DEFAULT)
             prediction_data = {
@@ -128,7 +128,7 @@ class TrackHubData(object):
                 genome_to_track[genome] = value
         return genome_to_track
 
-    def get_track_data(self, track_filename):
+    def get_track_data(self, genome, track_filename):
         """
         Given track filename return list of tracks, url.
         :param track_filename: filename to lookup track data for.
@@ -141,7 +141,7 @@ class TrackHubData(object):
             if name == 'track':
                 track = value
             if name == 'bigDataUrl':
-                url = self.remote_data.create_url(value)
+                url = self.remote_data.create_url('{}/{}'.format(genome, value))
                 result.append((track, url))
         return result
 
