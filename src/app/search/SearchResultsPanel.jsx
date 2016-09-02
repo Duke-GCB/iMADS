@@ -9,6 +9,7 @@ import {getTrackHubUrl} from '../store/GenomeData.js';
 import {CUSTOM_RANGES_LIST} from '../store/CustomList.js'
 import {ResultHeaderRow, ResultDetailRow} from './ResultRow.jsx'
 import SearchResultsFooter from './SearchResultsFooter.jsx'
+require('./SearchResultsPanel.css')
 
 class SearchResultsPanel extends React.Component {
     constructor(props) {

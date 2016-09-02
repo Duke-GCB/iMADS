@@ -1,186 +1,14 @@
-.std_left_right_margin {
-    margin-left: 30px;
-    margin-right: 30px;
+/* Settings for app div */
+
+#app {
+    min-width: 700px;
 }
 
-.std_bottom_margin {
-    margin-bottom: 30px;
-}
-/* styles for use with ./table/*.jsx */
-.table_header_cell {
-    padding: 10px;
-    display: inline-block;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    font-family: Roboto, sans-serif;
-    font-size: 16px;
-    letter-spacing: 0.0625em;
-}
-
-.table_cell {
-    padding: 10px;
-    display: inline-block;
-    font-family: Roboto, sans-serif;
-    font-size: 14px;
-    vertical-align: top;
-}
-
-.table_cell_small {
-    width: 14vw;
-}
-.table_cell_medium {
-    width: 20vw;
-}
-.table_cell_large {
-    width: 30vw;
-}
-
-.table_row {
-    border-bottom: 1px solid grey;
-}
-
-#scrolling_div_container {
-    display: -webkit-flex;
-    -webkit-flex-direction: column;
-    /* you must specify some kind of height like - height: 75%; */
-}
-
-#scrolling_div_child {
-    -webkit-flex: 1 1 auto;
-    min-height: 100px;
-    overflow-y: auto;
-}
-
-.ReactModal__Overlay {
-  -webkit-perspective: 600;
-  perspective: 600;
-  opacity: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.ReactModal__Overlay--after-open {
-  opacity: 1;
-  transition: opacity 150ms ease-out;
-}
-
-.ReactModal__Content {
-  -webkit-transform: scale(0.5) rotateX(-30deg);
-  transform: scale(0.5) rotateX(-30deg);
-}
-
-.ReactModal__Content--after-open {
-  -webkit-transform: scale(1) rotateX(0deg);
-  transform: scale(1) rotateX(0deg);
-  transition: all 150ms ease-in;
-}
-
-.ReactModal__Overlay--before-close {
-  opacity: 0;
-}
-
-.ReactModal__Content--before-close {
-  -webkit-transform: scale(0.5) rotateX(30deg);
-  transform: scale(0.5) rotateX(30deg);
-  transition: all 150ms ease-in;
-}
-
-.ReactModal__Content.modal-dialog {
-  border: none;
-  background-color: transparent;
-}
+/* Generic global styles */
 
 .badValue {
     background: red;
     color: white;
-}
-
-.Aligner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 60%;
-}
-
-.Aligner-item {
-    max-width: 90%;
-}
-
-.Aligner-item--top {
-    align-self: flex-start;
-}
-
-.Aligner-item--bottom {
-    align-self: flex-end;
-}
-
-.errorCell {
-    border: 1px solid black;
-    padding: 30px;
-    border-radius: 10px;
-}
-
-.errorText {
-    font-size: 12pt;
-    height: 30px;
-}
-
-.errorIcon {
-    height: 60px;
-
-}
-
-.HeaderCell {
-    padding: 10px;
-    display: inline-block;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    font-family: Roboto, sans-serif;
-    font-size: 12pt;
-}
-
-.DataCell {
-    padding-left: 10px;
-    display: inline-block;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    font-family: Roboto, sans-serif;
-    font-size: 10pt;
-    height: 20px;
-}
-
-.NameCell       {  width: 16%;  }
-.NameCellWide   {  width: 18%;  }
-.IdCell         {  width: 20%;  }
-.IdCellWide     {  width: 24%;  }
-.StrandCell     {  width: 8%;   }
-.StrandCellWide {  width: 10%;  }
-.ChromCell      {  width: 8%;   }
-.ChromCellWide  {  width: 16%;  }
-.NumberCell     {  width: 10%;  }
-
-
-.listHeader {
-    background-color: #235f9c;
-    color: white;
-}
-
-.CustomListDialog_textarea {
-    width: 100%;
-    height: 35%;
-    font-family: Monaco, monospace;
-    font-size: 10pt;
-    white-space: pre;
-}
-
-.small_lower_margin {
-    margin-bottom: 10px;
-}
-
-.SearchResultsPanel__resultsGridContainer {
-    min-height: 50%;
 }
 
 .centerChildrenHorizontally {
@@ -194,22 +22,6 @@
     left: 50%;
     margin-right: -50%;
     transform: translate(-50%, -50%);
-}
-
-.SearchResultsPanel__no_results_found {
-    font-size: 14pt;
-}
-
-.CustomListDialog__delete_warning {
-    font-weight: bold;
-}
-
-.SearchResultsPanel__searchWarning {
-    color: red;
-}
-
-#app {
-    min-width: 700px;
 }
 
 .expandWidth {
@@ -227,6 +39,44 @@
     text-align: right;
 }
 
-.disabledLabel {
-    color: grey;
+/* Customizations for react-modal Modal dialog */
+
+.ReactModal__Overlay {
+    -webkit-perspective: 600;
+    perspective: 600;
+    opacity: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.ReactModal__Overlay--after-open {
+    opacity: 1;
+    transition: opacity 150ms ease-out;
+}
+
+.ReactModal__Content {
+    -webkit-transform: scale(0.5) rotateX(-30deg);
+    transform: scale(0.5) rotateX(-30deg);
+}
+
+.ReactModal__Content--after-open {
+    -webkit-transform: scale(1) rotateX(0deg);
+    transform: scale(1) rotateX(0deg);
+    transition: all 150ms ease-in;
+}
+
+.ReactModal__Overlay--before-close {
+    opacity: 0;
+}
+
+.ReactModal__Content--before-close {
+    -webkit-transform: scale(0.5) rotateX(30deg);
+    transform: scale(0.5) rotateX(30deg);
+    transition: all 150ms ease-in;
+}
+
+.ReactModal__Content.modal-dialog {
+    border: none;
+    background-color: transparent;
 }

@@ -1,0 +1,7 @@
+.SearchResultsPanel__no_results_found {
+    font-size: 14pt;
+}
+
+.SearchResultsPanel__resultsGridContainer {
+    min-height: 50%;
+}

@@ -20,7 +20,7 @@ class NavBar extends React.Component {
                 <div className="collapse navbar-collapse NavBar_logo_container">
                     <div className="NavBar_logo_parent">
                     <a href="https://genome.duke.edu">
-                        <img className="NavBar_logo_image" src="static/gcb-logo.png" /></a>
+                        <img className="NavBar_logo_image" src="static/img/gcb-logo.png" /></a>
                         </div>
 
                 </div>

@@ -7,6 +7,7 @@ import CustomFile from '../store/CustomFile.js';
 import GeneSearchType from './GeneSearchType.jsx'
 import LoadSampleLink from '../common/LoadSampleLink.jsx'
 import {GENE_LIST_SAMPLE, RANGE_LIST_SAMPLE} from '../store/SampleData.js'
+require('./CustomListDialog.css');
 
 
 const customStyles = {
@@ -184,7 +185,7 @@ class CustomListDialog extends React.Component {
                                         geneSearchType={this.state.geneSearchType}
                                         setGeneSearchType={this.setGeneSearchType} />
                                     <label>Search Gene List:</label>
-                                    <select className="form-control small_lower_margin"
+                                    <select className="form-control CustomListDialog_small_lower_margin"
                                             value={this.state.geneList}
                                             onChange={this.onChangeGeneList}>
                                         {options}

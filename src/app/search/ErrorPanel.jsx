@@ -2,13 +2,13 @@ import React from 'react';
 
 class ErrorPanel extends React.Component {
     render() {
-        return <div className="Aligner">
-            <div className="Aligner-item Aligner-item--top"></div>
-            <div className="Aligner-item errorCell">
-                <img className="errorIcon" src="static/warning.svg" />
-                <span className="errorText">{this.props.message}</span>
+        return <div className="ErrorPanel_topContainer">
+            <div className="ErrorPanel_row ErrorPanel_top_row"></div>
+            <div className="ErrorPanel_row ErrorPanel_errorCell">
+                <img className="ErrorPanel_errorIcon" src="static/img/warning.svg" />
+                <span className="ErrorPanel_errorText">{this.props.message}</span>
             </div>
-            <div className="Aligner-item Aligner-item--bottom"></div>
+            <div className="ErrorPanel_row ErrorPanel_bottom_row"></div>
         </div>;
     }
 }
