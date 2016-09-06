@@ -22,13 +22,15 @@ class NavBar extends React.Component {
                     <a href="https://genome.duke.edu">
                         <img className="NavBar_logo_image" src="static/img/gcb-logo.png" /></a>
                         </div>
-
                 </div>
                 <div className="container-fluid">
                     <div className="row">
                         <div className="navbar-header">
                             <NavMenuButton />
-                            <a className="navbar-brand NavBar_app_title" href="#">TF DNA Predictions</a>
+                            <a className="navbar-brand NavBar_app_title" href="#">iMADS</a>
+                            <div className="NavBar_app_subtitle">
+                                    Modeling and analysis of TF specificity and differentiated specificity
+                            </div>
                         </div>
                     </div>
                     <div className="row">

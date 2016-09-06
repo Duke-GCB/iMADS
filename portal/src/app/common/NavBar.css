@@ -1,8 +1,17 @@
 
 .NavBar_app_title {
     letter-spacing: 0.05em;
-    font-size: 14pt;
+    font-size: 22pt;
     font-family: "Open Sans", sans-serif;
+}
+
+.NavBar_app_subtitle {
+    color: white;
+    padding-left: 15px;
+    white-space: nowrap;
+    padding-top: 15px;
+    font-size: 12pt;
+    height: 50px;
 }
 
 .NavBar_menu_item {
