@@ -9,12 +9,7 @@ class SearchResultsFooter extends React.Component {
         this.state = {
             showGetUrlDialog: false,
             shareUrl: ''
-        }
-        this.downloadCsv = this.downloadCsv.bind(this);
-        this.downloadTabDelimited = this.downloadTabDelimited.bind(this);
-        this.changePage = this.changePage.bind(this);
-        this.showGetLinkDialog = this.showGetLinkDialog.bind(this);
-        this.hideGetLinkDialog = this.hideGetLinkDialog.bind(this);
+        };
     }
 
     searchOperations() {
@@ -29,17 +24,17 @@ class SearchResultsFooter extends React.Component {
         }
     }
 
-    changePage(page) {
+    changePage = (page) => {
         this.searchOperations().changePage(page);
-    }
+    };
 
-    downloadCsv() {
+    downloadCsv = () => {
         return this.searchOperations().downloadAll('csv');
-    }
+    };
 
-    downloadTabDelimited() {
+    downloadTabDelimited = () => {
         return this.searchOperations().downloadAll('tsv');
-    }
+    };
 
     downloadRawDataURL() {
         if (this.searchOperations().downloadRawData) {
@@ -48,18 +43,18 @@ class SearchResultsFooter extends React.Component {
         return '';
     }
 
-    showGetLinkDialog() {
+    showGetLinkDialog = () => {
         this.setState({
             showGetUrlDialog: true
         });
-    }
+    };
 
-    hideGetLinkDialog() {
+    hideGetLinkDialog = () => {
         this.setState({
             showGetUrlDialog: false,
             shareUrl: ''
         });
-    }
+    };
 
     render() {
         let {searchSettings, searchResults, searchDataLoaded, predictionStore, page} = this.props;

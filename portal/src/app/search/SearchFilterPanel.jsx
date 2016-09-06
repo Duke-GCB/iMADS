@@ -54,16 +54,6 @@ class SearchFilterPanel extends React.Component {
                 customListData: "",
             };
         }
-        this.onChangeGenome = this.onChangeGenome.bind(this);
-        this.onChangeModel = this.onChangeModel.bind(this);
-        this.onChangeGeneList = this.onChangeGeneList.bind(this);
-        this.onChangeAll = this.onChangeAll.bind(this);
-        this.onChangeUpstream = this.onChangeUpstream.bind(this);
-        this.onChangeDownstream = this.onChangeDownstream.bind(this);
-        this.onChangeMaxPredictionSort = this.onChangeMaxPredictionSort.bind(this);
-        this.runSearch = this.runSearch.bind(this);
-        this.closeCustomDialog = this.closeCustomDialog.bind(this);
-        this.setShowCustomDialog = this.setShowCustomDialog.bind(this);
     }
 
     componentDidMount() {
@@ -98,10 +88,10 @@ class SearchFilterPanel extends React.Component {
         }
     }
 
-    onChangeGenome(e) {
+    onChangeGenome = (e) => {
         let value = e.target.value;
         this.setState(this.switchGenomeState(this.props.genomeData, value), this.runSearch);
-    }
+    };
 
     switchGenomeState(genomeData, genomeName) {
         return {
@@ -111,7 +101,7 @@ class SearchFilterPanel extends React.Component {
         };
     }
 
-    onChangeGeneList(e) {
+    onChangeGeneList = (e) => {
         let value = e.target.value;
         let isCustom = value === CUSTOM_GENE_LIST || value === CUSTOM_RANGES_LIST;
         let customListFilter = this.state.customListFilter;
@@ -132,48 +122,48 @@ class SearchFilterPanel extends React.Component {
             customListData: customListData,
             customListFilter: customListFilter,
         }, func);
-    }
+    };
 
-    setShowCustomDialog() {
+    setShowCustomDialog = () => {
         this.setState({
             showCustomDialog: true,
         });
-    }
+    };
 
-    closeCustomDialog(customListData, customListFilter, customGeneSearchType) {
+    closeCustomDialog = (customListData, customListFilter, customGeneSearchType) => {
         this.setState({
             showCustomDialog: false,
             customListData: customListData,
             customListFilter: customListFilter,
             customGeneSearchType: customGeneSearchType,
         }, this.runSearch);
-    }
+    };
 
-    onChangeModel(e) {
+    onChangeModel = (e) => {
         this.setState({model: e.target.value}, this.runSearch);
-    }
+    };
 
     getGenomeInfo(genomeName) {
         return this.props.genomeData[genomeName];
     }
 
-    onChangeAll(value) {
+    onChangeAll = (value) => {
         this.setState({all: value}, this.runSearch);
-    }
+    };
 
-    onChangeUpstream(e) {
+    onChangeUpstream = (e) => {
         let value = e.target.value;
         this.setState({upstream: value}, this.runSearch);
-    }
+    };
 
-    onChangeDownstream(e) {
+    onChangeDownstream = (e) => {
         let value = e.target.value;
         this.setState({downstream: value}, this.runSearch);
-    }
+    };
 
-    onChangeMaxPredictionSort(value) {
+    onChangeMaxPredictionSort = (value) => {
         this.setState({maxPredictionSort: value}, this.runSearch);
-    }
+    };
 
     updateValidationState() {
         let streamValue = new StreamValue(this.props.maxBindingOffset);
@@ -185,13 +175,13 @@ class SearchFilterPanel extends React.Component {
         });
     }
 
-    runSearch() {
+    runSearch = () => {
         if (this.state.showCustomDialog) {
             return;
         }
         this.updateValidationState();
         this.props.search(this.state, 1);
-    }
+    };
 
     render() {
         let {predictionColor, setPredictionColor, preferenceSettings} = this.props;

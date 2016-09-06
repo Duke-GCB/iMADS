@@ -19,15 +19,14 @@ class GetLinkDialog extends React.Component {
         super(props);
         this.state = {
             includeCustomList: true,
-        }
-        this.changeIncludeCustomList = this.changeIncludeCustomList.bind(this);
+        };
     }
 
-    changeIncludeCustomList(evt) {
+    changeIncludeCustomList = (evt) => {
         this.setState({
             includeCustomList: evt.target.checked,
         });
-    }
+    };
 
     render() {
         let customList = isCustomList(this.props.searchSettings.geneList);

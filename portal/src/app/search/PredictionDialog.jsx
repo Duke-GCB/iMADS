@@ -12,8 +12,6 @@ class PredictionDialog extends React.Component {
         this.state = {
             ranges: {}
         }
-        this.onDnaRangesResponse = this.onDnaRangesResponse.bind(this);
-        this.onDnaRangesError = this.onDnaRangesError.bind(this);
         this.predictionDetail = new PredictionDetail();
     }
 
@@ -42,11 +40,11 @@ class PredictionDialog extends React.Component {
         this.setState({
             'ranges': ranges
         })
-    }
+    };
 
     onDnaRangesError = (error) => {
         alert(error);
-    }
+    };
 
     render() {
         let {data, predictionColor, coreRange} = this.props;

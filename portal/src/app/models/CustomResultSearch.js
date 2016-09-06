@@ -17,7 +17,6 @@ class CustomResultSearch {
         this.resultIdCache = new ResultIdCache();
         this.currentRequest = {};
         this.statusLabelObj = statusLabelObj;
-        this.setStatusLabel = this.setStatusLabel.bind(this);
         this.log = (str) => {}; //to enable logging add console.log(str)
         this.active = true;
         this.currentJobId = 0;
@@ -37,9 +36,9 @@ class CustomResultSearch {
         }
     }
     
-    setStatusLabel(label) {
+    setStatusLabel = (label) => {
         this.statusLabelObj.setLoadingStatusLabel(label);
-    }
+    };
 
     setJobDates(started, current) {
         this.statusLabelObj.setJobDates({

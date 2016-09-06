@@ -14,33 +14,25 @@ require('./SearchResultsPanel.css')
 class SearchResultsPanel extends React.Component {
     constructor(props) {
         super(props);
-        this.showPredictionDetails = this.showPredictionDetails.bind(this);
-        this.hidePredictionDetails = this.hidePredictionDetails.bind(this);
         this.state = {
             predictionData: undefined,
         }
     }
 
     componentWillUpdate() {
-        /*
-         if (this.scrollToTop) {
-         let resultsGridContainer = document.getElementById('resultsGridContainer');
-         resultsGridContainer.scrollTop = 0;
-         this.scrollToTop = false;
-         }*/
     }
 
-    showPredictionDetails(predictionData) {
+    showPredictionDetails = (predictionData) => {
         this.setState({
             predictionData: predictionData,
         })
-    }
+    };
 
-    hidePredictionDetails(predictionData) {
+    hidePredictionDetails = (predictionData) => {
         this.setState({
             predictionData: undefined,
         })
-    }
+    };
 
     makeHeatMap(rowData) {
         let {searchSettings, predictionColor} = this.props;

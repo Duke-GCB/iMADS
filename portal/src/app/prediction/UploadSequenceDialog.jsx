@@ -31,13 +31,6 @@ class UploadSequenceDialog extends React.Component {
     constructor(props) {
         super(props);
         this.state = DEFAULT_STATE;
-        this.onChangeFile = this.onChangeFile.bind(this);
-        this.onClickUpload = this.onClickUpload.bind(this);
-        this.onChangeTextValue = this.onChangeTextValue.bind(this);
-        this.onCloseNoSave = this.onCloseNoSave.bind(this);
-        this.uploadSequence = this.uploadSequence.bind(this);
-        this.onUploadedSequence = this.onUploadedSequence.bind(this);
-        this.onUploadedSequenceFailed = this.onUploadedSequenceFailed.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -63,25 +56,25 @@ class UploadSequenceDialog extends React.Component {
         alert(err.message);
     };
 
-    onChangeTextValue(value) {
+    onChangeTextValue = (value) => {
         this.setState({
             canUpload: true,
             textValue: value,
             file: undefined,
             fileValue: undefined
         })
-    }
+    };
 
-    onChangeFile(file, fileValue) {
+    onChangeFile = (file, fileValue) => {
         this.setState({
             canUpload: true,
             textValue: '',
             file: file,
             fileValue: fileValue
         })
-    }
+    };
 
-    onClickUpload() {
+    onClickUpload = () => {
         this.setState({
             loading: true
         });
@@ -91,9 +84,9 @@ class UploadSequenceDialog extends React.Component {
         } else {
             this.uploadSequence(this.state.textValue);
         }
-    }
+    };
 
-    uploadSequence(data) {
+    uploadSequence = (data) => {
         if (data) {
             this.setState({
                 loading: false
@@ -102,19 +95,19 @@ class UploadSequenceDialog extends React.Component {
             customSequence.upload(data, this.determineTitle(),
                 this.onUploadedSequence, this.onUploadedSequenceFailed);
         }
-    }
+    };
 
     determineTitle = () => {
         return this.state.sequenceName || this.props.sequenceData.title || this.props.defaultSequenceName;
-    }
+    };
 
-    onUploadedSequence(seqId, title) {
+    onUploadedSequence = (seqId, title) => {
         this.closeDialog(seqId, undefined, title);
-    }
+    };
 
-    onUploadedSequenceFailed(errorMessage) {
+    onUploadedSequenceFailed = (errorMessage) => {
         this.closeDialog(undefined, errorMessage, '');
-    }
+    };
 
     closeDialog = (seqId, errorMessage, title) => {
         if (seqId) {
@@ -126,9 +119,9 @@ class UploadSequenceDialog extends React.Component {
         this.props.onRequestClose(seqId, errorMessage, title);
     };
 
-    onCloseNoSave() {
+    onCloseNoSave = () => {
         this.closeDialog(undefined, undefined, '');
-    }
+    };
 
     setSequenceName = (evt) => {
         let sequenceName = evt.target.value;

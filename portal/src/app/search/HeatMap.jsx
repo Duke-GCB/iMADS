@@ -8,20 +8,16 @@ class HeatMap extends React.Component {
         this.state = {
             detailsIsOpen: false,
         }
-        this.hideDetails = this.hideDetails.bind(this);
-        this.showDetails = this.showDetails.bind(this);
-        this.drillDown = this.drillDown.bind(this);
-        this.viewInGenomeBrowser = this.viewInGenomeBrowser.bind(this);
         this.genomeBrowserURL = new GenomeBrowserURL('human', this.props.data.trackHubUrl);
     }
 
-    hideDetails() {
+    hideDetails = () => {
         this.setState({detailsIsOpen: false});
-    }
+    };
 
-    showDetails() {
+    showDetails = () => {
         this.props.onClickHeatmap(this.props.data);
-    }
+    };
 
     transcriptionStartRect(x) {
         if (this.props.data.isCustomRange) {
@@ -74,7 +70,7 @@ class HeatMap extends React.Component {
         </g>
     }
 
-    drillDown(evt) {
+    drillDown = (evt) => {
         let {setSelectedIndex} = this.props;
         if (this.genomeBrowserURL.trackHubUrl) {
             let url = evt.target.getAttribute('data-url');
@@ -86,9 +82,9 @@ class HeatMap extends React.Component {
                 setSelectedIndex(indexes);
             }
         }
-    }
+    };
 
-    viewInGenomeBrowser() {
+    viewInGenomeBrowser = () => {
         let {setSelectedIndex} = this.props;
         if (this.genomeBrowserURL.trackHubUrl) {
             let data = this.props.data;
@@ -98,8 +94,7 @@ class HeatMap extends React.Component {
                 setSelectedIndex(undefined);
             }
         }
-
-    }
+    };
 
     render() {
         let data = this.props.data;
