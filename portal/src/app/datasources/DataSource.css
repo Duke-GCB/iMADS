@@ -1,0 +1,43 @@
+.DataSource_DataGrid_table {
+    width: 100%;
+    table-layout: fixed;
+    min-width: 700px;
+}
+
+.DataSource_DataGrid_headerCell {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    font-size: 16px;
+    background-color: #235f9c;
+    color: white;
+    font-family: Roboto, sans-serif;
+    letter-spacing: 0.0625em;
+}
+
+.DataSource_DataGrid_header_description {
+    width: 11em;
+}
+
+.DataSource_DataGrid_header_downloaded {
+    width: 6em;
+}
+
+.DataSource_DataGrid_header_spacer {
+    width: 0px;
+}
+
+.DataSource_DataGrid_header_fullUrl {
+    width: 40%;
+}
+
+.DataSource_DataGrid_dataCell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid grey;
+    font-size: 14px;
+    height: 26px;
+    white-space: nowrap;
+    line-height: 1.4;
+    padding: 10px;
+}

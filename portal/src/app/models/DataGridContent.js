@@ -1,6 +1,7 @@
 
 const TEXT_TYPE = "text";
 const HEATMAP_TYPE = "heatmap";
+const LINK_TYPE = "link";
 
 /**
  * Adds column info to each value in data grid including the appropriate className to use for header and data cells.
@@ -28,7 +29,7 @@ class DataGridContent {
         let valueAry = []
         for (let column of this.columns) {
             let value = obj[column.fieldName];
-            if (column.type == HEATMAP_TYPE) {
+            if (column.type != TEXT_TYPE) {
                 value = obj;
             }
             valueAry.push({
@@ -49,4 +50,4 @@ class DataGridContent {
 
 }
 
-export {DataGridContent, TEXT_TYPE, HEATMAP_TYPE};
+export {DataGridContent, TEXT_TYPE, HEATMAP_TYPE, LINK_TYPE};
