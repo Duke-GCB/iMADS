@@ -2,7 +2,6 @@
 # Base url we will download prediciton data from
 DATA_SOURCE_URL: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions
 TRACK_SKIP_IF_CONTAINS: '(JS)'
-TRACK_NAME_STRIP_REGEX: '_.*'
 
 # Where we save our result to
 CONFIG_FILENAME: ../predictionsconf.yaml

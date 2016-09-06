@@ -5,6 +5,7 @@ import SelectItem from '../common/SelectItem.jsx'
 import StreamInput from '../common/StreamInput.jsx'
 import BooleanInput from '../common/BooleanInput.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx'
+import ModelSelect from '../common/ModelSelect.jsx';
 import {getFirstGenomeName} from '../models/GenomeData.js';
 
 const CUSTOM_GENE_LIST = 'Custom Gene List';
@@ -190,10 +191,10 @@ class SearchFilterPanel extends React.Component {
         let smallMargin = { margin: '10px' }
         let smallMarginRight = { marginLeft: '10px' }
         let assemblyOptions = [];
-        let proteinOptions = [];
         let geneListOptions = [];
         let currentGenome = this.state.genome;
         let geneListNames = [];
+        let models = [];
         if (this.props.genomeData) {
             let genomeTypes = Object.keys(this.props.genomeData);
             for (let i = 0; i < genomeTypes.length; i++) {
@@ -201,9 +202,7 @@ class SearchFilterPanel extends React.Component {
                 let genomeInfo = this.props.genomeData[name];
                 assemblyOptions.push(<option key={name} value={name}>{name}</option>);
                 if (name === currentGenome) {
-                    genomeInfo.models.forEach(function (model) {
-                        proteinOptions.push(<option key={model.name}  value={model.name}>{model.name}</option>);
-                    });
+                    models = genomeInfo.models;
                     genomeInfo.geneLists.forEach(function (geneList) {
                         geneListOptions.push(<option key={geneList}  value={geneList}>{geneList}</option>);
                         geneListNames.push(geneList);
@@ -233,22 +232,23 @@ class SearchFilterPanel extends React.Component {
                 <h4>Filter</h4>
                 <SelectItem title="Assembly:" selected={this.state.genome} options={assemblyOptions}
                             onChange={this.onChangeGenome}/>
-                <SelectItem title="Protein/Model:" selected={this.state.model} options={proteinOptions}
-                            onChange={this.onChangeModel}/>
+                <ModelSelect selected={this.state.model}
+                             models={models}
+                             onChange={this.onChangeModel} />
                 <SelectItem title={geneListTitle} selected={this.state.geneList} options={geneListOptions}
                             onChange={this.onChangeGeneList}
                             />
                 {customListButton}
 
-                <StreamInput title="Bases upstream:" 
-                             value={this.state.upstream} 
+                <StreamInput title="Bases upstream:"
+                             value={this.state.upstream}
                              onChange={this.onChangeUpstream}
                              maxBindingOffset={this.props.maxBindingOffset}
                              isValid={this.state.upstreamValid}
                              disabled={disableUpstreamDownstream}
                               />
                 <StreamInput title="Bases downstream:"
-                             value={this.state.downstream} 
+                             value={this.state.downstream}
                              onChange={this.onChangeDownstream}
                              maxBindingOffset={this.props.maxBindingOffset}
                              isValid={this.state.downstreamValid}
