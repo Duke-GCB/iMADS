@@ -13,8 +13,6 @@ class DataSourcesPage extends React.Component {
             genelists: [],
             models: [],
         };
-        this.onData = this.onData.bind(this);
-        this.onError = this.onError.bind(this);
         this.dataSourceData = new DataSourceData();
     }
 
@@ -22,17 +20,17 @@ class DataSourcesPage extends React.Component {
         this.dataSourceData.fetchData(this.onData, this.onError);
     }
 
-    onData(predictions, genelists, models) {
+    onData = (predictions, genelists, models) => {
         this.setState({
             predictions: predictions,
             genelists: genelists,
             models: models
         });
-    }
+    };
 
-    onError(message) {
+    onError = (message) => {
         alert(message);
-    }
+    };
 
     render() {
         let {predictions, genelists, models} = this.state;
