@@ -1,10 +1,7 @@
 import React from 'react';
 
-import LabeledLoader from '../common/LabeledLoader.jsx'
 import PredictionDetailsDialog from './PredictionDetailsDialog.jsx'
 import HeatMap from '../search/HeatMap.jsx'
-import ErrorPanel from '../search/ErrorPanel.jsx'
-import {PredictionResultHeaderRow, PredictionResultDetailRow} from './PredictionResultRow.jsx'
 import SearchResultsFooter from '../search/SearchResultsFooter.jsx'
 import DataGrid from '../common/DataGrid.jsx'
 
