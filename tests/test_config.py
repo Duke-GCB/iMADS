@@ -53,3 +53,4 @@ class TestConfigLoading(TestCase):
         self.assertEqual('goldenPath/hg19/bigZips/hg19.2bit', hg19['genomeFile'])
         self.assertEqual(['knowngene'], hg19['geneLists'])
         self.assertEqual('E2F1_0001(JS)', hg19['models'][0]['name'])
+        self.assertEqual(set(['E2F1_0001(JS)']), config.get_all_model_names())

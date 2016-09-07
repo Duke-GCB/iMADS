@@ -75,16 +75,19 @@ class ModelFiles(object):
         self.model_base_url = config.model_base_url
         self.model_tracks_url = config.model_tracks_url
         self.models_dir = '{}/models'.format(config.download_dir)
+        self.model_names = config.get_all_model_names()
 
     def get_model_filenames(self):
         """
         Returns unique list of filenames from YAML downloaded from model_tracks_url passed in config.
+        Only includes the model filenames that we have predictions for.
         :return: [str] list of filenames of model filenames
         """
         model_filenames = []
         for item in self._get_tracks_data():
             for filename in item['model_filenames']:
-                model_filenames.append(filename)
+                if item['track_name'] in self.model_names:
+                    model_filenames.append(filename)
         return set(model_filenames)
 
     def _get_tracks_data(self):
