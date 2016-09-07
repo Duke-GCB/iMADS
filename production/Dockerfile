@@ -21,4 +21,4 @@ EXPOSE 80
 EXPOSE 443
 
 # create password for worker user and run apache in the foreground
-CMD htpasswd -cdb /etc/apache2/.htpasswd worker $WORKER_PASSWORD && apachectl -DFOREGROUND
+CMD htpasswd -cdb /etc/apache2/.htpasswd $WORKER_USERNAME $WORKER_PASSWORD && apachectl -DFOREGROUND
