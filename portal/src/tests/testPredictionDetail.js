@@ -1,4 +1,4 @@
-import PredictionDetail from './../app/store/PredictionDetail.js';
+import PredictionDetail from './../app/models/PredictionDetail.js';
 var assert = require('chai').assert;
 
 describe('PredictionDetail', function () {

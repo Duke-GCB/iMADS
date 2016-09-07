@@ -5,8 +5,8 @@ import PredictionDialog from './PredictionDialog.jsx'
 import HeatMap from './HeatMap.jsx'
 import ErrorPanel from './ErrorPanel.jsx'
 
-import {getTrackHubUrl} from '../store/GenomeData.js';
-import {CUSTOM_RANGES_LIST} from '../store/CustomList.js'
+import {getTrackHubUrl} from '../models/GenomeData.js';
+import {CUSTOM_RANGES_LIST} from '../models/CustomList.js'
 import {ResultHeaderRow, ResultDetailRow} from './ResultRow.jsx'
 import SearchResultsFooter from './SearchResultsFooter.jsx'
 require('./SearchResultsPanel.css')
@@ -14,33 +14,25 @@ require('./SearchResultsPanel.css')
 class SearchResultsPanel extends React.Component {
     constructor(props) {
         super(props);
-        this.showPredictionDetails = this.showPredictionDetails.bind(this);
-        this.hidePredictionDetails = this.hidePredictionDetails.bind(this);
         this.state = {
             predictionData: undefined,
         }
     }
 
     componentWillUpdate() {
-        /*
-         if (this.scrollToTop) {
-         let resultsGridContainer = document.getElementById('resultsGridContainer');
-         resultsGridContainer.scrollTop = 0;
-         this.scrollToTop = false;
-         }*/
     }
 
-    showPredictionDetails(predictionData) {
+    showPredictionDetails = (predictionData) => {
         this.setState({
             predictionData: predictionData,
         })
-    }
+    };
 
-    hidePredictionDetails(predictionData) {
+    hidePredictionDetails = (predictionData) => {
         this.setState({
             predictionData: undefined,
         })
-    }
+    };
 
     makeHeatMap(rowData) {
         let {searchSettings, predictionColor} = this.props;

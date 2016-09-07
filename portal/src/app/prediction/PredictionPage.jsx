@@ -1,21 +1,21 @@
 import React from 'react';
 import {browserHistory} from 'react-router'
 import NavBar from '../common/NavBar.jsx'
-import {PREDICTION_NAV} from '../store/Navigation.js'
+import {PREDICTION_NAV} from '../models/Navigation.js'
 import ThreePanelPane from '../common/ThreePanelPane.jsx'
 import PageTitle from '../common/PageTitle.jsx'
 import PredictionFilterPanel from './PredictionFilterPanel.jsx'
 import PredictionResultsPanel from './PredictionResultsPanel.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx';
-import PredictionsStore from '../store/PredictionsStore.js'
-import URLBuilder from '../store/URLBuilder.js'
-import PageBatch from '../store/PageBatch.js'
-import {fetchPredictionSettings} from '../store/PredictionSettings.js'
-import CustomResultSearch from '../store/CustomResultSearch.js';
-import {CustomSequenceList} from '../store/CustomSequence.js';
-import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../store/AppSettings.js'
-import {SEQUENCE_NOT_FOUND} from '../store/Errors.js';
-import {getPreferenceSettings, getCoreRange, getFirstGenomeName} from '../store/GenomeData.js';
+import PredictionsStore from '../models/PredictionsStore.js'
+import URLBuilder from '../models/URLBuilder.js'
+import PageBatch from '../models/PageBatch.js'
+import {fetchPredictionSettings} from '../models/PredictionSettings.js'
+import CustomResultSearch from '../models/CustomResultSearch.js';
+import {CustomSequenceList} from '../models/CustomSequence.js';
+import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../models/AppSettings.js'
+import {SEQUENCE_NOT_FOUND} from '../models/Errors.js';
+import {getPreferenceSettings, getCoreRange, getFirstGenomeName} from '../models/GenomeData.js';
 
 class PredictionPage extends React.Component {
     constructor(props) {

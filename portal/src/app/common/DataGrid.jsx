@@ -1,6 +1,5 @@
 import React from 'react';
-import {DataGridContent, TEXT_TYPE} from '../store/DataGridContent.js'
-import LabeledLoader from '../common/LabeledLoader.jsx'
+import {DataGridContent, TEXT_TYPE} from '../models/DataGridContent.js'
 import ErrorPanel from '../search/ErrorPanel.jsx'
 import ProgressTable from '../common/ProgressTable.jsx'
 
@@ -44,7 +43,8 @@ export default class DataGrid extends React.Component {
             </td>);
             key += 1;
         }
-        let headerSpacerClassName = this.makeClassName("headerCell");
+        let headerSpacerClassName = this.makeClassName("header_spacer");
+        headerSpacerClassName += " " + this.makeClassName("headerCell");
         let keyStr = this.makeClassName("header_spacer") + key;
         headers.push(<td className={headerSpacerClassName} key={keyStr}></td>);
         return headers;
@@ -54,7 +54,7 @@ export default class DataGrid extends React.Component {
         let {errorMessage, searchDataLoaded, loadingStatusLabel, jobDates,
             showBlankWhenEmpty} = this.props;
         let numColumns = dataGridContent.getNumColumns() + 1;
-        if (!searchDataLoaded) {
+        if (!searchDataLoaded && jobDates) {
             return <TallRow numColumns={numColumns}>
                 <ProgressTable startedDate={jobDates.started} currentDate={jobDates.current} status={loadingStatusLabel} />
             </TallRow>;
@@ -90,7 +90,7 @@ export default class DataGrid extends React.Component {
             <td></td>
         </tr>);//spacer row
         return rows;
-    }
+    };
 
     makeRow = (row, rowKey) => {
         let items = [];
@@ -117,12 +117,12 @@ export default class DataGrid extends React.Component {
 
         let rowKeyStr = dataRowClassName + rowKey;
         return <tr key={rowKeyStr} className={dataRowClassName}>{items}</tr>;
-    }
+    };
 
     makeClassName = (name) => {
         let {classNamePrefix} = this.props;
         return classNamePrefix + name;
-    }
+    };
 
     render() {
         let {errorMessage, searchDataLoaded, loadingStatusLabel} = this.props;

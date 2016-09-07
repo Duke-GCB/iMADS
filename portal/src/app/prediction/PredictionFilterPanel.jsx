@@ -1,5 +1,6 @@
 import React from 'react';
 import SelectItem from '../common/SelectItem.jsx'
+import ModelSelect from '../common/ModelSelect.jsx';
 import BooleanInput from '../common/BooleanInput.jsx'
 import ArrowTooltip from '../common/ArrowTooltip.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx'
@@ -82,23 +83,17 @@ class PredictionFilterPanel extends React.Component {
         this.props.setPredictionSettings({maxPredictionSort: value});
     };
 
-    makeModelOptions() {
+    getModels() {
         let {genomeData}  = this.props;
-        let modelOptions = [];
+        let models = [];
         if (genomeData) {
-            let genomeTypes = Object.keys(genomeData);
-            for (let i = 0; i < genomeTypes.length; i++) {
-                let name = genomeTypes[i];
-                let genomeInfo = genomeData[name];
-                if (i == 0) {
-                    genomeInfo.models.forEach(function (model) {
-                        modelOptions.push(<option key={model.name} value={model.name}>{model.name}</option>);
-                    });
-                }
+            let firstGenomeVersion = Object.keys(genomeData)[0];
+            let genomeInfo = genomeData[firstGenomeVersion];
+            if (genomeInfo) {
+                models = genomeInfo.models;
             }
-
         }
-        return modelOptions;
+        return models;
     }
 
     makeSequenceListOptions() {
@@ -122,11 +117,10 @@ class PredictionFilterPanel extends React.Component {
     render() {
         let {predictionColor, setPredictionColor, predictionSettings,
             customSequenceList, showTwoColorPickers} = this.props;
-        let modelOptions = this.makeModelOptions();
+        let models = this.getModels();
         let sequenceListOptions = this.makeSequenceListOptions();
         let uploadInstructions = <ArrowTooltip label={FIRST_TIME_INSTRUCTIONS}
                                                visible={customSequenceList.length == 0} />;
-
         let editSequenceButton = [];
         if (predictionSettings.selectedSequence) {
             editSequenceButton = <button type="button" className="btn btn-default btn-sm"
@@ -135,10 +129,9 @@ class PredictionFilterPanel extends React.Component {
         }
         return <div>
             <h4>Filter</h4>
-            <SelectItem title="Protein/Model:"
-                        selected={predictionSettings.model}
-                        options={modelOptions}
-                        onChange={this.onChangeModel}/>
+            <ModelSelect selected={predictionSettings.model}
+                         models={models}
+                         onChange={this.onChangeModel} />
             <SelectItem title="Custom DNA:"
                         selected={predictionSettings.selectedSequence}
                         options={sequenceListOptions}

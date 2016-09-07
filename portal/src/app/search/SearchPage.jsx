@@ -1,17 +1,17 @@
 import React from 'react';
 import { browserHistory } from 'react-router'
 import NavBar from '../common/NavBar.jsx'
-import {SEARCH_NAV} from '../store/Navigation.js'
+import {SEARCH_NAV} from '../models/Navigation.js'
 import SearchResultsPanel from './SearchResultsPanel.jsx'
 import PageTitle from '../common/PageTitle.jsx'
 import SearchFilterPanel from './SearchFilterPanel.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx';
-import PredictionsStore from '../store/PredictionsStore.js'
-import URLBuilder from '../store/URLBuilder.js'
-import PageBatch from '../store/PageBatch.js'
-import {fetchPredictionSettings} from '../store/PredictionSettings.js'
-import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../store/AppSettings.js'
-import {getPreferenceSettings, getCoreRange} from '../store/GenomeData.js';
+import PredictionsStore from '../models/PredictionsStore.js'
+import URLBuilder from '../models/URLBuilder.js'
+import PageBatch from '../models/PageBatch.js'
+import {fetchPredictionSettings} from '../models/PredictionSettings.js'
+import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../models/AppSettings.js'
+import {getPreferenceSettings, getCoreRange} from '../models/GenomeData.js';
 
 
 class SearchPage extends React.Component {
@@ -34,21 +34,14 @@ class SearchPage extends React.Component {
              predictionColor: TFColorPickers.defaultColorObj(),
              preferenceSettings: {},
          };
-         this.search = this.search.bind(this);
-         this.downloadAll = this.downloadAll.bind(this);
-         this.changePage = this.changePage.bind(this);
-         this.setErrorMessage = this.setErrorMessage.bind(this);
-         this.searchFirstPage = this.searchFirstPage.bind(this);
-         this.onError = this.onError.bind(this);
-         this.onSearchData = this.onSearchData.bind(this);
     }
 
-    setErrorMessage(msg) {
+    setErrorMessage = (msg) => {
         this.setState({
             errorMessage: msg,
             searchDataLoaded: true,
-        })
-    }
+        });
+    };
 
     componentDidMount() {
         fetchPredictionSettings(function(genomes, maxBindingOffset) {
@@ -59,11 +52,11 @@ class SearchPage extends React.Component {
         }.bind(this), this.onError);
     }
 
-    searchFirstPage() {
+    searchFirstPage = () => {
         this.search(this.state.searchSettings, 1);
-    }
+    };
 
-    search(searchSettings, page) {
+    search = (searchSettings, page) => {
         let {canRun, errorMessage} = this.predictionStore.checkSettings(searchSettings, this.state.maxBindingOffset);
         if (!canRun) {
             this.setErrorMessage(errorMessage);
@@ -79,9 +72,9 @@ class SearchPage extends React.Component {
         });
         this.predictionStore.requestPage(page, searchSettings, this.onSearchData, this.onError);
         browserHistory.push(this.predictionStore.makeLocalUrl(searchSettings));
-    }
+    };
 
-    onSearchData(predictions, pageNum, hasNextPages, warning) {
+    onSearchData = (predictions, pageNum, hasNextPages, warning) => {
         if (warning) {
             if (!(this.predictionStore.isGeneWarningMessage(warning) && !this.state.showGeneNamesWarnings)) {
                 alert(warning);
@@ -95,19 +88,19 @@ class SearchPage extends React.Component {
             errorMessage: '',
             showGeneNamesWarnings: false
         });
-    }
+    };
 
-    onError(err) {
+    onError = (err) => {
         this.setErrorMessage(err.message);
-    }
+    };
 
-    changePage(page) {
+    changePage = (page) => {
         this.search(this.state.searchSettings, page)
-    }
+    };
 
-    downloadAll(format) {
+    downloadAll = (format) => {
         return this.predictionStore.getDownloadURL(format, this.state.searchSettings);
-    }
+    };
 
     setPredictionColor = (colorObject) => {
         this.setState({

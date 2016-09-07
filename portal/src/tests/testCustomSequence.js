@@ -1,4 +1,4 @@
-import {CustomSequenceList} from './../app/store/CustomSequence.js';
+import {CustomSequenceList} from './../app/models/CustomSequence.js';
 var assert = require('chai').assert;
 
 class FakeLocalStorage {

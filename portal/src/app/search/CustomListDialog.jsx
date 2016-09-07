@@ -1,12 +1,12 @@
 import React from 'react';
 import Modal from 'react-modal';
 import Loader from 'react-loader';
-import { CustomListData } from '../store/CustomList.js';
-import FileUpload from '../store/FileUpload.js';
-import CustomFile from '../store/CustomFile.js';
+import { CustomListData } from '../models/CustomList.js';
+import FileUpload from '../models/FileUpload.js';
+import CustomFile from '../models/CustomFile.js';
 import GeneSearchType from './GeneSearchType.jsx'
 import LoadSampleLink from '../common/LoadSampleLink.jsx'
-import {GENE_LIST_SAMPLE, RANGE_LIST_SAMPLE} from '../store/SampleData.js'
+import {GENE_LIST_SAMPLE, RANGE_LIST_SAMPLE} from '../models/SampleData.js'
 require('./CustomListDialog.css');
 
 
@@ -30,22 +30,14 @@ class CustomListDialog extends React.Component {
             file: undefined,
             geneList: 'All',
             geneSearchType: 'gene_name',
-        }
-        this.changeUploadFile = this.changeUploadFile.bind(this);
-        this.changeText = this.changeText.bind(this);
-        this.onChangeGeneList = this.onChangeGeneList.bind(this);
-        this.onClickSearch = this.onClickSearch.bind(this);
-        this.closeReturningResult = this.closeReturningResult.bind(this);
-        this.setText = this.setText.bind(this);
-        this.exitDialog = this.exitDialog.bind(this);
-        this.setGeneSearchType = this.setGeneSearchType.bind(this);
+        };
     }
 
-    setGeneSearchType(searchType) {
+    setGeneSearchType = (searchType) => {
         this.setState({
             geneSearchType: searchType
         })
-    }
+    };
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.isOpen) {
@@ -66,7 +58,7 @@ class CustomListDialog extends React.Component {
         }
     }
 
-    changeUploadFile(evt) {
+    changeUploadFile = (evt) => {
         let customListDialog = this;
         let file = evt.target.files[0];
         if (file) {
@@ -83,28 +75,29 @@ class CustomListDialog extends React.Component {
                 file: file,
             });
         }
-    }
+    };
 
-
-
-    changeText(evt) {
+    changeText = (evt) => {
         this.setText(evt.target.value);
-    }
-    setText(value) {
+    };
+
+    setText = (value) => {
         this.setState({
             text: value,
             loading: false,
             file: undefined,
             fileValue: '',
         });
-    }
-    onChangeGeneList(evt) {
+    };
+
+    onChangeGeneList = (evt) => {
         let geneList = evt.target.value;
         this.setState({
             geneList: geneList
         });
-    }
-    onClickSearch() {
+    };
+
+    onClickSearch = () => {
         if (this.state.file) {
             this.setState({
                 loading: true,
@@ -114,13 +107,13 @@ class CustomListDialog extends React.Component {
         } else {
             this.closeReturningResult(this.state.text);
         }
-    }
+    };
 
-    exitDialog() {
+    exitDialog = () => {
         this.props.onRequestClose('', this.state.geneList, this.state.geneSearchType);
-    }
+    };
 
-    closeReturningResult(text) {
+    closeReturningResult = (text) => {
         let customListDialog = this;
         let customListData = new CustomListData(customListDialog.props.type);
         let customFile = new CustomFile(customListData.isGeneList(), text);
@@ -134,7 +127,7 @@ class CustomListDialog extends React.Component {
             })
             alert(error);
         })
-    }
+    };
 
     loadSampleData = () => {
         let customListData = new CustomListData(this.props.type);

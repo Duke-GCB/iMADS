@@ -1,44 +1,29 @@
 import React from 'react';
 import PageTitle from '../common/PageTitle.jsx'
-import ListHeader from '../common/ListHeader.jsx'
-import HeaderCell from '../common/HeaderCell.jsx'
-import CellRow from '../common/CellRow.jsx'
-import DataCell from '../common/DataCell.jsx'
+import DataGrid from '../common/DataGrid.jsx';
+require('./DataSource.css');
 
-class DataSource extends React.Component {
-    makeHeader() {
-        return <ListHeader>
-            <HeaderCell width={MEDIUM_WIDTH}>Description</HeaderCell>
-            <HeaderCell width={SMALL_WIDTH}>Downloaded</HeaderCell>
-            <HeaderCell width={LARGE_WIDTH}>URL</HeaderCell>
-        </ListHeader>
-    }
+export default class DataSource extends React.Component {
 
-    makeRow(item) {
-        let {fullUrl, cleanUrl, description, downloaded} = item;
-        let nameLink = <a href={fullUrl}>{cleanUrl}</a>;
-        return <CellRow key={item.fullUrl}>
-            <DataCell style={{width: MEDIUM_WIDTH, padding: DATA_CELL_PADDING}} >{description}</DataCell>
-            <DataCell style={{width: SMALL_WIDTH, padding: DATA_CELL_PADDING}} >{downloaded}</DataCell>
-            <DataCell style={{width: LARGE_WIDTH, padding: DATA_CELL_PADDING}} >{nameLink}</DataCell>
-        </CellRow>
-    }
+    makeDownloadURL = (item) => {
+        let {fullUrl, cleanUrl} = item;
+        return <a href={fullUrl} title={fullUrl}>{cleanUrl}</a>;
+    };
 
     render() {
         let {title, content} = this.props;
-        let header = this.makeHeader();
-        let contentRows = content.map(this.makeRow);
+        let gridColumnInfo = [
+            {fieldName: 'description', title: 'Description', type: 'text'},
+            {fieldName: 'downloaded', title: 'Downloaded', type: 'text'},
+            {fieldName: 'fullUrl', title: 'URL', type: 'link', makeControlFunc: this.makeDownloadURL},
+        ];
         return <div>
             <PageTitle>{title}</PageTitle>
-            {header}
-            {contentRows}
+            <DataGrid
+                classNamePrefix="DataSource_DataGrid_"
+                columnInfo={gridColumnInfo}
+                rows={content}
+            />
         </div>
     }
 }
-
-let SMALL_WIDTH = '14vw';
-let MEDIUM_WIDTH = '20vw';
-let LARGE_WIDTH = '30vw';
-let DATA_CELL_PADDING = '10px';
-
-export default DataSource;

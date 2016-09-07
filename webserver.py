@@ -226,6 +226,7 @@ def get_job(job_uuid):
 def put_job(job_uuid):
     """
     Update job status.
+    Secured via apache config: production/tfpredictions.conf.
     request['job_status'] str: value from customjob.JobStatus properties
     :param job_uuid: str: uuid of the job we want to update status
     :return: json response
@@ -249,6 +250,7 @@ def put_job(job_uuid):
 def post_custom_result():
     """
     Save custom prediction/preferences results.
+    Secured via apache config: production/tfpredictions.conf.
     request['job_id'] - str: uuid of the job associated with these results
     request['bed_data'] - str: data that makes up the results
     request['model_name'] - str: name of the model used to build these results

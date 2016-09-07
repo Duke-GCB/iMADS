@@ -1,4 +1,4 @@
-import HeatMapData, {OverlappingList} from './../app/store/HeatMapData.js';
+import HeatMapData, {OverlappingList} from './../app/models/HeatMapData.js';
 var assert = require('chai').assert;
 
 describe('OverlappingList', function () {

@@ -4,13 +4,12 @@ require('./LargeTextarea.css');
 class LargeTextarea extends React.Component {
     constructor(props) {
         super(props);
-        this.onChangeValue = this.onChangeValue.bind(this);
     }
 
-    onChangeValue(evt) {
+    onChangeValue = (evt) => {
         let {onChange} = this.props;
         onChange(evt.target.value);
-    }
+    };
 
     render() {
         let {placeholder, value, disabled} = this.props;

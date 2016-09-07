@@ -1,4 +1,4 @@
-import GenomeBrowserURL from './../app/store/GenomeBrowserURL.js';
+import GenomeBrowserURL from './../app/models/GenomeBrowserURL.js';
 var assert = require('chai').assert;
 
 describe('GenomeBrowserURL', function () {

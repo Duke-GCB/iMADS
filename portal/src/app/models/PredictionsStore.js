@@ -1,26 +1,43 @@
 import {URL} from './AppSettings.js'
-import {isCustomList, CUSTOM_GENE_LIST} from '../store/CustomList.js'
+import {isCustomList, CUSTOM_GENE_LIST} from './CustomList.js'
 import StreamValue from './StreamValue.js'
 import URLBuilder from './URLBuilder.js'
 
 const GENE_NAMES_WARNING_PREFIX = "Gene names not in our database";
 
-class CustomPrediction {
+class PredictionsStore {
     constructor(pageBatch, urlBuilder) {
         this.pageBatch = pageBatch;
         this.urlBuilder = urlBuilder;
         this.lastSearchSettingsStr = undefined;
     }
 
-    checkSettings(searchSettings) {
+    checkSettings(searchSettings, maxBindingOffset) {
         let canRun = true;
         let errorMessage = '';
+        // We don't have a genome version - we must waiting for settings to load.
+        if (!searchSettings.genome) {
+            canRun = false;
+        }
         if (canRun) {
             // We have a custom list with no data - we must prompt first.
             if (isCustomList(searchSettings.geneList)) {
                 if (!searchSettings.customListData) {
                     canRun = false;
                 }
+            }
+        }
+        if (canRun) {
+            // User has entered bad upstream or downstream values.
+            let streamValue = new StreamValue(maxBindingOffset);
+            let upstreamError = streamValue.checkForError("Bases upstream", searchSettings.upstream);
+            let downstreamError = streamValue.checkForError("Bases downstream", searchSettings.downstream);
+            if (upstreamError || downstreamError) {
+                errorMessage = upstreamError;
+                if (!errorMessage) {
+                    errorMessage = downstreamError;
+                }
+                canRun = false;
             }
         }
         return {
@@ -33,12 +50,19 @@ class CustomPrediction {
         let settings = {};
         if (query.genome) {
             settings = {
+                genome: query.genome,
                 geneList: query.geneList,
                 model: query.model,
                 all: this.isStrTrue(query.all),
+                upstream: query.upstream,
+                upstreamValid: true,
+                downstream: query.downstream,
+                downstreamValid: true,
                 maxPredictionSort: this.isStrTrue(query.maxPredictionSort),
                 showCustomDialog: false,
                 customListData: query.customListData,
+                customListFilter: query.customListFilter,
+                customGeneSearchType: query.customGeneSearchType,
             };
         }
         let customList = isCustomList(settings.geneList);
@@ -134,4 +158,4 @@ class CustomPrediction {
 
 }
 
-export default CustomPrediction;
+export default PredictionsStore;

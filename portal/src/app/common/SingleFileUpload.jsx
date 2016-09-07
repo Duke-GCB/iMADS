@@ -4,10 +4,9 @@ require('./SingleFileUpload.css');
 class SingleFileUpload extends React.Component {
     constructor(props) {
         super(props);
-        this.onChange = this.onChange.bind(this);
     }
 
-    onChange(evt) {
+    onChange = (evt) => {
         let {onChangeFile} = this.props;
 
         let file = evt.target.files[0];
@@ -16,7 +15,7 @@ class SingleFileUpload extends React.Component {
         } else {
             onChangeFile(undefined, undefined);
         }
-    }
+    };
 
     render() {
         let {fileValue, loading, onChangeFile} = this.props;

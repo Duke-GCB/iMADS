@@ -1,11 +1,12 @@
 import React from 'react';
-import StreamValue from '../store/StreamValue.js'
+import StreamValue from '../models/StreamValue.js'
 import CustomListDialog from './CustomListDialog.jsx'
 import SelectItem from '../common/SelectItem.jsx'
 import StreamInput from '../common/StreamInput.jsx'
 import BooleanInput from '../common/BooleanInput.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx'
-import {getFirstGenomeName} from '../store/GenomeData.js';
+import ModelSelect from '../common/ModelSelect.jsx';
+import {getFirstGenomeName} from '../models/GenomeData.js';
 
 const CUSTOM_GENE_LIST = 'Custom Gene List';
 const CUSTOM_RANGES_LIST = 'Custom Ranges List';
@@ -54,16 +55,6 @@ class SearchFilterPanel extends React.Component {
                 customListData: "",
             };
         }
-        this.onChangeGenome = this.onChangeGenome.bind(this);
-        this.onChangeModel = this.onChangeModel.bind(this);
-        this.onChangeGeneList = this.onChangeGeneList.bind(this);
-        this.onChangeAll = this.onChangeAll.bind(this);
-        this.onChangeUpstream = this.onChangeUpstream.bind(this);
-        this.onChangeDownstream = this.onChangeDownstream.bind(this);
-        this.onChangeMaxPredictionSort = this.onChangeMaxPredictionSort.bind(this);
-        this.runSearch = this.runSearch.bind(this);
-        this.closeCustomDialog = this.closeCustomDialog.bind(this);
-        this.setShowCustomDialog = this.setShowCustomDialog.bind(this);
     }
 
     componentDidMount() {
@@ -98,10 +89,10 @@ class SearchFilterPanel extends React.Component {
         }
     }
 
-    onChangeGenome(e) {
+    onChangeGenome = (e) => {
         let value = e.target.value;
         this.setState(this.switchGenomeState(this.props.genomeData, value), this.runSearch);
-    }
+    };
 
     switchGenomeState(genomeData, genomeName) {
         return {
@@ -111,7 +102,7 @@ class SearchFilterPanel extends React.Component {
         };
     }
 
-    onChangeGeneList(e) {
+    onChangeGeneList = (e) => {
         let value = e.target.value;
         let isCustom = value === CUSTOM_GENE_LIST || value === CUSTOM_RANGES_LIST;
         let customListFilter = this.state.customListFilter;
@@ -132,48 +123,48 @@ class SearchFilterPanel extends React.Component {
             customListData: customListData,
             customListFilter: customListFilter,
         }, func);
-    }
+    };
 
-    setShowCustomDialog() {
+    setShowCustomDialog = () => {
         this.setState({
             showCustomDialog: true,
         });
-    }
+    };
 
-    closeCustomDialog(customListData, customListFilter, customGeneSearchType) {
+    closeCustomDialog = (customListData, customListFilter, customGeneSearchType) => {
         this.setState({
             showCustomDialog: false,
             customListData: customListData,
             customListFilter: customListFilter,
             customGeneSearchType: customGeneSearchType,
         }, this.runSearch);
-    }
+    };
 
-    onChangeModel(e) {
+    onChangeModel = (e) => {
         this.setState({model: e.target.value}, this.runSearch);
-    }
+    };
 
     getGenomeInfo(genomeName) {
         return this.props.genomeData[genomeName];
     }
 
-    onChangeAll(value) {
+    onChangeAll = (value) => {
         this.setState({all: value}, this.runSearch);
-    }
+    };
 
-    onChangeUpstream(e) {
+    onChangeUpstream = (e) => {
         let value = e.target.value;
         this.setState({upstream: value}, this.runSearch);
-    }
+    };
 
-    onChangeDownstream(e) {
+    onChangeDownstream = (e) => {
         let value = e.target.value;
         this.setState({downstream: value}, this.runSearch);
-    }
+    };
 
-    onChangeMaxPredictionSort(value) {
+    onChangeMaxPredictionSort = (value) => {
         this.setState({maxPredictionSort: value}, this.runSearch);
-    }
+    };
 
     updateValidationState() {
         let streamValue = new StreamValue(this.props.maxBindingOffset);
@@ -185,13 +176,13 @@ class SearchFilterPanel extends React.Component {
         });
     }
 
-    runSearch() {
+    runSearch = () => {
         if (this.state.showCustomDialog) {
             return;
         }
         this.updateValidationState();
         this.props.search(this.state, 1);
-    }
+    };
 
     render() {
         let {predictionColor, setPredictionColor, preferenceSettings} = this.props;
@@ -200,10 +191,10 @@ class SearchFilterPanel extends React.Component {
         let smallMargin = { margin: '10px' }
         let smallMarginRight = { marginLeft: '10px' }
         let assemblyOptions = [];
-        let proteinOptions = [];
         let geneListOptions = [];
         let currentGenome = this.state.genome;
         let geneListNames = [];
+        let models = [];
         if (this.props.genomeData) {
             let genomeTypes = Object.keys(this.props.genomeData);
             for (let i = 0; i < genomeTypes.length; i++) {
@@ -211,9 +202,7 @@ class SearchFilterPanel extends React.Component {
                 let genomeInfo = this.props.genomeData[name];
                 assemblyOptions.push(<option key={name} value={name}>{name}</option>);
                 if (name === currentGenome) {
-                    genomeInfo.models.forEach(function (model) {
-                        proteinOptions.push(<option key={model.name}  value={model.name}>{model.name}</option>);
-                    });
+                    models = genomeInfo.models;
                     genomeInfo.geneLists.forEach(function (geneList) {
                         geneListOptions.push(<option key={geneList}  value={geneList}>{geneList}</option>);
                         geneListNames.push(geneList);
@@ -243,22 +232,23 @@ class SearchFilterPanel extends React.Component {
                 <h4>Filter</h4>
                 <SelectItem title="Assembly:" selected={this.state.genome} options={assemblyOptions}
                             onChange={this.onChangeGenome}/>
-                <SelectItem title="Protein/Model:" selected={this.state.model} options={proteinOptions}
-                            onChange={this.onChangeModel}/>
+                <ModelSelect selected={this.state.model}
+                             models={models}
+                             onChange={this.onChangeModel} />
                 <SelectItem title={geneListTitle} selected={this.state.geneList} options={geneListOptions}
                             onChange={this.onChangeGeneList}
                             />
                 {customListButton}
 
-                <StreamInput title="Bases upstream:" 
-                             value={this.state.upstream} 
+                <StreamInput title="Bases upstream:"
+                             value={this.state.upstream}
                              onChange={this.onChangeUpstream}
                              maxBindingOffset={this.props.maxBindingOffset}
                              isValid={this.state.upstreamValid}
                              disabled={disableUpstreamDownstream}
                               />
                 <StreamInput title="Bases downstream:"
-                             value={this.state.downstream} 
+                             value={this.state.downstream}
                              onChange={this.onChangeDownstream}
                              maxBindingOffset={this.props.maxBindingOffset}
                              isValid={this.state.downstreamValid}

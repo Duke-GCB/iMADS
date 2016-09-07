@@ -1,4 +1,5 @@
 import React from 'react';
+require('./ErrorPanel.css');
 
 class ErrorPanel extends React.Component {
     render() {

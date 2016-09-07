@@ -1,4 +1,4 @@
-import PageBatch from './../app/store/PageBatch.js';
+import PageBatch from './../app/models/PageBatch.js';
 var assert = require('chai').assert;
 
 describe('PageBatch', function () {

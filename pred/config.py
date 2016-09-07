@@ -75,11 +75,29 @@ class Config(object):
         return result
 
     def get_max_sort_guess(self, genome, model_name):
+        """
+        Find the guess value for the max sort for a given model.
+        :param genome: str: name of the genome ('hg19','hg38')
+        :param model_name: str: name of the model ('E2F1...')
+        :return: max value cutoff to speed up first few pages of searching
+        """
+        for genome_data in self.genome_data_list:
+            if genome_data.genomename == genome:
+                for model in genome_data.prediction_lists:
+                    if model.name == model_name:
+                        return model.sort_max_guess
+        return DEFAULT_MAX_SORT_GUESS
+
+    def get_all_model_names(self):
+        """
+        Return the unique names of all models across all genome versions
+        :return:
+        """
+        result = set()
         for genome_data in self.genome_data_list:
             for model in genome_data.prediction_lists:
-                if model.name == model_name:
-                    return model.sort_max_guess
-        return DEFAULT_MAX_SORT_GUESS
+                result.add(model.name)
+        return result
 
 
 class GenomeData(object):

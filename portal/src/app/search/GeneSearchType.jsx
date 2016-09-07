@@ -6,17 +6,15 @@ const ID_TYPE = 'id';
 class GeneSearchType extends React.Component {
     constructor(props) {
         super(props);
-        this.setGeneNameType = this.setGeneNameType.bind(this);
-        this.setIdType = this.setIdType.bind(this);
     }
 
-    setGeneNameType() {
+    setGeneNameType = () => {
         this.props.setGeneSearchType(GENE_NAME_TYPE);
-    }
+    };
 
-    setIdType() {
+    setIdType = () => {
         this.props.setGeneSearchType(ID_TYPE);
-    }
+    };
 
     render() {
         return <div>

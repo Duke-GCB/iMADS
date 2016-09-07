@@ -6,7 +6,7 @@ import SearchPage from './search/SearchPage.jsx'
 import DataSourcesPage from './datasources/DataSourcesPage.jsx'
 import PredictionPage from './prediction/PredictionPage.jsx'
 import AboutPage from './about/AboutPage.jsx'
-import {SEARCH_NAV, DATA_SOURCES_NAV, PREDICTION_NAV, ABOUT_NAV} from './store/Navigation.js'
+import {SEARCH_NAV, DATA_SOURCES_NAV, PREDICTION_NAV, ABOUT_NAV} from './models/Navigation.js'
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // Needed for onTouchTap

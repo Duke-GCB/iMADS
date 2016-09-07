@@ -14,18 +14,6 @@ genome_data:
   genome_file: goldenPath/hg19/bigZips/hg19.2bit
   prediction_lists:
   - core_length: 4
-    core_offset: 16
-    fix_script: bigBedToBed
-    name: E2F1_0001(JS)
-    sort_max_guess: 0.6
-    url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0001-E2F1-E2F1-bestSVR.model.bb
-  - core_length: 4
-    core_offset: 8
-    fix_script: bigBedToBed
-    name: E2F4_0002(JS)
-    sort_max_guess: 0.6
-    url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0002-E2F4-E2F4-bestSVR.model.bb
-  - core_length: 4
     core_offset: 8
     fix_script: bigBedToBed
     name: E2F1_0003(NS)
@@ -104,18 +92,6 @@ genome_data:
   genome: hg38
   genome_file: goldenPath/hg38/bigZips/hg38.2bit
   prediction_lists:
-  - core_length: 4
-    core_offset: 16
-    fix_script: bigBedToBed
-    name: E2F1_0001(JS)
-    sort_max_guess: 0.6
-    url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0001-E2F1-E2F1-bestSVR.model.bb
-  - core_length: 4
-    core_offset: 8
-    fix_script: bigBedToBed
-    name: E2F4_0002(JS)
-    sort_max_guess: 0.6
-    url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38-0002-E2F4-E2F4-bestSVR.model.bb
   - core_length: 4
     core_offset: 8
     fix_script: bigBedToBed

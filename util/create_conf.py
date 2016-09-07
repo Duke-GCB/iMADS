@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 import sys
+import re
 import requests
 import yaml
 from collections import OrderedDict
@@ -30,6 +31,7 @@ yaml_config = {}
 with open(YAML_CONFIG_FILE) as infile:
     yaml_config = yaml.safe_load(infile)
 DATA_SOURCE_URL = yaml_config['DATA_SOURCE_URL']
+TRACK_SKIP_IF_CONTAINS = yaml_config['TRACK_SKIP_IF_CONTAINS']
 CONFIG_FILENAME = yaml_config['CONFIG_FILENAME']
 BINDING_MAX_OFFSET = yaml_config['BINDING_MAX_OFFSET']
 GENOMES_FILENAME = yaml_config['GENOMES_FILENAME']
@@ -56,6 +58,8 @@ def create_config_file(trackhub_data, output_filename):
         track_data = []
         prediction_lists = []
         for track, url in trackhub_data.get_track_data(genome, track_filename):
+            if TRACK_SKIP_IF_CONTAINS and TRACK_SKIP_IF_CONTAINS in track:
+                continue
             sort_max_guess = SORT_MAX_GUESS.get(track, SORT_MAX_GUESS_DEFAULT)
             core_settings = CORE_SETTINGS.get(track, CORE_SETTINGS_DEFAULT)
             prediction_data = {

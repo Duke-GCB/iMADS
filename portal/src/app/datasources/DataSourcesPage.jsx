@@ -1,9 +1,9 @@
 import React from 'react';
 import NavBar from '../common/NavBar.jsx'
-import {DATA_SOURCES_NAV} from '../store/Navigation.js'
+import {DATA_SOURCES_NAV} from '../models/Navigation.js'
 import PageContent from '../common/PageContent.jsx'
 import DataSource from './DataSource.jsx'
-import DataSourceData from '../store/DataSourceData.js'
+import DataSourceData from '../models/DataSourceData.js'
 
 class DataSourcesPage extends React.Component {
     constructor(props) {
@@ -13,8 +13,6 @@ class DataSourcesPage extends React.Component {
             genelists: [],
             models: [],
         };
-        this.onData = this.onData.bind(this);
-        this.onError = this.onError.bind(this);
         this.dataSourceData = new DataSourceData();
     }
 
@@ -22,17 +20,17 @@ class DataSourcesPage extends React.Component {
         this.dataSourceData.fetchData(this.onData, this.onError);
     }
 
-    onData(predictions, genelists, models) {
+    onData = (predictions, genelists, models) => {
         this.setState({
             predictions: predictions,
             genelists: genelists,
             models: models
         });
-    }
+    };
 
-    onError(message) {
+    onError = (message) => {
         alert(message);
-    }
+    };
 
     render() {
         let {predictions, genelists, models} = this.state;

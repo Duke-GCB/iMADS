@@ -1,16 +1,15 @@
 import React from 'react';
-import StreamValue from '../store/StreamValue.js'
+import StreamValue from '../models/StreamValue.js'
 
 class StreamInput extends React.Component {
     constructor(props) {
         super(props);
-        this.onChange = this.onChange.bind(this);
         this.state = {
             isValid: true,
         }
     }
 
-    onChange(evt) {
+    onChange = (evt) => {
         let streamValue = new StreamValue(this.props.maxBindingOffset)
         let isValid = streamValue.isValid(evt.target.value);
         this.setState({
