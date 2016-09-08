@@ -25,7 +25,7 @@ RUN ["pip", "install", "-r", "requirements.txt"]
 # install portal requirements
 WORKDIR ${MYDIR}/portal
 ADD portal/package.json ${MYDIR}/portal/package.json
-RUN npm install -g
+RUN npm install
 RUN npm install --only=dev
 
 # Now add the rest of the application source and run webpack
