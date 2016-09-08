@@ -11,7 +11,6 @@ ADD http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bigBedToBed /usr/local
 RUN ["chmod", "777", "/usr/local/bin/bigBedToBed"]
 
 # Install global dependencies
-WORKDIR ${MYDIR}/portal
 RUN npm install -g npm
 RUN npm install webpack -g
 RUN ["pip", "install", "gunicorn"]
