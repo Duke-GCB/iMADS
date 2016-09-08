@@ -18,13 +18,19 @@ RUN ["pip", "install", "gunicorn"]
 # Install project dependencies - dependency files are added independently so that
 # changes to application source code don't trigger a cache invalidation at this step
 WORKDIR ${MYDIR}
-ADD package.json ${MYDIR}/
-RUN npm install -g
+
 ADD requirements.txt ${MYDIR}/
 RUN ["pip", "install", "-r", "requirements.txt"]
-RUN npm install --dev
+
+# install portal requirements
+WORKDIR ${MYDIR}/portal
+ADD portal/package.json ${MYDIR}/portal/package.json
+RUN npm install -g
+RUN npm install --only=dev
 
 # Now add the rest of the application source and run webpack
 ADD . ${MYDIR}
 RUN webpack
+
+WORKDIR ${MYDIR}
 CMD ["gunicorn", "--bind", "0.0.0.0:80", "--timeout", "180", "--log-level=debug", "webserver:app"]
