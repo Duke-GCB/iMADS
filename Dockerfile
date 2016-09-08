@@ -11,6 +11,7 @@ ADD http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bigBedToBed /usr/local
 RUN ["chmod", "777", "/usr/local/bin/bigBedToBed"]
 
 # Install global dependencies
+WORKDIR ${MYDIR}/portal
 RUN npm install -g npm
 RUN npm install webpack -g
 RUN ["pip", "install", "gunicorn"]
@@ -25,8 +26,8 @@ RUN ["pip", "install", "-r", "requirements.txt"]
 # install portal requirements
 WORKDIR ${MYDIR}/portal
 ADD portal/package.json ${MYDIR}/portal/package.json
-RUN npm install -g
-RUN npm install --only=dev
+RUN npm install
+RUN npm install --dev
 
 # Now add the rest of the application source and run webpack
 ADD . ${MYDIR}
