@@ -22,6 +22,7 @@ export default class DataSource extends React.Component {
         return <div>
             <PageTitle>{title}</PageTitle>
             <DataGrid
+                fullScreen={false}
                 classNamePrefix="DataSource_DataGrid_"
                 columnInfo={gridColumnInfo}
                 rows={content}

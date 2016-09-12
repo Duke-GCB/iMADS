@@ -52,7 +52,7 @@ export default class DataGrid extends React.Component {
 
     makeTableContent = (dataGridContent) => {
         let {errorMessage, searchDataLoaded, loadingStatusLabel, jobDates,
-            showBlankWhenEmpty} = this.props;
+            showBlankWhenEmpty, fullScreen} = this.props;
         let numColumns = dataGridContent.getNumColumns() + 1;
         if (!searchDataLoaded && jobDates) {
             return <TallRow numColumns={numColumns}>
@@ -70,9 +70,13 @@ export default class DataGrid extends React.Component {
             if (showBlankWhenEmpty) {
                 message = "";
             }
+            let messageStyle = "smallMargin";
+            if (fullScreen) {
+                messageStyle = "centerVertically";
+            }
             return <TallRow numColumns={numColumns}>
                 <div className="centerChildrenHorizontally">
-                    <span className="centerVertically">{message}</span>
+                    <span className={messageStyle}>{message}</span>
                 </div>
             </TallRow>;
         }
