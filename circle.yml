@@ -8,4 +8,4 @@ database:
 test:
   override:
     - nosetests # test python code
-    - testjs.sh #test javascript
+    - ./testjs.sh #test javascript
