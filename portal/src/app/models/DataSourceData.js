@@ -34,16 +34,18 @@ class DataSourceData {
             if (data.dataSourceType !== dataSourceType) {
                 continue;
             }
-            let fullUrl = data.url;
-            if (fullUrl.indexOf('http') < 0) {
-                fullUrl = 'http://' + fullUrl;
+            let url = data.url;
+            if (url.indexOf('http') < 0) {
+                url = 'https://' + url;
             }
-            let cleanUrl = data.url.replace("https:\/\/", "").replace("http:\/\/", "");
+            let filename = data.url.replace(/.*\//, "");
+            let host = data.url.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
             let row = {
                 description: data.description,
                 downloaded: data.downloaded,
-                fullUrl: fullUrl,
-                cleanUrl: cleanUrl,
+                url: url,
+                filename: filename,
+                host: host,
             };
             rows.push(row);
         }

@@ -6,8 +6,10 @@ require('./DataSource.css');
 export default class DataSource extends React.Component {
 
     makeDownloadURL = (item) => {
-        let {fullUrl, cleanUrl} = item;
-        return <a href={fullUrl} title={fullUrl}>{cleanUrl}</a>;
+        let {url, filename, host} = item;
+        return <span>
+            <a href={url} title={url}>{filename}</a> at {host}
+        </span>;
     };
 
     render() {
@@ -15,7 +17,7 @@ export default class DataSource extends React.Component {
         let gridColumnInfo = [
             {fieldName: 'description', title: 'Description', type: 'text'},
             {fieldName: 'downloaded', title: 'Downloaded', type: 'text'},
-            {fieldName: 'fullUrl', title: 'URL', type: 'link', makeControlFunc: this.makeDownloadURL},
+            {fieldName: 'url', title: 'URL', type: 'link', makeControlFunc: this.makeDownloadURL},
         ];
         return <div>
             <PageTitle>{title}</PageTitle>
