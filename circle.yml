@@ -8,4 +8,6 @@ database:
 test:
   override:
     - ./testjs.sh #test javascript
-    - nosetests --with-xunit # test python code
+        environment:
+          MOCHA_FILE: $CIRCLE_TEST_REPORTS/junit/test-results.xml
+    - nosetests --with-xunit --xunit-file=$CIRCLE_TEST_REPORTS/python/junit.xml # test python code
