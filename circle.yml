@@ -8,4 +8,4 @@ database:
 test:
   override:
     - ./testjs.sh #test javascript
-    - nosetests # test python code
+    - nosetests --with-xunit # test python code
