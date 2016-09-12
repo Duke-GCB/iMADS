@@ -5,3 +5,7 @@ database:
   override:
     - createdb pred
     - createuser -s -w pred_user
+test:
+  override:
+    - nosetests # test python code
+    - testjs.sh #test javascript
