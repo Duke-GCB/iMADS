@@ -8,4 +8,5 @@ database:
 test:
   override:
     - ./testjs.sh #test javascript
+    - mkdir -p $CIRCLE_TEST_REPORTS/python
     - nosetests --with-xunit --xunit-file=$CIRCLE_TEST_REPORTS/python/junit.xml # test python code
