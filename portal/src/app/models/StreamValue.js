@@ -15,9 +15,6 @@ class StreamValue {
     checkForError(name, strValue) {
         if (/^[0-9]+$/.test(strValue)) {
             let streamValue = parseInt(strValue);
-            if (streamValue <= 0) {
-                return name + " must be a positive number.";
-            }
             if (streamValue > this.maxValue) {
                 return name + " must be <= " + this.maxValue + ".";
             }
