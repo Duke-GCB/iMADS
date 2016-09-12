@@ -101,7 +101,7 @@ class SearchArgs(object):
     def _get_required_stream_arg(self, name):
         value = self._get_required_arg(name)
         int_value = int(value)
-        if int_value < 1:
+        if int_value < 0:
             raise ValueError("{} value must be positive.".format(name))
         if int_value > self.max_stream_val:
             raise ValueError("{} value must be less than {}.".format(name, self.max_stream_val))

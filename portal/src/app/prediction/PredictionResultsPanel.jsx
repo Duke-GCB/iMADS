@@ -70,6 +70,7 @@ class PredictionResultsPanel extends React.Component {
         let gridRows = searchResults;
         return <div>
                  <DataGrid
+                        fullScreen={true}
                         classNamePrefix="PredictionResultsPanel_DataGrid_"
                         columnInfo={gridColumnInfo}
                         rows={gridRows}

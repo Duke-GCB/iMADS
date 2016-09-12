@@ -29,7 +29,7 @@ class NavBar extends React.Component {
                             <NavMenuButton />
                             <a className="navbar-brand NavBar_app_title" href="#">iMADS</a>
                             <div className="NavBar_app_subtitle">
-                                    Modeling and analysis of TF specificity and differentiated specificity
+                                    Modeling and analysis of TF specificity and differential specificity
                             </div>
                         </div>
                     </div>

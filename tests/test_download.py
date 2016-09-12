@@ -62,5 +62,5 @@ class TestModelFiles(TestCase):
         url, path, desc = model_files.get_model_url_path_and_desc(model_filename)
         self.assertEqual('baseURL/{}'.format(model_filename), url)
         self.assertEqual('modelsDIR/{}'.format(model_filename), path)
-        self.assertEqual('E2F1 250nM 20bp GCGC 1a2a3mer', desc)
+        self.assertEqual('E2F1 20bp GCGC 1a2a3mer', desc)
 

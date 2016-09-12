@@ -11,7 +11,7 @@ let DATA_SOURCES_NAV= {
 
 let PREDICTION_NAV= {
     path: '/prediction',
-    label: 'PREDICTION',
+    label: 'MAKE PREDICTIONS',
 };
 
 let ABOUT_NAV = {

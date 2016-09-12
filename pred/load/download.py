@@ -135,6 +135,7 @@ class ModelFiles(object):
         ]
         for remove_part in remove_parts:
             desc = desc.replace(remove_part, "")
+        desc = re.sub('_\d+nM_', ' ', desc)
         return desc.replace("_"," ")
 
     def get_model_url_path_and_desc(self, filename):
