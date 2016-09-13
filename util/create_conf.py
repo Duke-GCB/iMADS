@@ -31,7 +31,6 @@ yaml_config = {}
 with open(YAML_CONFIG_FILE) as infile:
     yaml_config = yaml.safe_load(infile)
 DATA_SOURCE_URL = yaml_config['DATA_SOURCE_URL']
-TRACK_SKIP_IF_CONTAINS = yaml_config['TRACK_SKIP_IF_CONTAINS']
 CONFIG_FILENAME = yaml_config['CONFIG_FILENAME']
 BINDING_MAX_OFFSET = yaml_config['BINDING_MAX_OFFSET']
 GENOMES_FILENAME = yaml_config['GENOMES_FILENAME']
@@ -52,14 +51,13 @@ def create_config_file(trackhub_data, output_filename):
     """
     genome_data = []
     genome_to_track = trackhub_data.get_genomes()
+    track_name_to_family = TracksYAML(MODEL_TRACKS_URL).get_track_name_to_family()
     for genome in sorted(genome_to_track.keys()):
         genome_specific = GENOME_SPECIFIC_DATA.get(genome, {})
         track_filename = genome_to_track[genome]
         track_data = []
         prediction_lists = []
         for track, url in trackhub_data.get_track_data(genome, track_filename):
-            if TRACK_SKIP_IF_CONTAINS and TRACK_SKIP_IF_CONTAINS in track:
-                continue
             sort_max_guess = SORT_MAX_GUESS.get(track, SORT_MAX_GUESS_DEFAULT)
             core_settings = CORE_SETTINGS.get(track, CORE_SETTINGS_DEFAULT)
             prediction_data = {
@@ -69,6 +67,7 @@ def create_config_file(trackhub_data, output_filename):
                 'sort_max_guess': sort_max_guess,
                 'core_offset': core_settings[0],
                 'core_length': core_settings[1],
+                'family': track_name_to_family[track],
             }
             prediction_lists.append(prediction_data)
         genome_data.append({
@@ -136,16 +135,18 @@ class TrackHubData(object):
         """
         Given track filename return list of tracks, url.
         :param track_filename: filename to lookup track data for.
-        :return: [(track_name, url)] list of tracks and their urls
+        :return: [(track_name, url, family)] list of tracks and their urls
         """
         result = []
         track = ''
+        family = ''
         lines = self.remote_data.get_lines_for_path(track_filename)
         for name, value in get_key_value_list(lines):
             if name == 'track':
                 track = value
             if name == 'bigDataUrl':
                 url = self.remote_data.create_url('{}/{}'.format(genome, value))
+
                 result.append((track, url))
         return result
 
@@ -188,6 +189,30 @@ class RemoteData(object):
         """
         return '{}/{}'.format(self.data_source_url, suffix)
 
+
+class TracksYAML(object):
+    """
+    Downloads tracks YAML data.
+    """
+    def __init__(self, url):
+        """
+        Download YAML data based on the url.
+        :param url: str: url to the master tracks YAML file.
+        """
+        resp = requests.get(url)
+        resp.raise_for_status()
+        self.data = yaml.safe_load(resp.text)
+
+    def get_track_name_to_family(self):
+        """
+        Return dictionary of track_name -> family name
+        :return: dict, str -> str trackname lookup
+        """
+        result = {}
+        for item in self.data:
+            result[item['track_name']] = item['family']
+
+        return result
 
 if __name__ == '__main__':
     create_config_file(TrackHubData(DATA_SOURCE_URL), CONFIG_FILENAME)
