@@ -25,7 +25,7 @@ CORE_SETTINGS:
   'E2F1_0002(JS)': [16, 4]
 
 MODEL_TRACKS_URL: https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks.yaml?dest=/pred_data/models/tracks.yaml
-MODEL_BASE_URL: http://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models
+MODEL_BASE_URL: https://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models
 
 # Gene lists and other static data for each genome
 GENOME_SPECIFIC_DATA:
