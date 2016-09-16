@@ -39,7 +39,7 @@ https://github.com/Duke-GCB/Predict-TF-Binding-Worker
 
 __Deployment__
 
-We use playbook tf_dna_predictions.yml from https://github.com/Duke-GCB/gcb-ansible.
+We use playbook imads.yml from https://github.com/Duke-GCB/gcb-ansible.
 
 __Run via docker-compose__
 
