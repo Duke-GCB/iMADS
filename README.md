@@ -35,7 +35,7 @@ __Custom Prediction/Preference Worker__
 Calculates predictions and preferences for user uploaded sequences.
 https://github.com/Duke-GCB/Predict-TF-Binding-Worker
 
-## Running:
+## Running
 
 __Deployment__
 
@@ -56,7 +56,7 @@ docker-compose run --no-deps --rm web python load.py
 ```
 
 
-## Javascript unit tests:
+## Javascript unit tests
 Requires mocha and chai.
 Setup:
 ```
@@ -71,7 +71,7 @@ cd portal
 npm run test
 ```
 
-## Python unit tests:
+## Python unit tests
 From the root directory run this:
 ```
 nosetests
@@ -79,7 +79,7 @@ nosetests
 Integration tests are skipped (they are run by circleci).
 See tests/test_integration.py skip_postgres_tests for instructions for running them manually.
 
-## Config file updates:
+## Config file updates
 Under the `util` directory there is a python script for updating the config file.
 It can be run like so:
 ```
