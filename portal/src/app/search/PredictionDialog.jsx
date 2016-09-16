@@ -5,6 +5,7 @@ import PredictionDetailTable from '../common/PredictionDetailTable.jsx';
 import GenomeBrowserURL from '../models/GenomeBrowserURL.js';
 import DnaSequences from '../models/DnaSequences.js';
 import PredictionDetail from '../models/PredictionDetail.js';
+import {makeTitleForModelName} from '../models/Model.js';
 
 class PredictionDialog extends React.Component {
     constructor(props) {
@@ -47,7 +48,7 @@ class PredictionDialog extends React.Component {
     };
 
     render() {
-        let {data, predictionColor, coreRange} = this.props;
+        let {modelName, data, predictionColor, coreRange} = this.props;
         if (!data) {
             return <div></div>;
         }
@@ -61,7 +62,7 @@ class PredictionDialog extends React.Component {
         let genomeBrowserURL = new GenomeBrowserURL('human', this.props.data.trackHubUrl);
         let allRangeGenomeBrowserURL = genomeBrowserURL.getPredictionURL(this.props.data.genome,
             this.props.data.chrom, this.props.data.start, this.props.data.end);
-        let title = "Predictions for " + data.title;
+        let title = makeTitleForModelName(modelName, data.title);
         return <Popup isOpen={this.props.isOpen}
                       onRequestClose={this.props.onRequestClose}
                       title={title}>

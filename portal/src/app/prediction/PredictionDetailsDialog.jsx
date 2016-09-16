@@ -3,6 +3,7 @@ import Popup from '../common/Popup.jsx';
 import HeatMap from '../search/HeatMap.jsx';
 import PredictionDetailTable from '../common/PredictionDetailTable.jsx';
 import PredictionDetail from '../models/PredictionDetail.js';
+import {makeTitleForModelName} from '../models/Model.js';
 
 export default class PredictionDetailsDialog extends React.Component {
     constructor(props) {
@@ -29,7 +30,7 @@ export default class PredictionDetailsDialog extends React.Component {
 
     render() {
         let {selectedIndexList} = this.state;
-        let {data, coreOffset, coreLength} = this.props;
+        let {modelName, data, coreOffset, coreLength} = this.props;
         if (!data) {
             return <div></div>;
         }
@@ -40,7 +41,7 @@ export default class PredictionDetailsDialog extends React.Component {
             detailObj.seq = seq;
             detailList.push(detailObj);
         }
-        let title = "Predictions for " + data.title;
+        let title = makeTitleForModelName(modelName, data.title);
         return <Popup isOpen={this.props.isOpen}
                       onRequestClose={this.props.onRequestClose}
                       title={title}>
