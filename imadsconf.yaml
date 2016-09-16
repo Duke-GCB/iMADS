@@ -13,22 +13,22 @@ genome_data:
   genome: hg19
   genome_file: goldenPath/hg19/bigZips/hg19.2bit
   prediction_lists:
-  - core_length: 4
-    core_offset: 8
+  - core_length: 6
+    core_offset: 7
     family: bHLH
     fix_script: bigBedToBed
     name: c-Myc_0001
     sort_max_guess: 0.6
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0001_c-Myc.bb
-  - core_length: 4
-    core_offset: 8
+  - core_length: 6
+    core_offset: 7
     family: bHLH
     fix_script: bigBedToBed
     name: Mad1_0002
     sort_max_guess: 0.6
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0002_Mad1.bb
-  - core_length: 4
-    core_offset: 8
+  - core_length: 6
+    core_offset: 7
     family: bHLH
     fix_script: bigBedToBed
     name: Max_0003
@@ -76,14 +76,14 @@ genome_data:
     name: E2f4_0009
     sort_max_guess: 0.6
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0009_E2f4.bb
-  - core_length: 4
+  - core_length: 5
     core_offset: 8
     family: RUNX
     fix_script: bigBedToBed
     name: Runx1_0010
     sort_max_guess: 0.6
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0010_Runx1.bb
-  - core_length: 4
+  - core_length: 5
     core_offset: 8
     family: RUNX
     fix_script: bigBedToBed
@@ -115,22 +115,22 @@ genome_data:
   genome: hg38
   genome_file: goldenPath/hg38/bigZips/hg38.2bit
   prediction_lists:
-  - core_length: 4
-    core_offset: 8
+  - core_length: 6
+    core_offset: 7
     family: bHLH
     fix_script: bigBedToBed
     name: c-Myc_0001
     sort_max_guess: 0.6
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0001_c-Myc.bb
-  - core_length: 4
-    core_offset: 8
+  - core_length: 6
+    core_offset: 7
     family: bHLH
     fix_script: bigBedToBed
     name: Mad1_0002
     sort_max_guess: 0.6
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0002_Mad1.bb
-  - core_length: 4
-    core_offset: 8
+  - core_length: 6
+    core_offset: 7
     family: bHLH
     fix_script: bigBedToBed
     name: Max_0003
@@ -178,14 +178,14 @@ genome_data:
     name: E2f4_0009
     sort_max_guess: 0.6
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0009_E2f4.bb
-  - core_length: 4
+  - core_length: 5
     core_offset: 8
     family: RUNX
     fix_script: bigBedToBed
     name: Runx1_0010
     sort_max_guess: 0.6
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0010_Runx1.bb
-  - core_length: 4
+  - core_length: 5
     core_offset: 8
     family: RUNX
     fix_script: bigBedToBed

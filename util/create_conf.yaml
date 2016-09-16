@@ -17,13 +17,6 @@ SORT_MAX_GUESS:
   'ELK1_0005(NS)': 0.8,
   'ETS1_0006(NS)': 0.8,
 
-# Array of offset, length for determining where the core is in a prediction
-# this causes the underline in the prediction details screen
-CORE_SETTINGS_DEFAULT: [8, 4]
-CORE_SETTINGS:
-  'E2F1_0001(JS)': [16, 4]
-  'E2F1_0002(JS)': [16, 4]
-
 MODEL_TRACKS_URL: https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks.yaml?dest=/pred_data/models/tracks.yaml
 MODEL_BASE_URL: https://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models
 
