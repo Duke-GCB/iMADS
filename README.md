@@ -1,5 +1,9 @@
-iMADS [![CircleCI](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB.svg?style=svg)](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB)
-Website for viewing transcription factor predictions for gene lists and custom DNA sequences.
+# iMADS [![CircleCI](https://circleci.com/gh/Duke-GCB/iMADS.svg?style=svg)](https://circleci.com/gh/Duke-GCB/iMADS)
+
+Website for searching and creating transcription factor predictions/preferences.
+Searches predictions and prerference data by gene lists and custom ranges.
+Creates predictions/preferences for user uploaded DNA sequences.
+
 
 ## Major Components
 __Predictions Config File__ 
