@@ -1,6 +1,6 @@
 """
 Inserts predictions, gene lists, and entries about files downloaded into a database.
-Based on predictionsconf.yaml and files downloaded/created via download.download_and_convert
+Based on imadsconf.yaml and files downloaded/created via download.download_and_convert
 create/run SQL to load the data into the database. Runs some SQL in parallel.
 """
 from __future__ import print_function

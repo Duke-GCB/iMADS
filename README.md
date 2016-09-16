@@ -8,15 +8,15 @@ Creates predictions/preferences for user uploaded DNA sequences.
 ## Major Components
 __Predictions Config File__ 
 
-predictionsconf.yaml - this config file determines what will be downloaded and how prediction database will work
+imadsconf.yaml - this config file determines what will be downloaded and how prediction/preference database will work
 
 __Predictions Database__
 
-Postgres database contains indexed gene lists, custom user data and predicitions data for use by webserver.py
+Postgres database contains indexed gene lists, custom user data and predictions/preference data for use by webserver.py
 
 __Database Loading Script__
 
-load.py - downloads files and loads the database based on predictionsconf.yaml
+load.py - downloads files and loads the database based on imadsconf.yaml
 
 __Webserver__
 
@@ -50,7 +50,7 @@ Start the database and webserver.
 ```
 docker-compose up -d
 ```
-Populate the database. (This will take quite a while depending upon predictionsconf.yaml)
+Populate the database. (This will take quite a while depending upon imadsconf.yaml)
 ```
 docker-compose run --no-deps --rm web python load.py 
 ```

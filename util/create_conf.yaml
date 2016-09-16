@@ -3,7 +3,7 @@
 DATA_SOURCE_URL: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions
 
 # Where we save our result to
-CONFIG_FILENAME: ../predictionsconf.yaml
+CONFIG_FILENAME: ../imadsconf.yaml
 
 # File in DATA_SOURCE_URL  that lists genomes
 GENOMES_FILENAME: genomes.txt
