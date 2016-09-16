@@ -1,4 +1,4 @@
-# TF-DNA-PredictionsDB [![CircleCI](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB.svg?style=svg)](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB)
+iMADS [![CircleCI](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB.svg?style=svg)](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB)
 Website for viewing transcription factor predictions for gene lists and custom DNA sequences.
 
 ## Major Components
