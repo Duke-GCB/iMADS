@@ -1,7 +1,7 @@
 version: '2'
 services:
   web:
-    image: dukegcb/tf-dna-predictions
+    image: dukegcb/imads
     build: .
     env_file: .env
     ports:
@@ -14,7 +14,7 @@ services:
     image: postgres
     env_file: .env
   vacuum:
-    image: dukegcb/tf-dna-predictions
+    image: dukegcb/imads
     env_file: .env
     depends_on:
       - db

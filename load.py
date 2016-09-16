@@ -84,7 +84,7 @@ if __name__ == '__main__':
         'run_sql': run_sql_command,
         'run_sql_models' : run_sql_models_command
     }
-    parser = argparse.ArgumentParser(description='Loads prediction database based on predictionsconf.yaml')
+    parser = argparse.ArgumentParser(description='Loads prediction database based on imadsconf.yaml')
     parser.add_argument('command', choices=funcs.keys())
     args = parser.parse_args()
     funcs[args.command](parse_config(CONFIG_FILENAME))

@@ -15,7 +15,7 @@ DB_PASS_ENV = "DB_PASS"
 
 JOB_RUNNER_PASS_ENV = "JOB_RUNNER_PASS"
 
-CONFIG_FILENAME = 'predictionsconf.yaml'
+CONFIG_FILENAME = 'imadsconf.yaml'
 
 
 class DataType(object):

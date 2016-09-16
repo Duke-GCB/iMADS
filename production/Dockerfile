@@ -1,4 +1,4 @@
-FROM dukegcb/tf-dna-predictions
+FROM dukegcb/imads
 MAINTAINER john.bradley@duke.edu
 # apache2
 RUN apt-get update \
@@ -6,9 +6,9 @@ RUN apt-get update \
   && apt-get clean
 
 # Configure Apache
-ADD tfpredictions.conf /etc/apache2/sites-available/tfpredictions.conf
+ADD imads.conf /etc/apache2/sites-available/imads.conf
 RUN a2enmod ssl
-RUN a2ensite tfpredictions
+RUN a2ensite imads
 
 # Ensure services are stopped so that we can run them
 RUN service apache2 stop

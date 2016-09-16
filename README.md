@@ -1,18 +1,22 @@
-# TF-DNA-PredictionsDB [![CircleCI](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB.svg?style=svg)](https://circleci.com/gh/Duke-GCB/TF-DNA-PredictionsDB)
-Website for viewing transcription factor predictions for gene lists and custom DNA sequences.
+# iMADS [![CircleCI](https://circleci.com/gh/Duke-GCB/iMADS.svg?style=svg)](https://circleci.com/gh/Duke-GCB/iMADS)
+
+Website for searching and creating transcription factor predictions/preferences.
+Searches predictions and prerference data by gene lists and custom ranges.
+Creates predictions/preferences for user uploaded DNA sequences.
+
 
 ## Major Components
 __Predictions Config File__ 
 
-predictionsconf.yaml - this config file determines what will be downloaded and how prediction database will work
+imadsconf.yaml - this config file determines what will be downloaded and how prediction/preference database will work
 
 __Predictions Database__
 
-Postgres database contains indexed gene lists, custom user data and predicitions data for use by webserver.py
+Postgres database contains indexed gene lists, custom user data and predictions/preference data for use by webserver.py
 
 __Database Loading Script__
 
-load.py - downloads files and loads the database based on predictionsconf.yaml
+load.py - downloads files and loads the database based on imadsconf.yaml
 
 __Webserver__
 
@@ -31,11 +35,11 @@ __Custom Prediction/Preference Worker__
 Calculates predictions and preferences for user uploaded sequences.
 https://github.com/Duke-GCB/Predict-TF-Binding-Worker
 
-## Running:
+## Running
 
 __Deployment__
 
-We use playbook tf_dna_predictions.yml from https://github.com/Duke-GCB/gcb-ansible.
+We use playbook imads.yml from https://github.com/Duke-GCB/gcb-ansible.
 
 __Run via docker-compose__
 
@@ -46,13 +50,13 @@ Start the database and webserver.
 ```
 docker-compose up -d
 ```
-Populate the database. (This will take quite a while depending upon predictionsconf.yaml)
+Populate the database. (This will take quite a while depending upon imadsconf.yaml)
 ```
 docker-compose run --no-deps --rm web python load.py 
 ```
 
 
-## Javascript unit tests:
+## Javascript unit tests
 Requires mocha and chai.
 Setup:
 ```
@@ -67,7 +71,7 @@ cd portal
 npm run test
 ```
 
-## Python unit tests:
+## Python unit tests
 From the root directory run this:
 ```
 nosetests
@@ -75,7 +79,7 @@ nosetests
 Integration tests are skipped (they are run by circleci).
 See tests/test_integration.py skip_postgres_tests for instructions for running them manually.
 
-## Config file updates:
+## Config file updates
 Under the `util` directory there is a python script for updating the config file.
 It can be run like so:
 ```
