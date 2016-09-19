@@ -14,8 +14,12 @@ BINDING_MAX_OFFSET: 5000
 # Settings to speed up order by max
 SORT_MAX_GUESS_DEFAULT: 0.6
 SORT_MAX_GUESS:
-  'ELK1_0005(NS)': 0.8,
-  'ETS1_0006(NS)': 0.8,
+  'Elk1_0004': 0.8
+  'Ets1_0005': 0.8
+  'E2f3_0008': 0.75
+  'E2f4_0009': 0.65
+  'Runx1_0010': 0.7
+  'Runx2_0011': 0.8
 
 MODEL_TRACKS_URL: https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks.yaml?dest=/pred_data/models/tracks.yaml
 MODEL_BASE_URL: https://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models

@@ -39,14 +39,14 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Elk1_0004
-    sort_max_guess: 0.6
+    sort_max_guess: 0.8
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0004_Elk1.bb
   - core_length: 4
     core_offset: 8
     family: ETS
     fix_script: bigBedToBed
     name: Ets1_0005
-    sort_max_guess: 0.6
+    sort_max_guess: 0.8
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0005_Ets1.bb
   - core_length: 4
     core_offset: 8
@@ -67,28 +67,28 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f3_0008
-    sort_max_guess: 0.6
+    sort_max_guess: 0.75
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0008_E2f3.bb
   - core_length: 4
     core_offset: 8
     family: E2F
     fix_script: bigBedToBed
     name: E2f4_0009
-    sort_max_guess: 0.6
+    sort_max_guess: 0.65
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0009_E2f4.bb
   - core_length: 5
     core_offset: 8
     family: RUNX
     fix_script: bigBedToBed
     name: Runx1_0010
-    sort_max_guess: 0.6
+    sort_max_guess: 0.7
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0010_Runx1.bb
   - core_length: 5
     core_offset: 8
     family: RUNX
     fix_script: bigBedToBed
     name: Runx2_0011
-    sort_max_guess: 0.6
+    sort_max_guess: 0.8
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0011_Runx2.bb
   trackhub_url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt
 - ftp_files:
@@ -141,14 +141,14 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Elk1_0004
-    sort_max_guess: 0.6
+    sort_max_guess: 0.8
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0004_Elk1.bb
   - core_length: 4
     core_offset: 8
     family: ETS
     fix_script: bigBedToBed
     name: Ets1_0005
-    sort_max_guess: 0.6
+    sort_max_guess: 0.8
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0005_Ets1.bb
   - core_length: 4
     core_offset: 8
@@ -169,28 +169,28 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f3_0008
-    sort_max_guess: 0.6
+    sort_max_guess: 0.75
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0008_E2f3.bb
   - core_length: 4
     core_offset: 8
     family: E2F
     fix_script: bigBedToBed
     name: E2f4_0009
-    sort_max_guess: 0.6
+    sort_max_guess: 0.65
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0009_E2f4.bb
   - core_length: 5
     core_offset: 8
     family: RUNX
     fix_script: bigBedToBed
     name: Runx1_0010
-    sort_max_guess: 0.6
+    sort_max_guess: 0.7
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0010_Runx1.bb
   - core_length: 5
     core_offset: 8
     family: RUNX
     fix_script: bigBedToBed
     name: Runx2_0011
-    sort_max_guess: 0.6
+    sort_max_guess: 0.8
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0011_Runx2.bb
   trackhub_url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt
 model_base_url: https://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models
