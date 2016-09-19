@@ -35,9 +35,7 @@ def download_models(config, update_progress):
     :return:
     """
     model_files = ModelFiles(config)
-    models_dir = model_files.models_dir
-
-    local_tracks_filename = '{}/tracks.yaml'.format(models_dir)
+    local_tracks_filename = model_files.get_local_tracks_filename()
     download_url(config.model_tracks_url, local_tracks_filename, update_progress)
 
     for details in model_files.get_model_details():
@@ -75,6 +73,9 @@ class ModelFiles(object):
         self.model_tracks_url = config.model_tracks_url
         self.models_dir = '{}/models'.format(config.download_dir)
         self.model_names = config.get_all_model_names()
+
+    def get_local_tracks_filename(self):
+        return '{}/tracks.yaml'.format(self.models_dir)
 
     def get_model_details(self):
         """
