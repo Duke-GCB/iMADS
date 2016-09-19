@@ -19,7 +19,8 @@ class DataSources(object):
                 DataSourcesQueryNames.DESCRIPTION: row[DataSourcesQueryNames.DESCRIPTION],
                 DataSourcesQueryNames.DOWNLOADED: downloaded_str,
                 DataSourcesQueryNames.URL: row[DataSourcesQueryNames.URL],
-                'dataSourceType': row[DataSourcesQueryNames.DATA_SOURCE_TYPE]
+                'dataSourceType': row[DataSourcesQueryNames.DATA_SOURCE_TYPE],
+                DataSourcesQueryNames.GROUP_NAME: row[DataSourcesQueryNames.GROUP_NAME]
             })
         cur.close()
         return items

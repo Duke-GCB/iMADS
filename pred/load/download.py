@@ -40,10 +40,9 @@ def download_models(config, update_progress):
     local_tracks_filename = '{}/tracks.yaml'.format(models_dir)
     download_url(config.model_tracks_url, local_tracks_filename, update_progress)
 
-    for filename in model_files.get_model_filenames():
-        url = model_files.get_model_url(filename)
-
-        local_path = model_files.get_local_path(filename)
+    for details in model_files.get_model_details():
+        url = details['url']
+        local_path = details['local_path']
         download_url(url, local_path, update_progress)
 
 
@@ -77,18 +76,44 @@ class ModelFiles(object):
         self.models_dir = '{}/models'.format(config.download_dir)
         self.model_names = config.get_all_model_names()
 
-    def get_model_filenames(self):
+    def get_model_details(self):
         """
-        Returns unique list of filenames from YAML downloaded from model_tracks_url passed in config.
+        Returns unique properties from YAML downloaded from model_tracks_url passed in config.
         Only includes the model filenames that we have predictions for.
-        :return: [str] list of filenames of model filenames
+        :return: [dict] list of dicts of model properties
         """
-        model_filenames = []
+        data = []
+        unique_filenames = set()
         for item in self._get_tracks_data():
-            for filename in item['model_filenames']:
-                if item['track_name'] in self.model_names:
-                    model_filenames.append(filename)
-        return set(model_filenames)
+            track_name = item['track_name']
+            filenames = item['model_filenames']
+            if track_name in self.model_names:
+                for i in range(len(filenames)):
+                    filename = filenames[i]
+                    core = item['cores'][i]
+                    if not filename in unique_filenames:
+                        details = self._make_details(filename, core, item)
+                        data.append(details)
+                        unique_filenames.add(filename)
+        return data
+
+    def _make_details(self, filename, core, item):
+        """
+        Make a dictionary of end user fields for a filename,core,item
+        :param filename: str: filename user can download
+        :param core: str: core that this model file is for
+        :param item: str: dict: properties from trackhub yaml
+        :return: dict: properties describing this model
+        """
+        group_name = 'Protein {}'.format(item['protein'])
+        description = 'Model for core {}'.format(core)
+        return {
+            'filename': filename,
+            'group_name': group_name,
+            'description': description,
+            'url': self.get_model_url(filename),
+            'local_path': self.get_local_path(filename),
+        }
 
     def _get_tracks_data(self):
         """
@@ -116,35 +141,6 @@ class ModelFiles(object):
         :return: str: path to where the model file should live
         """
         return '{}/{}'.format(self.models_dir, filename)
-
-    def get_model_desc(self, filename):
-        """
-        Transform a model filename into a simpler user description.
-        :param filename: filename to simplify
-        :return: str: description
-        """
-        desc = filename
-        remove_parts = [
-            "_Bound",
-            "_filtered",
-            "_normalized",
-            "_logistic",
-            "_transformed",
-            "_format",
-            ".model",
-        ]
-        for remove_part in remove_parts:
-            desc = desc.replace(remove_part, "")
-        desc = re.sub('_\d+nM_', ' ', desc)
-        return desc.replace("_"," ")
-
-    def get_model_url_path_and_desc(self, filename):
-        """
-        Based on a filename return tuple of url, path and description.
-        :param filename: filename to make data for
-        :return: (str,str,str): url, local_path, description
-        """
-        return self.get_model_url(filename), self.get_local_path(filename), self.get_model_desc(filename)
 
 
 class GenomeFiles(object):

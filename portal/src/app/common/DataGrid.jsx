@@ -84,9 +84,15 @@ export default class DataGrid extends React.Component {
     };
 
     makeRows = (dataGridContent, rowContent) => {
+        let {hasGroups} = this.props;
         let rows = [];
         let key = 1;
+        let lastGroup = undefined;
         for (let row of rowContent) {
+            if (hasGroups && lastGroup != row.groupName) {
+                rows.push(this.makeGroupRow(key, row));
+                lastGroup = row.groupName;
+            }
             rows.push(this.makeRow(row, key));
             key += 1;
         }
@@ -94,6 +100,19 @@ export default class DataGrid extends React.Component {
             <td></td>
         </tr>);//spacer row
         return rows;
+    };
+
+    /**
+     * Makes tr that contains a groupName to group items below it.
+     */
+    makeGroupRow = (key, row) => {
+        let groupColSpan = row.length;
+        let groupClassName = this.makeClassName("group");
+        return <tr key={key}>
+            <td colSpan={groupColSpan}>
+                <div className={groupClassName}>{row.groupName}</div>
+            </td>
+        </tr>;
     };
 
     makeRow = (row, rowKey) => {

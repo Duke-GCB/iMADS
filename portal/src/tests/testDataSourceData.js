@@ -21,6 +21,7 @@ describe('DataSourceData', function () {
                 description: "some model",
                 downloaded: '2015-10-01',
                 filename: 'hg19-0003-E2F1.bb',
+                groupName: undefined,
                 url: fileUrl,
                 host: 'trackhub.genome.duke.edu'
             }];
@@ -46,12 +47,14 @@ describe('DataSourceData', function () {
                 description: "E2F0 classic",
                 downloaded: '2015-10-01',
                 filename: 'hg19-0003-E2F0.bb',
+                groupName: undefined,
                 url: fileUrl1,
                 host: 'trackhub.genome.duke.edu'
             },{
                 description: "E2F1 awesome",
                 downloaded: '2015-10-01',
                 filename: 'hg19-0003-E2F1.bb',
+                groupName: undefined,
                 url: fileUrl2,
                 host: 'trackhub.genome.duke.edu'
             },
@@ -72,6 +75,7 @@ describe('DataSourceData', function () {
                 description: "E2F0 classic",
                 downloaded: '2015-10-01',
                 filename: 'hg19-0003-E2F0.bb',
+                groupName: undefined,
                 url: 'https://' + fileUrl1,
                 host: 'trackhub.genome.duke.edu'
             }];
