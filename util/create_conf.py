@@ -37,8 +37,6 @@ GENOMES_FILENAME = yaml_config['GENOMES_FILENAME']
 GENOME_SPECIFIC_DATA = yaml_config['GENOME_SPECIFIC_DATA']
 SORT_MAX_GUESS_DEFAULT = yaml_config['SORT_MAX_GUESS_DEFAULT']
 SORT_MAX_GUESS = yaml_config['SORT_MAX_GUESS']
-CORE_SETTINGS_DEFAULT = yaml_config['CORE_SETTINGS_DEFAULT']
-CORE_SETTINGS = yaml_config['CORE_SETTINGS']
 MODEL_TRACKS_URL = yaml_config['MODEL_TRACKS_URL']
 MODEL_BASE_URL = yaml_config['MODEL_BASE_URL']
 
@@ -51,7 +49,7 @@ def create_config_file(trackhub_data, output_filename):
     """
     genome_data = []
     genome_to_track = trackhub_data.get_genomes()
-    track_name_to_family = TracksYAML(MODEL_TRACKS_URL).get_track_name_to_family()
+    tracks_yaml = TracksYAML(MODEL_TRACKS_URL)
     for genome in sorted(genome_to_track.keys()):
         genome_specific = GENOME_SPECIFIC_DATA.get(genome, {})
         track_filename = genome_to_track[genome]
@@ -59,15 +57,14 @@ def create_config_file(trackhub_data, output_filename):
         prediction_lists = []
         for track, url in trackhub_data.get_track_data(genome, track_filename):
             sort_max_guess = SORT_MAX_GUESS.get(track, SORT_MAX_GUESS_DEFAULT)
-            core_settings = CORE_SETTINGS.get(track, CORE_SETTINGS_DEFAULT)
             prediction_data = {
                 'name': track,
                 'url': url,
                 'fix_script': FIX_SCRIPT,
                 'sort_max_guess': sort_max_guess,
-                'core_offset': core_settings[0],
-                'core_length': core_settings[1],
-                'family': track_name_to_family[track],
+                'core_offset': tracks_yaml.get_core_offset(track),
+                'core_length': tracks_yaml.get_core_length(track),
+                'family': tracks_yaml.get_family(track),
             }
             prediction_lists.append(prediction_data)
         genome_data.append({
@@ -201,18 +198,27 @@ class TracksYAML(object):
         """
         resp = requests.get(url)
         resp.raise_for_status()
-        self.data = yaml.safe_load(resp.text)
+        self.track_name_to_items = {}
+        for item in  yaml.safe_load(resp.text):
+            self.track_name_to_items[item['track_name']] = item
 
-    def get_track_name_to_family(self):
-        """
-        Return dictionary of track_name -> family name
-        :return: dict, str -> str trackname lookup
-        """
-        result = {}
-        for item in self.data:
-            result[item['track_name']] = item['family']
+    def get_family(self, track_name):
+        return self.track_name_to_items[track_name]['family']
 
-        return result
+    def get_core_offset(self, track_name):
+        item = self.track_name_to_items[track_name]
+        core_start = item['core_start']
+        if core_start:
+            return int(core_start)
+        else:
+            half_core_length = self.get_core_length(track_name)/2
+            half_width = int(item['width'])/2
+            return int(half_width - half_core_length)
+
+    def get_core_length(self, track_name):
+        item = self.track_name_to_items[track_name]
+        return len(item['cores'][0])
+
 
 if __name__ == '__main__':
     create_config_file(TrackHubData(DATA_SOURCE_URL), CONFIG_FILENAME)

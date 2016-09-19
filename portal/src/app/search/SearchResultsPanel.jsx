@@ -125,6 +125,7 @@ class SearchResultsPanel extends React.Component {
                               data={this.state.predictionData}
                               predictionColor={predictionColor}
                               coreRange={coreRange}
+                              modelName={searchSettings.model}
             />
         </div>
     }

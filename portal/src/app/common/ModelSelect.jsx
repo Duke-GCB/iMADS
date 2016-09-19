@@ -3,6 +3,7 @@
 
 import React from 'react';
 import SelectItem from '../common/SelectItem.jsx';
+import {formatModelName} from '../models/Model.js';
 
 export default class ModelSelect  extends React.Component {
     /**
@@ -15,8 +16,8 @@ export default class ModelSelect  extends React.Component {
         // Hides numeric portion of names from users.
         // Additional release should change this dropdown into labeled categories.
         if (model) {
-            let userName = model.name.replace(/_.*/, '');
-            return <option key={model.name} value={model.name}>{userName}</option>;
+            let simplifiedName = formatModelName(model.name);
+            return <option key={model.name} value={model.name}>{simplifiedName}</option>;
         } else {
             return <option disabled>──────────</option>;
         }

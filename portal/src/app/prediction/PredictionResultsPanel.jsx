@@ -95,6 +95,7 @@ class PredictionResultsPanel extends React.Component {
                                      predictionColor={this.props.predictionColor}
                                      coreOffset={coreRange.coreOffset}
                                      coreLength={coreRange.coreLength}
+                                     modelName={predictionSettings.model}
             />
         </div>
     }
