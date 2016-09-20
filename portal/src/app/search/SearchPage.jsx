@@ -12,6 +12,7 @@ import PageBatch from '../models/PageBatch.js'
 import {fetchPredictionSettings} from '../models/PredictionSettings.js'
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../models/AppSettings.js'
 import {getPreferenceSettings, getCoreRange} from '../models/GenomeData.js';
+import {SessionStorage, SEARCH_PAGE_KEY} from '../models/SessionStorage.js';
 
 
 class SearchPage extends React.Component {
@@ -20,6 +21,12 @@ class SearchPage extends React.Component {
          let pageBatch = new PageBatch(NUM_PAGE_BUTTONS, ITEMS_PER_PAGE);
          this.predictionStore = new PredictionsStore(pageBatch, new URLBuilder($.ajax));
          let {searchSettings, customListWithoutData} = this.predictionStore.createSettingsFromQueryParams(props.location.query);
+         if (!searchSettings.genome) {
+             let searchSettingsLastVisit = new SessionStorage().getValue(SEARCH_PAGE_KEY);
+             if (searchSettingsLastVisit) {
+                 searchSettings = searchSettingsLastVisit;
+             }
+         }
          let searchDataLoaded = customListWithoutData;
          this.state = {
              genomeData: {},
@@ -50,6 +57,10 @@ class SearchPage extends React.Component {
                 maxBindingOffset: maxBindingOffset,
             }, this.searchFirstPage);
         }.bind(this), this.onError);
+    }
+
+    componentWillUnmount() {
+        new SessionStorage().putValue(SEARCH_PAGE_KEY, this.state.searchSettings);
     }
 
     searchFirstPage = () => {
