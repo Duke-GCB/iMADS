@@ -44,10 +44,6 @@ class UploadSequenceDialog extends React.Component {
         }
     }
 
-    componentWillUnmount() {
-        console.log("UNMOUNT!");
-    }
-
     onSequenceInfo = (sequenceInfo) => {
         this.onChangeTextValue(atob(sequenceInfo.data));
     };

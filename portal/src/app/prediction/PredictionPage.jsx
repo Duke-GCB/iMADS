@@ -16,6 +16,7 @@ import {CustomSequenceList} from '../models/CustomSequence.js';
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../models/AppSettings.js'
 import {SEQUENCE_NOT_FOUND} from '../models/Errors.js';
 import {getPreferenceSettings, getCoreRange, getFirstGenomeName} from '../models/GenomeData.js';
+import {SessionStorage, PREDICTION_PAGE_KEY} from '../models/SessionStorage.js';
 
 class PredictionPage extends React.Component {
     constructor(props) {
@@ -27,7 +28,12 @@ class PredictionPage extends React.Component {
         this.customResultSearch = new CustomResultSearch(this, pageBatch);
         let predictionSettings = this.customResultSearch.makeSettingsFromQuery(props.location.query);
         if (!predictionSettings.selectedSequence) {
-            predictionSettings.selectedSequence = this.customSequenceList.getFirst();
+            let predictionSettingsLastVisit = new SessionStorage().getValue(PREDICTION_PAGE_KEY);
+            if (predictionSettingsLastVisit) {
+                predictionSettings = predictionSettingsLastVisit;
+            } else {
+                predictionSettings.selectedSequence = this.customSequenceList.getFirst();
+            }
         } else {
             this.customSequenceList.addIfNecessary(predictionSettings.selectedSequence);
         }
@@ -52,6 +58,11 @@ class PredictionPage extends React.Component {
         fetchPredictionSettings(this.onReceiveGenomeData, this.onError);
     }
 
+    componentWillUnmount() {
+        new SessionStorage().putValue(PREDICTION_PAGE_KEY, this.state.predictionSettings);
+        this.customResultSearch.cancel();
+    }
+
     onReceiveGenomeData = (genomes, maxBindingOffset) => {
         let predictionSettings = this.state.predictionSettings;
         if (!predictionSettings.model) {
@@ -63,11 +74,7 @@ class PredictionPage extends React.Component {
             maxBindingOffset: maxBindingOffset,
             predictionSettings: predictionSettings
         }, this.searchFirstPage);
-    }
-
-    componentWillUnmount() {
-        this.customResultSearch.cancel();
-    }
+    };
 
     setPredictionColor = (colorObject) => {
         this.setState({
