@@ -13,7 +13,7 @@ export default class DataSource extends React.Component {
     };
 
     render() {
-        let {title, content} = this.props;
+        let {title, content, hasGroups} = this.props;
         let gridColumnInfo = [
             {fieldName: 'description', title: 'Description', type: 'text'},
             {fieldName: 'downloaded', title: 'Downloaded', type: 'text'},
@@ -26,6 +26,7 @@ export default class DataSource extends React.Component {
                 classNamePrefix="DataSource_DataGrid_"
                 columnInfo={gridColumnInfo}
                 rows={content}
+                hasGroups={hasGroups}
             />
         </div>
     }

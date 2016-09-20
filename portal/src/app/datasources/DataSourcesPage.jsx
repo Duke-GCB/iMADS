@@ -41,7 +41,7 @@ class DataSourcesPage extends React.Component {
                 <br />
                 <DataSource title="Gene Lists" content={genelists}/>
                 <br />
-                <DataSource title="Models" content={models}/>
+                <DataSource title="Models" content={models} hasGroups={true} />
             </PageContent>
         </div>;
     }

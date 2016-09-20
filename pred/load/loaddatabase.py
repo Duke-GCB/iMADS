@@ -14,6 +14,8 @@ from pred.load.postgres import PostgresConnection, CopyCommand
 from psycopg2 import OperationalError
 
 SQL_TEMPLATE_DIR = 'sql_templates'
+METADATA_FILE_DESC = 'Settings for all models'
+METADATA_GROUP_NAME = 'Metadata'
 
 
 def create_sql_builder():
@@ -50,9 +52,16 @@ def create_sql_for_model_files(config, sql_builder):
     :param sql_builder: builder to add our sql commands to
     """
     model_files = ModelFiles(config)
-    for filename in model_files.get_model_filenames():
-        url, local_path, description = model_files.get_model_url_path_and_desc(filename)
-        sql_builder.insert_data_source(url, description, 'model', local_path)
+    for details in model_files.get_model_details():
+        url = details['url']
+        local_path = details['local_path']
+        group_name = details['group_name']
+        description = details['description']
+        sql_builder.insert_data_source(url, description, 'model', local_path, group_name)
+    model_files = ModelFiles(config)
+    local_tracks_filename = model_files.get_local_tracks_filename()
+    sql_builder.insert_data_source(config.model_tracks_url, METADATA_FILE_DESC, 'model',
+                                   local_tracks_filename, METADATA_GROUP_NAME)
 
 
 def create_pipeline_for_genome_version(database_loader):
@@ -245,13 +254,14 @@ class SQLBuilder(object):
     def custom_job_tables(self):
         self.add_template('custom_job_tables.sql', {})
 
-    def insert_data_source(self, url, description, data_source_type, filename):
+    def insert_data_source(self, url, description, data_source_type, filename, group_name=''):
         date = datetime.datetime.fromtimestamp(get_modified_time_for_filename(filename))
         downloaded = date.strftime("%Y-%m-%d %H:%M:%S)")
         self.add_template('insert_data_source.sql', {'url': url,
                                                      'description': description,
                                                      'data_source_type': data_source_type,
-                                                     'downloaded': downloaded})
+                                                     'downloaded': downloaded,
+                                                     'group_name': group_name})
 
     def create_table_from_path(self, path):
         self.add_sql(sql_from_filename(path))

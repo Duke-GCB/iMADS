@@ -46,6 +46,7 @@ class DataSourceData {
                 url: url,
                 filename: filename,
                 host: host,
+                groupName: data.group_name,
             };
             rows.push(row);
         }

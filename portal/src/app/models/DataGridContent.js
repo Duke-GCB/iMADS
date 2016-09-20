@@ -36,6 +36,7 @@ class DataGridContent {
                 value: value,
                 column: column
             });
+            valueAry.groupName = obj.groupName;
         }
         this.data.push(valueAry);
     }

@@ -16,6 +16,7 @@ from pred.webserver.sequencelist import SequenceList
 from pred.webserver.customjob import CustomJob, JobStatus
 from pred.webserver.customresult import CustomResultData, SEQUENCE_NOT_FOUND
 from pred.queries.dbutil import update_database
+from pred.webserver.dbdatasource import DataSources
 import json
 
 
@@ -51,7 +52,8 @@ CONFIG_DATA = {
                 }
             ]
         }
-    ]
+    ],
+    'model_tracks_url': 'https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks.yaml?dest=/pred_data/models/tracks.yaml',
 }
 
 FILENAME_TO_SQL = {

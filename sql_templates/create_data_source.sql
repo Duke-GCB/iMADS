@@ -7,5 +7,6 @@ create table public.data_source (
   data_source_type data_source_type,
   description varchar NOT NULL,
   downloaded timestamp with time zone NOT NULL default current_timestamp,
+  group_name varchar,
   PRIMARY KEY (url)
 );
