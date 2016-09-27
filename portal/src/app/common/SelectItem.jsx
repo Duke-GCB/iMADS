@@ -1,5 +1,4 @@
 import React from 'react';
-import ArrowTooltip from '../common/ArrowTooltip.jsx'
 require('./SelectItem.css');
 
 class SelectItem extends React.Component {

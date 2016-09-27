@@ -64,9 +64,9 @@ class HeatMap extends React.Component {
             url = this.genomeBrowserURL.getPredictionURL(this.props.data.genome, this.props.data.chrom,
                 heatCell.start, heatCell.end);
         }
-        return <g>
+        return <g key={"heat_cell" + idx} >
             {title}
-            <rect data-idxlist={heatCell.idxList} x={heatCell.x} y={0} width={heatCell.width} height={heatCell.height}
+            <rect  data-idxlist={heatCell.idxList} x={heatCell.x} y={0} width={heatCell.width} height={heatCell.height}
                   fill={heatCell.color} onClick={this.drillDown} data-url={url}
             />
         </g>
