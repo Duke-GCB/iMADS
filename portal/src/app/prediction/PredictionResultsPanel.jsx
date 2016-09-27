@@ -1,5 +1,4 @@
 import React from 'react';
-
 import PredictionDetailsDialog from './PredictionDetailsDialog.jsx'
 import HeatMap from '../search/HeatMap.jsx'
 import SearchResultsFooter from '../search/SearchResultsFooter.jsx'
@@ -40,7 +39,7 @@ class PredictionResultsPanel extends React.Component {
         return columnInfo;
     }
 
-    makeHeatmapCell = (rowData) => {
+    makeHeatmapCell = (rowData, key) => {
         let {predictionColor} = this.props;
         let heatMapValues = {
                 title: rowData.name,
@@ -53,11 +52,12 @@ class PredictionResultsPanel extends React.Component {
                 isCustomRange: true,
                 sequence: rowData.sequence,
         };
-        return <HeatMap width="120" height="20"
-                               onClickHeatmap={this.showPredictionDetails}
-                               data={heatMapValues}
-                               scaleFactor={1.0}
-                               predictionColor={predictionColor} />
+        return <HeatMap key={key}
+                        width="120" height="20"
+                        onClickHeatmap={this.showPredictionDetails}
+                        data={heatMapValues}
+                        scaleFactor={1.0}
+                        predictionColor={predictionColor} />
     };
 
     render() {
@@ -72,6 +72,7 @@ class PredictionResultsPanel extends React.Component {
                  <DataGrid
                         fullScreen={true}
                         classNamePrefix="PredictionResultsPanel_DataGrid_"
+                        headerClassNamePrefix=""
                         columnInfo={gridColumnInfo}
                         rows={gridRows}
                         searchDataLoaded={searchDataLoaded}

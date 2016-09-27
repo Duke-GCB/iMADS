@@ -1,4 +1,5 @@
 import React from 'react';
+require("./BooleanInput.css");
 
 class BooleanInput extends React.Component {
     constructor(props) {
@@ -10,9 +11,10 @@ class BooleanInput extends React.Component {
     };
 
     render() {
-        return <label >
+        return <label className="BooleanInput_label">
                     <input type="checkbox"
-                           checked={this.props.checked} onChange={this.onChange}
+                           checked={this.props.checked}
+                           onChange={this.onChange}
                     /> {this.props.label}
             </label>
     }

@@ -9,13 +9,10 @@ import FileUpload from '../models/FileUpload.js';
 import {CustomSequence, CustomSequenceList} from '../models/CustomSequence.js';
 import {SEQUENCE_SAMPLE} from '../models/SampleData.js'
 
-
 const TITLE = "Custom DNA Sequence";
 const INSTRUCTIONS = "Enter Sequence/FASTA data or choose a file in that format. (Max file size 20MB)";
 const PURGE_WARNING = "DNA Lists will be purged after 48 hours.";
 const TEXTAREA_PLACEHOLDER_TEXT = "CGATCGATG";
-
-
 const DEFAULT_STATE = {
     loading: false,
     canUpload: false,
@@ -23,9 +20,8 @@ const DEFAULT_STATE = {
     fileValue: undefined,
     textValue: '',
     sequenceName: '',
-    titleErrorMessage: '',
+    titleErrorMessage: ''
 };
-
 
 class UploadSequenceDialog extends React.Component {
     constructor(props) {

@@ -15,8 +15,6 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 // https://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin();
 
-
-//component={PredictionPage}/>
 render((
   <Router history={browserHistory}>
       <Route path={SEARCH_NAV.path} component={SearchPage}/>

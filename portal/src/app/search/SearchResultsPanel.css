@@ -5,3 +5,94 @@
 .SearchResultsPanel__resultsGridContainer {
     min-height: 50%;
 }
+
+.SearchResultsPanel_DataGrid_table {
+    width: 100%;
+    table-layout: fixed;
+    min-height: 60%;
+    min-width: 700px;
+}
+
+/** moving first row down so they are evenly spaced **/
+.SearchResultsPanel_DataGrid_table > tbody > tr:first-child > td {
+    padding-top: 1px;
+}
+
+.SearchResultsPanel_DataGrid_headerCell {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    font-size: 16px;
+    background-color: #235f9c;
+    color: white;
+    font-family: Roboto, sans-serif;
+    letter-spacing: 0.0625em;
+}
+
+.SearchResultsPanel_DataGrid_dataCell {
+    padding-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid lightgray;
+    font-size: 14px;
+    white-space: nowrap;
+    font-family: Roboto, sans-serif;
+}
+
+.SearchResultsPanel_DataGrid_dataRow {
+    height: 21px;
+}
+
+/** standard column settings **/
+
+.SearchResultsPanel_DataGrid_header_commonName {
+    width: 18%;
+}
+
+.SearchResultsPanel_DataGrid_header_name {
+    width: 24%;
+}
+
+.SearchResultsPanel_DataGrid_header_strand {
+    width: 10%;
+    text-align: center;
+}
+
+.SearchResultsPanel_DataGrid_header_location {
+    width: 24%;
+}
+
+.SearchResultsPanel_DataGrid_header_max {
+    width: 10%;
+}
+
+.SearchResultsPanel_DataGrid_strand {
+    text-align: center;
+}
+
+/** narrow column settings **/
+
+.SearchResultsPanel_DataGrid_header_Narrow_commonName {
+    width: 15%;
+}
+
+.SearchResultsPanel_DataGrid_header_Narrow_name {
+    width: 20%;
+}
+
+.SearchResultsPanel_DataGrid_header_Narrow_strand {
+    width: 8%;
+    text-align: center;
+}
+
+.SearchResultsPanel_DataGrid_header_Narrow_location {
+    width: 24%;
+}
+
+.SearchResultsPanel_DataGrid_header_Narrow_max {
+    width: 10%;
+}
+
+.SearchResultsPanel_DataGrid_header_Narrow_values {
+    width: 140px;
+}

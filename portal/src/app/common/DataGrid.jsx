@@ -34,8 +34,9 @@ export default class DataGrid extends React.Component {
     makeHeaders = (dataGridContent) => {
         let headers = [];
         let key = 1;
+        let {headerClassNamePrefix} = this.props;
         for (let columnHeader of dataGridContent.getColumnHeaders()) {
-            let headerClassName = this.makeClassName("header_" + columnHeader.fieldName);
+            let headerClassName = this.makeClassName("header_" + headerClassNamePrefix + columnHeader.fieldName);
             headerClassName += " " + this.makeClassName("headerCell");
             let keyStr = headerClassName + key;
             headers.push(<td key={keyStr} className={headerClassName}>
@@ -124,7 +125,7 @@ export default class DataGrid extends React.Component {
             itemClassName += ' ' + this.makeClassName('dataCell');
             let itemControl = item.value;
             if (item.column.makeControlFunc) {
-                itemControl = item.column.makeControlFunc(item.value);
+                itemControl = item.column.makeControlFunc(item.value, rowKey);
             }
             let keyStr = itemClassName + key;
             let title="";
