@@ -2,6 +2,7 @@ import React from 'react';
 import PagingButtons from './PagingButtons.jsx'
 import GetLinkDialog from './GetLinkDialog.jsx'
 import DownloadButton from './DownloadButton.jsx'
+require('./SearchResultsFooter.css');
 
 class SearchResultsFooter extends React.Component {
     constructor(props) {
@@ -72,8 +73,7 @@ class SearchResultsFooter extends React.Component {
                         tabDelimitedURL={this.downloadTabDelimited()}
                         csvDelimitedURL={this.downloadCsv()}
                         rawDataURL={this.downloadRawDataURL()} />
-                    <button className="btn btn-default" type="button"
-                            style={{verticalAlign:'top', marginLeft:'20px', marginTop:'20px'}}
+                    <button className="btn btn-default SearchResultsFooter_button" type="button"
                             onClick={this.showGetLinkDialog} >Share</button>
                     <GetLinkDialog isOpen={this.state.showGetUrlDialog}
                                    searchSettings={searchSettings}

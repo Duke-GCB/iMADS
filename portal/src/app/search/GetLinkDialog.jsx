@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
-import {isCustomList} from '../models/CustomList.js'
+import {isCustomList} from '../models/CustomList.js';
+require('./GetLinkDialog.css');
 
 const customStyles = {
     content: {
@@ -38,12 +39,12 @@ class GetLinkDialog extends React.Component {
         let customListCheckbox = [];
         let message = '';
         if (customList) {
-            customListCheckbox = <label>
+            customListCheckbox = <label className="GetLinkDialog_include_custom_list">
                     <input type="checkbox"
                            checked={this.state.includeCustomList}
                            onChange={this.changeIncludeCustomList}
-                           style={{marginRight: '10px', marginTop: '10px', marginLeft: '20px'}}/>
-                    Include Custom List
+                            />
+                    &nbsp;Include Custom List
                 </label>;
             message = 'Note: Custom lists are deleted 48 hours after uploading.';
         }
@@ -61,8 +62,8 @@ class GetLinkDialog extends React.Component {
                 </div>
 
 
-                <div style={{marginLeft: '20px', marginRight: '20px', marginTop: '20px'}}>
-                    <textarea style={{width:'100%', height: "50%"}} value={url} readOnly>
+                <div className="GetLinkDialog_textarea_container" >
+                    <textarea className="GetLinkDialog_textarea"   value={url} readOnly>
                     </textarea>
                 </div>
                 {customListCheckbox}

@@ -1,0 +1,24 @@
+.ColorDNA_letter {
+    font-family: monospace;
+    font-size: 12pt;
+}
+
+.ColorDNA_A {
+    color: #00d000
+}
+
+.ColorDNA_C {
+    color: #0729d3
+}
+
+.ColorDNA_G {
+    color: #fdbc00
+}
+
+.ColorDNA_T {
+    color: #d71f00
+}
+
+.ColorDNA_underscore {
+    border-bottom: 1px solid black;
+}

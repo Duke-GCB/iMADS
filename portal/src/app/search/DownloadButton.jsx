@@ -1,4 +1,5 @@
 import React from 'react';
+require('./DownloadButton.css');
 
 class DownloadListItem extends React.Component {
     render() {
@@ -16,10 +17,9 @@ class DownloadButton extends React.Component {
         }
         downloadItems.push(<DownloadListItem key="tabDelim" url={tabDelimitedURL} label="Tab Delimited" />);
         downloadItems.push(<DownloadListItem key="csvDelim" url={csvDelimitedURL} label="CSV Format" />);
-        return <div className="dropup" style={{display:'inline'}}>
-                        <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+        return <div className="dropup DownloadButton_div" >
+                        <button className="btn btn-default dropdown-toggle DownloadButton_button" type="button" id="dropdownMenu1"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
-                                style={{verticalAlign:'top', marginLeft:'20px', marginTop:'20px'}}
                         >Download All Data</button>
                         <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
                             {downloadItems}
