@@ -4,13 +4,13 @@ require('./PredictionDetailTable.css');
 
 export default class PredictionDetailTable extends React.Component {
     getHeader() {
-        return this.makeHeaderRow("Chromosome", "Start", "End", "Value", "Sequence");
+        return this.makeHeaderRow("header", "Chromosome", "Start", "End", "Value", "Sequence");
     }
 
-    makeHeaderRow(chrom, start, end, value, sequence) {
+    makeHeaderRow(key, chrom, start, end, value, sequence) {
         let {showChromosomeColumn} = this.props;
         if (showChromosomeColumn) {
-            return <tr>
+            return <tr key={key}>
                 <th>{chrom}</th>
                 <th>{start}</th>
                 <th>{end}</th>
@@ -18,7 +18,7 @@ export default class PredictionDetailTable extends React.Component {
                 <th>{sequence}</th>
             </tr>;
         } else {
-            return <tr>
+            return <tr key={key}>
                 <th>{start}</th>
                 <th>{end}</th>
                 <th>{value}</th>
@@ -30,18 +30,20 @@ export default class PredictionDetailTable extends React.Component {
     getDetails() {
         let details = [];
         let {detailList} = this.props;
+        let ctr = 0;
         for (let detail of detailList) {
             let {rowClassName, chrom, start, end, value, seq} = detail;
-            details.push(this.makeRow(rowClassName, chrom, start, end, value, seq));
+            details.push(this.makeRow(ctr, rowClassName, chrom, start, end, value, seq));
+            ctr += 1;
         }
         return details;
     }
 
-    makeRow(rowClassName, chrom, start, end, value, sequence) {
+    makeRow(key, rowClassName, chrom, start, end, value, sequence) {
         let {showChromosomeColumn, coreOffset, coreLength} = this.props;
         let colorDna = <ColorDNA seq={sequence} coreOffset={coreOffset} coreLength={coreLength} />;
         if (showChromosomeColumn) {
-            return <tr className={rowClassName}>
+            return <tr key={key} className={rowClassName}>
                 <td>{chrom}</td>
                 <td>{start}</td>
                 <td>{end}</td>
@@ -49,7 +51,7 @@ export default class PredictionDetailTable extends React.Component {
                 <td>{colorDna}</td>
             </tr>;
         } else {
-            return <tr className={rowClassName}>
+            return <tr key={key} className={rowClassName}>
                 <td>{start}</td>
                 <td>{end}</td>
                 <td>{value}</td>

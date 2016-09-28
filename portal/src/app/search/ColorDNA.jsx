@@ -1,6 +1,7 @@
 // Dna sequence(ATGC) with appropriate color for each letter.
 // Example: <ColorDNA seq="ATGC" />
 import React from 'react';
+require('./ColorDNA.css');
 
 const CHAR_TO_COLOR = {
     'A': '#00d000',
@@ -21,16 +22,11 @@ class ColorDNA extends React.Component {
     }
 
     coloredLetterSpan(key, c, underscore) {
-        var color = this.determineColor(c.toUpperCase());
-        var style = {
-            'color': color,
-            'fontFamily': FONT_FAMILY,
-            'fontSize': FONT_SIZE,
-        };
+        var className = "ColorDNA_letter ColorDNA_" + c.toUpperCase();
         if (underscore) {
-            style['borderBottom'] = '1px solid black';
+            className += " ColorDNA_underscore";
         }
-        return <span key={key} style={style}>{c}</span>;
+        return <span key={key} className={className}>{c}</span>;
     }
 
     render() {

@@ -6,6 +6,7 @@ import GenomeBrowserURL from '../models/GenomeBrowserURL.js';
 import DnaSequences from '../models/DnaSequences.js';
 import PredictionDetail from '../models/PredictionDetail.js';
 import {makeTitleForModelName} from '../models/Model.js';
+require('./PredictionDialog.css');
 
 class PredictionDialog extends React.Component {
     constructor(props) {
@@ -70,7 +71,7 @@ class PredictionDialog extends React.Component {
                 &nbsp;
                 <a alt="View in Genome Browser" title="View in Genome Browser"
                    href={allRangeGenomeBrowserURL} target="_blank"
-                   style={{float: 'right', paddingRight: '24px'}}>
+                   className="PredictionDialog_view_genome_link">
                     View in Genome Browser (on + strand)
                 </a>
             </h5>

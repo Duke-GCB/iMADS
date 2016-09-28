@@ -1,0 +1,10 @@
+.HeatMap_div {
+    display: inline-block;
+    paddingBottom: 1px;
+    paddingTop: 1px;
+}
+
+.HeatMap_svg {
+    cursor: pointer;
+}
+

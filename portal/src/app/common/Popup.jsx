@@ -24,7 +24,7 @@ class Popup extends React.Component {
     }
 }
 
-// this component seems to require react styles
+// this component requires react styles
 const customStyles = {
     content: {
         minHeight: '450px',
@@ -38,6 +38,6 @@ const customStyles = {
 
 const childrenDivStyle = {
     margin: '20px'
-}
+};
 
 export default Popup;

@@ -1,6 +1,7 @@
 import React from 'react';
 import SelectItem from '../common/SelectItem.jsx'
 import ModelSelect from '../common/ModelSelect.jsx';
+import WideButton from '../common/WideButton.jsx';
 import BooleanInput from '../common/BooleanInput.jsx'
 import ArrowTooltip from '../common/ArrowTooltip.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx'
@@ -55,7 +56,7 @@ class PredictionFilterPanel extends React.Component {
             defaultCustomSequenceName: this.makeDefaultCustomSequenceName(),
             sequenceData: editSeqData
         });
-    }
+    };
 
     makeDefaultCustomSequenceName = () => {
         return "Sequence List " + moment().format('MM/DD HH:mm');
@@ -110,7 +111,8 @@ class PredictionFilterPanel extends React.Component {
         if (customSequenceList.length == 0) {
             sequenceListOptions.push(<option key=""></option>);
         }
-        sequenceListOptions.push(<option key="customGeneList"  value={CUSTOM_SEQUENCE_LIST}>{CUSTOM_SEQUENCE_LIST}</option>);
+        sequenceListOptions.push(<option key="customGeneList"
+                                         value={CUSTOM_SEQUENCE_LIST}>{CUSTOM_SEQUENCE_LIST}</option>);
         return sequenceListOptions;
     }
 
@@ -123,9 +125,7 @@ class PredictionFilterPanel extends React.Component {
                                                visible={customSequenceList.length == 0} />;
         let editSequenceButton = [];
         if (predictionSettings.selectedSequence) {
-            editSequenceButton = <button type="button" className="btn btn-default btn-sm"
-                                        style={{marginTop: '5px', marginBottom: '10px', width: '100%'}}
-                                        onClick={this.editExistingSequence} >Edit Sequence</button>;
+            editSequenceButton = <WideButton title="Edit Sequence" onClick={this.editExistingSequence} />
         }
         return <div>
             <h4>Filter</h4>

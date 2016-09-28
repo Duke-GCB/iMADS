@@ -1,0 +1,9 @@
+.DownloadButton_div {
+    display: inline;
+}
+
+.DownloadButton_button {
+    vertical-align: top;
+    margin-left: 20px;
+    margin-top: 20px;
+}

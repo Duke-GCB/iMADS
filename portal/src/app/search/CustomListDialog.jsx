@@ -197,7 +197,7 @@ class CustomListDialog extends React.Component {
                           </button>
                           <h4 className="modal-title">{customListData.type}</h4>
                         </div>
-                            <div style={{margin: '20px'}}>
+                            <div className="CustomListDialog_content" >
                                 {instructions}
 
                                 <textarea className="CustomListDialog_textarea"
@@ -206,8 +206,8 @@ class CustomListDialog extends React.Component {
                                           onChange={this.changeText}
                                           disabled={this.state.loading}
                                 ></textarea>
-                                <input
-                                    style={{marginTop: '10px', marginBottom:'10px'}} type="file" name="fileField"
+                                <input className="CustomListDialog_upload_file"
+                                       type="file" name="fileField"
                                        onChange={this.changeUploadFile}
                                        disabled={this.state.loading}
                                        value={this.state.fileValue}

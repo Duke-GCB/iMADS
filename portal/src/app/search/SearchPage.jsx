@@ -6,6 +6,7 @@ import SearchResultsPanel from './SearchResultsPanel.jsx'
 import PageTitle from '../common/PageTitle.jsx'
 import SearchFilterPanel from './SearchFilterPanel.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx';
+import ThreePanelPane from '../common/ThreePanelPane.jsx';
 import PredictionsStore from '../models/PredictionsStore.js'
 import URLBuilder from '../models/URLBuilder.js'
 import PageBatch from '../models/PageBatch.js'
@@ -136,17 +137,8 @@ class SearchPage extends React.Component {
             downloadAll: this.downloadAll,
             setErrorMessage: this.setErrorMessage
         };
-        return <div>
-            <NavBar selected={SEARCH_NAV.path} />
-            <div className="container" style={{width:'100%'}}>
-                    <div className="row">
-                        <div className="col-md-offset-2 col-sm-offset-2 col-xs-offset-2 col-col-md-10 col-sm-10" >
-                            <PageTitle>TF Binding Predictions</PageTitle>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-md-2 col-sm-2 col-xs-2"  >
-                                <SearchFilterPanel
+        let topPanel = <PageTitle>TF Binding Predictions</PageTitle>;
+        let leftPanel = <SearchFilterPanel
                                         genomeData={this.state.genomeData}
                                         search={this.search}
                                         searchSettings={this.state.searchSettings}
@@ -156,10 +148,8 @@ class SearchPage extends React.Component {
                                         predictionColor={predictionColor}
                                         setPredictionColor={this.setPredictionColor}
                                         preferenceSettings={preferenceSettings}
-                                />
-                        </div>
-                        <div className="col-md-10 col-sm-10 col-xs-10" >
-                            <SearchResultsPanel
+                                />;
+        let rightPanel = <SearchResultsPanel
                                 genomeData={this.state.genomeData}
 
                                 searchSettings={this.state.searchSettings}
@@ -176,13 +166,14 @@ class SearchPage extends React.Component {
                                 predictionColor={predictionColor}
                                 preferenceSettings={preferenceSettings}
                                 coreRange={coreRange}
-                            />
-                        </div>
-
-                    </div>
-
-                </div>
-
+                            />;
+        return <div>
+            <NavBar selected={SEARCH_NAV.path} />
+            <ThreePanelPane
+                topPanel={topPanel}
+                leftPanel={leftPanel}
+                rightPanel={rightPanel}
+            />
             </div>
     }
 

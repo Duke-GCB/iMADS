@@ -1,5 +1,5 @@
 import React from 'react';
-import PageTitle from '../common/PageTitle.jsx'
+import PageTitle from '../common/PageTitle.jsx';
 import DataGrid from '../common/DataGrid.jsx';
 require('./DataSource.css');
 

@@ -1,14 +1,10 @@
 import React from 'react';
-import Loader from 'react-loader';
-
 import PredictionDialog from './PredictionDialog.jsx'
 import HeatMap from './HeatMap.jsx'
-import ErrorPanel from './ErrorPanel.jsx'
-
 import {getTrackHubUrl} from '../models/GenomeData.js';
 import {CUSTOM_RANGES_LIST} from '../models/CustomList.js'
-import {ResultHeaderRow, ResultDetailRow} from './ResultRow.jsx'
 import SearchResultsFooter from './SearchResultsFooter.jsx'
+import DataGrid from '../common/DataGrid.jsx';
 require('./SearchResultsPanel.css')
 
 class SearchResultsPanel extends React.Component {
@@ -17,9 +13,6 @@ class SearchResultsPanel extends React.Component {
         this.state = {
             predictionData: undefined,
         }
-    }
-
-    componentWillUpdate() {
     }
 
     showPredictionDetails = (predictionData) => {
@@ -34,84 +27,97 @@ class SearchResultsPanel extends React.Component {
         })
     };
 
-    makeHeatMap(rowData) {
+    makeLocationCell = (item) => {
+        return <span>{item.chrom}:{item.start}-{item.end}</span>;
+    };
+
+    makeHeatmapCell = (item, key) => {
         let {searchSettings, predictionColor} = this.props;
         let rangeType = searchSettings.geneList === CUSTOM_RANGES_LIST;
-        let heatMap = <span></span>;
-        if (searchSettings.all === true) {
-            let combinedName = rowData.commonName + " (" + rowData.name + ") ";
-            let offsetsStr = " upstream:" + searchSettings.upstream + " downstream:" + searchSettings.downstream;
-            let trackHubUrl = getTrackHubUrl(this.props.genomeData, searchSettings.genome);
-            let title = combinedName + " " + offsetsStr;
-            if (rangeType) {
-                title = rowData.chrom + ":" + rowData.start + "-" + rowData.end;
-            }
-            let heatMapValues = {
-                title: title,
-                values: rowData.values,
-                start: rowData.start,
-                end: rowData.end,
-                strand: rowData.strand,
-                upstream: searchSettings.upstream,
-                downstream: searchSettings.downstream,
-                chrom: rowData.chrom,
-                genome: this.props.searchSettings.genome,
-                trackHubUrl: trackHubUrl,
-                isCustomRange: rangeType,
-            };
-            heatMap = <HeatMap width="120" height="20"
-                               onClickHeatmap={this.showPredictionDetails}
-                               data={heatMapValues}
-                               scaleFactor={1.0}
-                               predictionColor={predictionColor}
-            />
+        let combinedName = item.commonName + " (" + item.name + ") ";
+        let offsetsStr = " upstream:" + searchSettings.upstream + " downstream:" + searchSettings.downstream;
+        let trackHubUrl = getTrackHubUrl(this.props.genomeData, searchSettings.genome);
+        let title = combinedName + " " + offsetsStr;
+        if (rangeType) {
+            title = item.chrom + ":" + item.start + "-" + item.end;
         }
-        return heatMap;
+        let heatMapValues = {
+            title: title,
+            values: item.values,
+            start: item.start,
+            end: item.end,
+            strand: item.strand,
+            upstream: searchSettings.upstream,
+            downstream: searchSettings.downstream,
+            chrom: item.chrom,
+            genome: this.props.searchSettings.genome,
+            trackHubUrl: trackHubUrl,
+            isCustomRange: rangeType,
+        };
+        return <HeatMap width="120" height="19"
+                        key={key}
+                        onClickHeatmap={this.showPredictionDetails}
+                        data={heatMapValues}
+                        predictionColor={predictionColor} />
+    };
+
+    makeGridColumnInfo() {
+        let {searchSettings} = this.props;
+        if (searchSettings.geneList === CUSTOM_RANGES_LIST) {
+            return this.makeRangeColumnInfo();
+        }
+        let columnInfo = [
+            {fieldName: 'commonName', title: 'Name', type: 'text'},
+            {fieldName: 'name', title: 'ID', type: 'text'},
+            {fieldName: 'strand', title: 'Strand', type: 'text'},
+            {fieldName: 'location', title: 'Location', type: 'location', makeControlFunc: this.makeLocationCell},
+            {fieldName: 'max', title: 'Max', type: 'text'}
+        ];
+        if (searchSettings.all) {
+            columnInfo.push({
+                fieldName: 'values',
+                title: 'Values',
+                type: 'heatmap',
+                tdHeight: '20px',
+                makeControlFunc: this.makeHeatmapCell});
+        }
+        return columnInfo;
     }
 
-    makeListContent() {
-        let {errorMessage, searchResults, searchDataLoaded} = this.props;
-        if (errorMessage) {
-            return <ErrorPanel message={errorMessage}/>;
+    makeRangeColumnInfo() {
+        let {searchSettings} = this.props;
+        let columnInfo = [
+            {fieldName: 'location', title: 'Name', type: 'location', makeControlFunc: this.makeLocationCell},
+            {fieldName: 'max', title: 'Max', type: 'text'}
+        ];
+        if (searchSettings.all) {
+            columnInfo.push({fieldName: 'values', title: 'Values', type: 'heatmap', makeControlFunc: this.makeHeatmapCell});
         }
-        if (searchResults.length == 0 && searchDataLoaded) {
-            return <div className="centerChildrenHorizontally">
-                    <span className="SearchResultsPanel__no_results_found centerVertically">No results found.</span>
-                </div>
-        }
-        return this.makeListRowsContent();
-    }
-
-    makeListRowsContent() {
-        let {searchSettings, searchResults, searchDataLoaded} = this.props;
-        let rangeType = searchSettings.geneList === CUSTOM_RANGES_LIST;
-        let includeHeatMap = searchSettings.all === true;
-        let rows = [];
-        for (let i = 0; i < searchResults.length; i++) {
-            let rowData = searchResults[i];
-            let heatMap = this.makeHeatMap(rowData);
-            rows.push(<ResultDetailRow rowData={rowData} key={i} heatMap={heatMap}
-                                       rangeType={rangeType} includeHeatMap={includeHeatMap}/>)
-        }
-        return <Loader loaded={searchDataLoaded}>
-            {rows}
-        </Loader>;
+        return columnInfo;
     }
 
     render() {
         let {searchSettings, searchResults, searchDataLoaded, searchOperations,
-            page, predictionStore, predictionColor, coreRange} = this.props;
-        let rangeType = searchSettings.geneList === CUSTOM_RANGES_LIST;
-        let includeHeatMap = searchSettings.all === true;
-        let listContent = this.makeListContent();
+            page, predictionStore, predictionColor, coreRange, showBlankWhenEmpty} = this.props;
         let showPredictionDetails = Boolean(this.state.predictionData);
+        let gridColumnInfo = this.makeGridColumnInfo();
+        let dataGridClassNamePrefix = "SearchResultsPanel_DataGrid_";
+        let headerClassNamePrefix = "";
+        if (searchSettings.all) {
+            headerClassNamePrefix = "Narrow_";
+        }
         return <div>
-            <ResultHeaderRow rangeType={rangeType} includeHeatMap={includeHeatMap}/>
-
-            <div id="resultsGridContainer" className="SearchResultsPanel__resultsGridContainer">
-                {listContent}
-            </div>
-
+            <DataGrid
+                        fullScreen={true}
+                        classNamePrefix="SearchResultsPanel_DataGrid_"
+                        headerClassNamePrefix={headerClassNamePrefix}
+                        columnInfo={gridColumnInfo}
+                        rows={searchResults}
+                        searchDataLoaded={searchDataLoaded}
+                        loadingStatusLabel="Loading"
+                        showBlankWhenEmpty={!searchDataLoaded}
+                        errorMessage=""
+                    />
             <SearchResultsFooter
                 searchSettings={searchSettings}
                 searchResults={searchResults}

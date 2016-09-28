@@ -6,20 +6,29 @@ import SelectItem from '../common/SelectItem.jsx';
 import {formatModelName} from '../models/Model.js';
 
 export default class ModelSelect  extends React.Component {
+    makeOptions(models) {
+        let result = [];
+        for (let i = 0; i < models.length; i+=1) {
+            let model = models[i];
+            result.push(this.makeOption(model, i));
+        }
+        return result;
+    }
+
     /**
      * Return an option tag based on the mode.
      * Returns separator if model is undefined.
      * @param model
      * @returns {XML}
      */
-    makeOption(model) {
+    makeOption(model, key) {
         // Hides numeric portion of names from users.
         // Additional release should change this dropdown into labeled categories.
         if (model) {
             let simplifiedName = formatModelName(model.name);
-            return <option key={model.name} value={model.name}>{simplifiedName}</option>;
+            return <option key={key} value={model.name}>{simplifiedName}</option>;
         } else {
-            return <option disabled>──────────</option>;
+            return <option key={key} disabled>──────────</option>;
         }
     }
 
@@ -46,7 +55,7 @@ export default class ModelSelect  extends React.Component {
     render() {
         let {models, selected, onChange} = this.props;
         let modelsWithSpacers = [];
-        let proteinOptions = this.addSpacers(models).map(this.makeOption);
+        let proteinOptions = this.makeOptions(this.addSpacers(models));
         return <SelectItem
             title="Protein/Model:"
             selected={selected}

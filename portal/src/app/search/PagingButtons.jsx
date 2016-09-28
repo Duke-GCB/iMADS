@@ -1,4 +1,5 @@
 import React from 'react';
+require('./PagingButtons.css');
 
 class PagingButtons extends React.Component {
     constructor(props) {
@@ -21,7 +22,7 @@ class PagingButtons extends React.Component {
         }
         let func = this.onClickPage.bind(this, pageNum);
         return <li {...props} key={pageNum} >
-            <a href="#" style={{width: '4em', textAlign: 'center'}} onClick={func}>{pageNum} {child}</a>
+            <a href="#" className="PagingButtons_number_buttons" onClick={func}>{pageNum} {child}</a>
         </li>;
     }
 

@@ -7,6 +7,7 @@ import BooleanInput from '../common/BooleanInput.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx'
 import ModelSelect from '../common/ModelSelect.jsx';
 import {getFirstGenomeName} from '../models/GenomeData.js';
+require('./SearchFilterPanel.css');
 
 const CUSTOM_GENE_LIST = 'Custom Gene List';
 const CUSTOM_RANGES_LIST = 'Custom Ranges List';
@@ -218,9 +219,8 @@ class SearchFilterPanel extends React.Component {
             geneListTitle = <div>
                 Gene list:
             </div>;
-            customListButton = <button type="button" className="btn btn-default btn-sm"
-                        style={{marginTop: '5px', marginBottom: '10px', width: '100%'}}
-                    onClick={this.setShowCustomDialog} >
+            customListButton = <button type="button" className="btn btn-default btn-sm SearchFilterPanel_custom_list_button"
+                                       onClick={this.setShowCustomDialog} >
                     Update Custom List
                 </button>;
         }
