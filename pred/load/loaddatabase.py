@@ -45,6 +45,21 @@ def create_sql_pipeline(config, update_progress):
     return sql_builder.sql_pipeline
 
 
+def create_sql_for_predictions(config, sql_builder, type_filter, update_progress):
+    """
+    Add INSERT SQL to sql_builder for preference/prediction data into pre-existing tables in the database.
+    :param config: pred.Config: contains the trackhub setup that specifies our models
+    :param sql_builder: builder to add our sql commands to
+    :param type_filter: str: either config.DataType.PREDICTION, config.DataType.PREFERENCE, or None for both
+    :param update_progress: func(str): will be called with progress messages
+    :return:
+    """
+    for genome_data in config.genome_data_list:
+        database_loader = DatabaseLoader(config, genome_data, sql_builder, update_progress)
+        database_loader.insert_prediction_files(type_filter)
+        database_loader.create_gene_prediction(type_filter)
+
+
 def create_sql_for_model_files(config, sql_builder):
     """
     Insert records into the database for the model files we have in config.
@@ -72,9 +87,9 @@ def create_pipeline_for_genome_version(database_loader):
     database_loader.create_schema_and_base_tables()
     database_loader.insert_genome_data_source()
     database_loader.insert_gene_list_files()
-    database_loader.insert_prediction_files()
+    database_loader.insert_prediction_files(type_filter=None)
     database_loader.create_gene_and_prediction_indexes()
-    database_loader.create_gene_prediction()
+    database_loader.create_gene_prediction(type_filter=None)
     database_loader.delete_sql_for_gene_list_files()
 
 
@@ -138,25 +153,36 @@ class DatabaseLoader(object):
                 self.sql_builder.insert_genelist(gene_list)
         self.sql_builder.fill_gene_ranges(self.genome, self.config.binding_max_offset)
 
-    def insert_prediction_files(self):
+    def insert_prediction_files(self, type_filter):
+        """
+        Insert prediction/preference data into prediction table for all genomes.
+        Also adds prediction file as a data source.
+        :param type_filter: str: either config.DataType.PREDICTION, config.DataType.PREFERENCE, or None for both
+        """
         self.sql_builder.begin_parallel()
         for prediction_setting in self.genome_data.prediction_lists:
-            downloader = PredictionDownloader(self.config, prediction_setting, self.update_progress)
-            filename = downloader.get_local_tsv_path()
-            self.sql_builder.copy_file_into_db(self.genome_data.genomename + '.prediction', filename)
-            self.sql_builder.insert_data_source(downloader.get_url(), downloader.get_description(),
-                                                'prediction', filename)
+            if not type_filter or prediction_setting.data_type == type_filter:
+                downloader = PredictionDownloader(self.config, prediction_setting, self.update_progress)
+                filename = downloader.get_local_tsv_path()
+                self.sql_builder.copy_file_into_db(self.genome_data.genomename + '.prediction', filename)
+                self.sql_builder.insert_data_source(downloader.get_url(), downloader.get_description(),
+                                                    'prediction', filename)
         self.sql_builder.end_parallel()
 
     def create_gene_and_prediction_indexes(self):
         self.sql_builder.create_gene_and_prediction_indexes(self.genome)
 
-    def create_gene_prediction(self):
+    def create_gene_prediction(self, type_filter):
+        """
+        Insert data from prediction table into genome_prediction for all genomes based on a type_filter.
+        :param type_filter: str: either config.DataType.PREDICTION, config.DataType.PREFERENCE, or None for both
+        """
         for prediction_setting in self.genome_data.prediction_lists:
-            model_name = prediction_setting.name
-            self.sql_builder.begin_parallel()
-            self.sql_builder.insert_gene_prediction(self.genome, model_name)
-            self.sql_builder.end_parallel()
+            if not type_filter or prediction_setting.data_type == type_filter:
+                model_name = prediction_setting.name
+                self.sql_builder.begin_parallel()
+                self.sql_builder.insert_gene_prediction(self.genome, model_name)
+                self.sql_builder.end_parallel()
         self.sql_builder.create_gene_prediction_indexes(self.genome)
 
     def delete_sql_for_gene_list_files(self):

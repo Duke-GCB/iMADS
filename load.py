@@ -2,9 +2,10 @@
 Load gene list data and predictions into a Postgres database.
 """
 import argparse
-from pred.config import parse_config, CONFIG_FILENAME
+from pred.config import parse_config, CONFIG_FILENAME, DataType
 from pred.load.download import download_and_convert, download_models
-from pred.load.loaddatabase import create_sql_pipeline, create_sql_builder, create_sql_for_model_files, SqlRunner
+from pred.load.loaddatabase import create_sql_pipeline, create_sql_builder, create_sql_for_model_files, \
+    create_sql_for_predictions,  SqlRunner
 
 
 def update_progress(message):
@@ -65,6 +66,31 @@ def run_sql_models_command(config):
     run_sql_pipeline(config, sql_builder.sql_pipeline)
 
 
+def run_sql_predictions(config):
+    """
+    Load just predictions into the databse based on config.
+    :param config: pred.Config: global configuration containing what data to download/convert/load.
+    """
+    update_progress("STAGE: Creating predictions SQL files.")
+    sql_builder = create_sql_builder()
+    create_sql_for_predictions(config, sql_builder, DataType.PREDICTION, update_progress)
+    update_progress("STAGE: Executing predictions SQL files.")
+    run_sql_pipeline(config, sql_builder.sql_pipeline)
+
+
+def run_sql_preferences(config):
+    """
+    Load just preferences into the databse based on config.
+    :param config: pred.Config: global configuration containing what data to download/convert/load.
+    """
+    print("SQL PREFERENCES")
+    update_progress("STAGE: Creating preferences SQL files.")
+    sql_builder = create_sql_builder()
+    create_sql_for_predictions(config, sql_builder, DataType.PREFERENCE, update_progress)
+    update_progress("STAGE: Executing preferences SQL files.")
+    run_sql_pipeline(config, sql_builder.sql_pipeline)
+
+
 def run_sql_pipeline(config, sql_pipeline):
     """
     Run all the sql commands in sql_pipeline against the database.
@@ -82,7 +108,9 @@ if __name__ == '__main__':
         'download': download_files_command,
         'download_models': download_models_command,
         'run_sql': run_sql_command,
-        'run_sql_models' : run_sql_models_command
+        'run_sql_models' : run_sql_models_command,
+        'run_sql_predictions': run_sql_predictions,
+        'run_sql_preferences': run_sql_preferences,
     }
     parser = argparse.ArgumentParser(description='Loads prediction database based on imadsconf.yaml')
     parser.add_argument('command', choices=funcs.keys())

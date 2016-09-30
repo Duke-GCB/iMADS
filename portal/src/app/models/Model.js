@@ -1,7 +1,11 @@
 export function formatModelName(modelName) {
-    return modelName.replace(/_.*/, '');
+    return modelName.replace(/_[0-9]+/, '');
 }
 
 export function makeTitleForModelName(modelName, title) {
-    return formatModelName(modelName) + " predictions for " + title;
+    let modelType = "predictions";
+    if (modelName.indexOf("_vs_") != -1) {
+        modelType = "preferences";
+    }
+    return formatModelName(modelName) + " " + modelType + " for " + title;
 }
