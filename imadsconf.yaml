@@ -19,6 +19,7 @@ genome_data:
     fix_script: bigBedToBed
     name: c-Myc_0001
     sort_max_guess: 0.6
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0001_c-Myc.bb
   - core_length: 6
     core_offset: 7
@@ -26,6 +27,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Mad1_0002
     sort_max_guess: 0.6
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0002_Mad1.bb
   - core_length: 6
     core_offset: 7
@@ -33,6 +35,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Max_0003
     sort_max_guess: 0.6
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0003_Max.bb
   - core_length: 4
     core_offset: 8
@@ -40,6 +43,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Elk1_0004
     sort_max_guess: 0.8
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0004_Elk1.bb
   - core_length: 4
     core_offset: 8
@@ -47,6 +51,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Ets1_0005
     sort_max_guess: 0.8
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0005_Ets1.bb
   - core_length: 4
     core_offset: 8
@@ -54,6 +59,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Gabpa_0006
     sort_max_guess: 0.6
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0006_Gabpa.bb
   - core_length: 4
     core_offset: 8
@@ -61,6 +67,7 @@ genome_data:
     fix_script: bigBedToBed
     name: E2f1_0007
     sort_max_guess: 0.6
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0007_E2f1.bb
   - core_length: 4
     core_offset: 8
@@ -68,6 +75,7 @@ genome_data:
     fix_script: bigBedToBed
     name: E2f3_0008
     sort_max_guess: 0.75
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0008_E2f3.bb
   - core_length: 4
     core_offset: 8
@@ -75,6 +83,7 @@ genome_data:
     fix_script: bigBedToBed
     name: E2f4_0009
     sort_max_guess: 0.65
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0009_E2f4.bb
   - core_length: 5
     core_offset: 8
@@ -82,6 +91,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Runx1_0010
     sort_max_guess: 0.7
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0010_Runx1.bb
   - core_length: 5
     core_offset: 8
@@ -89,6 +99,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Runx2_0011
     sort_max_guess: 0.8
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0011_Runx2.bb
   trackhub_url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt
 - ftp_files:
@@ -121,6 +132,7 @@ genome_data:
     fix_script: bigBedToBed
     name: c-Myc_0001
     sort_max_guess: 0.6
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0001_c-Myc.bb
   - core_length: 6
     core_offset: 7
@@ -128,6 +140,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Mad1_0002
     sort_max_guess: 0.6
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0002_Mad1.bb
   - core_length: 6
     core_offset: 7
@@ -135,6 +148,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Max_0003
     sort_max_guess: 0.6
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0003_Max.bb
   - core_length: 4
     core_offset: 8
@@ -142,6 +156,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Elk1_0004
     sort_max_guess: 0.8
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0004_Elk1.bb
   - core_length: 4
     core_offset: 8
@@ -149,6 +164,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Ets1_0005
     sort_max_guess: 0.8
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0005_Ets1.bb
   - core_length: 4
     core_offset: 8
@@ -156,6 +172,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Gabpa_0006
     sort_max_guess: 0.6
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0006_Gabpa.bb
   - core_length: 4
     core_offset: 8
@@ -163,6 +180,7 @@ genome_data:
     fix_script: bigBedToBed
     name: E2f1_0007
     sort_max_guess: 0.6
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0007_E2f1.bb
   - core_length: 4
     core_offset: 8
@@ -170,6 +188,7 @@ genome_data:
     fix_script: bigBedToBed
     name: E2f3_0008
     sort_max_guess: 0.75
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0008_E2f3.bb
   - core_length: 4
     core_offset: 8
@@ -177,6 +196,7 @@ genome_data:
     fix_script: bigBedToBed
     name: E2f4_0009
     sort_max_guess: 0.65
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0009_E2f4.bb
   - core_length: 5
     core_offset: 8
@@ -184,6 +204,7 @@ genome_data:
     fix_script: bigBedToBed
     name: Runx1_0010
     sort_max_guess: 0.7
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0010_Runx1.bb
   - core_length: 5
     core_offset: 8
@@ -191,7 +212,16 @@ genome_data:
     fix_script: bigBedToBed
     name: Runx2_0011
     sort_max_guess: 0.8
+    type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0011_Runx2.bb
+  - core_length: null
+    core_offset: null
+    family: PREFERENCE
+    fix_script: bigBedToBed
+    name: E2f1_vs_E2f4
+    sort_max_guess: 0.6
+    type: PREFERENCE
+    url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/E2f1_vs_E2f4_GCGC_chr1-2-3.bb
   trackhub_url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt
 model_base_url: https://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models
 model_tracks_url: https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks.yaml?dest=/pred_data/models/tracks.yaml

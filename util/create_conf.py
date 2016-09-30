@@ -30,7 +30,7 @@ YAML_CONFIG_FILE = 'create_conf.yaml'
 yaml_config = {}
 with open(YAML_CONFIG_FILE) as infile:
     yaml_config = yaml.safe_load(infile)
-DATA_SOURCE_URL = yaml_config['DATA_SOURCE_URL']
+DATA_SOURCES = yaml_config['DATA_SOURCES']
 CONFIG_FILENAME = yaml_config['CONFIG_FILENAME']
 BINDING_MAX_OFFSET = yaml_config['BINDING_MAX_OFFSET']
 GENOMES_FILENAME = yaml_config['GENOMES_FILENAME']
@@ -55,16 +55,17 @@ def create_config_file(trackhub_data, output_filename):
         track_filename = genome_to_track[genome]
         track_data = []
         prediction_lists = []
-        for track, url in trackhub_data.get_track_data(genome, track_filename):
+        for track, url, type in trackhub_data.get_track_data(genome, track_filename):
             sort_max_guess = SORT_MAX_GUESS.get(track, SORT_MAX_GUESS_DEFAULT)
             prediction_data = {
                 'name': track,
+                'type': type,
                 'url': url,
                 'fix_script': FIX_SCRIPT,
                 'sort_max_guess': sort_max_guess,
                 'core_offset': tracks_yaml.get_core_offset(track),
                 'core_length': tracks_yaml.get_core_length(track),
-                'family': tracks_yaml.get_family(track),
+                'family': tracks_yaml.get_family(track, type),
             }
             prediction_lists.append(prediction_data)
         genome_data.append({
@@ -109,8 +110,9 @@ class TrackHubData(object):
     """
     Data from trackhub related to genomes and their predictions stored there.
     """
-    def __init__(self, data_source_url):
+    def __init__(self, data_source_url, type):
         self.remote_data = RemoteData(data_source_url)
+        self.type = type
 
     def get_genomes(self):
         """
@@ -132,21 +134,58 @@ class TrackHubData(object):
         """
         Given track filename return list of tracks, url.
         :param track_filename: filename to lookup track data for.
-        :return: [(track_name, url, family)] list of tracks and their urls
+        :return: [(track_name, url, type)] list of tracks and their urls
         """
         result = []
         track = ''
         family = ''
-        lines = self.remote_data.get_lines_for_path(track_filename)
-        for name, value in get_key_value_list(lines):
-            if name == 'track':
-                track = value
-            if name == 'bigDataUrl':
-                url = self.remote_data.create_url('{}/{}'.format(genome, value))
+        try:
+            lines = self.remote_data.get_lines_for_path(track_filename)
+            for name, value in get_key_value_list(lines):
+                if name == 'track':
+                    track = value
+                if name == 'bigDataUrl':
+                    url = self.remote_data.create_url('{}/{}'.format(genome, value))
 
-                result.append((track, url))
+                    result.append((track, url, self.type))
+        except requests.HTTPError as err:
+            msg = "Error fetching {} for {} error: {}"
+            print(msg.format(genome, track, err))
         return result
 
+
+class CompositeTrackHubData(object):
+    """
+    Allows a list of TrackHubData to act like a single TrackHubData.
+    """
+    def __init__(self, trackhub_list):
+        """
+        Create composite trackhub from a list.
+        :param trackhub_list: [TrackHubData] trackhubs to combine
+        """
+        self.trackhub_list = trackhub_list
+
+    def get_genomes(self):
+        """
+        Create genome version to trackDB dictionary.
+        :param remote_data: lines from trackhub file
+        :return: dict: genome to trackDB URL.
+        """
+        genome_to_track = {}
+        for trackhub in self.trackhub_list:
+            genome_to_track.update(trackhub.get_genomes())
+        return genome_to_track
+
+    def get_track_data(self, genome, track_filename):
+        """
+        Given track filename return list of tracks, url.
+        :param track_filename: filename to lookup track data for.
+        :return: [(track_name, url, type)] list of tracks and their urls
+        """
+        result = []
+        for trackhub in self.trackhub_list:
+            result.extend(trackhub.get_track_data(genome, track_filename))
+        return result
 
 class RemoteData(object):
     """
@@ -199,14 +238,19 @@ class TracksYAML(object):
         resp = requests.get(url)
         resp.raise_for_status()
         self.track_name_to_items = {}
-        for item in  yaml.safe_load(resp.text):
+        for item in yaml.safe_load(resp.text):
             self.track_name_to_items[item['track_name']] = item
 
-    def get_family(self, track_name):
-        return self.track_name_to_items[track_name]['family']
+    def get_family(self, track_name, default_family):
+        item = self.track_name_to_items.get(track_name)
+        if not item:
+            return default_family
+        return item['family']
 
     def get_core_offset(self, track_name):
-        item = self.track_name_to_items[track_name]
+        item = self.track_name_to_items.get(track_name)
+        if not item:
+            return None
         core_start = item['core_start']
         if core_start:
             return int(core_start)
@@ -216,9 +260,16 @@ class TracksYAML(object):
             return int(half_width - half_core_length)
 
     def get_core_length(self, track_name):
-        item = self.track_name_to_items[track_name]
+        item = self.track_name_to_items.get(track_name)
+        if not item:
+            return None
         return len(item['cores'][0])
 
 
+
+
 if __name__ == '__main__':
-    create_config_file(TrackHubData(DATA_SOURCE_URL), CONFIG_FILENAME)
+    trackhub_list = []
+    for data_source in DATA_SOURCES:
+        trackhub_list.append(TrackHubData(data_source['url'], data_source['type']))
+    create_config_file(CompositeTrackHubData(trackhub_list), CONFIG_FILENAME)

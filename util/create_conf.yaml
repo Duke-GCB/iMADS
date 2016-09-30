@@ -1,6 +1,10 @@
 
-# Base url we will download prediciton data from
-DATA_SOURCE_URL: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions
+# Base urls we will download prediction/preference data from
+DATA_SOURCES:
+ - type: PREDICTION
+   url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions
+ - type: PREFERENCE
+   url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences/
 
 # Where we save our result to
 CONFIG_FILENAME: ../imadsconf.yaml
