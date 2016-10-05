@@ -38,6 +38,7 @@ GENOME_SPECIFIC_DATA = yaml_config['GENOME_SPECIFIC_DATA']
 SORT_MAX_GUESS_DEFAULT = yaml_config['SORT_MAX_GUESS_DEFAULT']
 SORT_MAX_GUESS = yaml_config['SORT_MAX_GUESS']
 MODEL_BASE_URL = yaml_config['MODEL_BASE_URL']
+MODEL_FAMILY_ORDER = yaml_config['MODEL_FAMILY_ORDER']
 
 
 def create_config_file(trackhub_data, output_filename):
@@ -53,9 +54,11 @@ def create_config_file(trackhub_data, output_filename):
         track_filename = genome_to_track[genome]
         track_data = []
         prediction_lists = []
+        pred_idx = 1
         for track, url, type, tracks_yaml in trackhub_data.get_track_data(genome, track_filename):
             sort_max_guess = SORT_MAX_GUESS.get(track, SORT_MAX_GUESS_DEFAULT)
             prediction_data = {
+                'idx': pred_idx,
                 'name': track,
                 'type': type,
                 'url': url,
@@ -65,7 +68,11 @@ def create_config_file(trackhub_data, output_filename):
                 'core_length': tracks_yaml.get_core_length(track),
                 'family': tracks_yaml.get_family(track, type),
             }
+            pred_idx += 1
             prediction_lists.append(prediction_data)
+        prediction_lists = sorted(prediction_lists, key=prediction_sort_key)
+        for prediction_data in prediction_lists:
+            del prediction_data['idx']
         genome_data.append({
             'genome': '' + genome,
             'genome_file': "goldenPath/{}/bigZips/{}.2bit".format(genome, genome),
@@ -85,6 +92,10 @@ def create_config_file(trackhub_data, output_filename):
     with open(output_filename, 'w') as outfile:
         yaml.safe_dump(config_data, outfile, default_flow_style=False)
     print("Wrote config file to {}".format(output_filename))
+
+
+def prediction_sort_key(pred_data):
+    return MODEL_FAMILY_ORDER.index(pred_data['family']), pred_data['idx']
 
 
 def get_key_value_list(lines):

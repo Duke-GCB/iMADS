@@ -1,5 +1,6 @@
 import React from 'react';
 import StreamValue from '../models/StreamValue.js'
+require('./StreamInput.css');
 
 class StreamInput extends React.Component {
     constructor(props) {
@@ -19,7 +20,7 @@ class StreamInput extends React.Component {
      }
 
     render() {
-        let className = "form-control";
+        let className = "StreamInput_input form-control";
         if (!this.state.isValid) {
             className += " badValue"
         }

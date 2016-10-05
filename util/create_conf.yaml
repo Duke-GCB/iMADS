@@ -8,6 +8,8 @@ DATA_SOURCES:
    url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences/
    model_tracks_url: https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks-preferences.yaml
 
+MODEL_FAMILY_ORDER: [bHLH, ETS, E2F, RUNX]
+
 # Where we save our result to
 CONFIG_FILENAME: ../imadsconf.yaml
 
