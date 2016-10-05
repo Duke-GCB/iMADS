@@ -35,8 +35,9 @@ def download_models(config, update_progress):
     :return:
     """
     model_files = ModelFiles(config)
-    local_tracks_filename = model_files.get_local_tracks_filename()
-    download_url(config.model_tracks_url, local_tracks_filename, update_progress)
+    for model_tracks_url in config.model_tracks_url_list:
+        local_tracks_filename = model_files.get_local_path_for_url(model_tracks_url)
+        download_url(model_tracks_url, local_tracks_filename, update_progress)
 
     for details in model_files.get_model_details():
         url = details['url']
@@ -70,12 +71,27 @@ class ModelFiles(object):
         :param config: Config: settings used to retrieve model info
         """
         self.model_base_url = config.model_base_url
-        self.model_tracks_url = config.model_tracks_url
+        self.model_tracks_url_list = config.model_tracks_url_list
         self.models_dir = '{}/models'.format(config.download_dir)
         self.model_names = config.get_all_model_names()
 
-    def get_local_tracks_filename(self):
-        return '{}/tracks.yaml'.format(self.models_dir)
+    def get_local_path_for_url(self, url):
+        """
+        Given a url return a local path for storing the data.
+        :param url: str: url we will download
+        :return: str: path where to store the file
+        """
+        filename = os.path.basename(url)
+        return '{}/{}'.format(self.models_dir, filename)
+
+    def get_model_track_name(self, url):
+        """
+        Given a url return a user facing name for the file stripping un-necessary parts.
+        :param url: str: url we will download
+        :return: str: name to show to the user
+        """
+        filename = os.path.basename(url).replace("tracks-","").replace(".yaml","")
+        return 'Model settings for {}'.format(filename)
 
     def get_model_details(self):
         """
@@ -87,7 +103,7 @@ class ModelFiles(object):
         unique_filenames = set()
         for item in self._get_tracks_data():
             track_name = item['track_name']
-            filenames = item['model_filenames']
+            filenames = item.get('model_filenames', [])
             if track_name in self.model_names:
                 for i in range(len(filenames)):
                     filename = filenames[i]
@@ -121,11 +137,12 @@ class ModelFiles(object):
         Returns YAML data based on model_tracks_url property
         :return: object: array of model info
         """
-        if self.model_tracks_url:
-            resp = requests.get(self.model_tracks_url)
+        result = []
+        for tracks_url in self.model_tracks_url_list:
+            resp = requests.get(tracks_url)
             resp.raise_for_status()
-            return yaml.safe_load(resp.text)
-        return []
+            result.extend(yaml.safe_load(resp.text))
+        return result
 
     def get_model_url(self, filename):
         """

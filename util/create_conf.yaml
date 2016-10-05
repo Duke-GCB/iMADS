@@ -3,8 +3,10 @@
 DATA_SOURCES:
  - type: PREDICTION
    url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions
+   model_tracks_url: https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks-predictions.yaml
  - type: PREFERENCE
    url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences/
+   model_tracks_url: https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks-preferences.yaml
 
 # Where we save our result to
 CONFIG_FILENAME: ../imadsconf.yaml
@@ -25,7 +27,7 @@ SORT_MAX_GUESS:
   'Runx1_0010': 0.7
   'Runx2_0011': 0.8
 
-MODEL_TRACKS_URL: https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks.yaml?dest=/pred_data/models/tracks.yaml
+
 MODEL_BASE_URL: https://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models
 
 # Gene lists and other static data for each genome

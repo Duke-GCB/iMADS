@@ -14,7 +14,6 @@ from pred.load.postgres import PostgresConnection, CopyCommand
 from psycopg2 import OperationalError
 
 SQL_TEMPLATE_DIR = 'sql_templates'
-METADATA_FILE_DESC = 'Settings for all models'
 METADATA_GROUP_NAME = 'Metadata'
 
 
@@ -74,9 +73,12 @@ def create_sql_for_model_files(config, sql_builder):
         description = details['description']
         sql_builder.insert_data_source(url, description, 'model', local_path, group_name)
     model_files = ModelFiles(config)
-    local_tracks_filename = model_files.get_local_tracks_filename()
-    sql_builder.insert_data_source(config.model_tracks_url, METADATA_FILE_DESC, 'model',
-                                   local_tracks_filename, METADATA_GROUP_NAME)
+
+    for model_tracks_url in config.model_tracks_url_list:
+        local_tracks_filename = model_files.get_local_path_for_url(model_tracks_url)
+        name = model_files.get_model_track_name(model_tracks_url)
+        sql_builder.insert_data_source(model_tracks_url, name, 'model',
+                                       local_tracks_filename, METADATA_GROUP_NAME)
 
 
 def create_pipeline_for_genome_version(database_loader):

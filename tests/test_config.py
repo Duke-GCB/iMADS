@@ -7,7 +7,7 @@ CONFIG_DATA = {
     "binding_max_offset": 5000,
     "download_dir": "/tmp/pred_data",
     'model_base_url': 'someModelURL',
-    'model_tracks_url': 'someTracksURL',
+    'model_tracks_url_list': ['someTracksURL'],
     "genome_data": [
         {
             "genome": "hg19",
@@ -45,7 +45,7 @@ class TestConfigLoading(TestCase):
         self.assertEqual(5000, config.binding_max_offset)
         self.assertEqual('/tmp/pred_data', config.download_dir)
         self.assertEqual('someModelURL', config.model_base_url)
-        self.assertEqual('someTracksURL', config.model_tracks_url)
+        self.assertEqual(['someTracksURL'], config.model_tracks_url_list)
         genomes_setup = config.get_genomes_setup()
         self.assertEqual(1, len(genomes_setup))
         hg19 = genomes_setup['hg19']
