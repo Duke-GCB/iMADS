@@ -27,6 +27,7 @@ export default class DataSource extends React.Component {
                 columnInfo={gridColumnInfo}
                 rows={content}
                 hasGroups={hasGroups}
+                searchDataLoaded={true}
             />
         </div>
     }

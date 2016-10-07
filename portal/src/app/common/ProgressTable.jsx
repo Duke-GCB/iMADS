@@ -32,7 +32,7 @@ export default class ProgressTable extends React.Component {
         let current = moment(new Date(currentDate));
         let elapsed = this.getEllapsed(started, current);
         if (!startedDate) {
-            return <div></div>;
+            return <div>Loading</div>;
         }
         return <table className="ProgressTable_table">
             <tbody>
