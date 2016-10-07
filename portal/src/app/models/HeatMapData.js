@@ -43,6 +43,7 @@ class HeatMapData {
     static buildCellArray(chrom, inputArray, props, predictionColor) {
         let results = [];
         let idx = 0;
+        let isPreference = predictionColor.isPreference;
         let sortedInputArray = inputArray.slice();
         sortedInputArray.sort(sortByAbsValue);
         for (let item of sortedInputArray) {
@@ -59,7 +60,8 @@ class HeatMapData {
                 value: item.value,
             };
             let hmd = new HeatMapData(chrom, data, props.xOffset, props.includeTitle, itemWidth);
-            let color = new ColorBlender(data.value, predictionColor).getColor();
+
+            let color = new ColorBlender(data.value, predictionColor, isPreference).getColor();
             results.push({
                 color: color,
                 x: hmd.getX(props.scale, props.strand, props.xOffsetEnd),

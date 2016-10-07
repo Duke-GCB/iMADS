@@ -38,6 +38,7 @@ class HeatMap extends React.Component {
 
     getHeatRects(scale) {
         let {data, predictionColor} = this.props;
+        let isPreference = predictionColor.isPreference;
         let result = [];
         let cells = HeatMapData.buildCellArray(data.chrom, data.values, {
             xOffset: this.props.data.start,
@@ -49,12 +50,12 @@ class HeatMap extends React.Component {
             itemWidth: this.props.data.itemWidth
         }, predictionColor);
         for (let i = 0; i < cells.length; i++) {
-            result.push(this.makeHeatRect(i, cells[i]));
+            result.push(this.makeHeatRect(i, cells[i], isPreference));
         }
         return result;
     }
 
-    makeHeatRect(idx, heatCell) {
+    makeHeatRect(idx, heatCell, isPreference) {
         let title = [];
         if (heatCell.title) {
             title = <title>{heatCell.title}</title>;
@@ -62,7 +63,7 @@ class HeatMap extends React.Component {
         let url = '';
         if (!this.props.showDetailsOnClick) {
             url = this.genomeBrowserURL.getPredictionURL(this.props.data.genome, this.props.data.chrom,
-                heatCell.start, heatCell.end);
+                heatCell.start, heatCell.end, isPreference);
         }
         return <g key={"heat_cell" + idx} >
             {title}
@@ -74,7 +75,7 @@ class HeatMap extends React.Component {
 
     drillDown = (evt) => {
         let {setSelectedIndex} = this.props;
-        if (this.genomeBrowserURL.trackHubUrl) {
+        if (this.genomeBrowserURL.trackHubUrlList) {
             let url = evt.target.getAttribute('data-url');
             window.open(url);
         } else {
@@ -87,10 +88,11 @@ class HeatMap extends React.Component {
     };
 
     viewInGenomeBrowser = () => {
-        let {setSelectedIndex} = this.props;
-        if (this.genomeBrowserURL.trackHubUrl) {
+        let {setSelectedIndex, predictionColor} = this.props;
+        if (this.genomeBrowserURL.trackHubUrlList) {
             let data = this.props.data;
-            window.open(this.genomeBrowserURL.getGeneURL(data.genome, data.chrom, data.start, data.end));
+            window.open(this.genomeBrowserURL.getGeneURL(data.genome, data.chrom, data.start, data.end,
+                predictionColor.isPreference));
         } else {
             if (setSelectedIndex) {
                 setSelectedIndex(undefined);

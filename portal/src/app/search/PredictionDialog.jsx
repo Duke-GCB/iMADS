@@ -62,7 +62,7 @@ class PredictionDialog extends React.Component {
         }
         let genomeBrowserURL = new GenomeBrowserURL('human', this.props.data.trackHubUrl);
         let allRangeGenomeBrowserURL = genomeBrowserURL.getPredictionURL(this.props.data.genome,
-            this.props.data.chrom, this.props.data.start, this.props.data.end);
+            this.props.data.chrom, this.props.data.start, this.props.data.end, predictionColor.isPreference);
         let title = makeTitleForModelName(modelName, data.title);
         return <Popup isOpen={this.props.isOpen}
                       onRequestClose={this.props.onRequestClose}
