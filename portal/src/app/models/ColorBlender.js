@@ -1,7 +1,8 @@
 // Creates CSS color string 'rgb(int, int, int)' given a prediction value and some settings.
 // This is done via: new ColorBlender(...).getColor()
 
-const FLOAT_CUTOOFF = 0.01;
+const POS_FLOAT_CUTOOFF = 0.001;
+const NEG_FLOAT_CUTOOFF = -0.001;
 
 // colors allowed for predictionColor color1 and color2
 export const RED_COLOR_NAME = "red";
@@ -123,7 +124,7 @@ export default class ColorBlender {
     getPreferenceColor(colorName) {
         let value = this.getScaledValue();
         let colorRGB = PREFERENCE_GRAY;
-        if (value > 0.001 || value < -0.001) {
+        if (value > POS_FLOAT_CUTOOFF || value < NEG_FLOAT_CUTOOFF) {
             let gradientArray = this.getPreferenceArray();
             let slots = ColorBlender.determineSlots(value, gradientArray.length);
             colorRGB = gradientArray[slots[0]];
