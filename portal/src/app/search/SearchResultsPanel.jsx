@@ -98,7 +98,8 @@ class SearchResultsPanel extends React.Component {
 
     render() {
         let {searchSettings, searchResults, searchDataLoaded, searchOperations,
-            page, predictionStore, predictionColor, coreRange, showBlankWhenEmpty} = this.props;
+            page, predictionStore, predictionColor, coreRange, showBlankWhenEmpty,
+            errorMessage} = this.props;
         let showPredictionDetails = Boolean(this.state.predictionData);
         let gridColumnInfo = this.makeGridColumnInfo();
         let dataGridClassNamePrefix = "SearchResultsPanel_DataGrid_";
@@ -116,7 +117,7 @@ class SearchResultsPanel extends React.Component {
                         searchDataLoaded={searchDataLoaded}
                         loadingStatusLabel="Loading"
                         showBlankWhenEmpty={!searchDataLoaded}
-                        errorMessage=""
+                        errorMessage={errorMessage}
                     />
             <SearchResultsFooter
                 searchSettings={searchSettings}
