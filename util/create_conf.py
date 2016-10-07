@@ -1,6 +1,7 @@
 # Creates config file for webserver based on create_conf.yaml and data downloaded based on that file.
 
 from __future__ import print_function
+import os
 import sys
 import re
 import requests
@@ -30,6 +31,7 @@ YAML_CONFIG_FILE = 'create_conf.yaml'
 yaml_config = {}
 with open(YAML_CONFIG_FILE) as infile:
     yaml_config = yaml.safe_load(infile)
+DOWNLOAD_DIR = yaml_config['DOWNLOAD_DIR']
 DATA_SOURCES = yaml_config['DATA_SOURCES']
 CONFIG_FILENAME = yaml_config['CONFIG_FILENAME']
 BINDING_MAX_OFFSET = yaml_config['BINDING_MAX_OFFSET']
@@ -37,9 +39,15 @@ GENOMES_FILENAME = yaml_config['GENOMES_FILENAME']
 GENOME_SPECIFIC_DATA = yaml_config['GENOME_SPECIFIC_DATA']
 SORT_MAX_GUESS_DEFAULT = yaml_config['SORT_MAX_GUESS_DEFAULT']
 SORT_MAX_GUESS = yaml_config['SORT_MAX_GUESS']
-MODEL_TRACKS_URL = yaml_config['MODEL_TRACKS_URL']
 MODEL_BASE_URL = yaml_config['MODEL_BASE_URL']
-
+MODEL_FAMILY_ORDER = yaml_config['MODEL_FAMILY_ORDER']
+PREF_MIN_MAX = {}
+for item in yaml_config['PREF_MIN_MAX']:
+    genome = item['genome']
+    name = re.sub('_\d\d\d\d', '', item['name'])
+    pref_min = item['pref_min']
+    pref_max = item['pref_max']
+    PREF_MIN_MAX[(genome, name)] = (pref_min, pref_max)
 
 def create_config_file(trackhub_data, output_filename):
     """
@@ -49,15 +57,17 @@ def create_config_file(trackhub_data, output_filename):
     """
     genome_data = []
     genome_to_track = trackhub_data.get_genomes()
-    tracks_yaml = TracksYAML(MODEL_TRACKS_URL)
     for genome in sorted(genome_to_track.keys()):
         genome_specific = GENOME_SPECIFIC_DATA.get(genome, {})
         track_filename = genome_to_track[genome]
         track_data = []
         prediction_lists = []
-        for track, url, type in trackhub_data.get_track_data(genome, track_filename):
+        pred_idx = 1
+        for track, url, type, tracks_yaml in trackhub_data.get_track_data(genome, track_filename):
             sort_max_guess = SORT_MAX_GUESS.get(track, SORT_MAX_GUESS_DEFAULT)
+            pref_min, pref_max = PREF_MIN_MAX.get((genome, track), ('',''))
             prediction_data = {
+                'idx': pred_idx,
                 'name': track,
                 'type': type,
                 'url': url,
@@ -66,8 +76,14 @@ def create_config_file(trackhub_data, output_filename):
                 'core_offset': tracks_yaml.get_core_offset(track),
                 'core_length': tracks_yaml.get_core_length(track),
                 'family': tracks_yaml.get_family(track, type),
+                'preference_min': pref_min,
+                'preference_max': pref_max,
             }
+            pred_idx += 1
             prediction_lists.append(prediction_data)
+        prediction_lists = sorted(prediction_lists, key=prediction_sort_key)
+        for prediction_data in prediction_lists:
+            del prediction_data['idx']
         genome_data.append({
             'genome': '' + genome,
             'genome_file': "goldenPath/{}/bigZips/{}.2bit".format(genome, genome),
@@ -79,14 +95,18 @@ def create_config_file(trackhub_data, output_filename):
 
     config_data = {
         'binding_max_offset': BINDING_MAX_OFFSET,
-        'download_dir': '/tmp/pred_data',
-        'model_tracks_url': MODEL_TRACKS_URL,
+        'download_dir': DOWNLOAD_DIR,
+        'model_tracks_url_list': trackhub_data.get_tracks_yml_urls(),
         'model_base_url': MODEL_BASE_URL,
         'genome_data': genome_data,
     }
     with open(output_filename, 'w') as outfile:
         yaml.safe_dump(config_data, outfile, default_flow_style=False)
     print("Wrote config file to {}".format(output_filename))
+
+
+def prediction_sort_key(pred_data):
+    return MODEL_FAMILY_ORDER.index(pred_data['family']), pred_data['idx']
 
 
 def get_key_value_list(lines):
@@ -110,9 +130,10 @@ class TrackHubData(object):
     """
     Data from trackhub related to genomes and their predictions stored there.
     """
-    def __init__(self, data_source_url, type):
+    def __init__(self, data_source_url, type, model_tracks_url):
         self.remote_data = RemoteData(data_source_url)
         self.type = type
+        self.tracks_yaml = TracksYAML(model_tracks_url)
 
     def get_genomes(self):
         """
@@ -147,11 +168,14 @@ class TrackHubData(object):
                 if name == 'bigDataUrl':
                     url = self.remote_data.create_url('{}/{}'.format(genome, value))
 
-                    result.append((track, url, self.type))
+                    result.append((track, url, self.type, self.tracks_yaml))
         except requests.HTTPError as err:
             msg = "Error fetching {} for {} error: {}"
             print(msg.format(genome, track, err))
         return result
+
+    def get_tracks_yml_urls(self):
+        return [self.tracks_yaml.url]
 
 
 class CompositeTrackHubData(object):
@@ -186,6 +210,10 @@ class CompositeTrackHubData(object):
         for trackhub in self.trackhub_list:
             result.extend(trackhub.get_track_data(genome, track_filename))
         return result
+
+    def get_tracks_yml_urls(self):
+        return [trackhub.tracks_yaml.url for trackhub in self.trackhub_list]
+
 
 class RemoteData(object):
     """
@@ -235,6 +263,7 @@ class TracksYAML(object):
         Download YAML data based on the url.
         :param url: str: url to the master tracks YAML file.
         """
+        self.url = url
         resp = requests.get(url)
         resp.raise_for_status()
         self.track_name_to_items = {}
@@ -256,7 +285,7 @@ class TracksYAML(object):
             return int(core_start)
         else:
             half_core_length = self.get_core_length(track_name)/2
-            half_width = int(item['width'])/2
+            half_width = int(item.get('width', 20))/2
             return int(half_width - half_core_length)
 
     def get_core_length(self, track_name):
@@ -271,5 +300,5 @@ class TracksYAML(object):
 if __name__ == '__main__':
     trackhub_list = []
     for data_source in DATA_SOURCES:
-        trackhub_list.append(TrackHubData(data_source['url'], data_source['type']))
+        trackhub_list.append(TrackHubData(data_source['url'], data_source['type'], data_source['model_tracks_url']))
     create_config_file(CompositeTrackHubData(trackhub_list), CONFIG_FILENAME)

@@ -50,7 +50,7 @@ class DBConfig(object):
 class Config(object):
     def __init__(self, data, dbconfig):
         self.binding_max_offset = data.get('binding_max_offset', DEFAULT_MAX_BINDING_OFFSET)
-        self.model_tracks_url = data.get('model_tracks_url', None)
+        self.model_tracks_url_list = data.get('model_tracks_url_list', None)
         self.model_base_url = data.get('model_base_url')
         self.download_dir = data['download_dir']
         self.genome_data_list = []

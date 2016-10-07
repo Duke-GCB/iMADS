@@ -6,9 +6,9 @@ const PREDICTION_VIEW_OFFSET = 20;
 const UCSC_START_OFFSET = 1;
 
 class GenomeBrowserURL {
-    constructor(org = 'human', trackHubUrl = '') {
+    constructor(org = 'human', trackHubUrlList = []) {
         this.org = org;
-        this.trackHubUrl = trackHubUrl;
+        this.trackHubUrlList = trackHubUrlList;
     }
 
     makePosition(chrom, start, end) {
@@ -16,20 +16,34 @@ class GenomeBrowserURL {
         return chrom + ":" + actualStart  + '-' + end;
     }
 
-    getPredictionURL(db, chrom, start, end) {
+    getPredictionURL(db, chrom, start, end, isPreference) {
         let actualStart = parseInt(start) - PREDICTION_VIEW_OFFSET;
         let actualEnd = parseInt(end) + PREDICTION_VIEW_OFFSET;
-        return this.get(db, this.makePosition(chrom, actualStart, actualEnd));
+        let trackHubUrl = this.getTrackHubUrl(isPreference);
+        return this.get(db, this.makePosition(chrom, actualStart, actualEnd), trackHubUrl);
     }
 
-    getGeneURL(db, chrom, start, end) {
-        return this.get(db, this.makePosition(chrom, start, end));
+    getTrackHubUrl(isPreference) {
+        for (let trackHubUrl of this.trackHubUrlList) {
+            if (isPreference && trackHubUrl.preferences) {
+                return trackHubUrl.preferences;
+            }
+            if (!isPreference && trackHubUrl.predictions) {
+                return trackHubUrl.predictions;
+            }
+        }
+        return '';
     }
 
-    get(db, position) {
+    getGeneURL(db, chrom, start, end, isPreference) {
+        let trackHubUrl = this.getTrackHubUrl(isPreference);
+        return this.get(db, this.makePosition(chrom, start, end), trackHubUrl);
+    }
+
+    get(db, position, trackHubUrl) {
         let url = BASE_URL + '?org=' + this.org + '&db=' + db + '&position=' + position;
-        if (this.trackHubUrl) {
-            url += '&hubUrl=' + this.trackHubUrl;
+        if (trackHubUrl) {
+            url += '&hubUrl=' + trackHubUrl;
         }
         return url;
     }

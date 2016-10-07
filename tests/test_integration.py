@@ -53,7 +53,7 @@ CONFIG_DATA = {
             ]
         }
     ],
-    'model_tracks_url': 'https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks.yaml?dest=/pred_data/models/tracks.yaml',
+    'model_tracks_url_list': ['https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks-predictions.yaml'],
 }
 
 FILENAME_TO_SQL = {
