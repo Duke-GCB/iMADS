@@ -1,4 +1,7 @@
 
+
+DOWNLOAD_DIR: /tmp/pred_data
+
 # Base urls we will download prediction/preference data from
 DATA_SOURCES:
  - type: PREDICTION
@@ -29,13 +32,56 @@ SORT_MAX_GUESS:
   'Runx1_0010': 0.7
   'Runx2_0011': 0.8
 
+PREF_MIN_MAX:
+- genome: hg38
+  name: E2f1_0007_vs_E2f3_0008
+  pref_min: -16.98
+  pref_max: 9.59
+- genome: hg38
+  name: E2f1_0007_vs_E2f4_0009
+  pref_min: -11.44
+  pref_max: 9.88
+- genome: hg38
+  name: Elk1_0004_vs_Ets1_0005
+  pref_min: -17.24
+  pref_max: 25.3
+- genome: hg38
+  name: Mad1_0002_vs_c-Myc_0001
+  pref_min: -12.14
+  pref_max: 6.85
+- genome: hg38
+  name: Runx1_0010_vs_Runx2_0011
+  pref_min: -3.6
+  pref_max: 4.36
+- genome: hg19
+  name: E2f1_0007_vs_E2f3_0008
+  pref_min: -16.98
+  pref_max: 9.59
+- genome: hg19
+  name: E2f1_0007_vs_E2f4_0009
+  pref_min: -11.44
+  pref_max: 9.88
+- genome: hg19
+  name: Elk1_0004_vs_Ets1_0005
+  pref_min: -17.24
+  pref_max: 25.3
+- genome: hg19
+  name: Mad1_0002_vs_c-Myc_0001
+  pref_min: -12.14
+  pref_max: 6.85
+- genome: hg19
+  name: Runx1_0010_vs_Runx2_0011
+  pref_min: -3.6
+  pref_max: 4.36
 
 MODEL_BASE_URL: https://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models
 
 # Gene lists and other static data for each genome
 GENOME_SPECIFIC_DATA:
   hg19:
-    trackhub_url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt"
+    trackhub_url:
+      - predictions: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt"
+      - preferences: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences/hub.txt"
     ftp_files:
       - "goldenPath/hg19/database/knownGene.txt.gz"
       - "goldenPath/hg19/database/kgXref.txt.gz"
@@ -47,7 +93,9 @@ GENOME_SPECIFIC_DATA:
         common_lookup_table: "kgxref"
         common_lookup_table_field: "kgid"
   hg38:
-    trackhub_url: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt"
+    trackhub_url:
+      - predictions: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt"
+      - preferences: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences/hub.txt"
     ftp_files:
       - "goldenPath/hg38/database/wgEncodeGencodeBasicV23.txt.gz"
       - "goldenPath/hg38/database/wgEncodeGencodeCompV23.txt.gz"

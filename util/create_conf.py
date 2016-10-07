@@ -1,6 +1,7 @@
 # Creates config file for webserver based on create_conf.yaml and data downloaded based on that file.
 
 from __future__ import print_function
+import os
 import sys
 import re
 import requests
@@ -30,6 +31,7 @@ YAML_CONFIG_FILE = 'create_conf.yaml'
 yaml_config = {}
 with open(YAML_CONFIG_FILE) as infile:
     yaml_config = yaml.safe_load(infile)
+DOWNLOAD_DIR = yaml_config['DOWNLOAD_DIR']
 DATA_SOURCES = yaml_config['DATA_SOURCES']
 CONFIG_FILENAME = yaml_config['CONFIG_FILENAME']
 BINDING_MAX_OFFSET = yaml_config['BINDING_MAX_OFFSET']
@@ -39,7 +41,13 @@ SORT_MAX_GUESS_DEFAULT = yaml_config['SORT_MAX_GUESS_DEFAULT']
 SORT_MAX_GUESS = yaml_config['SORT_MAX_GUESS']
 MODEL_BASE_URL = yaml_config['MODEL_BASE_URL']
 MODEL_FAMILY_ORDER = yaml_config['MODEL_FAMILY_ORDER']
-
+PREF_MIN_MAX = {}
+for item in yaml_config['PREF_MIN_MAX']:
+    genome = item['genome']
+    name = re.sub('_\d\d\d\d', '', item['name'])
+    pref_min = item['pref_min']
+    pref_max = item['pref_max']
+    PREF_MIN_MAX[(genome, name)] = (pref_min, pref_max)
 
 def create_config_file(trackhub_data, output_filename):
     """
@@ -57,6 +65,7 @@ def create_config_file(trackhub_data, output_filename):
         pred_idx = 1
         for track, url, type, tracks_yaml in trackhub_data.get_track_data(genome, track_filename):
             sort_max_guess = SORT_MAX_GUESS.get(track, SORT_MAX_GUESS_DEFAULT)
+            pref_min, pref_max = PREF_MIN_MAX.get((genome, track), ('',''))
             prediction_data = {
                 'idx': pred_idx,
                 'name': track,
@@ -67,6 +76,8 @@ def create_config_file(trackhub_data, output_filename):
                 'core_offset': tracks_yaml.get_core_offset(track),
                 'core_length': tracks_yaml.get_core_length(track),
                 'family': tracks_yaml.get_family(track, type),
+                'preference_min': pref_min,
+                'preference_max': pref_max,
             }
             pred_idx += 1
             prediction_lists.append(prediction_data)
@@ -84,7 +95,7 @@ def create_config_file(trackhub_data, output_filename):
 
     config_data = {
         'binding_max_offset': BINDING_MAX_OFFSET,
-        'download_dir': '/tmp/pred_data',
+        'download_dir': DOWNLOAD_DIR,
         'model_tracks_url_list': trackhub_data.get_tracks_yml_urls(),
         'model_base_url': MODEL_BASE_URL,
         'genome_data': genome_data,
