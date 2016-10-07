@@ -13,7 +13,7 @@ export default class DataSource extends React.Component {
     };
 
     render() {
-        let {title, content, hasGroups} = this.props;
+        let {title, content, hasGroups, loading} = this.props;
         let gridColumnInfo = [
             {fieldName: 'description', title: 'Description', type: 'text'},
             {fieldName: 'downloaded', title: 'Downloaded', type: 'text'},
@@ -27,7 +27,7 @@ export default class DataSource extends React.Component {
                 columnInfo={gridColumnInfo}
                 rows={content}
                 hasGroups={hasGroups}
-                searchDataLoaded={true}
+                searchDataLoaded={!loading}
             />
         </div>
     }

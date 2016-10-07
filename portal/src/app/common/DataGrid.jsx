@@ -57,7 +57,12 @@ export default class DataGrid extends React.Component {
             showBlankWhenEmpty, fullScreen} = this.props;
         let numColumns = dataGridContent.getNumColumns() + 1;
         if (!searchDataLoaded) {
-            let content = <Loader loaded={false}></Loader>;
+            let content = <div className="centerChildrenHorizontally">
+                            <span className="smallMargin">Loading...</span>
+                        </div>;
+            if (fullScreen) {
+                content = <Loader loaded={false}></Loader>;
+            }
             if (jobDates) {
                 content =  <ProgressTable startedDate={jobDates.started}
                                           currentDate={jobDates.current}
