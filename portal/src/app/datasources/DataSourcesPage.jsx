@@ -9,7 +9,8 @@ class DataSourcesPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            predictions: [],
+            binding_predictions: [],
+            preference_predictions: [],
             genelists: [],
             models: [],
             loading: true
@@ -21,9 +22,10 @@ class DataSourcesPage extends React.Component {
         this.dataSourceData.fetchData(this.onData, this.onError);
     }
 
-    onData = (predictions, genelists, models) => {
+    onData = (binding_predictions, preference_predictions, genelists, models) => {
         this.setState({
-            predictions: predictions,
+            binding_predictions: binding_predictions,
+            preference_predictions: preference_predictions,
             genelists: genelists,
             models: models,
             loading: false
@@ -41,11 +43,13 @@ class DataSourcesPage extends React.Component {
     };
 
     render() {
-        let {predictions, genelists, models, loading} = this.state;
+        let {binding_predictions, preference_predictions, genelists, models, loading} = this.state;
         return <div>
             <NavBar selected={DATA_SOURCES_NAV.path}/>
             <PageContent>
-                <DataSource title="Predictions" content={predictions} loading={loading}/>
+                <DataSource title="Binding Predictions" content={binding_predictions} loading={loading}/>
+                <br />
+                <DataSource title="Preference Predictions" content={preference_predictions} loading={loading}/>
                 <br />
                 <DataSource title="Gene Lists" content={genelists} loading={loading}/>
                 <br />

@@ -1,7 +1,8 @@
 import {getAndLogErrorMessage} from './AjaxErrorMessage.js'
 import {URL} from './AppSettings.js'
 
-const PREDICTION_NAME = 'prediction';
+const BINDING_PREDICTIONS_NAME = 'binding_predictions';
+const PREFERENCE_PREDITIONS_NAME = 'preference_predictions';
 const GENELIST_NAME = 'genelist';
 const MODEL_NAME = 'model';
 
@@ -15,7 +16,8 @@ class DataSourceData {
             success: function (data) {
                 let results = data.results;
                 onData(
-                    this.formatData(PREDICTION_NAME, results),
+                    this.formatData(BINDING_PREDICTIONS_NAME, results),
+                    this.formatData(PREFERENCE_PREDITIONS_NAME, results),
                     this.formatData(GENELIST_NAME, results),
                     this.formatData(MODEL_NAME, results)
                 );
