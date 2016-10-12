@@ -9,6 +9,7 @@ import sys
 import datetime
 from multiprocessing import Pool
 from jinja2 import FileSystemLoader, Environment
+from pred.config import DataType
 from pred.load.download import GenomeDownloader, GeneListDownloader, PredictionDownloader, ModelFiles, GENE_LIST_HOST
 from pred.load.postgres import PostgresConnection, CopyCommand
 from psycopg2 import OperationalError
@@ -167,8 +168,10 @@ class DatabaseLoader(object):
                 downloader = PredictionDownloader(self.config, prediction_setting, self.update_progress)
                 filename = downloader.get_local_tsv_path()
                 self.sql_builder.copy_file_into_db(self.genome_data.genomename + '.prediction', filename)
-                self.sql_builder.insert_data_source(downloader.get_url(), downloader.get_description(),
-                                                    'prediction', filename)
+                self.sql_builder.insert_data_source(downloader.get_url(),
+                                                    downloader.get_description(),
+                                                    DataType.get_data_source_type(prediction_setting.data_type),
+                                                    filename)
         self.sql_builder.end_parallel()
 
     def create_gene_and_prediction_indexes(self):

@@ -22,6 +22,19 @@ class DataType(object):
     PREDICTION = 'PREDICTION'
     PREFERENCE = 'PREFERENCE'
 
+    @staticmethod
+    def get_data_source_type(data_type):
+        """
+        Based on the data type determine the data source type for the data_source table.
+        :param data_type: str: either PREDICTION or PREFERENCE.
+        :return: str: type of data source for use in data_source.data_source_type database field.
+        """
+        if data_type == DataType.PREDICTION:
+            return 'binding_predictions'
+        if data_type == DataType.PREFERENCE:
+            return 'preference_predictions'
+        return 'unknown'
+
 
 def parse_config(filename):
     config = None

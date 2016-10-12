@@ -36,10 +36,12 @@
     text-overflow: ellipsis;
     border-bottom: 1px solid grey;
     font-size: 14px;
-    height: 26px;
+    height: 18px;
     white-space: nowrap;
     line-height: 1.4;
-    padding: 10px;
+    padding-left: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .DataSource_DataGrid_group {
