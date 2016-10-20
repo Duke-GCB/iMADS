@@ -88,6 +88,7 @@ def create_config_file(trackhub_data, output_filename):
             'genome': '' + genome,
             'genome_file': "goldenPath/{}/bigZips/{}.2bit".format(genome, genome),
             'trackhub_url': genome_specific['trackhub_url'],
+            'alias_url': genome_specific['alias_url'],
             'ftp_files': genome_specific['ftp_files'],
             'gene_lists': genome_specific['gene_lists'],
             'prediction_lists': prediction_lists,

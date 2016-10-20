@@ -79,6 +79,7 @@ MODEL_BASE_URL: https://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models
 # Gene lists and other static data for each genome
 GENOME_SPECIFIC_DATA:
   hg19:
+    alias_url: "ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/non_alt_loci_set.txt"
     trackhub_url:
       - predictions: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt"
       - preferences: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences/hub.txt"
@@ -93,6 +94,7 @@ GENOME_SPECIFIC_DATA:
         common_lookup_table: "kgxref"
         common_lookup_table_field: "kgid"
   hg38:
+    alias_url: "ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/non_alt_loci_set.txt"
     trackhub_url:
       - predictions: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt"
       - preferences: "http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences/hub.txt"
