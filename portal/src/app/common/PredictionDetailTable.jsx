@@ -33,8 +33,10 @@ export default class PredictionDetailTable extends React.Component {
         let ctr = 0;
         for (let detail of detailList) {
             let {rowClassName, chrom, start, end, value, seq} = detail;
-            details.push(this.makeRow(ctr, rowClassName, chrom, start, end, value, seq));
-            ctr += 1;
+            if (chrom) { //ignore empty rows
+                details.push(this.makeRow(ctr, rowClassName, chrom, start, end, value, seq));
+                ctr += 1;
+            }
         }
         return details;
     }

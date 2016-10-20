@@ -28,7 +28,11 @@ class SearchResultsPanel extends React.Component {
     };
 
     makeLocationCell = (item) => {
-        return <span>{item.chrom}:{item.start}-{item.end}</span>;
+        if (item.chrom) {
+            return <span>{item.chrom}:{item.start}-{item.end}</span>;
+        } else {
+            return <span></span>;
+        }
     };
 
     makeHeatmapCell = (item, key) => {
