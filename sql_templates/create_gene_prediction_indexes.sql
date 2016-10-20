@@ -7,4 +7,7 @@ create index if not exists gene_prediction_value_idx
 create index if not exists gene_prediction_max_sort_idx
  on {{ schema_prefix }}.gene_prediction(gene_list, model_name, common_name);
 
+create index if not exists gene_prediction_name_idx
+ on hg19.gene_prediction(model_name, upper(common_name));
+
 analyze {{ schema_prefix }}.gene_prediction;
