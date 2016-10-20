@@ -37,11 +37,12 @@ class DataSourceData {
                 continue;
             }
             let url = data.url;
-            if (url.indexOf('http') < 0) {
+            if (url.indexOf('http') < 0 && url.indexOf('ftp') < 0) {
                 url = 'https://' + url;
             }
             let filename = data.url.replace(/.*\//, "");
-            let host = data.url.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+            //strip protocol and path
+            let host = data.url.replace(/^.*:\/\//, "").replace(/\/.*$/, "");
             let row = {
                 description: data.description,
                 downloaded: data.downloaded,

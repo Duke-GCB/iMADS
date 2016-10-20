@@ -29,7 +29,7 @@ describe('DataSourceData', function () {
         });
 
         it('return expected fields for two items in a list', function () {
-            let fileUrl1 = 'http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0003-E2F0.bb';
+            let fileUrl1 = 'ftp://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0003-E2F0.bb';
             let fileUrl2 = 'https://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0003-E2F1.bb';
             let dsd = new DataSourceData();
             let inputData = [{
