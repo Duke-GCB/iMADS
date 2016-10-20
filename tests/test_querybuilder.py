@@ -1,5 +1,5 @@
 from unittest import TestCase
-from pred.queries.querybuilder import QueryBuilder
+from pred.queries.querybuilder import QueryBuilder, QueryPart
 from pred.queries.predictionqueryparts import *
 
 
@@ -39,5 +39,3 @@ SELECT * from orders where total_sales > %s;"""
         expected_params = ["hg38", 200]
         self.assertEqual(expected_sql, query)
         self.assertEqual(expected_params, params)
-
-

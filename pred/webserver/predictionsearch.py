@@ -5,7 +5,7 @@ import psycopg2.extras
 from pred.webserver.customlist import CustomList, does_custom_list_exist, get_gene_name_set
 from pred.queries.predictionquery import PredictionQuery
 from pred.queries.maxpredictionquery import MaxPredictionQuery
-from pred.queries.genelistquery import GeneListQuery, GeneListUnusedNames
+from pred.queries.genelistquery import GeneListQuery
 from pred.queries.rangelistquery import RangeListQuery
 
 CUSTOM_GENE_LIST = 'Custom Gene List'
@@ -214,7 +214,6 @@ class PredictionSearch(object):
         cur = self.db.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute(query, params)
         predictions = []
-        prev_row = None
         for row in cur.fetchall():
             gene_start_str = row[PredictionQueryNames.GENE_BEGIN]
             gene_start = ""
@@ -231,32 +230,27 @@ class PredictionSearch(object):
                     start = gene_start - downstream
                     end = gene_start + upstream
             else:
-                start = row[PredictionQueryNames.RANGE_START]
-                end = row[PredictionQueryNames.RANGE_END]
+                start = row.get(PredictionQueryNames.RANGE_START, '')
+                end = row.get(PredictionQueryNames.RANGE_END, '')
             row = {
-                 'name': self.unique_name_parts(row[PredictionQueryNames.NAME]),
-                 'commonName': row[PredictionQueryNames.COMMON_NAME],
-                 'chrom': row[PredictionQueryNames.CHROM],
-                 'max': str(row[PredictionQueryNames.MAX_VALUE]),
+                 'name': self.unique_name_parts(row.get(PredictionQueryNames.NAME, '')),
+                 'commonName': row.get(PredictionQueryNames.COMMON_NAME, ''),
+                 'chrom': row.get(PredictionQueryNames.CHROM, ''),
+                 'max': str(row.get(PredictionQueryNames.MAX_VALUE, '')),
                  'start': str(start),
                  'end': str(end),
                  'values': self.unique_predictions(row[PredictionQueryNames.PRED]),
                  'strand': strand,
             }
-            #this messes up my counts can I push it into SQL
-            #if row['name'] and self.same_except_name(row, prev_row):
-            #    prev_row['name'] += ';' + row['name']
-            #    continue
             predictions.append(row)
-            prev_row = row
         self.db.rollback()
         cur.close()
-        if self.args.is_custom_gene_list():
-            self.warning = self.query_for_unused_gene_names()
         return predictions
 
     @staticmethod
     def unique_name_parts(combined_name):
+        if not combined_name:
+            return ''
         parts = sorted(set(combined_name.split("; ")))
         return "; ".join(parts)
 
@@ -374,22 +368,6 @@ class PredictionSearch(object):
     def get_per_page(self):
         page, per_page = self.args.get_page_and_per_page()
         return per_page
-
-    def query_for_unused_gene_names(self):
-        custom_list_key, custom_list_filter = self.get_custom_list_fields()
-        unused_name_query = GeneListUnusedNames(
-            schema=self.genome,
-            custom_list_id=custom_list_key,
-            custom_list_filter=custom_list_filter,
-            custom_gene_name_type=self.args.is_custom_gene_name_search_type()
-        )
-        bad_names = self.get_name_set(unused_name_query.get_query_and_params())
-        if bad_names:
-            if self.args.is_custom_gene_name_search_type():
-                return "Gene names not in our database:\n" + "\n".join(bad_names)
-            else:
-                return "Gene IDs not in our database:\n" + "\n".join(bad_names)
-        return ""
 
     def get_name_set(self, query_and_param):
         result = set()

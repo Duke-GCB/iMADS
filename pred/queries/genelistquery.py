@@ -29,34 +29,25 @@ class GeneListQuery(object):
         return builder.get_query_and_params()
 
     def main_query_parts(self):
+        join_filter = filter_gene_list(self.custom_list_filter, self.model_name, self.upstream, self.downstream)
+        comparison_fieldname = "name"
+        if self.custom_gene_name_type:
+            comparison_fieldname = "common_name"
         query_parts = [
-            select_prediction_values(),
+            select_prediction_values(table_name="custom_gene_list",
+                                     first_field="gene_name as common_name"),
+            alias_join_gene_prediction(comparison_fieldname),
+            and_sql(),
+            join_filter,
             where(),
-            filter_common_name(self.custom_list_id, self.custom_list_filter, self.custom_gene_name_type,
-                               self.model_name, self.upstream, self.downstream),
-            group_by_common_name_and_parts(),
+            id_equals(self.custom_list_id),
+            group_by_common_name_and_parts(first_field="gene_name"),
         ]
         if not self.count:
             if self.sort_by_max:
                 query_parts.append(order_by_max_value_desc_common_name())
             else:
-                query_parts.append(order_by_common_name())
+                query_parts.append(order_by_gene_name())
         if self.limit:
             query_parts.append(limit_and_offset(self.limit, self.offset))
         return query_parts
-
-
-class GeneListUnusedNames(object):
-    def __init__(self, schema, custom_list_id, custom_list_filter, custom_gene_name_type):
-        self.schema = schema
-        self.custom_list_id = custom_list_id
-        self.custom_list_filter = custom_list_filter
-        self.custom_gene_name_type = custom_gene_name_type
-
-    def get_query_and_params(self):
-        builder = QueryBuilder()
-        builder.set_schema.add_part(set_search_path(self.schema))
-        builder.query.add_parts([items_not_in_gene_list(self.custom_list_id,
-                                                        self.custom_list_filter,
-                                                        self.custom_gene_name_type)])
-        return builder.get_query_and_params()

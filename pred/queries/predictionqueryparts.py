@@ -33,9 +33,9 @@ custom_range_list.id = %s
 group by seq""", [model_name, list_id])
 
 
-def select_prediction_values():
+def select_prediction_values(table_name="gene_prediction", first_field="common_name"):
     return _query_part("""select
-common_name,
+{},
 string_agg(name, '; ') as name,
 case WHEN max(value) > abs(min(value)) THEN
   round(max(value), 4)
@@ -46,7 +46,16 @@ chrom,
 strand,
 gene_begin,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
-from gene_prediction""")
+from {}""".format(first_field, table_name))
+
+
+def alias_join_gene_prediction(comparison_fieldname):
+    return _query_part("""left outer join gene_symbol_alias on upper(alias) = upper(gene_name)
+left outer join gene_prediction on upper({}) in (upper(symbol), upper(alias), upper(gene_name))""".format(comparison_fieldname))
+
+
+def id_equals(id_value):
+    return QueryPart("""id = %s""", [id_value])
 
 
 def name_in_max_prediction_names():
@@ -60,54 +69,21 @@ def filter_gene_list(gene_list, model_name, upstream, downstream):
     The end of the prediction must come after the start of the gene
     and the end of the gene must come after the start of the prediction.
     http://nedbatchelder.com/blog/201310/range_overlap_in_two_compares.html
+    end1 >= start2 and end2 <= start1
     """
-    return QueryPart("""gene_list = %s
-and
-model_name = %s
+    beginning_sql = ""
+    params = []
+    if gene_list and gene_list.upper() != 'ALL':
+        beginning_sql = "gene_list = %s\nand\n"
+        params.append(gene_list)
+    params.extend([model_name, downstream, upstream, upstream, downstream])
+    return QueryPart(beginning_sql + """model_name = %s
 and
 case strand when '+' then
   (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 else
   (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
-end""", [gene_list, model_name, downstream, upstream, upstream, downstream])
-
-
-def filter_common_name(custom_list_id, custom_list_filter, custom_gene_name_type, model_name, upstream, downstream):
-    """
-    Overlapping range filter.
-    SQL Explanation:
-    The end of the prediction must come after the start of the gene
-    and the end of the gene must come after the start of the prediction.
-    http://nedbatchelder.com/blog/201310/range_overlap_in_two_compares.html
-    """
-    if custom_list_filter.strip().upper() == "ALL":
-        custom_list_filter = ""
-
-    inner_filter = "upper(name) in (select upper(gene_name) from custom_gene_list where id = %s)"
-    if custom_gene_name_type:
-        inner_filter = "upper(common_name) in (select upper(gene_name) from custom_gene_list where id = %s)"
-
-    base_sql = """( common_name in
-(select common_name from gene where
-    {}))
-and
-model_name = %s
-and
-case strand when '+' then
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
-else
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
-end""".format(inner_filter)
-    sql = base_sql
-    params = [custom_list_id, model_name, upstream, downstream, downstream, upstream]
-    if custom_list_filter:
-        sql = "gene_list = %s\nand\n{}".format(base_sql)
-        params.insert(0, custom_list_filter)
-    if not custom_gene_name_type:
-        sql += " and " + inner_filter
-        params.append(custom_list_id)
-
-    return QueryPart(sql, params)
+end""", params)
 
 
 def items_not_in_gene_list(list_id, gene_list_filter, custom_gene_name_type):
@@ -146,8 +122,8 @@ def group_by_name():
     return _query_part("group by name")
 
 
-def group_by_common_name_and_parts():
-    return _query_part("group by common_name, chrom, strand, gene_begin")
+def group_by_common_name_and_parts(first_field="common_name"):
+    return _query_part("group by {}, chrom, strand, gene_begin".format(first_field))
 
 
 def order_by_chrom_and_txstart():
@@ -158,8 +134,8 @@ def order_by_name():
     return _query_part("order by name")
 
 
-def order_by_common_name():
-    return _query_part("order by common_name")
+def order_by_gene_name():
+    return _query_part("order by gene_name")
 
 
 def order_by_common_name_and_name():
@@ -200,3 +176,6 @@ def begin():
 
 def commit():
     return _query_part(";commit;")
+
+def and_sql():
+    return _query_part("and")

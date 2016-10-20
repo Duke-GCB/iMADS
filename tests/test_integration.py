@@ -29,6 +29,7 @@ CONFIG_DATA = {
         {
             "genome": "hg19",
             "trackhub_url": "http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt",
+            "alias_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/non_alt_loci_set.txt",
             "genome_file": "goldenPath/hg19/bigZips/hg19.2bit",
             "ftp_files": [
                 "goldenPath/hg19/database/knownGene.txt.gz",
@@ -135,10 +136,23 @@ def make_prediction_data():
     return "\n".join(lines)
 
 
+def make_alias_data():
+    return """UBE2Q1	PRO3094
+UBE2Q1	NICE-5
+TULP1	TUBL1
+TULP1	LCA15
+MANA-ER	MAN1B1
+H_RG318M05.3	LRRC17
+MGC150517	SYT7
+Rpn6	PSMD11
+TYW3	FLJ40918
+UBE2Q2	DKFZp762C143"""
+
 FILENAME_TO_DATA = {
     "/tmp/pred_data/hg19/knownGene.txt": make_known_gene_data(),
     "/tmp/pred_data/hg19/kgXref.txt": make_kg_xref_data(),
     "/tmp/pred_data/hg19/hg19-0001-E2F1-E2F1-bestSVR.model.tsv": make_prediction_data(),
+    "/tmp/pred_data/hg19/non_alt_loci_set.tsv": make_alias_data()
 }
 
 
@@ -241,7 +255,7 @@ class TestWithPostgres(unittest.TestCase):
             SearchArgs.PER_PAGE: "10",
         }
         predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
-        self.assertEqual(len(predictions), 0)
+        self.assertEqual(len(predictions), 1)
 
     def test_custom_gene_list_with_results(self):
         db = create_db_connection(TestWithPostgres.config.dbconfig)
@@ -273,12 +287,16 @@ class TestWithPostgres(unittest.TestCase):
             SearchArgs.PER_PAGE: "10",
         }
         predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
-        self.assertEqual(len(predictions), 1)
+        self.assertEqual(len(predictions), 2)
         first_pred_name = predictions[0]['name']
         first_pred_name_parts = first_pred_name.split("; ")
-        self.assertEqual(len(first_pred_name_parts), 2)
+        self.assertEqual(len(first_pred_name_parts), 1)
         self.assertIn("uc001aaa.3", first_pred_name_parts)
-        self.assertIn("uc010nxr.1", first_pred_name_parts)
+
+        second_pred_name = predictions[1]['name']
+        second_pred_name_parts = second_pred_name.split("; ")
+        self.assertEqual(len(second_pred_name_parts), 1)
+        self.assertIn("uc010nxr.1", second_pred_name_parts)
 
     def test_custom_gene_list_with_lc_results(self):
         db = create_db_connection(TestWithPostgres.config.dbconfig)
