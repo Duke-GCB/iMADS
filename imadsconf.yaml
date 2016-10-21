@@ -80,7 +80,7 @@ genome_data:
     name: Elk1_vs_Ets1
     preference_max: 25.3
     preference_min: -17.24
-    sort_max_guess: 0.6
+    sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_Elk1_0004_vs_Ets1_0005.bb
   - core_length: 4
