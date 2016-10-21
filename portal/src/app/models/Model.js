@@ -1,5 +1,5 @@
 export function formatModelName(modelName) {
-    return modelName.replace(/_[0-9]+/, '');
+    return modelName.replace(/_[0-9]+/, '').replace(/_/g, ' ');
 }
 
 export function makeTitleForModelName(modelName, title) {
