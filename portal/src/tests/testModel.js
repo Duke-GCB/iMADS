@@ -11,6 +11,7 @@ describe('Model', function () {
 
         it('strips _ from _vs_ names', function () {
              assert.equal('Elk1 vs Ets1', formatModelName('Elk1_vs_Ets1'));
+            assert.equal('Elk1 vs Ets1', formatModelName('Elk1_0004_vs_Ets1_0005'));
         });
     });
 
