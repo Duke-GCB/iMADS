@@ -31,6 +31,7 @@ SORT_MAX_GUESS:
   'E2f4_0009': 0.65
   'Runx1_0010': 0.7
   'Runx2_0011': 0.8
+  'Elk1_vs_Ets1': 16
 
 PREF_MIN_MAX:
 - genome: hg38
