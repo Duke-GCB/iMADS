@@ -81,7 +81,7 @@ genome_data:
     name: Elk1_vs_Ets1
     preference_max: 25.3
     preference_min: -17.24
-    sort_max_guess: 0.6
+    sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_Elk1_0004_vs_Ets1_0005.bb
   - core_length: 4
@@ -222,16 +222,6 @@ genome_data:
     sort_max_guess: 0.6
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0006_Gabpa.bb
-  - core_length: 4
-    core_offset: 8
-    family: ETS
-    fix_script: bigBedToBed
-    name: Elk1_vs_Ets1
-    preference_max: 25.3
-    preference_min: -17.24
-    sort_max_guess: 0.6
-    type: PREFERENCE
-    url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/hg38_Elk1_0004_vs_Ets1_0005.bb
   - core_length: 4
     core_offset: 8
     family: E2F

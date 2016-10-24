@@ -1,5 +1,7 @@
 export function formatModelName(modelName) {
-    return modelName.replace(/_[0-9]+/, '');
+    // Remove unique model numbers and underscores from the model names.
+    // eg. 'Elk1_0004_vs_Ets1_0005' -> 'Elk1 vs Ets1'
+    return modelName.replace(/_[0-9]+/g, '').replace(/_/g, ' ');
 }
 
 export function makeTitleForModelName(modelName, title) {
