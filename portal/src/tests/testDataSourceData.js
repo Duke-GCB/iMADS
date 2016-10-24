@@ -82,4 +82,20 @@ describe('DataSourceData', function () {
             assert.deepEqual(expected, dsd.formatData('model', inputData));
         });
     });
+
+    describe('formatURLParts()', function () {
+        let dsd = new DataSourceData();
+        it('adds https to url if missing', function () {
+            let {url, filename, host} = dsd.formatURLParts('trackhub.genome.duke.edu/gordanlab/hg19-0003-E2F0.bb');
+            assert.equal('https://trackhub.genome.duke.edu/gordanlab/hg19-0003-E2F0.bb', url);
+            assert.equal('hg19-0003-E2F0.bb', filename);
+            assert.equal('trackhub.genome.duke.edu', host);
+        });
+        it('leaves ftp alone', function () {
+            let {url, filename, host} = dsd.formatURLParts('ftp://mytrack.genome.duke.edu/gordanlab/hg19-0003-E2F0.bb');
+            assert.equal('ftp://mytrack.genome.duke.edu/gordanlab/hg19-0003-E2F0.bb', url);
+            assert.equal('hg19-0003-E2F0.bb', filename);
+            assert.equal('mytrack.genome.duke.edu', host);
+        });
+    });
 });

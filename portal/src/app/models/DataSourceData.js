@@ -36,13 +36,7 @@ class DataSourceData {
             if (data.dataSourceType !== dataSourceType) {
                 continue;
             }
-            let url = data.url;
-            if (url.indexOf('http') < 0 && url.indexOf('ftp') < 0) {
-                url = 'https://' + url;
-            }
-            let filename = data.url.replace(/.*\//, "");
-            //strip protocol and path
-            let host = data.url.replace(/^.*:\/\//, "").replace(/\/.*$/, "");
+            let {url, filename, host} = this.formatURLParts(data.url);
             let row = {
                 description: data.description,
                 downloaded: data.downloaded,
@@ -55,6 +49,22 @@ class DataSourceData {
         }
         return rows;
     }
+
+    formatURLParts(url) {
+        // Returns object with formatted url, filename, and host properties.
+        // Adds https protocol to url if no protocol specified.
+        if (url.indexOf('http') < 0 && url.indexOf('ftp') < 0) {
+            url = 'https://' + url;
+        }
+        let filename = url.replace(/.*\//, "");
+        //strip protocol and path
+        let host = url.replace(/^.*:\/\//, "").replace(/\/.*$/, "");
+        return {
+            url: url,
+            filename: filename,
+            host: host
+        };
+    }git stat
 }
 
 export default DataSourceData;
