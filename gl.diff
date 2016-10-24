@@ -1,0 +1,19 @@
+diff --git a/pred/queries/genelistquery.py b/pred/queries/genelistquery.py
+index 8ef866f..741bea2 100644
+--- a/pred/queries/genelistquery.py
++++ b/pred/queries/genelistquery.py
+@@ -30,10 +30,11 @@ class GeneListQuery(object):
+ 
+     def main_query_parts(self):
+         query_parts = [
+-            select_prediction_values(),
++            select_prediction_values("custom_gene_list"),
++            alias_join_gene_prediction(),
+             where(),
+-            filter_common_name(self.custom_list_id, self.custom_list_filter, self.custom_gene_name_type,
+-                               self.model_name, self.upstream, self.downstream),
++            filter_gene_list(self.custom_list_filter, self.model_name, self.upstream, self.downstream),
++            id_equals(self.custom_list_id),
+             group_by_common_name_and_parts(),
+         ]
+         if not self.count:

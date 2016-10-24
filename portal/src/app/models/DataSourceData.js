@@ -64,7 +64,7 @@ class DataSourceData {
             filename: filename,
             host: host
         };
-    }git stat
+    }
 }
 
 export default DataSourceData;

@@ -260,7 +260,7 @@ class PredictionSearch(object):
         starts = set()
         for pred in preds:
             start = pred['start']
-            if not start in starts:
+            if start and not start in starts:
                 starts.add(start)
                 results.append(pred)
         return results
