@@ -249,6 +249,8 @@ class PredictionSearch(object):
 
     @staticmethod
     def unique_name_parts(combined_name):
+        # Since we left outer join we can end up with an empty prediction record.
+        # Skip these empty predictions so we can return an empty list.
         if not combined_name:
             return ''
         parts = sorted(set(combined_name.split("; ")))
