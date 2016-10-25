@@ -5,6 +5,7 @@ import os
 import re
 from ftplib import FTP
 import gzip
+from urlparse import urlparse
 import requests
 import subprocess
 import yaml
@@ -24,6 +25,7 @@ def download_and_convert(config, update_progress):
         genome_files.download_genome()
         genome_files.download_gene_list_files()
         genome_files.download_prediction_files()
+        genome_files.download_alias_files()
     download_models(config, update_progress)
 
 
@@ -180,7 +182,7 @@ class GenomeFiles(object):
         """
         Download a genome 2bit file.
         """
-        downloader = GenomeDownloader(self.config.download_dir, GENE_LIST_HOST,
+        downloader = GenomeDownloader(self.config, GENE_LIST_HOST,
                                       self.genome_data.genome_file, self.genome_data.genomename,
                                       update_progress=self.update_progress)
         downloader.download()
@@ -190,7 +192,7 @@ class GenomeFiles(object):
         Downloads and converts files related to gene lists specified in genome_data.
         """
         for target in self.genome_data.ftp_files:
-            data_file = GeneListDownloader(self.config.download_dir, GENE_LIST_HOST, target,
+            data_file = GeneListDownloader(self.config, GENE_LIST_HOST, target,
                                            self.genome_data.genomename, update_progress=self.update_progress)
             data_file.download_and_extract()
             data_file.download_schema_and_convert()
@@ -202,6 +204,15 @@ class GenomeFiles(object):
         for prediction_setting in self.genome_data.prediction_lists:
             downloader = PredictionDownloader(self.config, prediction_setting, update_progress=self.update_progress)
             downloader.download_and_convert()
+
+    def download_alias_files(self):
+        """
+        Download the gene name alias url file if we have one.
+        """
+        url = self.genome_data.alias_url
+        if url:
+            alias_file = GeneSymbolAliasFile(self.config, self.genome_data)
+            alias_file.download()
 
 
 class MySQLtoPG(object):
@@ -255,12 +266,59 @@ class MySQLtoPG(object):
         return line
 
 
+class FTPUtil(object):
+    """
+    Simplifies using FTP module to download files one at a time.
+    """
+    def __init__(self, config):
+        """
+        Setup the util with config so it knows the directory we will download files into.
+        :param config: pred.Config: contains download directory
+        """
+        self.config = config
+
+    def download_ftp_url(self, url, dest_sub_directory):
+        """
+        Download the file referenced by the ftp url into dest_sub_directory without our download directory.
+        :param url: str: ftp url to a file we want to download
+        :param dest_sub_directory: str: subdirectory where we will save the file locally
+        """
+        url_details = urlparse(url)
+        if url_details.scheme != 'ftp':
+            raise ValueError("Unsupported scheme {}".format(url_details.scheme))
+        ftp_host = url_details.netloc
+        ftp_dir = os.path.dirname(url_details.path)
+        ftp_filename = os.path.basename(url_details.path)
+        self.download_ftp(ftp_host, ftp_dir, ftp_filename, dest_sub_directory)
+
+    def download_ftp(self, ftp_host, ftp_dir, ftp_filename, dest_sub_directory):
+        """
+        Download the file referenced by the ftp params into dest_sub_directory without our download directory.
+        Will create the sub directory if it doesn't exist.
+        :param ftp_host: str: host we will connect to
+        :param ftp_dir: str: directory we will cd into
+        :param ftp_filename: str: name of the file to download
+        :param dest_sub_directory: subdirectory where we will save the file locally
+        """
+        dest_dir = os.path.join(self.config.download_dir, dest_sub_directory)
+        if not os.path.exists(dest_dir):
+            os.mkdir(dest_dir)
+        dest_path = '{}/{}'.format(dest_dir, ftp_filename)
+        ftp = FTP(ftp_host, 'anonymous', 'gcb-contact@duke.edu')
+        ftp.cwd(ftp_dir)
+        with open(dest_path, 'wb') as outfile:
+            ftp.retrbinary("RETR " + ftp_filename, outfile.write)
+        ftp.close()
+
+
+
 class GenomeDownloader(object):
     """
     Retrieves 2bit genome file from via FTP.
     """
-    def __init__(self, local_dir, ftp_host, ftp_path, genome, update_progress):
-        self.local_dir = os.path.join(local_dir, genome)
+    def __init__(self, config, ftp_host, ftp_path, genome, update_progress):
+        self.ftp_util = FTPUtil(config)
+        self.local_dir = os.path.join(config.download_dir, genome)
         self.ftp_host = ftp_host
         self.ftp_path = ftp_path
         self.genome = genome
@@ -279,13 +337,7 @@ class GenomeDownloader(object):
         :param out_filename: str: path where we should write the 2bit file.
         """
         self.update_progress('Downloading: ' + filename)
-        if not os.path.exists(self.local_dir):
-            os.mkdir(self.local_dir)
-        ftp = FTP(self.ftp_host, 'anonymous', 'gcb-contact@duke.edu')
-        ftp.cwd(self.get_ftp_dir())
-        with open(out_filename, 'wb') as outfile:
-            ftp.retrbinary("RETR " + filename, outfile.write)
-        ftp.close()
+        self.ftp_util.download_ftp(self.ftp_host, self.get_ftp_dir(), filename, self.genome)
 
     def get_ftp_dir(self):
         return os.path.dirname(self.ftp_path)
@@ -308,8 +360,9 @@ class GeneListDownloader(object):
     """
     Fetches and converts a *.txt.gz file and accompanying *.sql(schema) from ftp server.
     """
-    def __init__(self, local_dir, ftp_host, ftp_path, genome, update_progress):
-        self.local_dir = os.path.join(local_dir, genome)
+    def __init__(self, config, ftp_host, ftp_path, genome, update_progress):
+        self.ftp_util = FTPUtil(config)
+        self.local_dir = os.path.join(config.download_dir, genome)
         self.ftp_host = ftp_host
         self.ftp_path = ftp_path
         self.genome = genome
@@ -347,7 +400,7 @@ class GeneListDownloader(object):
         self.update_progress('Downloading: ' + self.get_local_path())
         if not os.path.exists(self.local_dir):
             os.mkdir(self.local_dir)
-        self._download_file(self.get_ftp_filename(), self.get_local_path())
+        self._download_file(self.get_ftp_filename())
         self.update_progress('Extracting: ' + self.get_local_path())
         self._extract()
 
@@ -360,18 +413,13 @@ class GeneListDownloader(object):
 
     def download_schema_and_convert(self):
         self.update_progress('Downloading: ' + self.get_ftp_schema_filename())
-        self._download_file(self.get_ftp_schema_filename(), self.get_local_schema_path())
+        self._download_file(self.get_ftp_schema_filename())
         self.update_progress('Fixing: ' + self.get_ftp_schema_filename())
         mysql_to_pg = MySQLtoPG(self.get_local_schema_path(), self.genome)
         mysql_to_pg.convert()
 
-    def _download_file(self, filename, out_filename):
-        ftp = FTP(self.ftp_host)
-        ftp.login()
-        ftp.cwd(self.get_ftp_dir())
-        with open(out_filename, 'wb') as outfile:
-            ftp.retrbinary("RETR " + filename, outfile.write)
-        ftp.close()
+    def _download_file(self, filename):
+        self.ftp_util.download_ftp(self.ftp_host, self.get_ftp_dir(), filename, self.genome)
 
     def get_url(self):
         """
@@ -479,3 +527,97 @@ class PredictionDownloader(object):
                 outfile.write('\t'.join(result_values) + '\n')
             else:
                 break
+
+
+class GeneSymbolAliasFile(object):
+    SYMBOL_FIELDNAME = 'symbol'
+    ALIAS_FIELDNAME = 'alias_symbol'
+    """
+    A file we can download via ftp that contains gene alias information.
+    """
+    def __init__(self, config, genome_data):
+        self.config = config
+        self.local_sub_directory = genome_data.genomename
+        self.url = genome_data.alias_url
+        self.cnt = 0
+
+    def download(self):
+        ftp_util = FTPUtil(self.config)
+        ftp_util.download_ftp_url(self.url, self.local_sub_directory)
+        self.save_symbol_alias_pairs()
+
+    @staticmethod
+    def split_alias_list(alias_list):
+        no_quotes = alias_list.replace('"', '')
+        return no_quotes.split("|")
+
+    def get_local_tsv_path(self):
+        pre, ext = os.path.splitext(self.get_local_filename())
+        return pre + '.tsv'
+
+    def save_symbol_alias_pairs(self):
+        with open(self.get_local_tsv_path(), 'w') as outfile:
+            for symbol, alias in self.get_symbol_alias_pairs():
+                outfile.write("{}\t{}\n".format(symbol, alias))
+
+    def get_symbol_alias_pairs(self):
+        symbol_idx = alias_idx = -1
+        first_time = True
+        gene_symbol_lookup = GeneSymbolAliasLookup()
+        with open(self.get_local_filename()) as infile:
+            for line in infile:
+                parts = line.split("\t")
+                if first_time:
+                    symbol_idx, alias_idx = self.get_indexes(parts)
+                    first_time = False
+                else:
+                    symbol_value = parts[symbol_idx]
+                    alias_value = parts[alias_idx]
+                    if alias_value:
+                        alias_list = GeneSymbolAliasFile.split_alias_list(alias_value)
+                        for alias_name in alias_list:
+                            gene_symbol_lookup.add(symbol_value, alias_name)
+        return gene_symbol_lookup.get_pairs()
+
+    def get_indexes(self, parts):
+        symbol_idx = -1
+        alias_idx = -1
+        for idx, key in enumerate(parts):
+            if key == GeneSymbolAliasFile.SYMBOL_FIELDNAME:
+                symbol_idx = idx
+            if key == GeneSymbolAliasFile.ALIAS_FIELDNAME:
+                alias_idx = idx
+
+        if symbol_idx == -1 or alias_idx == -1:
+            raise ValueError("Missing symbol or alias fieldnames in data file.")
+        return symbol_idx, alias_idx
+
+    def get_local_filename(self):
+        base_dir = self.config.download_dir
+        sub_dir = self.local_sub_directory
+        filename = os.path.basename(self.url)
+        return '{}/{}/{}'.format(base_dir, sub_dir, filename)
+
+
+class GeneSymbolAliasLookup(object):
+    def __init__(self):
+        self.lookup = {}
+
+    def add(self, from_name, to_name):
+        self._add(from_name, to_name)
+        self._add(to_name, from_name)
+
+    def _add(self, from_name, to_name):
+        alias_list = self.lookup.get(from_name, None)
+        if not alias_list:
+            alias_list = set()
+            self.lookup[from_name] = alias_list
+        alias_list.add(to_name)
+
+    def get_pairs(self):
+        pairs = []
+        for key in self.lookup:
+            values = self.lookup[key]
+            for value in values:
+                pairs.append((key, value))
+        return pairs

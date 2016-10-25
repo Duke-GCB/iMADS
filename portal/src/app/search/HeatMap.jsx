@@ -132,10 +132,14 @@ class HeatMap extends React.Component {
         let clickSurface = [];
         let backgroundClickSurface = [];
         let clickWidth = width - 1;
-        if (onClickHeatmap) {
-            clickSurface = this.makeClickSurface(this.showDetails);
-        } else {
-            backgroundClickSurface = this.makeClickSurface(this.viewInGenomeBrowser);
+        let svgClassname = '';
+        if (data.values.length > 0) {
+            if (onClickHeatmap) {
+                clickSurface = this.makeClickSurface(this.showDetails);
+            } else {
+                backgroundClickSurface = this.makeClickSurface(this.viewInGenomeBrowser);
+            }
+            svgClassname = 'HeatMap_svg_clickable';
         }
 
         // Create border around predictions
@@ -148,7 +152,7 @@ class HeatMap extends React.Component {
         let predictions = this.getHeatRects(scale);
 
         return <div className="HeatMap_div" >
-                <svg className="HeatMap_svg"
+                <svg className={svgClassname}
                      width={width} height={height}
                      xmlns="http://www.w3.org/2000/svg">
                     {backgroundClickSurface}

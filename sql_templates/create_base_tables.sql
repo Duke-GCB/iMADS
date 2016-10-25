@@ -44,3 +44,11 @@ CREATE TABLE {{ schema_prefix }}.gene_prediction (
   end_range int NOT NULL
 );
 GRANT ALL PRIVILEGES ON {{ schema_prefix }}.gene_prediction TO pred_user;
+
+
+CREATE TABLE {{ schema_prefix }}.gene_symbol_alias (
+  alias varchar NOT NULL,
+  symbol varchar NOT NULL,
+  PRIMARY KEY (alias, symbol)
+);
+GRANT ALL PRIVILEGES ON {{ schema_prefix }}.gene_symbol_alias TO pred_user;

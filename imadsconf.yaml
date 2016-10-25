@@ -1,7 +1,8 @@
 binding_max_offset: 5000
 download_dir: /tmp/pred_data
 genome_data:
-- ftp_files:
+- alias_url: ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/non_alt_loci_set.txt
+  ftp_files:
   - goldenPath/hg19/database/knownGene.txt.gz
   - goldenPath/hg19/database/kgXref.txt.gz
   gene_lists:
@@ -136,7 +137,8 @@ genome_data:
   trackhub_url:
   - predictions: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt
   - preferences: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences/hub.txt
-- ftp_files:
+- alias_url: ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/non_alt_loci_set.txt
+  ftp_files:
   - goldenPath/hg38/database/wgEncodeGencodeBasicV23.txt.gz
   - goldenPath/hg38/database/wgEncodeGencodeCompV23.txt.gz
   - goldenPath/hg38/database/knownGene.txt.gz

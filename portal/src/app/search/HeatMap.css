@@ -4,7 +4,7 @@
     paddingTop: 1px;
 }
 
-.HeatMap_svg {
+.HeatMap_svg_clickable {
     cursor: pointer;
 }
 

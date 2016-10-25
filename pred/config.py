@@ -118,6 +118,7 @@ class GenomeData(object):
         self.download_dir = config.download_dir
         self.genomename = genome_data['genome']
         self.trackhub_url = genome_data['trackhub_url']
+        self.alias_url = genome_data.get('alias_url')
         self.genome_file = genome_data['genome_file']
         self.ftp_files = []
         self.gene_lists = []

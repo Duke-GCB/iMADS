@@ -29,7 +29,7 @@ describe('DataSourceData', function () {
         });
 
         it('return expected fields for two items in a list', function () {
-            let fileUrl1 = 'http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0003-E2F0.bb';
+            let fileUrl1 = 'ftp://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0003-E2F0.bb';
             let fileUrl2 = 'https://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19-0003-E2F1.bb';
             let dsd = new DataSourceData();
             let inputData = [{
@@ -80,6 +80,22 @@ describe('DataSourceData', function () {
                 host: 'trackhub.genome.duke.edu'
             }];
             assert.deepEqual(expected, dsd.formatData('model', inputData));
+        });
+    });
+
+    describe('formatURLParts()', function () {
+        let dsd = new DataSourceData();
+        it('adds https to url if missing', function () {
+            let {url, filename, host} = dsd.formatURLParts('trackhub.genome.duke.edu/gordanlab/hg19-0003-E2F0.bb');
+            assert.equal('https://trackhub.genome.duke.edu/gordanlab/hg19-0003-E2F0.bb', url);
+            assert.equal('hg19-0003-E2F0.bb', filename);
+            assert.equal('trackhub.genome.duke.edu', host);
+        });
+        it('leaves ftp alone', function () {
+            let {url, filename, host} = dsd.formatURLParts('ftp://mytrack.genome.duke.edu/gordanlab/hg19-0003-E2F0.bb');
+            assert.equal('ftp://mytrack.genome.duke.edu/gordanlab/hg19-0003-E2F0.bb', url);
+            assert.equal('hg19-0003-E2F0.bb', filename);
+            assert.equal('mytrack.genome.duke.edu', host);
         });
     });
 });

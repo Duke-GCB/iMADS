@@ -11,8 +11,8 @@ from multiprocessing import Pool
 from jinja2 import FileSystemLoader, Environment
 from pred.config import DataType
 from pred.load.download import GenomeDownloader, GeneListDownloader, PredictionDownloader, ModelFiles, GENE_LIST_HOST
+from pred.load.download import GeneSymbolAliasFile
 from pred.load.postgres import PostgresConnection, CopyCommand
-from psycopg2 import OperationalError
 
 SQL_TEMPLATE_DIR = 'sql_templates'
 METADATA_GROUP_NAME = 'Metadata'
@@ -94,6 +94,7 @@ def create_pipeline_for_genome_version(database_loader):
     database_loader.create_gene_and_prediction_indexes()
     database_loader.create_gene_prediction(type_filter=None)
     database_loader.delete_sql_for_gene_list_files()
+    database_loader.insert_alias_list()
 
 
 def get_modified_time_for_filename(filename):
@@ -130,7 +131,7 @@ class DatabaseLoader(object):
         self.sql_builder.create_base_tables(self.genome, self.genome_data.get_model_types_str())
 
     def insert_genome_data_source(self):
-        downloader = GenomeDownloader(self.config.download_dir,
+        downloader = GenomeDownloader(self.config,
                                       GENE_LIST_HOST,
                                       self.genome_data.genome_file,
                                       self.genome,
@@ -142,7 +143,7 @@ class DatabaseLoader(object):
 
     def insert_gene_list_files(self):
         for target in self.genome_data.ftp_files:
-            data_file = GeneListDownloader(self.config.download_dir, GENE_LIST_HOST, target,
+            data_file = GeneListDownloader(self.config, GENE_LIST_HOST, target,
                                            self.genome, update_progress=self.update_progress)
             self.sql_builder.create_table_from_path(data_file.get_local_schema_path())
             self.sql_builder.copy_file_into_db(self.genome + '.' + data_file.get_root_filename(),
@@ -197,6 +198,13 @@ class DatabaseLoader(object):
             if gene_list.common_lookup_table:
                 table_names.append(gene_list.common_lookup_table)
             self.sql_builder.delete_tables(gene_list.genome, table_names)
+
+    def insert_alias_list(self):
+        alias_file = GeneSymbolAliasFile(self.config, self.genome_data)
+        self.sql_builder.copy_file_into_db(self.genome + '.gene_symbol_alias',
+                                           alias_file.get_local_tsv_path())
+        self.sql_builder.insert_data_source(alias_file.url, 'Gene symbol aliases ' + self.genome,
+                                            'genelist',alias_file.get_local_tsv_path())
 
 
 class SQLBuilder(object):
