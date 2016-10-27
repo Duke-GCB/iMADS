@@ -108,12 +108,16 @@ class ModelFiles(object):
             filenames = item.get('model_filenames', [])
             if track_name in self.model_names:
                 for i in range(len(filenames)):
-                    filename = filenames[i]
+                    filename_list = filenames[i]
                     core = item['cores'][i]
-                    if not filename in unique_filenames:
-                        details = self._make_details(filename, core, item)
-                        data.append(details)
-                        unique_filenames.add(filename)
+                    # preferences have nested filename lists
+                    if type(filename_list) != list:
+                        filename_list = [filenames[i]]
+                    for filename in filename_list:
+                        if filename not in unique_filenames:
+                            details = self._make_details(filename, core, item)
+                            data.append(details)
+                            unique_filenames.add(filename)
         return data
 
     def _make_details(self, filename, core, item):
@@ -124,7 +128,13 @@ class ModelFiles(object):
         :param item: str: dict: properties from trackhub yaml
         :return: dict: properties describing this model
         """
-        group_name = 'Protein {}'.format(item['protein'])
+        protein = item.get('protein')
+        protein_list = []
+        if protein:
+            protein_list.append(protein)
+        else:
+            protein_list = item['proteins']
+        group_name = 'Protein {}'.format(','.join(protein_list))
         description = 'Model for core {}'.format(core)
         return {
             'filename': filename,
