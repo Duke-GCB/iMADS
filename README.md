@@ -33,7 +33,7 @@ Directory portal/ contains the reactjs project that builds static/js/bunde.js fo
 __Custom Prediction/Preference Worker__
 
 Calculates predictions and preferences for user uploaded sequences.
-https://github.com/Duke-GCB/Predict-TF-Binding-Worker
+https://github.com/Duke-GCB/iMADS-worker
 
 ## Running
 
