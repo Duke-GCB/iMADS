@@ -4,16 +4,16 @@ from pred.webserver.predictionsearch import CUSTOM_GENE_NAME_TYPE, CUSTOM_ID_TYP
 
 QUERY_BASE = """SET search_path TO %s,public;
 select
-gene_name as common_name,
+max(gene_name) as common_name,
 string_agg(name, '; ') as name,
 case WHEN max(value) > abs(min(value)) THEN
   round(max(value), 4)
 ELSE
   round(min(value), 4)
 end as max_value,
-chrom,
-strand,
-gene_begin,
+max(chrom) as chrom,
+max(strand) as strand,
+max(gene_begin) as gene_begin,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from custom_gene_list
 left outer join gene_symbol_alias on upper(alias) = upper(gene_name)
@@ -28,8 +28,8 @@ else
 end
 where
 id = %s
-group by gene_name, chrom, strand, gene_begin
-order by gene_name{}"""
+group by gene_id
+order by max(gene_name){}"""
 
 GENE_LIST_FILTER_WITH_LIMIT = QUERY_BASE.format("\ngene_list = %s\nand", "\nlimit %s offset %s")
 GENE_LIST_FILTER = QUERY_BASE.format("", "")
@@ -37,16 +37,16 @@ GENE_LIST_FILTER = QUERY_BASE.format("", "")
 COUNT_QUERY = """SET search_path TO %s,public;
 select count(*) from (
 select
-gene_name as common_name,
+max(gene_name) as common_name,
 string_agg(name, '; ') as name,
 case WHEN max(value) > abs(min(value)) THEN
   round(max(value), 4)
 ELSE
   round(min(value), 4)
 end as max_value,
-chrom,
-strand,
-gene_begin,
+max(chrom) as chrom,
+max(strand) as strand,
+max(gene_begin) as gene_begin,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from custom_gene_list
 left outer join gene_symbol_alias on upper(alias) = upper(gene_name)
@@ -61,7 +61,7 @@ else
 end
 where
 id = %s
-group by gene_name, chrom, strand, gene_begin
+group by gene_id
 ) as foo"""
 
 
@@ -82,7 +82,7 @@ class TestGeneListQuery(TestCase):
         )
         sql, params = query.get_query_and_params()
         self.maxDiff = None
-        self.assertEqual(expected_sql, sql)
+        self.assertMultiLineEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 
     def test_gene_list_filter(self):
@@ -99,7 +99,7 @@ class TestGeneListQuery(TestCase):
         )
         sql, params = query.get_query_and_params()
         self.maxDiff = None
-        self.assertEqual(expected_sql, sql)
+        self.assertMultiLineEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 
     def test_gene_list_count(self):
@@ -117,6 +117,6 @@ class TestGeneListQuery(TestCase):
         )
         sql, params = query.get_query_and_params()
         self.maxDiff = None
-        self.assertEqual(expected_sql, sql)
+        self.assertMultiLineEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 

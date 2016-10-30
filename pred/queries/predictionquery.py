@@ -25,13 +25,13 @@ class PredictionQuery(object):
 
     def main_query_parts(self):
         query_parts = [
-            select_prediction_values(),
+            select_prediction_values(first_field="max(common_name) as common_name"),
             where(),
             filter_gene_list(self.gene_list, self.model_name, self.upstream, self.downstream),
-            group_by_common_name_and_parts(),
+            group_by_gene_id(),
         ]
         if not self.count:
-            query_parts.append(order_by_chrom_and_txstart())
+            query_parts.append(order_by_gene_id())
         if self.limit:
             query_parts.append(limit_and_offset(self.limit, self.offset))
         return query_parts

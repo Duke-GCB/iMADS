@@ -33,7 +33,7 @@ class MaxPredictionQuery(object):
         ]
         if self.guess and not self.count:
             with_parts.append(value_greater_than(self.guess))
-        with_parts.append(group_by_common_name_and_parts())
+        with_parts.append(group_by_gene_id())
         with_parts.append(order_by_max_value_desc())
         if self.limit:
             with_parts.append(limit_and_offset(self.limit, self.offset))
@@ -42,13 +42,13 @@ class MaxPredictionQuery(object):
 
     def main_query_parts(self):
         query_parts = [
-            select_prediction_values(),
+            select_prediction_values(first_field="max(common_name) as common_name"),
             where(),
             filter_gene_list(self.gene_list, self.model_name, self.upstream, self.downstream),
-            name_in_max_prediction_names(),
-            group_by_common_name_and_parts(),
+            gene_id_in_max_prediction_names(),
+            group_by_gene_id(),
         ]
         if not self.count:
-            query_parts.append(order_by_max_value_desc_common_name())
+            query_parts.append(order_by_max_value_desc_gene_id())
         return query_parts
 

@@ -23,11 +23,11 @@ CREATE TABLE {{ schema_prefix }}.gene (
   txstart int NOT NULL,
   txend int NOT NULL,
   gene_begin int NOT NULL,
-  range int4range
+  range int4range,
+  gene_id integer
 );
 GRANT ALL PRIVILEGES ON {{ schema_prefix }}.gene TO pred_user;
 CREATE index gene_list_idx on {{ schema_prefix }}.gene(gene_list);
-
 
 CREATE TABLE {{ schema_prefix }}.gene_prediction (
   gene_list varchar NOT NULL,
@@ -35,8 +35,7 @@ CREATE TABLE {{ schema_prefix }}.gene_prediction (
   common_name varchar,
   chrom varchar NOT NULL,
   strand char(1) NOT NULL,
-  txstart int NOT NULL,
-  txend int NOT NULL,
+  gene_id int NOT NULL,
   gene_begin int NOT NULL,
   model_name {{ schema_prefix }}.model_type NOT NULL,
   value numeric NOT NULL,

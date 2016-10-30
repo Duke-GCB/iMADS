@@ -35,17 +35,17 @@ class GeneListQuery(object):
             comparison_fieldname = "common_name"
         query_parts = [
             select_prediction_values(table_name="custom_gene_list",
-                                     first_field="gene_name as common_name"),
+                                     first_field="max(gene_name) as common_name"),
             alias_join_gene_prediction(comparison_fieldname),
             and_sql(),
             join_filter,
             where(),
             id_equals(self.custom_list_id),
-            group_by_common_name_and_parts(first_field="gene_name"),
+            group_by_gene_id(),
         ]
         if not self.count:
             if self.sort_by_max:
-                query_parts.append(order_by_max_value_desc_common_name())
+                query_parts.append(order_by_max_value_desc_gene_id())
             else:
                 query_parts.append(order_by_gene_name())
         if self.limit:

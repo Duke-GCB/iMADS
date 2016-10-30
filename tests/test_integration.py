@@ -274,6 +274,9 @@ class TestWithPostgres(unittest.TestCase):
         self.assertEqual(len(predictions), 1)
 
     def test_custom_gene_list_id_results(self):
+        """
+        These two splice variants belong to the same gene so they should list together in a single prediction.
+        """
         db = create_db_connection(TestWithPostgres.config.dbconfig)
         custom_list_key = save_custom_file(db, 'john', GENE_LIST_TYPE, "uc001aaa.3\nuc010nxr.1")
         params = {
@@ -287,16 +290,12 @@ class TestWithPostgres(unittest.TestCase):
             SearchArgs.PER_PAGE: "10",
         }
         predictions, search_args, search_warning = get_predictions_with_guess(db, TestWithPostgres.config, "hg19", params)
-        self.assertEqual(len(predictions), 2)
+        self.assertEqual(len(predictions), 1)
         first_pred_name = predictions[0]['name']
         first_pred_name_parts = first_pred_name.split("; ")
-        self.assertEqual(len(first_pred_name_parts), 1)
+        self.assertEqual(len(first_pred_name_parts), 2)
         self.assertIn("uc001aaa.3", first_pred_name_parts)
-
-        second_pred_name = predictions[1]['name']
-        second_pred_name_parts = second_pred_name.split("; ")
-        self.assertEqual(len(second_pred_name_parts), 1)
-        self.assertIn("uc010nxr.1", second_pred_name_parts)
+        self.assertIn("uc010nxr.1", first_pred_name_parts)
 
     def test_custom_gene_list_with_lc_results(self):
         db = create_db_connection(TestWithPostgres.config.dbconfig)

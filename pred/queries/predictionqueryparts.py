@@ -42,9 +42,9 @@ case WHEN max(value) > abs(min(value)) THEN
 ELSE
   round(min(value), 4)
 end as max_value,
-chrom,
-strand,
-gene_begin,
+max(chrom) as chrom,
+max(strand) as strand,
+max(gene_begin) as gene_begin,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from {}""".format(first_field, table_name))
 
@@ -58,8 +58,8 @@ def id_equals(id_value):
     return QueryPart("""id = %s""", [id_value])
 
 
-def name_in_max_prediction_names():
-    return _query_part("and common_name in (select common_name from max_prediction_names)")
+def gene_id_in_max_prediction_names():
+    return _query_part("and gene_id in (select gene_id from max_prediction_names)")
 
 
 def filter_gene_list(gene_list, model_name, upstream, downstream):
@@ -103,7 +103,7 @@ where id = %s and not exists
 
 def with_max_prediction_names():
     return _query_part("""with max_prediction_names as (
- select common_name from gene_prediction""")
+ select gene_id from gene_prediction""")
 
 
 def end_with():
@@ -126,6 +126,13 @@ def group_by_common_name_and_parts(first_field="common_name"):
     return _query_part("group by {}, chrom, strand, gene_begin".format(first_field))
 
 
+def group_by_gene_id():
+    return _query_part("group by gene_id")
+
+
+def order_by_gene_id():
+    return _query_part("order by gene_id")
+
 def order_by_chrom_and_txstart():
     return _query_part("order by chrom, gene_begin")
 
@@ -135,16 +142,11 @@ def order_by_name():
 
 
 def order_by_gene_name():
-    return _query_part("order by gene_name")
+    return _query_part("order by max(gene_name)")
 
 
 def order_by_common_name_and_name():
     return _query_part("order by common_name, name")
-
-
-def order_by_chrom_txstart():
-    return _query_part("order by chrom, txstart")
-
 
 def order_by_seq():
     return _query_part("order by seq")
@@ -154,8 +156,8 @@ def order_by_max_value_desc():
     return _query_part("order by max(abs(value)) desc")
 
 
-def order_by_max_value_desc_common_name():
-    return _query_part("order by max(abs(value)) desc, common_name")
+def order_by_max_value_desc_gene_id():
+    return _query_part("order by max(abs(value)) desc, gene_id")
 
 
 def limit_and_offset(limit, offset):
