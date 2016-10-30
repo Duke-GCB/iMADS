@@ -3,7 +3,7 @@ from pred.queries.maxpredictionquery import MaxPredictionQuery
 
 MAX_QUERY_BASE = """SET search_path TO %s,public;
 with max_prediction_names as (
- select common_name from gene_prediction
+ select gene_id from gene_prediction
 where
 gene_list = %s
 and
@@ -14,20 +14,20 @@ case strand when '+' then
 else
   (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end{}
-group by common_name, chrom, strand, gene_begin
+group by gene_id
 order by max(abs(value)) desc{}
 )
 select
-common_name,
+max(common_name) as common_name,
 string_agg(name, '; ') as name,
 case WHEN max(value) > abs(min(value)) THEN
   round(max(value), 4)
 ELSE
   round(min(value), 4)
 end as max_value,
-chrom,
-strand,
-gene_begin,
+max(chrom) as chrom,
+max(strand) as strand,
+max(gene_begin) as gene_begin,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where
@@ -40,9 +40,9 @@ case strand when '+' then
 else
   (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end
-and common_name in (select common_name from max_prediction_names)
-group by common_name, chrom, strand, gene_begin
-order by max(abs(value)) desc, common_name"""
+and gene_id in (select gene_id from max_prediction_names)
+group by gene_id
+order by max(abs(value)) desc, gene_id"""
 
 MAX_QUERY_WITH_GUESS_WITH_LIMIT = MAX_QUERY_BASE.format("\nand abs(value) > %s", "\nlimit %s offset %s")
 MAX_QUERY_WITH_GUESS = MAX_QUERY_BASE.format("\nand abs(value) > %s", "")
@@ -51,7 +51,7 @@ MAX_QUERY_NO_GUESS = MAX_QUERY_BASE.format("", "")
 
 COUNT_QUERY = """SET search_path TO %s,public;
 with max_prediction_names as (
- select common_name from gene_prediction
+ select gene_id from gene_prediction
 where
 gene_list = %s
 and
@@ -62,21 +62,21 @@ case strand when '+' then
 else
   (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end
-group by common_name, chrom, strand, gene_begin
+group by gene_id
 order by max(abs(value)) desc
 )
 select count(*) from (
 select
-common_name,
+max(common_name) as common_name,
 string_agg(name, '; ') as name,
 case WHEN max(value) > abs(min(value)) THEN
   round(max(value), 4)
 ELSE
   round(min(value), 4)
 end as max_value,
-chrom,
-strand,
-gene_begin,
+max(chrom) as chrom,
+max(strand) as strand,
+max(gene_begin) as gene_begin,
 json_agg(json_build_object('value', round(value, 4), 'start', start_range, 'end', end_range)) as pred
 from gene_prediction
 where
@@ -89,8 +89,8 @@ case strand when '+' then
 else
   (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
 end
-and common_name in (select common_name from max_prediction_names)
-group by common_name, chrom, strand, gene_begin
+and gene_id in (select gene_id from max_prediction_names)
+group by gene_id
 ) as foo"""
 
 
@@ -111,7 +111,7 @@ class TestMaxPredictionQuery(TestCase):
         )
         sql, params = query.get_query_and_params()
         self.maxDiff = None
-        self.assertEqual(expected_sql, sql)
+        self.assertMultiLineEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 
     def test_max_with_guess(self):
@@ -128,7 +128,7 @@ class TestMaxPredictionQuery(TestCase):
         )
         sql, params = query.get_query_and_params()
         self.maxDiff = None
-        self.assertEqual(expected_sql, sql)
+        self.assertMultiLineEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 
     def test_max_with_no_guess_and_limit(self):
@@ -145,7 +145,7 @@ class TestMaxPredictionQuery(TestCase):
             offset="200",
         )
         sql, params = query.get_query_and_params()
-        self.assertEqual(expected_sql, sql)
+        self.assertMultiLineEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 
     def test_max_with_no_guess(self):
@@ -160,7 +160,7 @@ class TestMaxPredictionQuery(TestCase):
             downstream="250",
         )
         sql, params = query.get_query_and_params()
-        self.assertEqual(expected_sql, sql)
+        self.assertMultiLineEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
 
     def test_max_count(self):
@@ -177,5 +177,5 @@ class TestMaxPredictionQuery(TestCase):
         )
         self.maxDiff = None
         sql, params = query.get_query_and_params()
-        self.assertEqual(expected_sql, sql)
+        self.assertMultiLineEqual(expected_sql, sql)
         self.assertEqual(expected_params, params)
