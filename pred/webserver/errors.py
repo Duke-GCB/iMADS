@@ -2,6 +2,7 @@
 class ErrorType(object):
     GENERIC_ERROR = 'generic'
     SEQUENCE_NOT_FOUND = 'sequence_not_found'
+    INVALID_SEQUENCE_DATA = 'invalid_sequence_data'
 
 
 class BaseWebException(Exception):

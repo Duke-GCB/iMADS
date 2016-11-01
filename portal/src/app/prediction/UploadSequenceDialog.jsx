@@ -8,6 +8,7 @@ import LoadSampleLink from '../common/LoadSampleLink.jsx'
 import FileUpload from '../models/FileUpload.js';
 import {CustomSequence, CustomSequenceList} from '../models/CustomSequence.js';
 import {SEQUENCE_SAMPLE} from '../models/SampleData.js'
+require('./UploadSequenceDialog.css');
 
 const TITLE = "Custom DNA Sequence";
 const INSTRUCTIONS = "Enter Sequence/FASTA data or choose a file in that format. (Max file size 20MB)";
@@ -20,7 +21,8 @@ const DEFAULT_STATE = {
     fileValue: undefined,
     textValue: '',
     sequenceName: '',
-    titleErrorMessage: ''
+    titleErrorMessage: '',
+    uploadErrorMessage: ''
 };
 
 class UploadSequenceDialog extends React.Component {
@@ -30,13 +32,13 @@ class UploadSequenceDialog extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.sequenceData.id) {
-            let customSequence = new CustomSequence();
-            customSequence.fetch(nextProps.sequenceData.id, this.onSequenceInfo, this.onSequenceInfoError);
-        }
         // reset state each time this dialog is shown
         if (nextProps.isOpen && !this.props.isOpen) {
             this.setState(DEFAULT_STATE);
+            if (nextProps.sequenceData.id) {
+                let customSequence = new CustomSequence();
+                customSequence.fetch(nextProps.sequenceData.id, this.onSequenceInfo, this.onSequenceInfoError);
+            }
         }
     }
 
@@ -53,6 +55,7 @@ class UploadSequenceDialog extends React.Component {
             canUpload: true,
             textValue: value,
             file: undefined,
+            uploadErrorMessage: '',
             fileValue: undefined
         })
     };
@@ -62,6 +65,7 @@ class UploadSequenceDialog extends React.Component {
             canUpload: true,
             textValue: '',
             file: file,
+            uploadErrorMessage: '',
             fileValue: fileValue
         })
     };
@@ -98,7 +102,9 @@ class UploadSequenceDialog extends React.Component {
     };
 
     onUploadedSequenceFailed = (errorMessage) => {
-        this.closeDialog(undefined, errorMessage, '');
+        this.setState({
+            uploadErrorMessage: errorMessage
+        });
     };
 
     closeDialog = (seqId, errorMessage, title) => {
@@ -173,11 +179,15 @@ class UploadSequenceDialog extends React.Component {
                            onChange={this.onChangeTextValue}
                            disabled={this.state.loading}
             />
-            <SingleFileUpload fileValue={this.state.fileValue}
-                              loading={this.state.loading}
-                              onChangeFile={this.onChangeFile}
-                              disabled={this.state.loading}
-            />
+            <div>
+                <SingleFileUpload fileValue={this.state.fileValue}
+                                  loading={this.state.loading}
+                                  onChangeFile={this.onChangeFile}
+                                  disabled={this.state.loading}
+                />
+                <span className="UploadSequenceDialog_uploadErrorMessage">{this.state.uploadErrorMessage}</span>
+            </div>
+
             <LoadingButton label="Upload"
                            loading={this.state.loading}
                            disabled={!canUpload}

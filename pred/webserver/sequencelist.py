@@ -3,6 +3,7 @@ Stores custom FASTA sequences under a uuid in the database.
 Part of the tables used for custom jobs.
 """
 import uuid
+from pred.webserver.errors import ClientException, ErrorType
 from pred.queries.dbutil import update_database, read_database
 from Bio import SeqIO
 from StringIO import StringIO
@@ -144,4 +145,16 @@ class SequenceListItems(object):
                 'sequence': str(seq.seq)
             })
             cnt += 1
+        SequenceListItems.verify_unique_names(results)
         return results
+
+    @staticmethod
+    def verify_unique_names(items):
+        """
+        Make sure that we don't have any duplicate names in the list.
+        Raises UserFacingException if the names are duplicated.
+        :param items: [{}]: list of dictionaries with name property to check
+        """
+        unique_names = set([item['name'] for item in items])
+        if len(unique_names) != len(items):
+            raise ClientException("Error: Duplicate sequence names found.", ErrorType.INVALID_SEQUENCE_DATA)
