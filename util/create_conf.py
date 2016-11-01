@@ -41,13 +41,29 @@ SORT_MAX_GUESS_DEFAULT = yaml_config['SORT_MAX_GUESS_DEFAULT']
 SORT_MAX_GUESS = yaml_config['SORT_MAX_GUESS']
 MODEL_BASE_URL = yaml_config['MODEL_BASE_URL']
 MODEL_FAMILY_ORDER = yaml_config['MODEL_FAMILY_ORDER']
-PREF_MIN_MAX = {}
-for item in yaml_config['PREF_MIN_MAX']:
+PREFERENCE_BINS = {}
+for item in yaml_config['PREFERENCE_BINS']:
     genome = item['genome']
-    name = re.sub('_\d\d\d\d', '', item['name'])
-    pref_min = item['pref_min']
-    pref_max = item['pref_max']
-    PREF_MIN_MAX[(genome, name)] = (pref_min, pref_max)
+    name = item['name']
+    preference_bins = item['preference_bins']
+    PREFERENCE_BINS[(genome, name)] = preference_bins
+
+
+def fix_pref_bins(bins):
+    for bin_name in ['neg','pos']:
+        bins[bin_name] = fix_bin(bins[bin_name])
+    return bins
+
+
+def fix_bin(bin):
+    """
+    Remove outer indexes make sure values are positive and sorted.
+    :param bin: list of values
+    :return: [float] fixed array of bin values
+    """
+    inner_items = bin[1:len(bin)-1]
+    return sorted([abs(x) for x in inner_items])
+
 
 def create_config_file(trackhub_data, output_filename):
     """
@@ -65,7 +81,7 @@ def create_config_file(trackhub_data, output_filename):
         pred_idx = 1
         for track, url, type, tracks_yaml in trackhub_data.get_track_data(genome, track_filename):
             sort_max_guess = SORT_MAX_GUESS.get(track, SORT_MAX_GUESS_DEFAULT)
-            pref_min, pref_max = PREF_MIN_MAX.get((genome, track), ('',''))
+            preference_bins = PREFERENCE_BINS.get((genome, track), None)
             prediction_data = {
                 'idx': pred_idx,
                 'name': track,
@@ -76,9 +92,9 @@ def create_config_file(trackhub_data, output_filename):
                 'core_offset': tracks_yaml.get_core_offset(track),
                 'core_length': tracks_yaml.get_core_length(track),
                 'family': tracks_yaml.get_family(track, type),
-                'preference_min': pref_min,
-                'preference_max': pref_max,
             }
+            if preference_bins:
+                prediction_data['preference_bins'] = fix_pref_bins(preference_bins)
             pred_idx += 1
             prediction_lists.append(prediction_data)
         prediction_lists = sorted(prediction_lists, key=prediction_sort_key)

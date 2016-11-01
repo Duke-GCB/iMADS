@@ -20,8 +20,7 @@ export function getPreferenceSettings(genomeData, genomeName, modelName) {
             if (modelObj.data_type == PREFERENCE_TYPE) {
                 return {
                     isPreference: true,
-                    preferenceMin: modelObj.preference_min,
-                    preferenceMax: modelObj.preference_max,
+                    preferenceBins: modelObj.preference_bins,
                 }
             }
         }

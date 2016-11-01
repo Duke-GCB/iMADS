@@ -1,6 +1,11 @@
 import ColorBlender, {RED_COLOR_NAME, GREEN_COLOR_NAME, BLUE_COLOR_NAME,  YELLOW_COLOR_NAME,
-    CYAN_COLOR_NAME, MAGENTA_COLOR_NAME} from './../app/models/ColorBlender.js';
+        CYAN_COLOR_NAME, MAGENTA_COLOR_NAME,
+        PREFERENCE_GRAY, PREFERENCE_REDS, PREFERENCE_BLUES, PREFERENCE_GREENS} from './../app/models/ColorBlender.js';
 var assert = require('chai').assert;
+
+function rgbFromArray(items) {
+    return 'rgb(' + items[0] + ',' + items[1] + ',' + items[2] + ')';
+}
 
 describe('ColorBlender', function () {
     describe('isNegative()', function () {
@@ -26,21 +31,102 @@ describe('ColorBlender', function () {
         });
     });
 
-    describe('getScaledValue()', function () {
-        it('just returns value when no preferenceMin or preferenceMax', function () {
-            let predictionColor = {};
-            assert.equal(10, new ColorBlender(10, predictionColor).getScaledValue());
-            assert.equal(-10, new ColorBlender(-10, predictionColor).getScaledValue());
-        });
-        it('just scales value with abs preferenceMin/preferenceMax based on negative/positive values', function () {
+    describe('getPreferenceSlot()', function () {
+        it('works with two bins', function () {
             let predictionColor = {
-                preferenceMax: 2,
-                preferenceMin: -5,
+                'preferenceBins': {
+                    'pos': [2],
+                    'neg': [4]
+                }
             };
-            assert.equal(5, new ColorBlender(10, predictionColor).getScaledValue());
-            assert.equal(-2, new ColorBlender(-10, predictionColor).getScaledValue());
+            assert.equal(0, new ColorBlender(1.0, predictionColor).getPreferenceSlot());
+            assert.equal(0, new ColorBlender(1.99, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(2.0, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(3.0, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(200.0, predictionColor).getPreferenceSlot());
+            assert.equal(0, new ColorBlender(-1.0, predictionColor).getPreferenceSlot());
+            assert.equal(0, new ColorBlender(-3.99, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(-4, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(-4.1, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(-4000.0, predictionColor).getPreferenceSlot());
+        });
+        it('works with three bins', function () {
+            let predictionColor = {
+                'preferenceBins': {
+                    'pos': [1,8],
+                    'neg': [2,6]
+                }
+            };
+            assert.equal(0, new ColorBlender(0.1, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(1.0, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(1.1, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(7.9, predictionColor).getPreferenceSlot());
+            assert.equal(2, new ColorBlender(8.0, predictionColor).getPreferenceSlot());
+            assert.equal(2, new ColorBlender(8.1, predictionColor).getPreferenceSlot());
+            assert.equal(2, new ColorBlender(100, predictionColor).getPreferenceSlot());
+
+            assert.equal(0, new ColorBlender(-0.1, predictionColor).getPreferenceSlot());
+            assert.equal(0, new ColorBlender(-1.9, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(-2.0, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(-2.1, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(-5.9, predictionColor).getPreferenceSlot());
+            assert.equal(2, new ColorBlender(-6.0, predictionColor).getPreferenceSlot());
+            assert.equal(2, new ColorBlender(-6.1, predictionColor).getPreferenceSlot());
+            assert.equal(2, new ColorBlender(-100.0, predictionColor).getPreferenceSlot());
+        });
+        it('works with four bins', function () {
+            let predictionColor = {
+                'preferenceBins': {
+                    'pos': [1, 8, 10],
+                    'neg': [2, 6, 20]
+                }
+            };
+            assert.equal(0, new ColorBlender(0.1, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(1.0, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(1.1, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(7.9, predictionColor).getPreferenceSlot());
+            assert.equal(2, new ColorBlender(8.0, predictionColor).getPreferenceSlot());
+            assert.equal(2, new ColorBlender(8.1, predictionColor).getPreferenceSlot());
+            assert.equal(3, new ColorBlender(10, predictionColor).getPreferenceSlot());
+            assert.equal(3, new ColorBlender(11, predictionColor).getPreferenceSlot());
+
+            assert.equal(0, new ColorBlender(-0.1, predictionColor).getPreferenceSlot());
+            assert.equal(0, new ColorBlender(-1.9, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(-2.0, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(-2.1, predictionColor).getPreferenceSlot());
+            assert.equal(1, new ColorBlender(-5.9, predictionColor).getPreferenceSlot());
+            assert.equal(2, new ColorBlender(-6.0, predictionColor).getPreferenceSlot());
+            assert.equal(2, new ColorBlender(-6.1, predictionColor).getPreferenceSlot());
+            assert.equal(2, new ColorBlender(-19.9, predictionColor).getPreferenceSlot());
+            assert.equal(3, new ColorBlender(-20.0, predictionColor).getPreferenceSlot());
+            assert.equal(3, new ColorBlender(-30.0, predictionColor).getPreferenceSlot());
         });
     });
+
+    describe('getPreferenceColorArray()', function () {
+        it('looks up red colors', function () {
+            let predictionColor = {
+                'preferenceBins': {
+                    'pos': [1, 8, 10],
+                    'neg': [2, 6, 20]
+                }
+            };
+            let color = RED_COLOR_NAME;
+            let colorArray = PREFERENCE_REDS;
+            assert.equal(colorArray[0], new ColorBlender(0, predictionColor).getPreferenceColorArray(color));
+            assert.equal(colorArray[1], new ColorBlender(1.1, predictionColor).getPreferenceColorArray(color));
+            assert.equal(colorArray[1], new ColorBlender(7, predictionColor).getPreferenceColorArray(color));
+            assert.equal(colorArray[2], new ColorBlender(8, predictionColor).getPreferenceColorArray(color));
+            assert.equal(colorArray[3], new ColorBlender(11, predictionColor).getPreferenceColorArray(color));
+            assert.equal(colorArray[0], new ColorBlender(-0.1, predictionColor).getPreferenceColorArray(color));
+            assert.equal(colorArray[0], new ColorBlender(-1.9, predictionColor).getPreferenceColorArray(color));
+            assert.equal(colorArray[1], new ColorBlender(-2, predictionColor).getPreferenceColorArray(color));
+            assert.equal(colorArray[2], new ColorBlender(-6, predictionColor).getPreferenceColorArray(color));
+            assert.equal(colorArray[3], new ColorBlender(-20, predictionColor).getPreferenceColorArray(color));
+
+        });
+    });
+
 
     describe('getColor()', function () {
         it('works for red and blue combination for prediction data', function () {
@@ -57,19 +143,40 @@ describe('ColorBlender', function () {
             assert.equal('rgb(128,128,255)', new ColorBlender(-0.5, predictionColor, false).getColor());
         });
 
+
         it('works for red and blue combination for preference data', function () {
             let predictionColor = {
                 color1: RED_COLOR_NAME,
                 color2: BLUE_COLOR_NAME,
+                'preferenceBins': {
+                    'pos': [1, 8, 10],
+                    'neg': [2, 6, 20]
+                }
             };
-            let deepRed = 'rgb(103,0,13)';
-            assert.equal(deepRed, new ColorBlender(1.0, predictionColor, true).getColor());
+            let expectedColor = rgbFromArray(PREFERENCE_GRAY);
+            assert.equal(expectedColor, new ColorBlender(0, predictionColor, true).getColor());
 
-            let zeroGray = 'rgb(190,190,190)';
-            assert.equal(zeroGray, new ColorBlender(0.0, predictionColor, true).getColor());
+            expectedColor = rgbFromArray(PREFERENCE_REDS[0]);
+            assert.equal(expectedColor, new ColorBlender(0.1, predictionColor, true).getColor());
+            expectedColor = rgbFromArray(PREFERENCE_REDS[0]);
+            assert.equal(expectedColor, new ColorBlender(0.9, predictionColor, true).getColor());
+            expectedColor = rgbFromArray(PREFERENCE_REDS[1]);
+            assert.equal(expectedColor, new ColorBlender(1.0, predictionColor, true).getColor());
+            expectedColor = rgbFromArray(PREFERENCE_REDS[2]);
+            assert.equal(expectedColor, new ColorBlender(8.0, predictionColor, true).getColor());
+            expectedColor = rgbFromArray(PREFERENCE_REDS[3]);
+            assert.equal(expectedColor, new ColorBlender(11.0, predictionColor, true).getColor());
 
-            let midnightBlue = 'rgb(25,25,112)';
-            assert.equal(midnightBlue, new ColorBlender(-1.0, predictionColor, true).getColor());
+            expectedColor = rgbFromArray(PREFERENCE_BLUES[0]);
+            assert.equal(expectedColor, new ColorBlender(-0.1, predictionColor, true).getColor());
+            expectedColor = rgbFromArray(PREFERENCE_BLUES[1]);
+            assert.equal(expectedColor, new ColorBlender(-2.1, predictionColor, true).getColor());
+            expectedColor = rgbFromArray(PREFERENCE_BLUES[2]);
+            assert.equal(expectedColor, new ColorBlender(-6.0, predictionColor, true).getColor());
+            expectedColor = rgbFromArray(PREFERENCE_BLUES[3]);
+            assert.equal(expectedColor, new ColorBlender(-20.0, predictionColor, true).getColor());
+            expectedColor = rgbFromArray(PREFERENCE_BLUES[3]);
+            assert.equal(expectedColor, new ColorBlender(-40.0, predictionColor, true).getColor());
         });
     });
 
