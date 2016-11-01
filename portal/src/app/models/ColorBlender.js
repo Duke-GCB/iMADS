@@ -36,7 +36,11 @@ export let PREFERENCE_REDS = [
 
 /*
  * Color constants for blue gradient
- * http://colorbrewer2.org/?type=sequential&scheme=Blues&n=9#type=sequential&scheme=Blues&n=9
+ * Converted to RGB from R Color names
+ * plotclr2 = c("midnightblue","steelblue4","steelblue","steelblue3","steelblue2","steelblue1")
+ * using chart at http://research.stowers-institute.org/efg/R/Color/Chart/ColorChart.pdf
+ * midnightblue is the darkest, should be associated with the highest value,
+ * and therefore be last.
  */
 export let PREFERENCE_BLUES = [
     [99, 184, 255],   // steelblue1
