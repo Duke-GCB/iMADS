@@ -1,0 +1,12 @@
+.Page_container {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.Page_content {
+    flex: 1;
+}
+
+.Page_footer {
+}

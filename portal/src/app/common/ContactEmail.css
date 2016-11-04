@@ -1,0 +1,9 @@
+.ContactEmail_container {
+    display: flex;
+}
+
+.ContactEmail_text {
+    text-align: center;
+    width: 100%;
+    margin: 20px;
+}
