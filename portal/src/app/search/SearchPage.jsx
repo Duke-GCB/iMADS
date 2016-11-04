@@ -1,6 +1,6 @@
 import React from 'react';
 import { browserHistory } from 'react-router'
-import NavBar from '../common/NavBar.jsx'
+import Page from '../common/Page.jsx';
 import {SEARCH_NAV} from '../models/Navigation.js'
 import SearchResultsPanel from './SearchResultsPanel.jsx'
 import PageTitle from '../common/PageTitle.jsx'
@@ -14,6 +14,7 @@ import {fetchPredictionSettings} from '../models/PredictionSettings.js'
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../models/AppSettings.js'
 import {getPreferenceSettings, getCoreRange} from '../models/GenomeData.js';
 import {SessionStorage, SEARCH_PAGE_KEY} from '../models/SessionStorage.js';
+
 
 
 class SearchPage extends React.Component {
@@ -167,14 +168,13 @@ class SearchPage extends React.Component {
                                 preferenceSettings={preferenceSettings}
                                 coreRange={coreRange}
                             />;
-        return <div>
-            <NavBar selected={SEARCH_NAV.path} />
-            <ThreePanelPane
-                topPanel={topPanel}
-                leftPanel={leftPanel}
-                rightPanel={rightPanel}
-            />
-            </div>
+        return <Page nav_path={SEARCH_NAV.path} >
+                <ThreePanelPane
+                    topPanel={topPanel}
+                    leftPanel={leftPanel}
+                    rightPanel={rightPanel}
+                />
+            </Page>;
     }
 
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import NavBar from '../common/NavBar.jsx';
+import Page from '../common/Page.jsx';
 import {DATA_SOURCES_NAV} from '../models/Navigation.js';
 import PageContent from '../common/PageContent.jsx';
 import DataSource from './DataSource.jsx';
@@ -44,8 +44,7 @@ class DataSourcesPage extends React.Component {
 
     render() {
         let {binding_predictions, preference_predictions, genelists, models, loading} = this.state;
-        return <div>
-            <NavBar selected={DATA_SOURCES_NAV.path}/>
+        return <Page nav_path={DATA_SOURCES_NAV.path} >
             <PageContent>
                 <DataSource title="Binding Predictions" content={binding_predictions} loading={loading}/>
                 <br />
@@ -55,7 +54,7 @@ class DataSourcesPage extends React.Component {
                 <br />
                 <DataSource title="Models" content={models} hasGroups={true} loading={loading}/>
             </PageContent>
-        </div>;
+        </Page>;
     }
 }
 

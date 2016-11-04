@@ -1,6 +1,6 @@
 import React from 'react';
 import {browserHistory} from 'react-router'
-import NavBar from '../common/NavBar.jsx'
+import Page from '../common/Page.jsx';
 import {PREDICTION_NAV} from '../models/Navigation.js'
 import ThreePanelPane from '../common/ThreePanelPane.jsx'
 import PageTitle from '../common/PageTitle.jsx'
@@ -238,14 +238,13 @@ class PredictionPage extends React.Component {
                                                  jobDates={this.state.jobDates}
                                                  coreRange={coreRange}
         />;
-        return <div>
-            <NavBar selected={PREDICTION_NAV.path}/>
+        return <Page nav_path={PREDICTION_NAV.path}>
             <ThreePanelPane
                 topPanel={topPanel}
                 leftPanel={leftPanel}
                 rightPanel={rightPanel}
             />
-        </div>
+        </Page>
     }
 
 }
