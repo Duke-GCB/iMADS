@@ -15,7 +15,7 @@ class AboutContent extends React.Component {
         return <div className="AboutContent_container"><div>
             <PageTitle>About</PageTitle>
             <p className="AboutContent_paragraph">
-                iMADS (integrative Modeling and Analysis of Differential Specificity) is a combined
+                iMADS (<u>i</u>ntegrative <u>M</u>odeling and <u>A</u>nalysis of <u>D</u>ifferential <u>S</u>pecificity) is a combined
                 computational-experimental strategy to identify and study the differences in DNA-binding specificity
                 between transcription factor (TF) family members, i.e. paralogous TFs.
             </p>
@@ -62,7 +62,7 @@ class AboutContent extends React.Component {
                     <li>Programming languages: python, R, JavaScript</li>
                     <li>Web framework: Flask</li>
                     <li>Technical documentation also available at <a href="https://github.com/Duke-GCB/iMADS/blob/master/README.md">
-                        https://github.com/Duke-GCB/iMADS/blob/master/README.md
+                        github.com/Duke-GCB/iMADS/blob/master/README.md
                         </a>
                     </li>
                 </ul>
@@ -99,7 +99,7 @@ class AboutContent extends React.Component {
                 <span className="AboutContent_group_label">CITATION</span>
                 <p  className="AboutContent_paragraph">“Integrative modeling of differential DNA-binding specificity among paralogous transcription factors”.
                     Ning Shen, Jingkang Zhao, Josh Schipper, Tristan Bepler, Dan Leehr, John Bradley, John Horton,
-                    Hilmar Lapp, Raluca Gordan. Submitted.</p>
+                    Hilmar Lapp, Raluca Gordan. <i>Submitted</i>.</p>
             </div>
             </div>
         </div>;
