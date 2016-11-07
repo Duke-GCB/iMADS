@@ -56,11 +56,12 @@ class AboutContent extends React.Component {
                 web application are described in the DATA SOURCES tab.
             </p>
             <div>
-                <span className="AboutContent_group_label">TECHNOLOGY</span>
+                <h5 className="AboutContent_group_label">TECHNOLOGY</h5>
                 <ul>
-                    <li>Database management system: PostgreSQL</li>
-                    <li>Programming languages: python, R, JavaScript</li>
-                    <li>Web framework: Flask</li>
+                    <li>Database management system: <a href="https://www.postgresql.org/">PostgreSQL 9.5</a></li>
+                    <li>Programming languages: <a href="https://www.python.org/">python 2.7.11</a>
+                        , <a href="https://www.r-project.org/">R 3.3.2</a>, <a href="http://babeljs.io">JavaScript es2015</a></li>
+                    <li>Web framework: <a href="http://flask.pocoo.org/">Flask 0.10.1</a></li>
                     <li>Technical documentation also available at <a href="https://github.com/Duke-GCB/iMADS/blob/master/README.md">
                         github.com/Duke-GCB/iMADS/blob/master/README.md
                         </a>
@@ -68,10 +69,10 @@ class AboutContent extends React.Component {
                 </ul>
             </div>
             <div>
-                <span className="AboutContent_group_label">SOURCE CODE</span>
+                <h5 className="AboutContent_group_label">SOURCE CODE</h5>
                 <ul>
                     <li>Website: <a href="https://github.com/Duke-GCB/iMADS">github.com/Duke-GCB/iMADS</a></li>
-                    <li>iMADS Worker: <a href="https://github.com/Duke-GCB/iMADS-worker">
+                    <li>Worker for prediction server: <a href="https://github.com/Duke-GCB/iMADS-worker">
                         github.com/Duke-GCB/iMADS-worker</a>
                     </li>
                     <li>Binding predictions for individual TFs: <a href="https://github.com/Duke-GCB/Predict-TF-Binding">
@@ -84,7 +85,7 @@ class AboutContent extends React.Component {
                 </ul>
             </div>
             <div>
-                <span className="AboutContent_group_label">CREDITS</span>
+                <h5 className="AboutContent_group_label">CREDITS</h5>
                 <ul>
                     <li>Concept, content, and scientific requirements: Raluca Gordan (Duke University)</li>
                     <li>Computational modeling: Ning Shen, Jingkang Zhao (Duke Unviersity)</li>
@@ -94,12 +95,12 @@ class AboutContent extends React.Component {
                 </ul>
             </div>
             <div>
-                <span className="AboutContent_group_label">CONTACT</span>
+                <h5 className="AboutContent_group_label">CONTACT</h5>
                 <p  className="AboutContent_paragraph">If you have any questions, want to provide feedback, or report any bugs,
                     please send us an email at <a href="mailto:imads@duke.edu">imads@duke.edu</a></p>
             </div>
             <div>
-                <span className="AboutContent_group_label">CITATION</span>
+                <h5 className="AboutContent_group_label">CITATION</h5>
                 <p  className="AboutContent_paragraph">“Integrative modeling of differential DNA-binding specificity among paralogous transcription factors”.
                     Ning Shen, Jingkang Zhao, Josh Schipper, Tristan Bepler, Dan Leehr, John Bradley, John Horton,
                     Hilmar Lapp, Raluca Gordan. <i>Submitted</i>.</p>
