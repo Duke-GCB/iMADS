@@ -1,4 +1,12 @@
 /** placeholder for AboutContent styling **/
-.AboutContent_source_code_label {
+.AboutContent_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.AboutContent_group_label {
     font-weight: bold;
+}
+.AboutContent_paragraph {
+    max-width: 700px;
 }
