@@ -70,7 +70,10 @@ class AboutContent extends React.Component {
             <div>
                 <span className="AboutContent_group_label">SOURCE CODE</span>
                 <ul>
-                    <li>Website: github.com/Duke-GCB/iMADS</li>
+                    <li>Website: <a href="https://github.com/Duke-GCB/iMADS">github.com/Duke-GCB/iMADS</a></li>
+                    <li>iMADS Worker: <a href="https://github.com/Duke-GCB/iMADS-worker">
+                        github.com/Duke-GCB/iMADS-worker</a>
+                    </li>
                     <li>Binding predictions for individual TFs: <a href="https://github.com/Duke-GCB/Predict-TF-Binding">
                             github.com/Duke-GCB/Predict-TF-Binding
                         </a>
