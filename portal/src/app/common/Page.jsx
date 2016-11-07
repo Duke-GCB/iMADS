@@ -15,10 +15,6 @@ export default class Page extends React.Component {
                 <NavBar selected={nav_path} />
                 {children}
             </div>
-            <div className="Page_footer">
-                <ContactEmail email="imads@duke.edu" />
-            </div>
-
         </div>;
     }
 }
