@@ -71,13 +71,11 @@ class AboutContent extends React.Component {
                 <span className="AboutContent_group_label">SOURCE CODE</span>
                 <ul>
                     <li>Website: github.com/Duke-GCB/iMADS</li>
-                    <li>Binding predictions for individual TFs:
-                        <a href="https://github.com/Duke-GCB/Predict-TF-Binding">
+                    <li>Binding predictions for individual TFs: <a href="https://github.com/Duke-GCB/Predict-TF-Binding">
                             github.com/Duke-GCB/Predict-TF-Binding
                         </a>
                     </li>
-                    <li>Preference predictions for TF1 vs. TF2:
-                        <a href="https://github.com/Duke-GCB/Predict-TF-Preference">
+                    <li>Preference predictions for TF1 vs. TF2: <a href="https://github.com/Duke-GCB/Predict-TF-Preference">
                             github.com/Duke-GCB/Predict-TF-Preference
                         </a></li>
                 </ul>
