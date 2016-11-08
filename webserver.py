@@ -2,6 +2,8 @@
 from __future__ import print_function
 
 import os
+import sys
+import logging
 import base64
 import psycopg2
 import psycopg2.extras
@@ -17,7 +19,7 @@ from pred.webserver.customjob import CustomJob, JobStatus
 from pred.webserver.customresult import CustomResultData
 from pred.webserver.errors import ClientException, ServerException, ErrorType
 
-
+logging.basicConfig(stream=sys.stderr)
 app = Flask(__name__)
 g_config = parse_config(CONFIG_FILENAME)
 g_dbconfig = g_config.dbconfig
@@ -444,5 +446,4 @@ def make_predictions_csv_response(predictions, args):
 
 
 if __name__ == '__main__':
-    app.debug = True
     app.run()
