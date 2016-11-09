@@ -15,12 +15,12 @@ COLOR_RGB[GREEN_COLOR_NAME]     = [0,   128,   0];
 COLOR_RGB[BLUE_COLOR_NAME]      = [0,     0, 255];
 
 // PREFERENCE_COLORS based on https://github.com/Duke-GCB/TrackHubGenerator/blob/master/cwl/bin/add_itemrgb_column.py
-export let PREFERENCE_GRAY = [190, 190, 190];
+let PREFERENCE_GRAY = [190, 190, 190];
 /**
  * Color constants for Red gradient
  * From Colorbrewer Red 9 http://colorbrewer2.org/?type=sequential&scheme=Reds&n=9
  */
-export let PREFERENCE_REDS = [
+let PREFERENCE_REDS = [
     [255, 245, 240],
     [254, 224, 210],
     [252, 187, 161],
@@ -33,25 +33,28 @@ export let PREFERENCE_REDS = [
 ];
 
 /*
- * Color constants for blue gradient
- * http://colorbrewer2.org/?type=sequential&scheme=Blues&n=9#type=sequential&scheme=Blues&n=9
- */
-export let PREFERENCE_BLUES = [
-    [247,251,255],
-    [222,235,247],
-    [198,219,239],
-    [158,202,225],
-    [107,174,214],
-    [66,146,198],
-    [33,113,181],
-    [8,81,156],
-    [8,48,107]];
+# Color constants for blue gradient
+# Converted to RGB from R Color names
+# plotclr2 = c("midnightblue","steelblue4","steelblue","steelblue3","steelblue2","steelblue1")
+# using chart at http://research.stowers-institute.org/efg/R/Color/Chart/ColorChart.pdf
+
+# midnightblue is the darkest, should be associated with the highest value,
+# and therefore be last.
+*/
+let PREFERENCE_BLUES = [
+    [99, 184, 255],   // steelblue1
+    [92, 172, 238],   // steelblue2
+    [79, 148, 205],   // steelblue3
+    [70, 130, 180],   // steelblue
+    [54, 100, 139],   // steelblue4
+    [25, 25, 112]    // midnightblue
+];
 
 /**
  * Color constants for green gradient
  * http://colorbrewer2.org/?type=sequential&scheme=Reds&n=9#type=sequential&scheme=Greens&n=9
  */
-export let PREFERENCE_GREENS = [
+let PREFERENCE_GREENS = [
     [247,252,245],
     [229,245,224],
     [199,233,192],
@@ -87,53 +90,21 @@ export default class ColorBlender {
         }
     }
 
-    /**
-     * Using this.value and the preferenceBin array determine which color slot we should show.
-     * @returns {number} integer 0 -> bins.length
-     */
-    getPreferenceSlot() {
-        let bins = this.getPreferenceBin();
-        let slot = 0; // if greater than all bins must be the last slot
-        let absValue = Math.abs(this.value);
-        for (let i = 0; i < bins.length; i++) {
-            let binValue = Math.abs(bins[i]);
-            if (binValue > absValue) {
-                break;
-            }
-            slot = i + 1;
-        }
-        return slot;
-    }
-
-    /**
-     * Return array of inner fenceposts used to determine which slot in color arrays we should use.
-     * If you have three colors ...-1, 1-10, 10-... it returns an array like so: [1, 10]
-     * Anything below the lowest number is assumed to be the first bin anything greater than the
-     * last fencepost is assumed to be the last bin.
-     * @returns array of inner fencepost cutoff values
-     */
-    getPreferenceBin() {
+    getScaledValue() {
         if (this.isNegative()) {
-            return this.predictionColor.preferenceBins.neg;
+            return ColorBlender.scaleValue(this.value, this.predictionColor.preferenceMin);
         } else {
-            return this.predictionColor.preferenceBins.pos;
+            return ColorBlender.scaleValue(this.value, this.predictionColor.preferenceMax);
         }
     }
 
-    /**
-     * Return array of r,g,b values for this.value.
-     * @param colorName determines which color array to use eg: 'red'
-     * @returns array of r g b
-     */
-    getPreferenceColorArray(colorName) {
-        let slot = this.getPreferenceSlot();
-        let colorArray = PREF_ARRAY_LOOKUP[colorName];
-        return colorArray[slot];
+    static scaleValue(value, limitValue) {
+        if (limitValue) {
+            return value / Math.abs(limitValue);
+        }
+        return value;
     }
 
-    /**
-     * Return CSS color string appropriate for this.value and color settings.
-     */
     getColor() {
         let colorName = this.determineColorName();
         if (this.isPreference) {
@@ -141,31 +112,30 @@ export default class ColorBlender {
         }
         let colorRGB = COLOR_RGB[colorName];
         let zeroColor = [255, 255, 255];
-        let colorValues = ColorBlender.interpolateRGB(zeroColor, colorRGB, this.value);
+        let colorValues = ColorBlender.interpolateRGB(zeroColor, colorRGB, this.getScaledValue());
         return this.getRGBString(colorValues);
     }
 
-    /**
-     * Returns an array of color values based on colorPreference.color1/2 and this.value being postitive or neg.
-     * @returns array of colors(array)
-     */
     getPreferenceArray() {
         let colorName = this.determineColorName();
         return PREF_ARRAY_LOOKUP[colorName];
     }
 
-    /**
-     * Returns CSS color "rgb(r,g,b)" for this.value.
-     * Looks up which array to use based on colorName.
-     * Determines which slot in the array to use based on preferenceBins.
-     * @param colorName name of the color array to use eg: 'red'
-     * @returns CSS color string
-     */
     getPreferenceColor(colorName) {
-        let value = this.value;
+        let value = this.getScaledValue();
         let colorRGB = PREFERENCE_GRAY;
         if (value > POS_FLOAT_CUTOOFF || value < NEG_FLOAT_CUTOOFF) {
-            colorRGB = this.getPreferenceColorArray(colorName);
+            let gradientArray = this.getPreferenceArray();
+            let slots = ColorBlender.determineSlots(value, gradientArray.length);
+            colorRGB = gradientArray[slots[0]];
+            if (slots[0] != slots[1]) {
+                let zeroColor = gradientArray[slots[0]];
+                let oneColor = gradientArray[slots[1]];
+                //need to scale value for the two slots
+                let slotScaledValue = ColorBlender.scaleValueForSlot(slots[0], gradientArray.length, value);
+                let blendedColor = ColorBlender.interpolateRGB(zeroColor, oneColor, slotScaledValue);
+                return this.getRGBString(blendedColor);
+            }
         }
         return this.getRGBString({
             'r': colorRGB[0],
