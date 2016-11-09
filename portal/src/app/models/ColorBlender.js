@@ -16,8 +16,6 @@ COLOR_RGB[BLUE_COLOR_NAME]      = [0,     0, 255];
 
 // PREFERENCE_COLORS based on https://github.com/Duke-GCB/TrackHubGenerator/blob/master/cwl/bin/add_itemrgb_column.py
 export let PREFERENCE_GRAY = [190, 190, 190];
-// The preferred length of a preference array.
-export let PREFERRED_PREFERENCE_ARRAY_LENGTH = 9;
 /**
  * Color constants for Red gradient
  * From Colorbrewer Red 9 http://colorbrewer2.org/?type=sequential&scheme=Reds&n=9
@@ -39,13 +37,15 @@ export let PREFERENCE_REDS = [
  * http://colorbrewer2.org/?type=sequential&scheme=Blues&n=9#type=sequential&scheme=Blues&n=9
  */
 export let PREFERENCE_BLUES = [
-    [99, 184, 255],   // steelblue1
-    [92, 172, 238],   // steelblue2
-    [79, 148, 205],   // steelblue3
-    [70, 130, 180],   // steelblue
-    [54, 100, 139],   // steelblue4
-    [25, 25, 112]    // midnightblue
-];
+    [247,251,255],
+    [222,235,247],
+    [198,219,239],
+    [158,202,225],
+    [107,174,214],
+    [66,146,198],
+    [33,113,181],
+    [8,81,156],
+    [8,48,107]];
 
 /**
  * Color constants for green gradient
@@ -128,21 +128,7 @@ export default class ColorBlender {
     getPreferenceColorArray(colorName) {
         let slot = this.getPreferenceSlot();
         let colorArray = PREF_ARRAY_LOOKUP[colorName];
-        if (colorArray.length != PREFERRED_PREFERENCE_ARRAY_LENGTH) {
-            slot = this.scalePreferenceSlot(slot, colorArray.length);
-        }
         return colorArray[slot];
-    }
-
-    /**
-     * Return array of r,g,b values for this.value.
-     * @param colorName determines which color array to use eg: 'red'
-     * @returns array of r g b
-     */
-    scalePreferenceSlot(slot, arrayLength) {
-        let scaleFactor = parseFloat(arrayLength) / parseFloat(PREFERRED_PREFERENCE_ARRAY_LENGTH);
-        let scaledSlot = slot * scaleFactor;
-        return Math.round(scaledSlot);
     }
 
     /**

@@ -167,16 +167,15 @@ describe('ColorBlender', function () {
             expectedColor = rgbFromArray(PREFERENCE_REDS[3]);
             assert.equal(expectedColor, new ColorBlender(11.0, predictionColor, true).getColor());
 
-            // blues have only 5 items in the color array so slot index will be scaled by PREFERRED_PREFERENCE_ARRAY_LENGTH
             expectedColor = rgbFromArray(PREFERENCE_BLUES[0]);
             assert.equal(expectedColor, new ColorBlender(-0.1, predictionColor, true).getColor());
             expectedColor = rgbFromArray(PREFERENCE_BLUES[1]);
             assert.equal(expectedColor, new ColorBlender(-2.1, predictionColor, true).getColor());
-            expectedColor = rgbFromArray(PREFERENCE_BLUES[1]);
+            expectedColor = rgbFromArray(PREFERENCE_BLUES[2]);
             assert.equal(expectedColor, new ColorBlender(-6.0, predictionColor, true).getColor());
-            expectedColor = rgbFromArray(PREFERENCE_BLUES[2]);
+            expectedColor = rgbFromArray(PREFERENCE_BLUES[3]);
             assert.equal(expectedColor, new ColorBlender(-20.0, predictionColor, true).getColor());
-            expectedColor = rgbFromArray(PREFERENCE_BLUES[2]);
+            expectedColor = rgbFromArray(PREFERENCE_BLUES[3]);
             assert.equal(expectedColor, new ColorBlender(-40.0, predictionColor, true).getColor());
         });
     });
