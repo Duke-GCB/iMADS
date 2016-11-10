@@ -80,9 +80,9 @@ def filter_gene_list(gene_list, model_name, upstream, downstream):
     return QueryPart(beginning_sql + """model_name = %s
 and
 case strand when '+' then
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
+  int4range(gene_begin - %s, gene_begin + %s) && int4range(start_range, end_range)
 else
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
+  int4range(gene_begin - %s, gene_begin + %s) && int4range(start_range, end_range)
 end""", params)
 
 
