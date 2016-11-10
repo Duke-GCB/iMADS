@@ -43,43 +43,87 @@ SORT_MAX_GUESS:
   'Runx1_0010_vs_Runx2_0011' : 16
 
 PREF_MIN_MAX:
-- genome: hg38
+- genome: hg19
   name: E2f1_0007_vs_E2f3_0008
   pref_min: -16.98
   pref_max: 9.59
-- genome: hg38
+- genome: hg19
   name: E2f1_0007_vs_E2f4_0009
   pref_min: -11.44
   pref_max: 9.88
-- genome: hg38
+- genome: hg19
+  name: E2f3_0008_vs_E2f4_0009
+  pref_min: -8.05
+  pref_max: 8.33
+- genome: hg19
   name: Elk1_0004_vs_Ets1_0005
   pref_min: -17.24
   pref_max: 25.3
-- genome: hg38
+- genome: hg19
+  name: Elk1_0004_vs_Gabpa_0006
+  pref_min: -13.29
+  pref_max: 15.66
+- genome: hg19
+  name: Ets1_0005_vs_Gabpa_0006
+  pref_min: -19.33
+  pref_max: 15.85
+- genome: hg19
+  name: Mad1_0002_vs_Max_0003
+  pref_min: -7.43
+  pref_max: 6.28
+- genome: hg19
   name: Mad1_0002_vs_c-Myc_0001
   pref_min: -12.14
   pref_max: 6.85
-- genome: hg38
+- genome: hg19
+  name: Max_0003_vs_c-Myc_0001
+  pref_min: -8.24
+  pref_max: 8.59
+- genome: hg19
   name: Runx1_0010_vs_Runx2_0011
   pref_min: -3.6
   pref_max: 4.36
-- genome: hg19
-  name: E2f1_0007_vs_E2f3_0008
-  pref_min: -16.98
-  pref_max: 9.59
-- genome: hg19
-  name: E2f1_0007_vs_E2f4_0009
-  pref_min: -11.44
-  pref_max: 9.88
-- genome: hg19
-  name: Elk1_0004_vs_Ets1_0005
-  pref_min: -17.24
-  pref_max: 25.3
-- genome: hg19
+- genome: hg38
   name: Mad1_0002_vs_c-Myc_0001
   pref_min: -12.14
   pref_max: 6.85
-- genome: hg19
+- genome: hg38
+  name: E2f1_0007_vs_E2f3_0008
+  pref_min: -16.98
+  pref_max: 9.59
+- genome: hg38
+  name: E2f1_0007_vs_E2f4_0009
+  pref_min: -11.44
+  pref_max: 9.88
+- genome: hg38
+  name: E2f3_0008_vs_E2f4_0009
+  pref_min: -8.05
+  pref_max: 8.33
+- genome: hg38
+  name: Elk1_0004_vs_Ets1_0005
+  pref_min: -17.24
+  pref_max: 25.3
+- genome: hg38
+  name: Elk1_0004_vs_Gabpa_0006
+  pref_min: -13.29
+  pref_max: 15.66
+- genome: hg38
+  name: Ets1_0005_vs_Gabpa_0006
+  pref_min: -19.33
+  pref_max: 15.85
+- genome: hg38
+  name: Mad1_0002_vs_Max_0003
+  pref_min: -7.43
+  pref_max: 6.28
+- genome: hg38
+  name: Mad1_0002_vs_c-Myc_0001
+  pref_min: -12.14
+  pref_max: 6.85
+- genome: hg38
+  name: Max_0003_vs_c-Myc_0001
+  pref_min: -8.24
+  pref_max: 8.59
+- genome: hg38
   name: Runx1_0010_vs_Runx2_0011
   pref_min: -3.6
   pref_max: 4.36

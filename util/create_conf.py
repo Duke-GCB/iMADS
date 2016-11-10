@@ -44,10 +44,12 @@ MODEL_FAMILY_ORDER = yaml_config['MODEL_FAMILY_ORDER']
 PREF_MIN_MAX = {}
 for item in yaml_config['PREF_MIN_MAX']:
     genome = item['genome']
-    name = re.sub('_\d\d\d\d', '', item['name'])
+    name = item['name'] #re.sub('_\d\d\d\d', '', item['name'])
     pref_min = item['pref_min']
     pref_max = item['pref_max']
     PREF_MIN_MAX[(genome, name)] = (pref_min, pref_max)
+
+print(PREF_MIN_MAX)
 
 def create_config_file(trackhub_data, output_filename):
     """
@@ -66,6 +68,7 @@ def create_config_file(trackhub_data, output_filename):
         for track, url, type, tracks_yaml in trackhub_data.get_track_data(genome, track_filename):
             sort_max_guess = SORT_MAX_GUESS.get(track, SORT_MAX_GUESS_DEFAULT)
             pref_min, pref_max = PREF_MIN_MAX.get((genome, track), ('',''))
+            print(pref_min, pref_max, genome, track)
             prediction_data = {
                 'idx': pred_idx,
                 'name': track,
