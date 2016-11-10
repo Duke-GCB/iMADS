@@ -1,6 +1,9 @@
 from pred.queries.querybuilder import QueryPart
 
 
+RANGE_OPERATOR = '@>' # contains range - excludes predictions not completely inside gene TSS range
+
+
 def _query_part(sql):
     return QueryPart(sql, [])
 
@@ -26,11 +29,11 @@ max(upper(custom_range_list.range)) as range_end
 from custom_range_list
 left outer join prediction
 on prediction.chrom = custom_range_list.chrom
-and custom_range_list.range && prediction.range
+and custom_range_list.range {} prediction.range
 and model_name = %s
 where
 custom_range_list.id = %s
-group by seq""", [model_name, list_id])
+group by seq""".format(RANGE_OPERATOR), [model_name, list_id])
 
 
 def select_prediction_values(table_name="gene_prediction", first_field="common_name"):
@@ -80,10 +83,10 @@ def filter_gene_list(gene_list, model_name, upstream, downstream):
     return QueryPart(beginning_sql + """model_name = %s
 and
 case strand when '+' then
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
+  int4range(gene_begin - %s, gene_begin + %s) {} int4range(start_range, end_range)
 else
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
-end""", params)
+  int4range(gene_begin - %s, gene_begin + %s) {} int4range(start_range, end_range)
+end""".format(RANGE_OPERATOR, RANGE_OPERATOR), params)
 
 
 def items_not_in_gene_list(list_id, gene_list_filter, custom_gene_name_type):

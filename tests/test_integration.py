@@ -215,7 +215,6 @@ class TestWithPostgres(unittest.TestCase):
         self.assertEqual(len(values), 3)
         pred_value_set = set([v['value'] for v in values])
         self.assertIn(0.4, pred_value_set)
-        self.assertIn(0.3, pred_value_set)
         self.assertIn(0.1, pred_value_set)
 
     def test_prediction_max_sort_query(self):
@@ -238,7 +237,6 @@ class TestWithPostgres(unittest.TestCase):
         self.assertEqual(len(values), 3)
         pred_value_set = set([v['value'] for v in values])
         self.assertIn(0.4, pred_value_set)
-        self.assertIn(0.3, pred_value_set)
         self.assertIn(0.1, pred_value_set)
 
     def test_custom_gene_list_no_results(self):
@@ -315,7 +313,7 @@ class TestWithPostgres(unittest.TestCase):
 
     def test_custom_range_list(self):
         db = create_db_connection(TestWithPostgres.config.dbconfig)
-        custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "chr1 11873 11883")
+        custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "chr1 11873 11895")
         params = {
             SearchArgs.GENE_LIST: CUSTOM_RANGES_LIST,
             SearchArgs.CUSTOM_LIST_DATA: custom_list_key,
@@ -348,7 +346,7 @@ class TestWithPostgres(unittest.TestCase):
 
     def test_custom_range_list_no_chr(self):
         db = create_db_connection(TestWithPostgres.config.dbconfig)
-        custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "1 11873 11883")
+        custom_list_key = save_custom_file(db, 'john', RANGE_TYPE, "1 11873 11895")
         params = {
             SearchArgs.GENE_LIST: CUSTOM_RANGES_LIST,
             SearchArgs.CUSTOM_LIST_DATA: custom_list_key,

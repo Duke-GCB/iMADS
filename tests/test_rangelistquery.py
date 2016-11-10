@@ -18,7 +18,7 @@ max(upper(custom_range_list.range)) as range_end
 from custom_range_list
 left outer join prediction
 on prediction.chrom = custom_range_list.chrom
-and custom_range_list.range && prediction.range
+and custom_range_list.range @> prediction.range
 and model_name = %s
 where
 custom_range_list.id = %s
@@ -45,7 +45,7 @@ max(upper(custom_range_list.range)) as range_end
 from custom_range_list
 left outer join prediction
 on prediction.chrom = custom_range_list.chrom
-and custom_range_list.range && prediction.range
+and custom_range_list.range @> prediction.range
 and model_name = %s
 where
 custom_range_list.id = %s

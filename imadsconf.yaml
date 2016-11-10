@@ -19,6 +19,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: c-Myc_0001
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.6
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0001_c-Myc.bb
@@ -27,6 +29,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: Mad1_0002
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.6
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0002_Mad1.bb
@@ -35,6 +39,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: Max_0003
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.6
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0003_Max.bb
@@ -43,24 +49,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: Mad1_0002_vs_c-Myc_0001
-    preference_bins:
-      neg:
-      - 2.92
-      - 3.27
-      - 3.64
-      - 3.84
-      - 3.91
-      - 4.64
-      - 4.66
-      pos:
-      - 2.73
-      - 2.89
-      - 3.05
-      - 3.23
-      - 3.39
-      - 3.58
-      - 3.84
-      - 4.22
+    preference_max: 6.85
+    preference_min: -12.14
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_Mad1_0002_vs_c-Myc_0001.bb
@@ -69,25 +59,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: Mad1_0002_vs_Max_0003
-    preference_bins:
-      neg:
-      - 2.77
-      - 2.98
-      - 3.22
-      - 3.54
-      - 4.37
-      - 5.45
-      - 5.71
-      - 6.07
-      pos:
-      - 2.64
-      - 2.74
-      - 2.86
-      - 3.0
-      - 3.19
-      - 3.3
-      - 3.46
-      - 3.63
+    preference_max: 6.28
+    preference_min: -7.43
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_Mad1_0002_vs_Max_0003.bb
@@ -96,25 +69,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: Max_0003_vs_c-Myc_0001
-    preference_bins:
-      neg:
-      - 2.68
-      - 2.79
-      - 2.91
-      - 3.05
-      - 3.23
-      - 3.42
-      - 3.69
-      - 4.13
-      pos:
-      - 2.73
-      - 2.88
-      - 3.01
-      - 3.18
-      - 3.39
-      - 3.63
-      - 3.95
-      - 4.43
+    preference_max: 8.59
+    preference_min: -8.24
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_Max_0003_vs_c-Myc_0001.bb
@@ -123,6 +79,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Elk1_0004
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.8
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0004_Elk1.bb
@@ -131,6 +89,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Ets1_0005
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.8
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0005_Ets1.bb
@@ -139,6 +99,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Gabpa_0006
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.6
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0006_Gabpa.bb
@@ -147,25 +109,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Elk1_0004_vs_Ets1_0005
-    preference_bins:
-      neg:
-      - 2.92
-      - 3.29
-      - 3.7
-      - 4.15
-      - 4.65
-      - 5.25
-      - 6.05
-      - 7.33
-      pos:
-      - 3.91
-      - 5.19
-      - 6.46
-      - 7.79
-      - 9.21
-      - 10.57
-      - 11.89
-      - 13.54
+    preference_max: 25.3
+    preference_min: -17.24
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_Elk1_0004_vs_Ets1_0005.bb
@@ -174,25 +119,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Elk1_0004_vs_Gabpa_0006
-    preference_bins:
-      neg:
-      - 2.9
-      - 3.22
-      - 3.57
-      - 3.93
-      - 4.34
-      - 4.8
-      - 5.43
-      - 6.41
-      pos:
-      - 3.08
-      - 3.6
-      - 4.11
-      - 4.67
-      - 5.24
-      - 5.73
-      - 6.35
-      - 7.1
+    preference_max: 15.66
+    preference_min: -13.29
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_Elk1_0004_vs_Gabpa_0006.bb
@@ -201,25 +129,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Ets1_0005_vs_Gabpa_0006
-    preference_bins:
-      neg:
-      - 2.96
-      - 3.33
-      - 3.73
-      - 4.13
-      - 4.59
-      - 5.11
-      - 5.77
-      - 6.68
-      pos:
-      - 3.12
-      - 3.71
-      - 4.38
-      - 5.15
-      - 6.06
-      - 7.12
-      - 8.36
-      - 9.87
+    preference_max: 15.85
+    preference_min: -19.33
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_Ets1_0005_vs_Gabpa_0006.bb
@@ -228,6 +139,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f1_0007
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.6
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0007_E2f1.bb
@@ -236,6 +149,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f3_0008
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.75
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0008_E2f3.bb
@@ -244,6 +159,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f4_0009
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.65
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0009_E2f4.bb
@@ -252,25 +169,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f1_0007_vs_E2f4_0009
-    preference_bins:
-      neg:
-      - 2.75
-      - 3.02
-      - 3.31
-      - 3.64
-      - 4.08
-      - 4.68
-      - 5.5
-      - 6.14
-      pos:
-      - 2.86
-      - 3.12
-      - 3.41
-      - 3.67
-      - 3.95
-      - 4.3
-      - 4.73
-      - 5.39
+    preference_max: 9.88
+    preference_min: -11.44
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_E2f1_0007_vs_E2f4_0009.bb
@@ -279,25 +179,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f1_0007_vs_E2f3_0008
-    preference_bins:
-      neg:
-      - 2.94
-      - 3.41
-      - 3.84
-      - 4.47
-      - 4.92
-      - 5.58
-      - 6.48
-      - 7.57
-      pos:
-      - 2.77
-      - 2.95
-      - 3.14
-      - 3.38
-      - 3.66
-      - 3.92
-      - 4.29
-      - 4.85
+    preference_max: 9.59
+    preference_min: -16.98
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_E2f1_0007_vs_E2f3_0008.bb
@@ -306,25 +189,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f3_0008_vs_E2f4_0009
-    preference_bins:
-      neg:
-      - 2.71
-      - 2.85
-      - 3.04
-      - 3.22
-      - 3.4
-      - 3.66
-      - 4.08
-      - 4.63
-      pos:
-      - 2.71
-      - 2.89
-      - 3.07
-      - 3.29
-      - 3.58
-      - 3.91
-      - 4.36
-      - 5.03
+    preference_max: 8.33
+    preference_min: -8.05
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_E2f3_0008_vs_E2f4_0009.bb
@@ -333,6 +199,8 @@ genome_data:
     family: RUNX
     fix_script: bigBedToBed
     name: Runx1_0010
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.7
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0010_Runx1.bb
@@ -341,6 +209,8 @@ genome_data:
     family: RUNX
     fix_script: bigBedToBed
     name: Runx2_0011
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.8
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg19/hg19_0011_Runx2.bb
@@ -349,24 +219,8 @@ genome_data:
     family: RUNX
     fix_script: bigBedToBed
     name: Runx1_0010_vs_Runx2_0011
-    preference_bins:
-      neg:
-      - 2.63
-      - 2.7
-      - 2.79
-      - 2.84
-      - 2.9
-      - 3.25
-      - 3.425
-      pos:
-      - 2.6
-      - 2.63
-      - 2.66
-      - 2.7
-      - 2.74
-      - 2.8
-      - 2.84
-      - 2.97
+    preference_max: 4.36
+    preference_min: -3.6
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg19/hg19_Runx1_0010_vs_Runx2_0011.bb
@@ -403,6 +257,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: c-Myc_0001
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.6
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0001_c-Myc.bb
@@ -411,6 +267,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: Mad1_0002
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.6
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0002_Mad1.bb
@@ -419,6 +277,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: Max_0003
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.6
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0003_Max.bb
@@ -427,24 +287,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: Mad1_0002_vs_c-Myc_0001
-    preference_bins:
-      neg:
-      - 2.92
-      - 3.27
-      - 3.64
-      - 3.84
-      - 3.91
-      - 4.64
-      - 4.66
-      pos:
-      - 2.73
-      - 2.89
-      - 3.05
-      - 3.23
-      - 3.39
-      - 3.58
-      - 3.85
-      - 4.22
+    preference_max: 6.85
+    preference_min: -12.14
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/hg38_Mad1_0002_vs_c-Myc_0001.bb
@@ -453,25 +297,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: Mad1_0002_vs_Max_0003
-    preference_bins:
-      neg:
-      - 2.77
-      - 2.98
-      - 3.22
-      - 3.53
-      - 4.37
-      - 5.45
-      - 5.71
-      - 6.07
-      pos:
-      - 2.64
-      - 2.74
-      - 2.86
-      - 3.01
-      - 3.21
-      - 3.32
-      - 3.46
-      - 3.63
+    preference_max: 6.28
+    preference_min: -7.43
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/hg38_Mad1_0002_vs_Max_0003.bb
@@ -480,25 +307,8 @@ genome_data:
     family: bHLH
     fix_script: bigBedToBed
     name: Max_0003_vs_c-Myc_0001
-    preference_bins:
-      neg:
-      - 2.68
-      - 2.79
-      - 2.91
-      - 3.06
-      - 3.23
-      - 3.42
-      - 3.69
-      - 4.14
-      pos:
-      - 2.73
-      - 2.88
-      - 3.01
-      - 3.19
-      - 3.39
-      - 3.63
-      - 3.95
-      - 4.43
+    preference_max: 8.59
+    preference_min: -8.24
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/hg38_Max_0003_vs_c-Myc_0001.bb
@@ -507,6 +317,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Elk1_0004
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.8
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0004_Elk1.bb
@@ -515,6 +327,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Ets1_0005
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.8
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0005_Ets1.bb
@@ -523,6 +337,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Gabpa_0006
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.6
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0006_Gabpa.bb
@@ -531,25 +347,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Elk1_0004_vs_Ets1_0005
-    preference_bins:
-      neg:
-      - 2.92
-      - 3.29
-      - 3.7
-      - 4.16
-      - 4.65
-      - 5.25
-      - 6.01
-      - 7.24
-      pos:
-      - 3.9
-      - 5.18
-      - 6.44
-      - 7.76
-      - 9.17
-      - 10.53
-      - 11.86
-      - 13.51
+    preference_max: 25.3
+    preference_min: -17.24
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/hg38_Elk1_0004_vs_Ets1_0005.bb
@@ -558,25 +357,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Elk1_0004_vs_Gabpa_0006
-    preference_bins:
-      neg:
-      - 2.91
-      - 3.26
-      - 3.62
-      - 3.98
-      - 4.39
-      - 4.87
-      - 5.58
-      - 6.51
-      pos:
-      - 3.08
-      - 3.59
-      - 4.1
-      - 4.67
-      - 5.23
-      - 5.72
-      - 6.35
-      - 7.09
+    preference_max: 15.66
+    preference_min: -13.29
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/hg38_Elk1_0004_vs_Gabpa_0006.bb
@@ -585,25 +367,8 @@ genome_data:
     family: ETS
     fix_script: bigBedToBed
     name: Ets1_0005_vs_Gabpa_0006
-    preference_bins:
-      neg:
-      - 2.97
-      - 3.35
-      - 3.76
-      - 4.18
-      - 4.62
-      - 5.13
-      - 5.77
-      - 6.61
-      pos:
-      - 3.12
-      - 3.71
-      - 4.38
-      - 5.18
-      - 6.1
-      - 7.18
-      - 8.4
-      - 9.92
+    preference_max: 15.85
+    preference_min: -19.33
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/hg38_Ets1_0005_vs_Gabpa_0006.bb
@@ -612,6 +377,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f1_0007
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.6
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0007_E2f1.bb
@@ -620,6 +387,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f3_0008
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.75
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0008_E2f3.bb
@@ -628,6 +397,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f4_0009
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.65
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0009_E2f4.bb
@@ -636,25 +407,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f1_0007_vs_E2f4_0009
-    preference_bins:
-      neg:
-      - 2.75
-      - 3.02
-      - 3.31
-      - 3.64
-      - 4.08
-      - 4.67
-      - 5.49
-      - 6.14
-      pos:
-      - 2.87
-      - 3.14
-      - 3.44
-      - 3.67
-      - 3.95
-      - 4.31
-      - 4.76
-      - 5.39
+    preference_max: 9.88
+    preference_min: -11.44
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/hg38_E2f1_0007_vs_E2f4_0009.bb
@@ -663,25 +417,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f1_0007_vs_E2f3_0008
-    preference_bins:
-      neg:
-      - 2.94
-      - 3.42
-      - 3.85
-      - 4.5
-      - 4.92
-      - 5.64
-      - 6.49
-      - 7.58
-      pos:
-      - 2.76
-      - 2.95
-      - 3.13
-      - 3.36
-      - 3.65
-      - 3.92
-      - 4.29
-      - 4.85
+    preference_max: 9.59
+    preference_min: -16.98
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/hg38_E2f1_0007_vs_E2f3_0008.bb
@@ -690,25 +427,8 @@ genome_data:
     family: E2F
     fix_script: bigBedToBed
     name: E2f3_0008_vs_E2f4_0009
-    preference_bins:
-      neg:
-      - 2.71
-      - 2.85
-      - 3.03
-      - 3.21
-      - 3.39
-      - 3.65
-      - 4.07
-      - 4.63
-      pos:
-      - 2.71
-      - 2.87
-      - 3.04
-      - 3.26
-      - 3.54
-      - 3.87
-      - 4.3
-      - 4.98
+    preference_max: 8.33
+    preference_min: -8.05
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/hg38_E2f3_0008_vs_E2f4_0009.bb
@@ -717,6 +437,8 @@ genome_data:
     family: RUNX
     fix_script: bigBedToBed
     name: Runx1_0010
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.7
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0010_Runx1.bb
@@ -725,6 +447,8 @@ genome_data:
     family: RUNX
     fix_script: bigBedToBed
     name: Runx2_0011
+    preference_max: ''
+    preference_min: ''
     sort_max_guess: 0.8
     type: PREDICTION
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hg38/hg38_0011_Runx2.bb
@@ -733,24 +457,8 @@ genome_data:
     family: RUNX
     fix_script: bigBedToBed
     name: Runx1_0010_vs_Runx2_0011
-    preference_bins:
-      neg:
-      - 2.63
-      - 2.7
-      - 2.79
-      - 2.84
-      - 2.9
-      - 3.25
-      - 3.425
-      pos:
-      - 2.6
-      - 2.63
-      - 2.66
-      - 2.7
-      - 2.74
-      - 2.8
-      - 2.84
-      - 2.97
+    preference_max: 4.36
+    preference_min: -3.6
     sort_max_guess: 16
     type: PREFERENCE
     url: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences//hg38/hg38_Runx1_0010_vs_Runx2_0011.bb

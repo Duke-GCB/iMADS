@@ -154,12 +154,13 @@ class GenomeData(object):
             fix_script = prediction_data['fix_script']
             sort_max_guess = prediction_data['sort_max_guess']
             type = prediction_data.get('type', 'PREDICTION')
-            preference_bins = prediction_data.get('preference_bins', None)
+            preference_min = prediction_data.get('preference_min', None)
+            preference_max = prediction_data.get('preference_max', None)
             core_offset = prediction_data.get('core_offset', None)
             core_length = prediction_data.get('core_length', None)
             family = prediction_data.get('family', None)
             prediction = PredictionSettings(name, url, self.genomename, fix_script, sort_max_guess, type,
-                                            preference_bins, core_offset, core_length, family)
+                                            preference_min, preference_max, core_offset, core_length, family)
             self.prediction_lists.append(prediction)
 
     def get_model_types_str(self):
@@ -178,7 +179,7 @@ class GeneInfoSettings(object):
 
 
 class PredictionSettings(object):
-    def __init__(self, name, url, genome, fix_script, sort_max_guess, data_type, preference_bins,
+    def __init__(self, name, url, genome, fix_script, sort_max_guess, data_type, preference_min, preference_max,
                  core_offset, core_length, family):
         self.name = name
         self.url = url
@@ -186,7 +187,8 @@ class PredictionSettings(object):
         self.fix_script = fix_script
         self.sort_max_guess = sort_max_guess
         self.data_type = data_type
-        self.preference_bins = preference_bins
+        self.preference_min = preference_min
+        self.preference_max = preference_max
         self.core_offset = core_offset
         self.core_length = core_length
         self.family = family
@@ -199,7 +201,8 @@ class PredictionSettings(object):
         return {
             'name': self.name,
             'data_type': self.data_type,
-            'preference_bins': self.preference_bins,
+            'preference_min': self.preference_min,
+            'preference_max': self.preference_max,
             'core_offset': self.core_offset,
             'core_length': self.core_length,
             'family': self.family

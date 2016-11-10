@@ -10,9 +10,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 else
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 end{}
 group by gene_id
 order by max(abs(value)) desc{}
@@ -36,9 +36,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 else
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 end
 and gene_id in (select gene_id from max_prediction_names)
 group by gene_id
@@ -58,9 +58,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 else
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 end
 group by gene_id
 order by max(abs(value)) desc
@@ -85,9 +85,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 else
-  (gene_begin + %s) >= start_range and end_range >= (gene_begin - %s)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 end
 and gene_id in (select gene_id from max_prediction_names)
 group by gene_id
