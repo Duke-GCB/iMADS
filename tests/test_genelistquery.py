@@ -22,9 +22,9 @@ and{}
 model_name = %s
 and
 case strand when '+' then
-  int4range(gene_begin - %s, gene_begin + %s) && int4range(start_range, end_range)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 else
-  int4range(gene_begin - %s, gene_begin + %s) && int4range(start_range, end_range)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 end
 where
 id = %s
@@ -55,9 +55,9 @@ and
 model_name = %s
 and
 case strand when '+' then
-  int4range(gene_begin - %s, gene_begin + %s) && int4range(start_range, end_range)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 else
-  int4range(gene_begin - %s, gene_begin + %s) && int4range(start_range, end_range)
+  int4range(gene_begin - %s, gene_begin + %s) @> int4range(start_range, end_range)
 end
 where
 id = %s
