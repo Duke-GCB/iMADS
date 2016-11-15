@@ -8,6 +8,7 @@ import LoadSampleLink from '../common/LoadSampleLink.jsx'
 import FileUpload from '../models/FileUpload.js';
 import {CustomSequence, CustomSequenceList} from '../models/CustomSequence.js';
 import {SEQUENCE_SAMPLE} from '../models/SampleData.js'
+import ErrorMessage from '../common/ErrorMessage.jsx';
 require('./UploadSequenceDialog.css');
 
 const TITLE = "Custom DNA Sequence";
@@ -71,6 +72,12 @@ class UploadSequenceDialog extends React.Component {
     };
 
     onClickUpload = () => {
+        if (FileUpload.isTooBigFileOrText(this.state.file, this.state.textValue)) {
+            this.setState({
+                uploadErrorMessage: FileUpload.tooBigErrorMessage()
+            });
+            return;
+        }
         this.setState({
             loading: true
         });
@@ -185,7 +192,7 @@ class UploadSequenceDialog extends React.Component {
                                   onChangeFile={this.onChangeFile}
                                   disabled={this.state.loading}
                 />
-                <span className="UploadSequenceDialog_uploadErrorMessage">{this.state.uploadErrorMessage}</span>
+                <ErrorMessage message={this.state.uploadErrorMessage} />
             </div>
 
             <LoadingButton label="Upload"

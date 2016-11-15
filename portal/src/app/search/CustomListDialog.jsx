@@ -6,6 +6,8 @@ import FileUpload from '../models/FileUpload.js';
 import CustomFile from '../models/CustomFile.js';
 import GeneSearchType from './GeneSearchType.jsx'
 import LoadSampleLink from '../common/LoadSampleLink.jsx'
+import SingleFileUpload from '../common/SingleFileUpload.jsx'
+import ErrorMessage from '../common/ErrorMessage.jsx';
 import {GENE_LIST_SAMPLE, RANGE_LIST_SAMPLE} from '../models/SampleData.js'
 require('./CustomListDialog.css');
 
@@ -24,12 +26,13 @@ class CustomListDialog extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            text: '',
+            textValue: '',
             loading: false,
             fileValue: '',
             file: undefined,
             geneList: 'All',
             geneSearchType: 'gene_name',
+            uploadErrorMessage: ''
         };
     }
 
@@ -41,36 +44,35 @@ class CustomListDialog extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.isOpen) {
-            let text = this.state.text;
+            let textValue = this.state.textValue;
             let geneList = this.state.geneList;
             if (this.state.type !== nextProps.type) {
-                text = '';
+                textValue = '';
                 geneList = 'All';
             }
             this.setState({
-                text: text,
+                textValue: textValue,
                 file: undefined,
                 fileValue: '',
                 geneList: geneList,
                 loading: false,
                 type: nextProps.type,
+                uploadErrorMessage: ''
             });
         }
     }
 
-    changeUploadFile = (evt) => {
-        let customListDialog = this;
-        let file = evt.target.files[0];
+    changeUploadFile = (file, fileValue) => {
         if (file) {
             this.setState({
-                text: "",
+                textValue: "",
                 file: file,
-                fileValue: evt.target.value,
+                fileValue: fileValue,
                 loading: false,
             });
         } else {
             customListDialog.setState({
-                text: '',
+                textValue: '',
                 fileValue: '',
                 file: file,
             });
@@ -83,10 +85,11 @@ class CustomListDialog extends React.Component {
 
     setText = (value) => {
         this.setState({
-            text: value,
+            textValue: value,
             loading: false,
             file: undefined,
             fileValue: '',
+            uploadErrorMessage: ''
         });
     };
 
@@ -98,14 +101,20 @@ class CustomListDialog extends React.Component {
     };
 
     onClickSearch = () => {
+        if (FileUpload.isTooBigFileOrText(this.state.file, this.state.textValue)) {
+            this.setState({
+                uploadErrorMessage: FileUpload.tooBigErrorMessage()
+            });
+            return;
+        }
         if (this.state.file) {
             this.setState({
                 loading: true,
-            })
+            });
             let fileUpload = new FileUpload(this.state.file);
             fileUpload.fetchAllFile(this.closeReturningResult);
         } else {
-            this.closeReturningResult(this.state.text);
+            this.closeReturningResult(this.state.textValue);
         }
     };
 
@@ -113,10 +122,13 @@ class CustomListDialog extends React.Component {
         this.props.onRequestClose('', this.state.geneList, this.state.geneSearchType);
     };
 
-    closeReturningResult = (text) => {
+    closeReturningResult = (textValue) => {
+        this.setState({
+            uploadErrorMessage: ''
+        })
         let customListDialog = this;
         let customListData = new CustomListData(customListDialog.props.type);
-        let customFile = new CustomFile(customListData.isGeneList(), text);
+        let customFile = new CustomFile(customListData.isGeneList(), textValue);
         customFile.uploadFile(function(key) {
             customListDialog.props.onRequestClose(key,
                 customListDialog.state.geneList,
@@ -165,8 +177,8 @@ class CustomListDialog extends React.Component {
                     </div>
                 </div>;
         }
-        let disableSearch = !this.state.text && !this.state.file;
-        let hasText = this.state.text.length > 0;
+        let disableSearch = !this.state.textValue && !this.state.file;
+        let hasText = this.state.textValue.length > 0;
         let geneListDropdown = [];
         if (customListData.isGeneList()) {
             let options = [<option key="All">All</option>]
@@ -202,16 +214,18 @@ class CustomListDialog extends React.Component {
 
                                 <textarea className="CustomListDialog_textarea"
                                           placeholder={sampleData}
-                                          value={this.state.text}
+                                          value={this.state.textValue}
                                           onChange={this.changeText}
                                           disabled={this.state.loading}
                                 ></textarea>
-                                <input className="CustomListDialog_upload_file"
-                                       type="file" name="fileField"
-                                       onChange={this.changeUploadFile}
-                                       disabled={this.state.loading}
-                                       value={this.state.fileValue}
-                                />
+                                <div>
+                                    <SingleFileUpload fileValue={this.state.fileValue}
+                                        loading={this.state.loading}
+                                        onChangeFile={this.changeUploadFile}
+                                        disabled={this.state.loading}
+                                    />
+                                    <ErrorMessage message={this.state.uploadErrorMessage} />
+                                </div>
                                 {geneListDropdown}
                                 <Loader loaded={!this.state.loading} >
                                     <button className="btn btn-default"
