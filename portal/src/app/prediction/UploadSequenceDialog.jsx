@@ -5,7 +5,7 @@ import LoadingButton from '../common/LoadingButton.jsx'
 import LargeTextarea from '../common/LargeTextarea.jsx'
 import TextEdit from '../common/TextEdit.jsx'
 import LoadSampleLink from '../common/LoadSampleLink.jsx'
-import FileUpload from '../models/FileUpload.js';
+import UploadContent from '../models/UploadContent.js';
 import {CustomSequence, CustomSequenceList} from '../models/CustomSequence.js';
 import {SEQUENCE_SAMPLE} from '../models/SampleData.js'
 import ErrorMessage from '../common/ErrorMessage.jsx';
@@ -72,20 +72,14 @@ class UploadSequenceDialog extends React.Component {
     };
 
     onClickUpload = () => {
-        if (FileUpload.isTooBigFileOrText(this.state.file, this.state.textValue)) {
-            this.setState({
-                uploadErrorMessage: FileUpload.tooBigErrorMessage()
-            });
-            return;
-        }
-        this.setState({
-            loading: true
-        });
-        if (this.state.file) {
-            let fileUpload = new FileUpload(this.state.file);
-            fileUpload.fetchAllFile(this.uploadSequence);
+        let uploadContent = new UploadContent(this.state.file, this.state.textValue);
+        if (uploadContent.isTooBig()) {
+            this.onUploadedSequenceFailed(uploadContent.getTooBigErrorMessage());
         } else {
-            this.uploadSequence(this.state.textValue);
+            this.setState({
+                loading: true
+            });
+            uploadContent.fetchData(this.uploadSequence);
         }
     };
 

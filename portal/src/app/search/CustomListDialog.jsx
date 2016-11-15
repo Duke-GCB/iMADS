@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from 'react-modal';
 import Loader from 'react-loader';
 import { CustomListData } from '../models/CustomList.js';
-import FileUpload from '../models/FileUpload.js';
+import UploadContent from '../models/UploadContent.js';
 import CustomFile from '../models/CustomFile.js';
 import GeneSearchType from './GeneSearchType.jsx'
 import LoadSampleLink from '../common/LoadSampleLink.jsx'
@@ -101,21 +101,21 @@ class CustomListDialog extends React.Component {
     };
 
     onClickSearch = () => {
-        if (FileUpload.isTooBigFileOrText(this.state.file, this.state.textValue)) {
-            this.setState({
-                uploadErrorMessage: FileUpload.tooBigErrorMessage()
-            });
-            return;
-        }
-        if (this.state.file) {
-            this.setState({
-                loading: true,
-            });
-            let fileUpload = new FileUpload(this.state.file);
-            fileUpload.fetchAllFile(this.closeReturningResult);
+        let uploadContent = new UploadContent(this.state.file, this.state.textValue);
+        if (uploadContent.isTooBig()) {
+            this.onUploadError(uploadContent.getTooBigErrorMessage());
         } else {
-            this.closeReturningResult(this.state.textValue);
+            this.setState({
+                loading: true
+            });
+            uploadContent.fetchData(this.closeReturningResult);
         }
+    };
+
+    onUploadError = (message) => {
+        this.setState({
+            uploadErrorMessage: message
+        });
     };
 
     exitDialog = () => {
@@ -137,7 +137,7 @@ class CustomListDialog extends React.Component {
             customListDialog.setState({
                 loading: false,
             })
-            alert(error);
+            this.onUploadError(error);
         })
     };
 
