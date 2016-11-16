@@ -24,7 +24,7 @@ export default class UploadContent {
             throw new Error(this.getTooBigErrorMessage());
         }
         if (this.file) {
-            return this._fetchContent(consumeText, false);
+            return this._fetchContent(consumeText);
         } else {
             consumeText(this.textValue);
         }
