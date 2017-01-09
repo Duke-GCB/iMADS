@@ -5,11 +5,7 @@ import WideButton from '../common/WideButton.jsx';
 import BooleanInput from '../common/BooleanInput.jsx'
 import ArrowTooltip from '../common/ArrowTooltip.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx'
-import UploadSequenceDialog from './UploadSequenceDialog.jsx'
 let moment = require('moment');
-
-const CUSTOM_SEQUENCE_LIST = 'Upload Custom Sequence';
-const FIRST_TIME_INSTRUCTIONS = "Select '" + CUSTOM_SEQUENCE_LIST + "' to upload your first sequence.";
 
 /**
  * Allows user to select model, dna sequence and other settings.
@@ -27,22 +23,23 @@ class PredictionFilterPanel extends React.Component {
 
     onChangeSequence = (e) => {
         let value = e.target.value;
-        if (value == CUSTOM_SEQUENCE_LIST) {
-            this.setShowCustomDialog();
-        } else {
-            this.props.setPredictionSettings({selectedSequence: value});
+        let {customResultList} = this.props;
+        for (let customResult of customResultList) {
+            if (customResult.resultId == value) {
+                console.log(customResult);
+                this.props.setPredictionSettings({
+                    selectedSequence: customResult.sequenceId,
+                    model: customResult.modelName
+                });
+                return;
+            }
         }
-    };
-
-    setShowCustomDialog = () => {
-        this.setState({
-            showCustomDialog: true,
-            defaultCustomSequenceName: this.makeDefaultCustomSequenceName(),
-            sequenceData: {}
-        });
+        console.log("NADA");
     };
 
     editExistingSequence = () => {
+        this.props.setShowInputPane(true);
+        /*
         let {customSequenceList, predictionSettings} = this.props;
         let editSeqData = {};
         for (let seqData of customSequenceList) {
@@ -56,6 +53,7 @@ class PredictionFilterPanel extends React.Component {
             defaultCustomSequenceName: this.makeDefaultCustomSequenceName(),
             sequenceData: editSeqData
         });
+        */
     };
 
     makeDefaultCustomSequenceName = () => {
@@ -98,22 +96,27 @@ class PredictionFilterPanel extends React.Component {
     }
 
     makeSequenceListOptions() {
-        let {customSequenceList} = this.props;
+        let {customSequenceList, customResultList} = this.props;
 
         let sequenceListOptions = [];
 
-        for (let idx = 0; idx < customSequenceList.length; idx++) {
-            let label = customSequenceList[idx].title;
-            let value = customSequenceList[idx].id;
+        for (let customResult of customResultList) {
+            let label = customResult.title;
+            let value = customResult.resultId;
             sequenceListOptions.push(<option key={value} value={value}>{label}</option>);
         }
-
-        if (customSequenceList.length == 0) {
-            sequenceListOptions.push(<option key=""></option>);
-        }
-        sequenceListOptions.push(<option key="customGeneList"
-                                         value={CUSTOM_SEQUENCE_LIST}>{CUSTOM_SEQUENCE_LIST}</option>);
         return sequenceListOptions;
+    }
+
+    findSelectedSequence() {
+        let {customResultList, predictionSettings} = this.props;
+        for (let customResult of customResultList) {
+            if (customResult.sequenceId == predictionSettings.selectedSequence &&
+                customResult.modelName == predictionSettings.model) {
+                return customResult.resultId;
+            }
+        }
+        return undefined;
     }
 
     render() {
@@ -121,23 +124,21 @@ class PredictionFilterPanel extends React.Component {
             customSequenceList, showTwoColorPickers} = this.props;
         let models = this.getModels();
         let sequenceListOptions = this.makeSequenceListOptions();
-        let uploadInstructions = <ArrowTooltip label={FIRST_TIME_INSTRUCTIONS}
-                                               visible={customSequenceList.length == 0} />;
         let editSequenceButton = [];
-        if (predictionSettings.selectedSequence) {
-            editSequenceButton = <WideButton title="Edit Sequence" onClick={this.editExistingSequence} />
+        let selectedSequence = this.findSelectedSequence();
+        if (selectedSequence) {
+            editSequenceButton = <WideButton title="Edit Prediction" onClick={this.editExistingSequence} />
         }
         return <div>
             <h4>Filter</h4>
-            <ModelSelect selected={predictionSettings.model}
-                         models={models}
-                         onChange={this.onChangeModel} />
-            <SelectItem title="Custom DNA:"
-                        selected={predictionSettings.selectedSequence}
+
+            <SelectItem title="Protein/Model + DNA:"
+                        selected={selectedSequence}
                         options={sequenceListOptions}
                         onChange={this.onChangeSequence}
-                        labelControl={uploadInstructions} />
+                        />
             {editSequenceButton}
+
             <BooleanInput checked={predictionSettings.maxPredictionSort}
                           label="Sort by max value"
                           onChange={this.onChangeMaxPredictionSort}/>
@@ -146,12 +147,20 @@ class PredictionFilterPanel extends React.Component {
             <TFColorPickers showTwoPickers={showTwoColorPickers}
                             predictionColor={predictionColor}
                             setPredictionColor={setPredictionColor} />
+
+            <WideButton title="Create More Predictions" onClick={this.editExistingSequence} emphasis={true} />
+        </div>
+    }
+}
+/*
             <UploadSequenceDialog isOpen={this.state.showCustomDialog}
                                   defaultSequenceName={this.state.defaultCustomSequenceName}
                                   sequenceData={this.state.sequenceData}
                                   onRequestClose={this.closeCustomDialog} />
-        </div>
-    }
-}
+            <ModelSelect selected={predictionSettings.model}
+                         models={models}
+                         onChange={this.onChangeModel} />
 
+
+ */
 export default PredictionFilterPanel;

@@ -49,13 +49,21 @@ export class CustomSequenceList {
     }
 
     add(seqId, title) {
-        console.log(title);
         this.list.push({
             id: seqId,
             title: title,
             createdMS: new Date().getTime()
         });
         this.saveChanges();
+    }
+
+    lookup(seqId) {
+        for (let item of this.list) {
+            if (item.id == seqId) {
+                return item;
+            }
+        }
+        return undefined;
     }
 
     saveChanges() {

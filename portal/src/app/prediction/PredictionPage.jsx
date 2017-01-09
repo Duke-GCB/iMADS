@@ -7,16 +7,21 @@ import PageTitle from '../common/PageTitle.jsx'
 import PredictionFilterPanel from './PredictionFilterPanel.jsx'
 import PredictionResultsPanel from './PredictionResultsPanel.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx';
+import UploadSequencePane from './UploadSequencePane.jsx';
 import PredictionsStore from '../models/PredictionsStore.js'
 import URLBuilder from '../models/URLBuilder.js'
 import PageBatch from '../models/PageBatch.js'
 import {fetchPredictionSettings} from '../models/PredictionSettings.js'
 import CustomResultSearch from '../models/CustomResultSearch.js';
+import CustomResultList from '../models/CustomResultList.js';
 import {CustomSequenceList} from '../models/CustomSequence.js';
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../models/AppSettings.js'
 import {SEQUENCE_NOT_FOUND} from '../models/Errors.js';
 import {getPreferenceSettings, getCoreRange, getFirstGenomeName} from '../models/GenomeData.js';
 import {SessionStorage, PREDICTION_PAGE_KEY} from '../models/SessionStorage.js';
+let moment = require('moment');
+
+const THREE_COLUMN_LEFT_PANEL = 2;
 
 class PredictionPage extends React.Component {
     constructor(props) {
@@ -25,7 +30,12 @@ class PredictionPage extends React.Component {
         this.predictionStore = new PredictionsStore(pageBatch, new URLBuilder());
         this.customSequenceList = new CustomSequenceList();
         this.customSequenceList.removeOld();
-        this.customResultSearch = new CustomResultSearch(this, pageBatch);
+        this.customResultList = new CustomResultList(
+            this.customSequenceList,
+            this.customResultListFinishedLoading,
+            this.setErrorMessage);
+        this.customResultSearch = new CustomResultSearch(this, pageBatch, this.customResultList);
+        let showInputPane = true;
         let predictionSettings = this.customResultSearch.makeSettingsFromQuery(props.location.query);
         if (!predictionSettings.selectedSequence) {
             let predictionSettingsLastVisit = new SessionStorage().getValue(PREDICTION_PAGE_KEY);
@@ -36,6 +46,9 @@ class PredictionPage extends React.Component {
             }
         } else {
             this.customSequenceList.addIfNecessary(predictionSettings.selectedSequence);
+        }
+        if (predictionSettings.selectedSequence) {
+            showInputPane = false;
         }
         this.state = {
             genomeData: {},
@@ -51,8 +64,19 @@ class PredictionPage extends React.Component {
             predictionColor: TFColorPickers.defaultColorObj(),
             customSequenceList: this.customSequenceList.get(),
             jobDates: {},
+            sequenceData: {},
+            showInputPane: showInputPane,
+            customSequenceName: this.makeDefaultCustomSequenceName(),
+            loadingCustomResultList: true,
+            customResultList: []
         };
+
+        this.customResultList.fetch();
     }
+
+    makeDefaultCustomSequenceName = () => {
+        return "Sequence List " + moment().format('MM/DD HH:mm');
+    };
 
     componentDidMount() {
         fetchPredictionSettings(this.onReceiveGenomeData, this.onError);
@@ -98,6 +122,7 @@ class PredictionPage extends React.Component {
         this.setState({
             errorMessage: msg,
             searchDataLoaded: true,
+            loadingCustomResultList: false,
         })
     };
 
@@ -119,7 +144,8 @@ class PredictionPage extends React.Component {
         }
         this.setState({
             selectedSequence: seqId,
-            predictionSettings: currentPredictionSettings
+            predictionSettings: currentPredictionSettings,
+            showInputPane: false,
         }, this.search);
     };
 
@@ -189,6 +215,31 @@ class PredictionPage extends React.Component {
         return this.customResultSearch.getRawDownloadURL();
     };
 
+    closeCustomDialog = (seqId, errorMessage, title) => {
+        if (seqId) {
+            this.addCustomSeqenceList(seqId, title, this.state.sequenceData);
+        }
+        this.setState({
+            showCustomDialog: false,
+        });
+    };
+
+    setShowInputPane  = (value) => {
+        this.setState({
+            showInputPane: value,
+        });
+    };
+
+    customResultListFinishedLoading = (errors) => {
+        this.setState({
+            loadingCustomResultList: false,
+            customResultList: this.customResultList.get()
+        });
+        if (errors.length > 0) {
+            alert(errors.join());
+        }
+    };
+
     render() {
         // Add preference min/max to color settings.
         let preferenceSettings = getPreferenceSettings(this.state.genomeData,
@@ -220,6 +271,9 @@ class PredictionPage extends React.Component {
                                                predictionColor={predictionColor}
                                                setPredictionColor={this.setPredictionColor}
                                                showTwoColorPickers={preferenceSettings.isPreference}
+                                               setShowInputPane={this.setShowInputPane}
+                                               customResultList={this.state.customResultList}
+
         />;
         let rightPanel = <PredictionResultsPanel genomeData={this.state.genomeData}
                                                  predictionSettings={this.state.predictionSettings}
@@ -238,12 +292,31 @@ class PredictionPage extends React.Component {
                                                  jobDates={this.state.jobDates}
                                                  coreRange={coreRange}
         />;
+        let content;
+        if (this.state.loadingCustomResultList) {
+            content = <span>Loading..</span>;
+        } else {
+            if (this.state.showInputPane) {
+                content = <UploadSequencePane
+                    genomeData={this.state.genomeData}
+                    predictionSettings={this.state.predictionSettings}
+                    setPredictionSettings={this.setPredictionSettings}
+                    sequenceData={this.state.sequenceData}
+                    defaultSequenceName={this.state.customSequenceName}
+                    onRequestClose={this.closeCustomDialog}
+                    setShowInputPane={this.setShowInputPane}
+                />
+            } else {
+                content = <ThreePanelPane
+                    leftPanelSize={THREE_COLUMN_LEFT_PANEL}
+                    topPanel={topPanel}
+                    leftPanel={leftPanel}
+                    rightPanel={rightPanel}
+                />
+            }
+        }
         return <Page nav_path={PREDICTION_NAV.path}>
-            <ThreePanelPane
-                topPanel={topPanel}
-                leftPanel={leftPanel}
-                rightPanel={rightPanel}
-            />
+            {content}
         </Page>
     }
 

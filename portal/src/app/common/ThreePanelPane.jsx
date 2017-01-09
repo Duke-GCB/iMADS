@@ -4,19 +4,36 @@ import React from 'react';
  * Creates a wide three pane 
  */
 export default class ThreePanelPane extends React.Component {
+    topPanelClassNames(leftSize, rightSize) {
+        return "col-md-offset-" + leftSize + " col-sm-offset-" + leftSize + " col-xs-offset-" + leftSize +
+            " col-col-md-" + rightSize + " col-sm-" + rightSize;
+    }
+
+    childPanelClassNames(size) {
+        return "col-md-" + size + " col-sm-" + size + " col-xs-"  + size;
+    }
+
     render() {
-        let {topPanel, leftPanel, rightPanel} = this.props;
+        let {topPanel, leftPanel, rightPanel, leftPanelSize} = this.props;
+        if (leftPanelSize == undefined) {
+            leftPanelSize = 2;
+        }
+        let rightPanelSize = 12 - leftPanelSize;
+        let topPanelClassName = this.topPanelClassNames(leftPanelSize, rightPanelSize);
+        let leftPanelClassName = this.childPanelClassNames(leftPanelSize);
+        let rightPanelClassName = this.childPanelClassNames(rightPanelSize);
+
         return <div className="container expandWidth">
                     <div className="row">
-                        <div className="col-md-offset-2 col-sm-offset-2 col-xs-offset-2 col-col-md-10 col-sm-10" >
+                        <div className={topPanelClassName} >
                             {topPanel}
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-md-2 col-sm-2 col-xs-2"  >
+                        <div className={leftPanelClassName}  >
                             {leftPanel}
                         </div>
-                        <div className="col-md-10 col-sm-10 col-xs-10" >
+                        <div className={rightPanelClassName} >
                             {rightPanel}
                         </div>
                     </div>

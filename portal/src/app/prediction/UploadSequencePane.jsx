@@ -5,10 +5,12 @@ import LoadingButton from '../common/LoadingButton.jsx'
 import LargeTextarea from '../common/LargeTextarea.jsx'
 import TextEdit from '../common/TextEdit.jsx'
 import LoadSampleLink from '../common/LoadSampleLink.jsx'
+import ModelSelect from '../common/ModelSelect.jsx';
+import UploadSequenceButtons from './UploadSequenceButtons.jsx';
 import FileUpload from '../models/FileUpload.js';
 import {CustomSequence, CustomSequenceList} from '../models/CustomSequence.js';
 import {SEQUENCE_SAMPLE} from '../models/SampleData.js'
-require('./UploadSequenceDialog.css');
+require('./UploadSequencePane.css');
 
 const TITLE = "Custom DNA Sequence";
 const INSTRUCTIONS = "Enter Sequence/FASTA data or choose a file in that format. (Max file size 20MB)";
@@ -25,7 +27,7 @@ const DEFAULT_STATE = {
     uploadErrorMessage: ''
 };
 
-class UploadSequenceDialog extends React.Component {
+export default class UploadSequencePane extends React.Component {
     constructor(props) {
         super(props);
         this.state = DEFAULT_STATE;
@@ -33,13 +35,13 @@ class UploadSequenceDialog extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         // reset state each time this dialog is shown
-        if (nextProps.isOpen && !this.props.isOpen) {
-            this.setState(DEFAULT_STATE);
-            if (nextProps.sequenceData.id) {
-                let customSequence = new CustomSequence();
-                customSequence.fetch(nextProps.sequenceData.id, this.onSequenceInfo, this.onSequenceInfoError);
-            }
-        }
+        //if (nextProps.isOpen && !this.props.isOpen) {
+        //    this.setState(DEFAULT_STATE);
+        //    if (nextProps.sequenceData.id) {
+        //        let customSequence = new CustomSequence();
+        //       customSequence.fetch(nextProps.sequenceData.id, this.onSequenceInfo, this.onSequenceInfoError);
+        //   }
+        //}
     }
 
     onSequenceInfo = (sequenceInfo) => {
@@ -117,6 +119,15 @@ class UploadSequenceDialog extends React.Component {
         this.props.onRequestClose(seqId, errorMessage, title);
     };
 
+    onChangeModel = (e) => {
+        let value = e.target.value;
+        this.props.setPredictionSettings({model: value});
+    };
+
+    onClickViewPredictions = () => {
+        this.props.setShowInputPane(false);
+    };
+
     onCloseNoSave = () => {
         this.closeDialog(undefined, undefined, '');
     };
@@ -136,14 +147,29 @@ class UploadSequenceDialog extends React.Component {
     isDuplicateTitle = (sequenceName) => {
         let customListObj = new CustomSequenceList();
         return customListObj.isTitleDuplicate(this.uploadSequence.id, sequenceName);
-    }
+    };
 
     loadSampleData = () => {
         this.onChangeTextValue(SEQUENCE_SAMPLE);
     };
+    
+    getModels() {
+        let {genomeData}  = this.props;
+        let models = [];
+        if (genomeData) {
+            let firstGenomeVersion = Object.keys(genomeData)[0];
+            let genomeInfo = genomeData[firstGenomeVersion];
+            if (genomeInfo) {
+                models = genomeInfo.models;
+            }
+        }
+        return models;
+    }
 
     render() {
-        let {isOpen, sequenceData} = this.props;
+        let {sequenceData, predictionSettings} = this.props;
+        let models = this.getModels();
+
         let title = this.state.sequenceName;
         let isNew = true;
         let canUpload = this.state.canUpload;
@@ -154,9 +180,7 @@ class UploadSequenceDialog extends React.Component {
         if (this.state.titleErrorMessage) {
             canUpload = false;
         }
-        return <Popup isOpen={this.props.isOpen}
-                      onRequestClose={this.onCloseNoSave}
-                      title={TITLE}>
+        return <div className="UploadSequencePane_container" >
             <p>{INSTRUCTIONS}</p>
             <p>{PURGE_WARNING}</p>
 
@@ -185,16 +209,21 @@ class UploadSequenceDialog extends React.Component {
                                   onChangeFile={this.onChangeFile}
                                   disabled={this.state.loading}
                 />
-                <span className="UploadSequenceDialog_uploadErrorMessage">{this.state.uploadErrorMessage}</span>
+                <span className="UploadSequencePane_uploadErrorMessage">{this.state.uploadErrorMessage}</span>
             </div>
-
-            <LoadingButton label="Upload"
-                           loading={this.state.loading}
-                           disabled={!canUpload}
-                           onClick={this.onClickUpload}
-            />
-        </Popup>
+            <div className="UploadSequencePane_model_select_div">
+                <ModelSelect selected={predictionSettings.model}
+                             models={models}
+                             onChange={this.onChangeModel} />
+            </div>
+            <div className="UploadSequencePane_generate_pred_button_div">
+                <UploadSequenceButtons
+                    loading={this.state.loading}
+                    generatePredictionsDisabled={!canUpload}
+                    clickGeneratePredictions={this.onClickUpload}
+                    clickViewPredictions={this.onClickViewPredictions}
+                />
+            </div>
+        </div>
     }
 }
-
-export default UploadSequenceDialog;

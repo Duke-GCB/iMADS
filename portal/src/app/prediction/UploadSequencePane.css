@@ -1,0 +1,22 @@
+.UploadSequencePane_uploadErrorMessage {
+    color: red;
+    float: right;
+    margin: 10px;
+    font-size: 14pt;
+}
+
+.UploadSequencePane_container {
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.UploadSequencePane_model_select_div {
+    max-width: 250px;
+    margin-left: 4px;
+}
+
+.UploadSequencePane_generate_pred_button_div {
+    margin-top: 10px;
+}

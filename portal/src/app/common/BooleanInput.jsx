@@ -11,12 +11,14 @@ class BooleanInput extends React.Component {
     };
 
     render() {
-        return <label className="BooleanInput_label">
-                    <input type="checkbox"
-                           checked={this.props.checked}
-                           onChange={this.onChange}
-                    /> {this.props.label}
-            </label>
+        return <div>
+                <label className="BooleanInput_label">
+                        <input type="checkbox"
+                               checked={this.props.checked}
+                               onChange={this.onChange}
+                        /> {this.props.label}
+                </label>
+            </div>
     }
 }
 
