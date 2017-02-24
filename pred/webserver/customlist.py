@@ -1,10 +1,8 @@
 import uuid
+from pred.webserver.errors import raise_on_too_big_uploaded_data
 
 RANGE_TYPE = 'range'
 GENE_LIST_TYPE = 'gene_list'
-
-MAX_FILE_SIZE = 20 * 1024 * 1024
-MAX_FILE_SIZE_STR = "20MB"
 
 MAX_RANGE_SUM = 30 * 1000 * 1000
 MAX_RANGE_ERROR_STR = "You are only allowed {} in total ranges.".format(MAX_RANGE_SUM)
@@ -50,8 +48,7 @@ class CustomList(object):
 
 class CustomListParser(object):
     def __init__(self, is_gene_list, data):
-        if len(data) > MAX_FILE_SIZE:
-            raise ValueError("File size too big max {}".format(MAX_FILE_SIZE_STR))
+        raise_on_too_big_uploaded_data(data)
         self.is_gene_list = is_gene_list
         self.data = data
         self.key = None

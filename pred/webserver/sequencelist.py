@@ -3,7 +3,7 @@ Stores custom FASTA sequences under a uuid in the database.
 Part of the tables used for custom jobs.
 """
 import uuid
-from pred.webserver.errors import ClientException, ErrorType
+from pred.webserver.errors import ClientException, ErrorType, raise_on_too_big_uploaded_data
 from pred.queries.dbutil import update_database, read_database
 from Bio import SeqIO
 from StringIO import StringIO
@@ -106,6 +106,7 @@ class SequenceListItems(object):
     Used to lookup sequence for results.
     """
     def __init__(self, data):
+        raise_on_too_big_uploaded_data(data)
         self.data = SequenceListItems.make_fasta(data.strip())
         self.items = SequenceListItems.find_sequence_items(self.data)
 
