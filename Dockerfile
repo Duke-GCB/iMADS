@@ -1,17 +1,14 @@
 FROM python:2.7.11
 EXPOSE 80
 ENV MYDIR /tfdnapredictions
-RUN apt-get update
-RUN apt-get install nodejs -y
-RUN apt-get install npm -y
-RUN ln -s /usr/bin/nodejs /usr/bin/node
+RUN curl -sL https://deb.nodesource.com/setup_7.x | bash -
+RUN apt-get install -y nodejs
 
 # Install bigBedToBed
 ADD http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bigBedToBed /usr/local/bin/bigBedToBed
 RUN ["chmod", "777", "/usr/local/bin/bigBedToBed"]
 
 # Install global dependencies
-RUN npm install -g npm
 RUN npm install webpack -g
 RUN ["pip", "install", "gunicorn"]
 

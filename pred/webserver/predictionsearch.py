@@ -52,7 +52,7 @@ def get_all_values(prediction, size):
         value = data['value']
         idx = start - offset
         if 0 <= idx <= size:
-            if value > values[idx]:
+            if abs(value) > abs(values[idx]):
                 values[idx] = value
     result = [str(val) for val in values]
     if 'strand' in prediction:
