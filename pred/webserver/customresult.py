@@ -161,12 +161,12 @@ class CustomResultData(object):
         return None
 
     @staticmethod
-    def find(db, sequence_id):
+    def find(db, sequence_id, model_name):
         """
-        Find all custom results for the specified sequence.
-        Raises ClientException is not a uuid.
+        Find custom results with the sequence_id and optionally model_name.
         :param db: Database Connection
-        :param sequence_id: str:sequence uuids to search for
+        :param sequence_id: str: uuid of the custom sequence to search for
+        :param model_name: str: name of the model to search for, None if for all model names
         :return: [dict]: array of custom result info
         """
         try:
@@ -176,8 +176,12 @@ class CustomResultData(object):
         select_sql = "select custom_result.id, custom_result.model_name from custom_result " \
                      " inner join job on job.id = job_id " \
                      " where seq_id = %s"
+        params = [sequence_id]
+        if model_name:
+            select_sql += " and custom_result.model_name = %s"
+            params.append(model_name)
         result = []
-        for row in read_database(db, select_sql, [sequence_id]):
+        for row in read_database(db, select_sql, params):
             values = {
                 'resultId': row[0],
                 'modelName': row[1],
