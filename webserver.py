@@ -358,16 +358,20 @@ def find_one_custom_result():
     return make_ok_json_response({'id': custom_result_id})
 
 
-@app.route('/api/v1/custom_predictions/find_for_sequence', methods=['GET'])
-@app.route('/api/v1/custom_preferences/find_for_sequence', methods=['GET'])
-def find_custom_results_for_sequence():
+@app.route('/api/v1/custom_predictions/', methods=['GET'])
+@app.route('/api/v1/custom_preferences/', methods=['GET'])
+def find_custom_results_for_sequence_and_model_name():
     """
     Find a custom results for a sequence_id.
-    request['sequence_id'] str: sequence ids to use when searching custom results
+    request['sequence_id'] str: sequence id to use when searching custom results
+    request['model_name'] str: optional model name to filter with
     :return: json response with results array of dict with keys resultId,modelName,sequenceId
     """
     sequence_id = request.args.get('sequence_id')
-    custom_result_ids = CustomResultData.find(get_db(), sequence_id)
+    model_name = request.args.get('model_name')
+    if not sequence_id:
+        raise ValueError("Missing required sequence_id field.")
+    custom_result_ids = CustomResultData.find(get_db(), sequence_id. model_name)
     return make_ok_json_response({'results': custom_result_ids})
 
 
