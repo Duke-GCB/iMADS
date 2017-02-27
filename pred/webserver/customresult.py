@@ -4,6 +4,7 @@ Part of the tables used for custom jobs.
 """
 import uuid
 from pred.queries.dbutil import update_database, read_database
+from pred.webserver.errors import ClientException, ErrorType
 
 SEQUENCE_NOT_FOUND = "Unable to find sequence for this name."
 
@@ -146,7 +147,7 @@ class CustomResultData(object):
     @staticmethod
     def find_one(db, sequence_id, model_name):
         """
-        Find a single custom result for the specified sequence
+        Find a single custom result for the specified sequence and model
         :param db: Database Connection
         :param sequence_id: str: uuid of the custom sequence to search for
         :param model_name: str: name of the model to search for
@@ -158,6 +159,32 @@ class CustomResultData(object):
         for row in read_database(db, select_sql, [sequence_id, model_name]):
             return row[0]
         return None
+
+    @staticmethod
+    def find(db, sequence_id):
+        """
+        Find all custom results for the specified sequence.
+        Raises ClientException is not a uuid.
+        :param db: Database Connection
+        :param sequence_id: str:sequence uuids to search for
+        :return: [dict]: array of custom result info
+        """
+        try:
+            val = uuid.UUID(sequence_id, version=4)
+        except ValueError:
+            raise ClientException(message="Sequence id is not a valid uuid", error_type=ErrorType.INVALID_SEQUENCE_ID)
+        select_sql = "select custom_result.id, custom_result.model_name from custom_result " \
+                     " inner join job on job.id = job_id " \
+                     " where seq_id = %s"
+        result = []
+        for row in read_database(db, select_sql, [sequence_id]):
+            values = {
+                'resultId': row[0],
+                'modelName': row[1],
+                'sequenceId': sequence_id,
+            }
+            result.append(values)
+        return result
 
     @staticmethod
     def bed_file_contents(db, result_id):

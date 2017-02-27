@@ -345,7 +345,7 @@ def get_optional_int(args, arg_name):
 
 @app.route('/api/v1/custom_predictions/find_one', methods=['GET'])
 @app.route('/api/v1/custom_preferences/find_one', methods=['GET'])
-def find_custom_result():
+def find_one_custom_result():
     """
     Find a single prediction for a sequence_id and model_name.
     request['sequence_id'] str: uuid of the custom sequence to look for
@@ -356,6 +356,19 @@ def find_custom_result():
     model_name = request.args['model_name']
     custom_result_id = CustomResultData.find_one(get_db(), sequence_id, model_name)
     return make_ok_json_response({'id': custom_result_id})
+
+
+@app.route('/api/v1/custom_predictions/find_for_sequence', methods=['GET'])
+@app.route('/api/v1/custom_preferences/find_for_sequence', methods=['GET'])
+def find_custom_results_for_sequence():
+    """
+    Find a custom results for a sequence_id.
+    request['sequence_id'] str: sequence ids to use when searching custom results
+    :return: json response with results array of dict with keys resultId,modelName,sequenceId
+    """
+    sequence_id = request.args.get('sequence_id')
+    custom_result_ids = CustomResultData.find(get_db(), sequence_id)
+    return make_ok_json_response({'results': custom_result_ids})
 
 
 def get_required_json_props(request, params):
