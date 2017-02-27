@@ -371,7 +371,7 @@ def find_custom_results_for_sequence_and_model_name():
     model_name = request.args.get('model_name')
     if not sequence_id:
         raise ValueError("Missing required sequence_id field.")
-    custom_result_ids = CustomResultData.find(get_db(), sequence_id. model_name)
+    custom_result_ids = CustomResultData.find(get_db(), sequence_id, model_name)
     return make_ok_json_response({'results': custom_result_ids})
 
 
