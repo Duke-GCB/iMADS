@@ -12,7 +12,7 @@ const WAIT_FOR_JOB_MS = 1000;
 //onSearchData(predictions, pageNum, hasNextPages, warning)
 
 class CustomResultSearch {
-    constructor(statusLabelObj, pageBatch) {
+    constructor(statusLabelObj, pageBatch, customResultList) {
         this.urlBuilder = new URLBuilder($.ajax);
         this.resultIdCache = new ResultIdCache();
         this.currentRequest = {};
@@ -22,6 +22,7 @@ class CustomResultSearch {
         this.currentJobId = 0;
         this.pageBatch = pageBatch;
         this.lastResultId = undefined;
+        this.customResultList = customResultList;
     }
 
     cancel() {
@@ -117,6 +118,10 @@ class CustomResultSearch {
                 this.log("Got result for " + model + " and " + sequenceId + ".");
                 this.resultIdCache.saveResultId(model, sequenceId, resultId);
                 this.fetchResult(resultId);
+                if (!this.customResultList.containsResultId(resultId)) {
+                    this.customResultList.add(model, sequenceId, resultId);
+                    this.customResultList.fetch();
+                }
             } else {
                 if (mustExist) {
                     // job COMPLETED without any data

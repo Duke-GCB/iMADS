@@ -15,7 +15,7 @@ export default class TextEdit extends React.Component {
                                type="text"
                                disabled={disabled}
                                placeholder={placeholder}
-                               defaultValue={value}
+                               value={value}
                                size={size}
                                maxLength={maxlength}
                                onChange={onChange} />
