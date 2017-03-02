@@ -42,7 +42,10 @@ class AboutContent extends React.Component {
                     </a>, or directly in the iMADS
                     web application, using the graphical interface. Users can explore predictions around transcription
                     start sites (TSSs) of gene, using preloaded or custom gene lists, as well as custom lists of
-                    genomic coordinates.
+                    genomic coordinates. When using preloaded gene lists, only the genes/transcripts with predicted
+                    binding sites in the selected interval will be shown. When using custom gene lists, all
+                    genes/transcripts will be shown, regardless of whether or not they contain predicted binding
+                    sites in the selected interval.
                 </p>
             </div>
             <div>
