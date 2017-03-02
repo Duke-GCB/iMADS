@@ -68,18 +68,13 @@ def gene_id_in_max_prediction_names():
 def filter_gene_list(gene_list, model_name, upstream, downstream):
     """
     Overlapping range filter.
-    SQL Explanation:
-    The end of the prediction must come after the start of the gene
-    and the end of the gene must come after the start of the prediction.
-    http://nedbatchelder.com/blog/201310/range_overlap_in_two_compares.html
-    end1 >= start2 and end2 <= start1
     """
     beginning_sql = ""
     params = []
     if gene_list and gene_list.upper() != 'ALL':
         beginning_sql = "gene_list = %s\nand\n"
         params.append(gene_list)
-    params.extend([model_name, downstream, upstream, upstream, downstream])
+    params.extend([model_name, upstream, downstream, downstream, upstream])
     return QueryPart(beginning_sql + """model_name = %s
 and
 case strand when '+' then

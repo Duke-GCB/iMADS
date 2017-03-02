@@ -97,8 +97,8 @@ group by gene_id
 class TestMaxPredictionQuery(TestCase):
     def test_max_with_guess_and_limit(self):
         expected_sql = MAX_QUERY_WITH_GUESS_WITH_LIMIT
-        expected_params = ["hg38", "refgene", "E2F4", "250", "150", "150", "250", "0.4", "100", "200",
-                           "refgene", "E2F4", "250", "150", "150", "250"]
+        expected_params = ["hg38", "refgene", "E2F4", "150", "250", "250", "150", "0.4", "100", "200",
+                           "refgene", "E2F4", "150", "250", "250", "150"]
         query = MaxPredictionQuery(
             schema="hg38",
             gene_list="refgene",
@@ -116,8 +116,8 @@ class TestMaxPredictionQuery(TestCase):
 
     def test_max_with_guess(self):
         expected_sql = MAX_QUERY_WITH_GUESS
-        expected_params = ["hg38", "refgene", "E2F4", "250", "150", "150", "250", "0.4",
-                           "refgene", "E2F4", "250", "150", "150", "250"]
+        expected_params = ["hg38", "refgene", "E2F4", "150", "250", "250", "150", "0.4",
+                           "refgene", "E2F4", "150", "250", "250", "150"]
         query = MaxPredictionQuery(
             schema="hg38",
             gene_list="refgene",
@@ -133,8 +133,8 @@ class TestMaxPredictionQuery(TestCase):
 
     def test_max_with_no_guess_and_limit(self):
         expected_sql = MAX_QUERY_NO_GUESS_WITH_LIMIT
-        expected_params = ["hg38", "refgene", "E2F4", "250", "150", "150", "250", "100", "200",
-                           "refgene", "E2F4", "250", "150", "150", "250"]
+        expected_params = ["hg38", "refgene", "E2F4", "150", "250", "250", "150", "100", "200",
+                           "refgene", "E2F4", "150", "250", "250", "150"]
         query = MaxPredictionQuery(
             schema="hg38",
             gene_list="refgene",
@@ -150,8 +150,8 @@ class TestMaxPredictionQuery(TestCase):
 
     def test_max_with_no_guess(self):
         expected_sql = MAX_QUERY_NO_GUESS
-        expected_params = ["hg38", "refgene", "E2F4", "250", "150", "150", "250",
-                           "refgene", "E2F4", "250", "150", "150", "250"]
+        expected_params = ["hg38", "refgene", "E2F4", "150", "250", "250", "150",
+                           "refgene", "E2F4", "150", "250", "250", "150"]
         query = MaxPredictionQuery(
             schema="hg38",
             gene_list="refgene",
@@ -165,8 +165,8 @@ class TestMaxPredictionQuery(TestCase):
 
     def test_max_count(self):
         expected_sql = COUNT_QUERY
-        expected_params = ["hg38", "refgene", "E2F4", "250", "150", "150", "250",
-                           "refgene", "E2F4", "250", "150", "150", "250"]
+        expected_params = ["hg38", "refgene", "E2F4", "150", "250", "250", "150",
+                           "refgene", "E2F4", "150", "250", "250", "150"]
         query = MaxPredictionQuery(
             schema="hg38",
             gene_list="refgene",

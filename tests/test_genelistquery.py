@@ -68,7 +68,7 @@ group by gene_id
 class TestGeneListQuery(TestCase):
     def test_gene_list_filter_with_limit(self):
         expected_sql = GENE_LIST_FILTER_WITH_LIMIT
-        expected_params = ["hg38", "knowngene", "E2F4", "250", "150", "150", "250", 55, "100", "200"]
+        expected_params = ["hg38", "knowngene", "E2F4", "150", "250", "250", "150", 55, "100", "200"]
         query = GeneListQuery(
             schema="hg38",
             custom_list_id=55,
@@ -87,7 +87,7 @@ class TestGeneListQuery(TestCase):
 
     def test_gene_list_filter(self):
         expected_sql = GENE_LIST_FILTER
-        expected_params = ["hg38", "E2F4", "250", "150", "150", "250", 45]
+        expected_params = ["hg38", "E2F4", "150", "250", "250", "150", 45]
         query = GeneListQuery(
             schema="hg38",
             custom_list_id=45,
@@ -104,7 +104,7 @@ class TestGeneListQuery(TestCase):
 
     def test_gene_list_count(self):
         expected_sql = COUNT_QUERY
-        expected_params = ["hg38", "E2F4", "250", "150", "150", "250", 77]
+        expected_params = ["hg38", "E2F4", "150", "250", "250", "150", 77]
         query = GeneListQuery(
             schema="hg38",
             custom_list_id=77,

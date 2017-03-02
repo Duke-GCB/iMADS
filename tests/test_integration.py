@@ -1,8 +1,5 @@
-from unittest import TestCase
 import unittest
 import os
-import subprocess
-import time
 from StringIO import StringIO
 from pred.config import parse_config_from_dict, DataType
 from load import run_sql_command
@@ -14,9 +11,8 @@ from webserver import create_db_connection
 from pred.webserver.customlist import save_custom_file, GENE_LIST_TYPE, RANGE_TYPE, MAX_RANGE_ERROR_STR
 from pred.webserver.sequencelist import SequenceList
 from pred.webserver.customjob import CustomJob, JobStatus
-from pred.webserver.customresult import CustomResultData, SEQUENCE_NOT_FOUND
+from pred.webserver.customresult import CustomResultData
 from pred.queries.dbutil import update_database
-from pred.webserver.dbdatasource import DataSources
 import json
 
 
@@ -125,13 +121,13 @@ def make_pred_line(chrom, start, stop, value, name):
 
 
 def make_prediction_data():
-    #gene starts at 11873
+    #gene starts at 11873 (TSS)
     lines = [
         make_pred_line("chr1", 11874, 11894, 0.4, "E2F1_0001(JS)"),
-        make_pred_line("chr1", 11753, 11773, 0.3, "E2F1_0001(JS)"), # far left edge of DDX11L1(11873) upstream 100
-        make_pred_line("chr1", 11752, 11772, 0.2, "E2F1_0001(JS)"), # just past far left edge of DDX11L1(11873) upstream 100
-        make_pred_line("chr1", 11923, 11943, 0.1, "E2F1_0001(JS)"),  # far right edge of DDX11L1(11873) downstream 50
-        make_pred_line("chr1", 11924, 11944, 0.5, "E2F1_0001(JS)"),  # far right edge of DDX11L1(11873) downstream 50
+        make_pred_line("chr1", 11773, 11793, 0.3, "E2F1_0001(JS)"), # far left edge of DDX11L1(11873) upstream 100
+        make_pred_line("chr1", 11772, 11792, 0.2, "E2F1_0001(JS)"), # just past far left edge of DDX11L1(11873) upstream 100
+        make_pred_line("chr1", 11903, 11923, 0.1, "E2F1_0001(JS)"), # far right edge of DDX11L1(11873) downstream 50
+        make_pred_line("chr1", 11904, 11924, 0.5, "E2F1_0001(JS)"), # far right edge of DDX11L1(11873) downstream 50
     ]
     return "\n".join(lines)
 
