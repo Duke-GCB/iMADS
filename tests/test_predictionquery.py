@@ -59,10 +59,11 @@ end
 group by gene_id
 ) as foo"""
 
+
 class TestPredictionQuery(TestCase):
     def test_filter_with_limit(self):
         expected_sql = GENE_LIST_FILTER_WITH_LIMIT
-        expected_params = ["hg38", "knowngene", "E2F4", "250", "150", "150", "250", "100", "200"]
+        expected_params = ["hg38", "knowngene", "E2F4", "150", "250", "250", "150", "100", "200"]
         query = PredictionQuery(
             schema="hg38",
             gene_list="knowngene",
@@ -78,7 +79,7 @@ class TestPredictionQuery(TestCase):
 
     def test_filter(self):
         expected_sql = GENE_LIST_FILTER
-        expected_params = ["hg38", "knowngene", "E2F4", "250", "150", "150", "250"]
+        expected_params = ["hg38", "knowngene", "E2F4", "150", "250", "250", "150"]
         query = PredictionQuery(
             schema="hg38",
             gene_list="knowngene",
@@ -93,7 +94,7 @@ class TestPredictionQuery(TestCase):
 
     def test_count(self):
         expected_sql = COUNT_QUERY
-        expected_params = ["hg38", "knowngene", "E2F4", "250", "150", "150", "250"]
+        expected_params = ["hg38", "knowngene", "E2F4", "150", "250", "250", "150"]
         query = PredictionQuery(
             schema="hg38",
             gene_list="knowngene",
