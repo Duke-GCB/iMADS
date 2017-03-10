@@ -20,5 +20,5 @@ VOLUME /etc/external/
 EXPOSE 80
 EXPOSE 443
 
-# create password for worker user and run apache in the foreground
-CMD htpasswd -cdb /etc/apache2/.htpasswd $WORKER_USERNAME $WORKER_PASSWORD && apachectl -DFOREGROUND
+ADD start-apache.sh /usr/bin/start-apache.sh
+CMD ["start-apache.sh"]
