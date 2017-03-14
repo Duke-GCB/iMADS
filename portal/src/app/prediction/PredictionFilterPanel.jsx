@@ -31,11 +31,11 @@ class PredictionFilterPanel extends React.Component {
     };
 
     createMorePredictions = () => {
-        this.props.setShowInputPane(true, true);
+        this.props.showUploadSequencePane(true);
     };
 
     editExistingSequence = () => {
-        this.props.setShowInputPane(true, false);
+        this.props.showUploadSequencePane(false);
     };
 
 

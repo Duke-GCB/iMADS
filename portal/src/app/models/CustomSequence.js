@@ -92,10 +92,12 @@ export class CustomSequenceList {
         for (let i = 0; i < this.list.length; i++) {
             let item = this.list[i];
             if (item.id == oldSeqId) {
+                var previousSequence = Object.assign({}, this.list[i]);
                 this.list[i] = {
                     id: seqId,
                     title: title,
-                    createdMS: new Date().getTime()
+                    createdMS: new Date().getTime(),
+                    previousSequence: previousSequence
                 };
                 this.saveChanges();
                 break;
@@ -107,7 +109,12 @@ export class CustomSequenceList {
         for (let i = 0; i < this.list.length; i++) {
             let item = this.list[i];
             if (item.id == seqId) {
-                this.list.splice(i);
+                if (item.previousSequence && item.previousSequence.id) {
+                    this.list[i] = item.previousSequence;
+                } else {
+                    this.list.splice(i);
+                }
+                break;
             }
         }
         this.saveChanges();

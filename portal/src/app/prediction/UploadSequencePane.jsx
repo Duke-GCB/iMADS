@@ -22,13 +22,28 @@ const DEFAULT_STATE = {
     file: undefined,
     fileValue: undefined,
     textValue: '',
-    sequenceName: '',
     titleErrorMessage: '',
     uploadErrorMessage: '',
-    isNew: true,
-    model: '',
-    previousSequenceId: ''
 };
+
+/**
+ * UploadSequencePane - shows panel for uploading a custom DNA sequence/picking a model and run prediction generation.
+ * Properties:
+ *   genomeData - models available for different genome versions
+ *
+ *   uploadSequenceData - object containing data that persists when this component is unmounted
+ *     loadSequenceId - sequence id we should fetch when this component mounts
+ *     sequenceName - name of the sequence we are going to upload
+ *     model - name of the model we selected for predictions
+ *     showLoadSampleLink - boolean should we show the LoadSampleLink button
+ *
+ *   setUploadSequenceData(uploadSequenceData) - asks parent to change uploadSequenceData
+ *
+ *   defaultSequenceName - sequence name to use if the user doesn't pick one (shows as placeholder)
+ *   generatePredictionsForSequence(seqId, model, title, previousSequenceId) - asks parent to generate predictions
+ *   viewExistingPredictions() - asks parent to show existing predictions screen
+ *
+ */
 
 export default class UploadSequencePane extends React.Component {
     constructor(props) {
@@ -37,29 +52,21 @@ export default class UploadSequencePane extends React.Component {
     }
 
     componentDidMount() {
-        let {sequenceData, predictionSettings, createNewSequence} = this.props;
-        let previousSequenceId = '';
-        if (!createNewSequence) {
+        let {uploadSequenceData} = this.props;
+        if (uploadSequenceData.loadSequenceId) {
             let customSequence = new CustomSequence();
-            previousSequenceId = predictionSettings.selectedSequence;
-            if (previousSequenceId) {
-                customSequence.fetch(previousSequenceId, this.onSequenceInfo, this.onSequenceInfoError);
-            }
+            customSequence.fetch(uploadSequenceData.loadSequenceId, this.onSequenceInfo, this.onSequenceInfoError);
         }
-        this.setState({
-            isNew: createNewSequence,
-            previousSequenceId: previousSequenceId,
-        });
     }
 
     onSequenceInfo = (sequenceInfo) => {
-        let customListObj = new CustomSequenceList();
-        let existingSequenceTitle = customListObj.lookup(sequenceInfo.id).title;
-        console.log("HEY" + existingSequenceTitle);
-        this.setState({
-            sequenceName: existingSequenceTitle
-        });
         this.onChangeTextValue(atob(sequenceInfo.data));
+    };
+
+    setSequenceName = (name) => {
+        let {uploadSequenceData} = this.props;
+        uploadSequenceData.sequenceName = name;
+        this.props.setUploadSequenceData(uploadSequenceData);
     };
 
     onSequenceInfoError = (err) => {
@@ -110,11 +117,20 @@ export default class UploadSequencePane extends React.Component {
     };
 
     determineTitle = () => {
-        return this.state.sequenceName || this.props.defaultSequenceName;
+         let {uploadSequenceData, defaultSequenceName} = this.props;
+        return uploadSequenceData.sequenceName || defaultSequenceName;
     };
 
     onUploadedSequence = (seqId, title) => {
-        this.closeDialog(seqId, undefined, title);
+        let {uploadSequenceData, generatePredictionsForSequence} = this.props;
+        if (this.state.titleErrorMessage) {
+            // user clicked upload really quick (before we could disable the upload button)
+            return;
+        }
+        generatePredictionsForSequence(seqId,
+            uploadSequenceData.model,
+            title,
+            uploadSequenceData.loadSequenceId);
     };
 
     onUploadedSequenceFailed = (errorMessage) => {
@@ -123,37 +139,25 @@ export default class UploadSequencePane extends React.Component {
         });
     };
 
-    closeDialog = (seqId, errorMessage, title) => {
-        if (seqId) {
-            if (this.state.titleErrorMessage) {
-                // user clicked upload really quick (before we could disable the upload button)
-                return;
-            }
-        }
-        this.props.onRequestClose(seqId, errorMessage, title, this.state.previousSequenceId);
-    };
-
     onChangeModel = (e) => {
-        let value = e.target.value;
-        this.props.setPredictionSettings({model: value});
+        let {uploadSequenceData} = this.props;
+        uploadSequenceData.model = e.target.value;
+        this.props.setUploadSequenceData(uploadSequenceData);
     };
 
     onClickViewPredictions = () => {
-        this.props.setShowInputPane(false);
+        let {viewExistingPredictions} = this.props;
+        viewExistingPredictions();
     };
 
-    onCloseNoSave = () => {
-        this.closeDialog(undefined, undefined, '');
-    };
-
-    setSequenceName = (evt) => {
+    onChangeSequenceName = (evt) => {
         let sequenceName = evt.target.value;
         let titleErrorMessage = undefined;
         if (this.isDuplicateTitle(sequenceName)) {
             titleErrorMessage = "This title is already taken.";
         }
+        this.setSequenceName(sequenceName);
         this.setState({
-            sequenceName: sequenceName,
             titleErrorMessage: titleErrorMessage
         });
     };
@@ -181,17 +185,11 @@ export default class UploadSequencePane extends React.Component {
     }
 
     render() {
-        let {sequenceData, predictionSettings} = this.props;
-        let {isNew} = this.state;
+        let {uploadSequenceData} = this.props;
         let noCustomSequences = new CustomSequenceList().isEmpty();
-        console.log(sequenceData);
         let models = this.getModels();
-
-        let title = this.state.sequenceName;
+        let title = uploadSequenceData.sequenceName;
         let canUpload = this.state.canUpload;
-        if (sequenceData.title) {
-            title = sequenceData.title;
-        }
         if (this.state.titleErrorMessage) {
             canUpload = false;
         }
@@ -202,14 +200,14 @@ export default class UploadSequencePane extends React.Component {
                 <TextEdit title="Title: "
                           value={title}
                           placeholder={this.props.defaultSequenceName}
-                          onChange={this.setSequenceName}
+                          onChange={this.onChangeSequenceName}
                           size="30"
                           maxlength="50"
                           errorMessage={this.state.titleErrorMessage}
                     />
             </div>
             <div className="smallRightInlineBlock">
-                <LoadSampleLink onClick={this.loadSampleData} hidden={!isNew}/>
+                <LoadSampleLink onClick={this.loadSampleData} hidden={!uploadSequenceData.showLoadSampleLink}/>
             </div>
 
             <LargeTextarea placeholder={TEXTAREA_PLACEHOLDER_TEXT}
@@ -226,7 +224,7 @@ export default class UploadSequencePane extends React.Component {
                 <span className="UploadSequencePane_uploadErrorMessage">{this.state.uploadErrorMessage}</span>
             </div>
             <div className="UploadSequencePane_model_select_div">
-                <ModelSelect selected={predictionSettings.model}
+                <ModelSelect selected={uploadSequenceData.model}
                              models={models}
                              onChange={this.onChangeModel} />
             </div>

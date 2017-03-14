@@ -59,34 +59,56 @@ class PredictionPage extends React.Component {
             nextPages: 0,
             searchDataLoaded: true,
             errorMessage: "",
-            showCustomDialog: false,
             showGeneNamesWarnings: true,
             loadingStatusLabel: "",
             predictionColor: TFColorPickers.defaultColorObj(),
             customSequenceList: this.customSequenceList.get(),
             jobDates: {},
-            sequenceData: {},
             showInputPane: showInputPane,
             customSequenceName: this.makeDefaultCustomSequenceName(),
             loadingCustomResultList: loadingCustomResultList,
             customResultList: [],
-            createNewSequence: true
+            generatingSequence: {},
+            uploadSequenceData: {
+                loadSequenceId: '',
+                sequenceName: '',
+                model: '',
+                showLoadSampleLink: true,
+            }
         };
         if (loadingCustomResultList) {
             this.customResultList.fetch();
         }
     }
 
+    setUploadSequenceData = (uploadSequenceData) => {
+        this.setState({
+            uploadSequenceData: uploadSequenceData
+        });
+    };
+
     makeDefaultCustomSequenceName = () => {
         return "Sequence List " + moment().format('MM/DD HH:mm');
     };
 
     cancelPredictionGeneration = () => {
+        var {predictionSettings, generatingSequence, uploadSequenceData} = this.state;
+        var canceledSequenceId = generatingSequence.seqId;
+        // undo selection of canceled sequence
+        predictionSettings.selectedSequence = generatingSequence.previousSelectedSequence;
+        predictionSettings.model = generatingSequence.previousModel;
+        // load up the canceled data so the user can edit and resubmit
+        uploadSequenceData.loadSequenceId = canceledSequenceId;
+        // the canceled sequence should not persist for this user
+        this.customSequenceList.remove(canceledSequenceId);
         this.setState({
             errorMessage: '',
             searchDataLoaded: true,
             loadingCustomResultList: false,
             showInputPane: true,
+            generatingSequence: {},
+            uploadSequenceData: uploadSequenceData,
+            predictionSettings: predictionSettings
         });
     };
 
@@ -101,15 +123,24 @@ class PredictionPage extends React.Component {
 
     onReceiveGenomeData = (genomes, maxBindingOffset) => {
         let predictionSettings = this.state.predictionSettings;
+        let uploadSequenceData = this.state.uploadSequenceData;
         if (!predictionSettings.model) {
-            let genomeName = Object.keys(genomes)[0];
-            predictionSettings.model = genomes[genomeName].models[0].name;
+            predictionSettings.model = this.getFirstGeneName(genomes);
+        }
+        if (!uploadSequenceData.model) {
+            uploadSequenceData.model = this.getFirstGeneName(genomes);
         }
         this.setState({
             genomeData: genomes,
             maxBindingOffset: maxBindingOffset,
-            predictionSettings: predictionSettings
+            predictionSettings: predictionSettings,
+            uploadSequenceData: uploadSequenceData
         }, this.searchFirstPage);
+    };
+
+    getFirstGeneName = (genomes) => {
+        let genomeName = Object.keys(genomes)[0];
+        return genomes[genomeName].models[0].name;
     };
 
     setPredictionColor = (colorObject) => {
@@ -143,21 +174,23 @@ class PredictionPage extends React.Component {
         Object.assign(currentPredictionSettings, predictionSettings);
         this.setState({
             predictionSettings: currentPredictionSettings
-        });
+        }, this.search);
     };
 
-    addCustomSeqenceList = (seqId, title, previousSequenceId) => {
-        let currentPredictionSettings = this.state.predictionSettings;
+    addCustomSequenceList = (seqId, model, title, previousSequenceId) => {
+        let currentPredictionSettings = Object.assign({}, this.state.predictionSettings);
+        let previousModel = currentPredictionSettings.model;
         currentPredictionSettings.selectedSequence = seqId;
+        currentPredictionSettings.model = model;
         if (this.customSequenceList.containsId(previousSequenceId)) {
             this.customSequenceList.replace(seqId, title, previousSequenceId);
         } else {
             this.customSequenceList.add(seqId, title);
         }
         this.setState({
-            selectedSequence: seqId,
             predictionSettings: currentPredictionSettings,
             showInputPane: false,
+            previousModel: previousModel
         }, this.search);
     };
 
@@ -172,15 +205,11 @@ class PredictionPage extends React.Component {
     };
 
     search = () => {
-        let predictionSettings = this.state.predictionSettings;
+        let {predictionSettings} = this.state;
         let page = this.state.currentPage;
         let {model, selectedSequence} = predictionSettings;
         if (model && selectedSequence) {
-            this.setState({
-                searchDataLoaded: false,
-            });
             this.customResultSearch.requestPage(page, predictionSettings, this.onSearchData, this.onError);
-            browserHistory.push(this.customResultSearch.makeLocalUrl(predictionSettings));
         }
     };
 
@@ -188,13 +217,16 @@ class PredictionPage extends React.Component {
         if (warning) {
             alert(warning);
         }
+        let predictionSettings = this.state.predictionSettings;
+        browserHistory.push(this.customResultSearch.makeLocalUrl(predictionSettings));
         this.setState({
             searchResults: predictions,
             nextPages: hasNextPages,
             searchDataLoaded: true,
             page: pageNum,
             errorMessage: '',
-            showGeneNamesWarnings: false
+            showGeneNamesWarnings: false,
+            generatingSequence: {}
         });
     };
 
@@ -227,19 +259,47 @@ class PredictionPage extends React.Component {
         return this.customResultSearch.getRawDownloadURL();
     };
 
-    closeCustomDialog = (seqId, errorMessage, title, previousSequenceId) => {
-        if (seqId) {
-            this.addCustomSeqenceList(seqId, title, previousSequenceId);
-        }
+    generatePredictionsForSequence = (seqId, model, title, previousSequenceId) => {
+        var {predictionSettings} = this.state;
         this.setState({
-            showCustomDialog: false,
+            searchDataLoaded: false,
+            generatingSequence: {
+                seqId: seqId,
+                model: model,
+                title: title,
+                previousSelectedSequence: predictionSettings.selectedSequence,
+                previousModel: predictionSettings.model
+            }
+        });
+        this.addCustomSequenceList(seqId, model, title, previousSequenceId);
+    };
+
+    viewExistingPredictions = () => {
+        this.setState({
+            showInputPane: false
         });
     };
 
-    setShowInputPane  = (value, createNewSequence) => {
+    showUploadSequencePane = (createNewSequence) => {
+        var {predictionSettings, uploadSequenceData} = this.state;
+        var uploadSequenceData = this.state.uploadSequenceData;
+        if (createNewSequence) {
+            uploadSequenceData.loadSequenceId = '';
+            uploadSequenceData.sequenceName = '';
+            uploadSequenceData.showLoadSampleLink = true;
+            uploadSequenceData.model = predictionSettings.model;
+        } else { //editing existing sequence
+            var loadSequenceId = predictionSettings.selectedSequence;
+            var sequenceData = this.customSequenceList.lookup(loadSequenceId);
+            var title = sequenceData.title;
+            uploadSequenceData.loadSequenceId = loadSequenceId;
+            uploadSequenceData.sequenceName = title;
+            uploadSequenceData.showLoadSampleLink = false;
+            uploadSequenceData.model = predictionSettings.model;
+        }
         this.setState({
             showInputPane: value,
-            createNewSequence: createNewSequence
+            uploadSequenceData: uploadSequenceData
         });
     };
 
@@ -280,11 +340,10 @@ class PredictionPage extends React.Component {
                                                predictionSettings={this.state.predictionSettings}
                                                setPredictionSettings={this.setPredictionSettings}
                                                setErrorMessage={this.setErrorMessage}
-                                               showCustomDialog={this.state.showCustomDialog}
                                                predictionColor={predictionColor}
                                                setPredictionColor={this.setPredictionColor}
                                                showTwoColorPickers={preferenceSettings.isPreference}
-                                               setShowInputPane={this.setShowInputPane}
+                                               showUploadSequencePane={this.showUploadSequencePane}
                                                customResultList={this.state.customResultList}
 
         />;
@@ -297,7 +356,6 @@ class PredictionPage extends React.Component {
                                                  loadingStatusLabel={this.state.loadingStatusLabel}
                                                  hasSequences={this.state.predictionSettings.selectedSequence}
                                                  errorMessage={this.state.errorMessage}
-                                                 showCustomDialog={this.state.showCustomDialog}
                                                  predictionStore={this.predictionStore}
                                                  searchOperations={searchOperations}
                                                  predictionColor={predictionColor}
@@ -319,14 +377,12 @@ class PredictionPage extends React.Component {
             } else {
                 if (this.state.showInputPane) {
                     content = <UploadSequencePane
-                        createNewSequence={this.state.createNewSequence}
                         genomeData={this.state.genomeData}
-                        predictionSettings={this.state.predictionSettings}
-                        setPredictionSettings={this.setPredictionSettings}
-                        sequenceData={this.state.sequenceData}
+                        uploadSequenceData={this.state.uploadSequenceData}
+                        setUploadSequenceData={this.setUploadSequenceData}
                         defaultSequenceName={this.state.customSequenceName}
-                        onRequestClose={this.closeCustomDialog}
-                        setShowInputPane={this.setShowInputPane}
+                        generatePredictionsForSequence={this.generatePredictionsForSequence}
+                        viewExistingPredictions={this.viewExistingPredictions}
                     />
                 } else {
                     content = <ThreePanelPane
