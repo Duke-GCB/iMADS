@@ -19,16 +19,21 @@ class TestCustomResultData(TestCase):
             return [
                 ('123', 'ELK1')
             ]
-        pred.webserver.customresult.read_database = fake_read_database
-        uid = '8B9836B5-8E3D-4346-AB12-69DD10313C77'
-        results = CustomResultData.find(db=None, sequence_id=uid, model_name=None)
-        self.assertEqual(1, len(results))
-        item = results[0]
-        self.assertEqual('123', item['resultId'])
-        self.assertEqual('ELK1', item['modelName'])
-        self.assertEqual('8B9836B5-8E3D-4346-AB12-69DD10313C77', item['sequenceId'])
-        self.assertNotIn('custom_result.model_name =', self.query_sql)
-        self.assertEqual(['8B9836B5-8E3D-4346-AB12-69DD10313C77'], self.query_params)
+
+        sv_read_database = pred.webserver.customresult.read_database
+        try:
+            pred.webserver.customresult.read_database = fake_read_database
+            uid = '8B9836B5-8E3D-4346-AB12-69DD10313C77'
+            results = CustomResultData.find(db=None, sequence_id=uid, model_name=None)
+            self.assertEqual(1, len(results))
+            item = results[0]
+            self.assertEqual('123', item['resultId'])
+            self.assertEqual('ELK1', item['modelName'])
+            self.assertEqual('8B9836B5-8E3D-4346-AB12-69DD10313C77', item['sequenceId'])
+            self.assertNotIn('custom_result.model_name =', self.query_sql)
+            self.assertEqual(['8B9836B5-8E3D-4346-AB12-69DD10313C77'], self.query_params)
+        finally:
+            pred.webserver.customresult.read_database = sv_read_database
 
     def test_find_with_model_filter(self):
         self.query_sql = ''
@@ -39,13 +44,18 @@ class TestCustomResultData(TestCase):
             return [
                 ('123', 'ELK1')
             ]
-        pred.webserver.customresult.read_database = fake_read_database
-        uid = '8B9836B5-8E3D-4346-AB12-69DD10313C77'
-        results = CustomResultData.find(db=None, sequence_id=uid, model_name='ELK1')
-        self.assertEqual(1, len(results))
-        item = results[0]
-        self.assertEqual('123', item['resultId'])
-        self.assertEqual('ELK1', item['modelName'])
-        self.assertEqual('8B9836B5-8E3D-4346-AB12-69DD10313C77', item['sequenceId'])
-        self.assertIn('custom_result.model_name =', self.query_sql)
-        self.assertEqual(['8B9836B5-8E3D-4346-AB12-69DD10313C77', 'ELK1'], self.query_params)
+
+        sv_read_database = pred.webserver.customresult.read_database
+        try:
+            pred.webserver.customresult.read_database = fake_read_database
+            uid = '8B9836B5-8E3D-4346-AB12-69DD10313C77'
+            results = CustomResultData.find(db=None, sequence_id=uid, model_name='ELK1')
+            self.assertEqual(1, len(results))
+            item = results[0]
+            self.assertEqual('123', item['resultId'])
+            self.assertEqual('ELK1', item['modelName'])
+            self.assertEqual('8B9836B5-8E3D-4346-AB12-69DD10313C77', item['sequenceId'])
+            self.assertIn('custom_result.model_name =', self.query_sql)
+            self.assertEqual(['8B9836B5-8E3D-4346-AB12-69DD10313C77', 'ELK1'], self.query_params)
+        finally:
+            pred.webserver.customresult.read_database = sv_read_database
