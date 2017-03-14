@@ -7,8 +7,8 @@ RUN apt-get install npm -y
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 
 # Install bigBedToBed
-ADD http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bigBedToBed /usr/local/bin/bigBedToBed
-RUN ["chmod", "777", "/usr/local/bin/bigBedToBed"]
+ADD ./third_party/linux.x86_64/bigBedToBed /usr/local/bin/bigBedToBed
+RUN ["chmod", "755", "/usr/local/bin/bigBedToBed"]
 
 # Install global dependencies
 RUN npm install -g npm
