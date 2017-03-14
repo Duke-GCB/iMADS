@@ -1,15 +1,14 @@
 import React from 'react';
-import Popup from '../common/Popup.jsx'
 import SingleFileUpload from '../common/SingleFileUpload.jsx'
-import LoadingButton from '../common/LoadingButton.jsx'
 import LargeTextarea from '../common/LargeTextarea.jsx'
 import TextEdit from '../common/TextEdit.jsx'
 import LoadSampleLink from '../common/LoadSampleLink.jsx'
 import ModelSelect from '../common/ModelSelect.jsx';
 import UploadSequenceButtons from './UploadSequenceButtons.jsx';
-import FileUpload from '../models/FileUpload.js';
 import {CustomSequence, CustomSequenceList} from '../models/CustomSequence.js';
 import {SEQUENCE_SAMPLE} from '../models/SampleData.js'
+import UploadContent from '../models/UploadContent.js';
+import ErrorMessage from '../common/ErrorMessage.jsx';
 require('./UploadSequencePane.css');
 
 const TITLE = "Custom DNA Sequence";
@@ -94,14 +93,14 @@ export default class UploadSequencePane extends React.Component {
     };
 
     onClickUpload = () => {
-        this.setState({
-            loading: true
-        });
-        if (this.state.file) {
-            let fileUpload = new FileUpload(this.state.file);
-            fileUpload.fetchAllFile(this.uploadSequence);
+        let uploadContent = new UploadContent(this.state.file, this.state.textValue);
+        if (uploadContent.isTooBig()) {
+            this.onUploadedSequenceFailed(uploadContent.getTooBigErrorMessage());
         } else {
-            this.uploadSequence(this.state.textValue);
+            this.setState({
+                loading: true
+            });
+            uploadContent.fetchData(this.uploadSequence);
         }
     };
 
@@ -221,7 +220,7 @@ export default class UploadSequencePane extends React.Component {
                                   onChangeFile={this.onChangeFile}
                                   disabled={this.state.loading}
                 />
-                <span className="UploadSequencePane_uploadErrorMessage">{this.state.uploadErrorMessage}</span>
+                <ErrorMessage message={this.state.uploadErrorMessage} />
             </div>
             <div className="UploadSequencePane_model_select_div">
                 <ModelSelect selected={uploadSequenceData.model}
