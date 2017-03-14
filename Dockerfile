@@ -5,8 +5,8 @@ RUN curl -sL https://deb.nodesource.com/setup_7.x | bash -
 RUN apt-get install -y nodejs
 
 # Install bigBedToBed
-ADD http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bigBedToBed /usr/local/bin/bigBedToBed
-RUN ["chmod", "777", "/usr/local/bin/bigBedToBed"]
+ADD ./third_party/linux.x86_64/bigBedToBed /usr/local/bin/bigBedToBed
+RUN ["chmod", "755", "/usr/local/bin/bigBedToBed"]
 
 # Install global dependencies
 RUN npm install webpack -g
