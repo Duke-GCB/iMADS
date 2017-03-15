@@ -10,6 +10,7 @@ import PredictionResultsPanel from './PredictionResultsPanel.jsx'
 import TFColorPickers from '../common/TFColorPickers.jsx';
 import UploadSequencePane from './UploadSequencePane.jsx';
 import ProgressTable from '../common/ProgressTable.jsx';
+import TitledPanel from '../common/TitledPanel.jsx';
 import PredictionsStore from '../models/PredictionsStore.js'
 import URLBuilder from '../models/URLBuilder.js'
 import PageBatch from '../models/PageBatch.js'
@@ -18,6 +19,7 @@ import CustomResultSearch from '../models/CustomResultSearch.js';
 import CustomResultList from '../models/CustomResultList.js';
 import {CustomSequenceList} from '../models/CustomSequence.js';
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../models/AppSettings.js'
+import {formatModelName} from '../models/Model.js';
 import {SEQUENCE_NOT_FOUND} from '../models/Errors.js';
 import {getPreferenceSettings, getCoreRange, getFirstGenomeName} from '../models/GenomeData.js';
 import {SessionStorage, PREDICTION_PAGE_KEY} from '../models/SessionStorage.js';
@@ -298,7 +300,7 @@ class PredictionPage extends React.Component {
             uploadSequenceData.model = predictionSettings.model;
         }
         this.setState({
-            showInputPane: value,
+            showInputPane: true,
             uploadSequenceData: uploadSequenceData
         });
     };
@@ -314,6 +316,7 @@ class PredictionPage extends React.Component {
     };
 
     render() {
+        let {generatingSequence} = this.state;
         // Add preference min/max to color settings.
         let preferenceSettings = getPreferenceSettings(this.state.genomeData,
             getFirstGenomeName(this.state.genomeData),
@@ -368,11 +371,14 @@ class PredictionPage extends React.Component {
             content = <span>Loading..</span>;
         } else {
             if (!this.state.searchDataLoaded) {
+                var title = "Generating Predictions for " + formatModelName(generatingSequence.model);
                 content = <div className="centerVertically">
-                    <ProgressTable startedDate={this.state.jobDates.started}
+                    <TitledPanel title={title} subTitle={generatingSequence.title}>
+                        <ProgressTable startedDate={this.state.jobDates.started}
                                    currentDate={this.state.jobDates.current}
                                    status={this.state.loadingStatusLabel}
                                    cancelOperation={this.cancelPredictionGeneration}/>
+                    </TitledPanel>
                 </div>;
             } else {
                 if (this.state.showInputPane) {
