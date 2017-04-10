@@ -206,10 +206,14 @@ class CustomResultSearch {
     }
 
     makeSettingsFromQuery(query) {
+        let allValue = query.all;
+        if (!allValue) {
+            allValue = true;
+        }
         return {
             model: query.model,
             selectedSequence: query.selectedSequence,
-            all: query.all,
+            all: allValue,
             maxPredictionSort: query.maxPredictionSort,
         }
     }
