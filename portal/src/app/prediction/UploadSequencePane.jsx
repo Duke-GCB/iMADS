@@ -6,7 +6,7 @@ import LoadSampleLink from '../common/LoadSampleLink.jsx'
 import ModelSelect from '../common/ModelSelect.jsx';
 import UploadSequenceButtons from './UploadSequenceButtons.jsx';
 import {CustomSequence, CustomSequenceList} from '../models/CustomSequence.js';
-import {SEQUENCE_SAMPLE} from '../models/SampleData.js'
+import {MAKE_PREDICTIONS_SEQUENCE_SAMPLE} from '../models/SampleData.js'
 import UploadContent from '../models/UploadContent.js';
 import ErrorMessage from '../common/ErrorMessage.jsx';
 require('./UploadSequencePane.css');
@@ -167,7 +167,7 @@ export default class UploadSequencePane extends React.Component {
     };
 
     loadSampleData = () => {
-        this.onChangeTextValue(SEQUENCE_SAMPLE);
+        this.onChangeTextValue(MAKE_PREDICTIONS_SEQUENCE_SAMPLE);
     };
 
     getModels() {
