@@ -25,7 +25,7 @@ import {getPreferenceSettings, getCoreRange, getFirstGenomeName} from '../models
 import {SessionStorage, PREDICTION_PAGE_KEY} from '../models/SessionStorage.js';
 let moment = require('moment');
 
-const DEFAULT_MODEL_NAME_PATTERN = 'Elk1_0004';
+const DEFAULT_MODEL_NAME_PATTERN = 'Elk1_0004_vs_Ets1_0005';
 
 class PredictionPage extends React.Component {
     constructor(props) {
