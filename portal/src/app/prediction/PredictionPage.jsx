@@ -25,6 +25,8 @@ import {getPreferenceSettings, getCoreRange, getFirstGenomeName} from '../models
 import {SessionStorage, PREDICTION_PAGE_KEY} from '../models/SessionStorage.js';
 let moment = require('moment');
 
+const DEFAULT_MODEL_NAME_PATTERN = 'Elk1_0004';
+
 class PredictionPage extends React.Component {
     constructor(props) {
         super(props);
@@ -126,11 +128,12 @@ class PredictionPage extends React.Component {
     onReceiveGenomeData = (genomes, maxBindingOffset) => {
         let predictionSettings = this.state.predictionSettings;
         let uploadSequenceData = this.state.uploadSequenceData;
+
         if (!predictionSettings.model) {
-            predictionSettings.model = this.getFirstGeneName(genomes);
+            predictionSettings.model = this.getDefaultModelName(genomes);
         }
         if (!uploadSequenceData.model) {
-            uploadSequenceData.model = this.getFirstGeneName(genomes);
+            uploadSequenceData.model = this.getDefaultModelName(genomes);
         }
         this.setState({
             genomeData: genomes,
@@ -144,6 +147,16 @@ class PredictionPage extends React.Component {
         let genomeName = Object.keys(genomes)[0];
         return genomes[genomeName].models[0].name;
     };
+
+    getDefaultModelName(genomes, pattern) {
+        let genomeName = Object.keys(genomes)[0];
+        for (var model of genomes[genomeName].models) {
+            if (model.name.includes(DEFAULT_MODEL_NAME_PATTERN)) {
+                return model.name;
+            }
+        }
+        return this.getFirstGeneName(genomes);
+    }
 
     setPredictionColor = (colorObject) => {
         this.setState({
