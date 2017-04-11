@@ -46,7 +46,14 @@ class PredictionPage extends React.Component {
             if (predictionSettingsLastVisit) {
                 predictionSettings = predictionSettingsLastVisit;
             } else {
-                predictionSettings.selectedSequence = this.customSequenceList.getFirst();
+                let firstSequence = this.customSequenceList.getFirst();
+                if (firstSequence) {
+                    predictionSettings.selectedSequence = firstSequence.id;
+                    predictionSettings.model = firstSequence.model;
+                } else {
+                    predictionSettings.selectedSequence = '';
+                }
+
             }
         } else {
             this.customSequenceList.addIfNecessary(predictionSettings.selectedSequence);
@@ -198,9 +205,9 @@ class PredictionPage extends React.Component {
         currentPredictionSettings.selectedSequence = seqId;
         currentPredictionSettings.model = model;
         if (this.customSequenceList.containsId(previousSequenceId)) {
-            this.customSequenceList.replace(seqId, title, previousSequenceId);
+            this.customSequenceList.replace(seqId, title, model, previousSequenceId);
         } else {
-            this.customSequenceList.add(seqId, title);
+            this.customSequenceList.add(seqId, title, model);
         }
         this.setState({
             predictionSettings: currentPredictionSettings,

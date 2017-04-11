@@ -48,10 +48,11 @@ export class CustomSequenceList {
         this.list = list;
     }
 
-    add(seqId, title) {
+    add(seqId, title, model) {
         this.list.push({
             id: seqId,
             title: title,
+            model: model,
             createdMS: new Date().getTime()
         });
         this.saveChanges();
@@ -88,7 +89,7 @@ export class CustomSequenceList {
         return false;
     }
 
-    replace(seqId, title, oldSeqId) {
+    replace(seqId, title, model, oldSeqId) {
         for (let i = 0; i < this.list.length; i++) {
             let item = this.list[i];
             if (item.id == oldSeqId) {
@@ -96,6 +97,7 @@ export class CustomSequenceList {
                 this.list[i] = {
                     id: seqId,
                     title: title,
+                    model: model,
                     createdMS: new Date().getTime(),
                     previousSequence: previousSequence
                 };
@@ -155,9 +157,9 @@ export class CustomSequenceList {
 
     getFirst() {
         if (this.isEmpty()) {
-            return ''
+            return null;
         }
-        return this.list[0].id;
+        return this.list[0];
     }
 
 
