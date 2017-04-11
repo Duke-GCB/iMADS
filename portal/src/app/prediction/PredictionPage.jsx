@@ -46,14 +46,7 @@ class PredictionPage extends React.Component {
             if (predictionSettingsLastVisit) {
                 predictionSettings = predictionSettingsLastVisit;
             } else {
-                let firstSequence = this.customSequenceList.getFirst();
-                if (firstSequence) {
-                    predictionSettings.selectedSequence = firstSequence.id;
-                    predictionSettings.model = firstSequence.model;
-                } else {
-                    predictionSettings.selectedSequence = '';
-                }
-
+                this.applyFirstCustomSequence(predictionSettings);
             }
         } else {
             this.customSequenceList.addIfNecessary(predictionSettings.selectedSequence);
@@ -91,6 +84,18 @@ class PredictionPage extends React.Component {
             this.customResultList.fetch();
         }
     }
+
+    applyFirstCustomSequence = (predictionSettings) => {
+        let firstSequence = this.customSequenceList.getFirst();
+        if (firstSequence) {
+            predictionSettings.selectedSequence = firstSequence.id;
+            predictionSettings.model = firstSequence.model;
+            return true;
+        } else {
+            predictionSettings.selectedSequence = '';
+            return false;
+        }
+    };
 
     setUploadSequenceData = (uploadSequenceData) => {
         this.setState({
@@ -266,11 +271,14 @@ class PredictionPage extends React.Component {
     removeExpiredSequence = (sequenceId) => {
         this.customSequenceList.remove(sequenceId);
         let predictionSettings = this.state.predictionSettings;
-        predictionSettings.selectedSequence = this.customSequenceList.getFirst();
-        this.setState({
-            customSequenceList: this.customSequenceList.get(),
-            predictionSettings: predictionSettings
-        }, this.search);
+        if (this.applyFirstCustomSequence(predictionSettings)) {
+            this.setState({
+                customSequenceList: this.customSequenceList.get(),
+                predictionSettings: predictionSettings
+            }, this.search);
+        } else {
+            this.showUploadSequencePane(true);
+        }
     };
 
     downloadAll = (format) => {
