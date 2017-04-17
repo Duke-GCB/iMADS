@@ -15,9 +15,11 @@ describe('CustomSequenceList', function () {
         it('should be able find added items', function () {
             let list = new CustomSequenceList(new FakeLocalStorage());
             assert.equal(list.containsId(1), false);
-            list.add(1, "test");
+            list.add(1, "test", "Elk1_0004");
             assert.equal(list.containsId(1), true);
             assert.equal(list.containsId(2), false);
+            assert.equal(1, list.getFirst().id);
+            assert.equal("Elk1_0004", list.getFirst().model);
         });
     });
     describe('isTitleDuplicate()', function () {

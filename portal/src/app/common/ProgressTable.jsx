@@ -27,32 +27,41 @@ export default class ProgressTable extends React.Component {
     }
 
     render() {
-        let {startedDate, currentDate, status} = this.props;
+        let {startedDate, currentDate, status, cancelOperation} = this.props;
         let started = moment(new Date(startedDate));
         let current = moment(new Date(currentDate));
         let elapsed = this.getEllapsed(started, current);
         if (!startedDate) {
             return <div>Loading</div>;
         }
-        return <table className="ProgressTable_table">
-            <tbody>
-            <tr className="ProgressTable_tr_even">
-                <td className="ProgressTable_td">Status</td>
-                <td className="ProgressTable_td">{status}</td>
-            </tr>
-            <tr className="ProgressTable_tr_odd">
-                <td className="ProgressTable_td">Submitted at</td>
-                <td className="ProgressTable_td">{this.formatDate(started)}</td>
-            </tr>
-            <tr className="ProgressTable_tr_even">
-                <td className="ProgressTable_td">Current time</td>
-                <td className="ProgressTable_td">{this.formatDate(current)}</td>
-            </tr>
-            <tr className="ProgressTable_tr_odd">
-                <td className="ProgressTable_td">Elapsed</td>
-                <td className="ProgressTable_td">{elapsed}</td>
-            </tr>
-            </tbody>
-        </table>;
+        return <div>
+            <table className="ProgressTable_table">
+                <tbody>
+                <tr className="ProgressTable_tr_even">
+                    <td className="ProgressTable_td">Status</td>
+                    <td className="ProgressTable_td">{status}</td>
+                </tr>
+                <tr className="ProgressTable_tr_odd">
+                    <td className="ProgressTable_td">Submitted at</td>
+                    <td className="ProgressTable_td">{this.formatDate(started)}</td>
+                </tr>
+                <tr className="ProgressTable_tr_even">
+                    <td className="ProgressTable_td">Current time</td>
+                    <td className="ProgressTable_td">{this.formatDate(current)}</td>
+                </tr>
+                <tr className="ProgressTable_tr_odd">
+                    <td className="ProgressTable_td">Elapsed</td>
+                    <td className="ProgressTable_td">{elapsed}</td>
+                </tr>
+                </tbody>
+            </table>
+            <div className="centerChildrenHorizontally">
+                <button className="btn btn-default ProgressTable_cancel_button"
+                        type="button"
+                        onClick={cancelOperation}>
+                    Cancel
+                </button>
+            </div>
+        </div>;
     }
 }

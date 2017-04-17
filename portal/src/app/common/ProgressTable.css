@@ -14,3 +14,7 @@
     white-space: nowrap;
     font-size: 11pt;
 }
+
+.ProgressTable_cancel_button {
+    margin-top: 12px;
+}

@@ -4,6 +4,7 @@ Part of the tables used for custom jobs.
 """
 import uuid
 from pred.queries.dbutil import update_database, read_database
+from pred.webserver.errors import ClientException, ErrorType
 
 SEQUENCE_NOT_FOUND = "Unable to find sequence for this name."
 
@@ -146,7 +147,7 @@ class CustomResultData(object):
     @staticmethod
     def find_one(db, sequence_id, model_name):
         """
-        Find a single custom result for the specified sequence
+        Find a single custom result for the specified sequence and model
         :param db: Database Connection
         :param sequence_id: str: uuid of the custom sequence to search for
         :param model_name: str: name of the model to search for
@@ -158,6 +159,36 @@ class CustomResultData(object):
         for row in read_database(db, select_sql, [sequence_id, model_name]):
             return row[0]
         return None
+
+    @staticmethod
+    def find(db, sequence_id, model_name):
+        """
+        Find custom results with the sequence_id and optionally model_name.
+        :param db: Database Connection
+        :param sequence_id: str: uuid of the custom sequence to search for
+        :param model_name: str: name of the model to search for, None if for all model names
+        :return: [dict]: array of custom result info
+        """
+        try:
+            val = uuid.UUID(sequence_id, version=4)
+        except ValueError:
+            raise ClientException(message="Sequence id is not a valid uuid", error_type=ErrorType.INVALID_SEQUENCE_ID)
+        select_sql = "select custom_result.id, custom_result.model_name from custom_result " \
+                     " inner join job on job.id = job_id " \
+                     " where seq_id = %s"
+        params = [sequence_id]
+        if model_name:
+            select_sql += " and custom_result.model_name = %s"
+            params.append(model_name)
+        result = []
+        for row in read_database(db, select_sql, params):
+            values = {
+                'resultId': row[0],
+                'modelName': row[1],
+                'sequenceId': sequence_id,
+            }
+            result.append(values)
+        return result
 
     @staticmethod
     def bed_file_contents(db, result_id):

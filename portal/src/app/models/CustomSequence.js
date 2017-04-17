@@ -48,14 +48,23 @@ export class CustomSequenceList {
         this.list = list;
     }
 
-    add(seqId, title) {
-        console.log(title);
+    add(seqId, title, model) {
         this.list.push({
             id: seqId,
             title: title,
+            model: model,
             createdMS: new Date().getTime()
         });
         this.saveChanges();
+    }
+
+    lookup(seqId) {
+        for (let item of this.list) {
+            if (item.id == seqId) {
+                return item;
+            }
+        }
+        return undefined;
     }
 
     saveChanges() {
@@ -80,14 +89,17 @@ export class CustomSequenceList {
         return false;
     }
 
-    replace(seqId, title, oldSeqId) {
+    replace(seqId, title, model, oldSeqId) {
         for (let i = 0; i < this.list.length; i++) {
             let item = this.list[i];
             if (item.id == oldSeqId) {
+                var previousSequence = Object.assign({}, this.list[i]);
                 this.list[i] = {
                     id: seqId,
                     title: title,
-                    createdMS: new Date().getTime()
+                    model: model,
+                    createdMS: new Date().getTime(),
+                    previousSequence: previousSequence
                 };
                 this.saveChanges();
                 break;
@@ -99,7 +111,12 @@ export class CustomSequenceList {
         for (let i = 0; i < this.list.length; i++) {
             let item = this.list[i];
             if (item.id == seqId) {
-                this.list.splice(i);
+                if (item.previousSequence && item.previousSequence.id) {
+                    this.list[i] = item.previousSequence;
+                } else {
+                    this.list.splice(i);
+                }
+                break;
             }
         }
         this.saveChanges();
@@ -140,9 +157,9 @@ export class CustomSequenceList {
 
     getFirst() {
         if (this.isEmpty()) {
-            return ''
+            return null;
         }
-        return this.list[0].id;
+        return this.list[0];
     }
 
 
