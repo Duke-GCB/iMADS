@@ -3,7 +3,7 @@ require('./ColorPicker.css');
 
 class ColorPickerCell extends React.Component {
     onClick = () => {
-        let {colorName, onClickCell} = this.props;
+        let {colorName, onClickCell, disabled} = this.props;
         onClickCell(colorName);
     }
     render() {
@@ -20,13 +20,26 @@ export default class ColorPicker extends React.Component {
     }
 
     render() {
-        let {label, color} = this.props;
+        let {label, labelTitle, color, disabled} = this.props;
+        console.log(disabled);
+        let stuff = [];
+        if (disabled) {
+            return <div>
+                <label title={labelTitle}>{label}</label>
+                <button className="ColorPicker_button"
+                        style={{backgroundColor: color, border: "1px solid lightGrey"}}
+                        title={labelTitle}
+                        disabled></button>
+            </div>
+        }
         return <div className="dropdown">
-            <label>{label}</label>
+            <label title={labelTitle}>{label}</label>
             <button className="ColorPicker_button dropdown-toggle"
                     data-toggle="dropdown"
                     style={{backgroundColor: color}}
+                    title={labelTitle}
             ></button>
+            {stuff}
             <div className="ColorPicker_popup dropdown-menu">
                 <ColorPickerCell colorName="red" onClickCell={this.onClickCell} />
                 <ColorPickerCell colorName="green" onClickCell={this.onClickCell} />
