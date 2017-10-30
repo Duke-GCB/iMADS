@@ -46,7 +46,7 @@ class SearchFilterPanel extends React.Component {
                 genome: selectedGenome,
                 geneList: geneList,
                 model: model,
-                all: false,
+                all: true,
                 upstream: 200,
                 upstreamValid: true,
                 downstream: 200,
