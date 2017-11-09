@@ -18,6 +18,7 @@ from pred.webserver.sequencelist import SequenceList
 from pred.webserver.customjob import CustomJob, JobStatus
 from pred.webserver.customresult import CustomResultData
 from pred.webserver.errors import ClientException, ServerException, ErrorType
+from pred.webserver.csvgenerator import make_row_generator
 
 logging.basicConfig(stream=sys.stderr)
 app = Flask(__name__)
@@ -426,40 +427,14 @@ def make_json_response(props, status_code=None):
 
 
 def make_predictions_csv_response(predictions, args):
-    up = args.get_upstream()
-    down = args.get_downstream()
-    size = up + down + 1
-    if args.is_custom_ranges_list():
-        size = None
-    separator = ','
-    if args.get_format() == 'tsv':
-        separator = '\t'
-    headers = ['Name', 'ID', 'Max', 'Chromosome', 'Start', 'End']
-    if args.is_custom_ranges_list():
-        headers = ['Chromosome', 'Start', 'End', 'Max']
-    if args.get_include_all():
-        if args.is_custom_ranges_list():
-            headers.append('Values')
-        else:
-            headers.extend([str(i) for i in range(-1*up, down+1)])
-    yield separator.join(headers) + '\n'
-    for prediction in predictions:
-        items = []
-        if args.is_custom_ranges_list():
-            items = [prediction['chrom'], str(prediction['start']), str(prediction['end']), str(prediction['max'])]
-        else:
-            start = prediction['start']
-            end = prediction['end']
-            items = [
-                prediction['commonName'],
-                prediction['name'],
-                str(prediction['max']),
-                prediction['chrom'],
-                str(start),
-                str(end)]
-        if args.get_include_all():
-            items.extend(get_all_values(prediction, size))
-        yield separator.join(items) + '\n'
+    """
+    Create predictions csv/tsv response for the specified predictions using the settings in args.
+    :param predictions: [dict]: list of prediction data rows (see PredictionSearch.get_predictions)
+    :param args: SearchArgs: settings used configure response generation
+    :return: generator that returns csv/tsv content
+    """
+    generator = make_row_generator(args)
+    return generator.generate_rows(predictions)
 
 
 if __name__ == '__main__':
