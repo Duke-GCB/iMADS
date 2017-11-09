@@ -2,6 +2,7 @@
 Creates TSV/CSV data based on predictions
 """
 from pred.webserver.predictionsearch import get_all_values
+from pred.webserver.dnasequence import DNALookup
 
 
 class RowGenerator(object):
@@ -79,6 +80,44 @@ class NumericColumnRowFormat(BaseRowFormat):
         return values + get_all_values(prediction, self.size)
 
 
+class BindingSiteListRowFormat(BaseRowFormat):
+    """
+    Adds 3 columns to base values and repeats for each binding site in a prediction
+    """
+    def __init__(self, config, genome, args):
+        """
+        :param config: config.Config: system wide configuration
+        :param genome: str: name of the genome
+        :param args: SearchArgs: settings used to determine which RowFormat class to create
+        """
+        super(BindingSiteListRowFormat, self).__init__(args)
+        self.dna_lookup = DNALookup(config, genome)
+        self.extra_headers = ['Binding site location', 'Binding site score', 'DNA Sequence']
+
+    def make_rows(self, prediction):
+        """
+        Returns a row for each binding site location in prediction
+        :param prediction: dict: list of prediction data rows (see PredictionSearch.get_predictions)
+        :return: [[str]]: rows of values
+        """
+        rows = []
+        chrom = prediction['chrom']
+        base_values = self.make_base_values(prediction)
+        if prediction['values']:
+            for binding_site_data in prediction['values']:
+                start = binding_site_data['start']
+                end = binding_site_data['end']
+                binding_site_location = '{}:{}-{}'.format(chrom, start, end)
+                binding_site_score = str(binding_site_data['value'])
+                dna_sequence = self.dna_lookup.lookup_dna_sequence(chrom, start, end)
+                row = base_values + [binding_site_location, binding_site_score, dna_sequence]
+                rows.append(row)
+        else:
+            row = base_values + ['', '', '']
+            rows.append(row)
+        return rows
+
+
 class CustomRangesRowFormat(BaseRowFormat):
     """
     Displays 4 column data based custom range predictions.
@@ -109,9 +148,11 @@ class CustomRangesWithValuesRowFormat(CustomRangesRowFormat):
         return values + get_all_values(prediction, None)
 
 
-def make_row_format(args):
+def make_row_format(config, genome, args):
     """
-    Based on args create a RowFormat object
+    Based on config, genome and args create a RowFormat object
+    :param config: config.Config: system wide configuration
+    :param genome: str: name of the genome
     :param args: SearchArgs: settings used to determine which RowFormat class to create
     :return: object with get_headers and make_rows methods
     """
@@ -121,19 +162,23 @@ def make_row_format(args):
         else:
             return CustomRangesRowFormat(args)
     else:
-        if args.get_include_all():
+        if args.get_binding_site_list():
+            return BindingSiteListRowFormat(config, genome, args)
+        elif args.get_include_all():
             return NumericColumnRowFormat(args)
         else:
             return BaseRowFormat(args)
 
 
-def make_row_generator(args):
+def make_row_generator(config, genome, args):
     """
     Create object that will create a generator for returning CSV or TSV data.
+    :param config: config.Config: system wide configuration
+    :param genome: str: name of the genome
     :param args: SearchArgs: settings used to determine which RowFormat class to create
     :return: RowGenerator: call generate_rows to generate lines for CSV/TSV data
     """
     separator = ','
     if args.get_format() == 'tsv':
         separator = '\t'
-    return RowGenerator(separator, make_row_format(args))
+    return RowGenerator(separator, make_row_format(config, genome, args))

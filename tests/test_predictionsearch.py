@@ -1,5 +1,5 @@
 from unittest import TestCase
-from pred.webserver.predictionsearch import get_all_values
+from pred.webserver.predictionsearch import get_all_values, SearchArgs
 
 
 class TestPredictionSearch(TestCase):
@@ -80,3 +80,28 @@ class TestPredictionSearch(TestCase):
         }
         expected = ['0', '-1.3', '0', '0', '0']
         self.assertEqual(expected, get_all_values(prediction, None))
+
+
+class TestSearchArgs(TestCase):
+    def test_get_binding_site_list(self):
+        # default to False
+        search_args = SearchArgs(max_stream_val=100, args={})
+        self.assertFalse(search_args.get_binding_site_list())
+
+        # test bindingSiteList 'true' value
+        search_args = SearchArgs(max_stream_val=100, args={
+            'bindingSiteList': 'true'
+        })
+        self.assertTrue(search_args.get_binding_site_list())
+
+        # test bindingSiteList 'false' value
+        search_args = SearchArgs(max_stream_val=100, args={
+            'bindingSiteList': 'false'
+        })
+        self.assertFalse(search_args.get_binding_site_list())
+
+        # test bindingSiteList '' value
+        search_args = SearchArgs(max_stream_val=100, args={
+            'bindingSiteList': ''
+        })
+        self.assertFalse(search_args.get_binding_site_list())
