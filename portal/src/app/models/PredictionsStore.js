@@ -4,6 +4,7 @@ import StreamValue from './StreamValue.js'
 import URLBuilder from './URLBuilder.js'
 import {GeneNameColumnFormats, CustomRangeColumnFormats, COLUMN_FORMAT_NUMERIC_BINDING_SITES,
     COLUMN_FORMAT_BINDING_SITES_LIST} from './ColumnFormats.js'
+const GENE_NAMES_WARNING_PREFIX = "Gene names not in our database";
 
 class PredictionsStore {
     constructor(pageBatch, urlBuilder) {

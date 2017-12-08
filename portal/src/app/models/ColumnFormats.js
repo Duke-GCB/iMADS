@@ -1,4 +1,3 @@
-export const GENE_NAMES_WARNING_PREFIX = "Gene names not in our database";
 export const COLUMN_FORMAT_STANDARD = 'standard';
 export const COLUMN_FORMAT_NUMERIC_BINDING_SITES = 'numericBindingSites';
 export const COLUMN_FORMAT_BINDING_SITES_LIST = 'bindingSiteList';
