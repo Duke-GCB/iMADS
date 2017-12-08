@@ -28,6 +28,7 @@ class Popup extends React.Component {
 const customStyles = {
     content: {
         minHeight: '450px',
+        bottom: 'none'
     },
     overlay: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
