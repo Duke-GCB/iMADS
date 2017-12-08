@@ -16,7 +16,6 @@ import {getPreferenceSettings, getCoreRange} from '../models/GenomeData.js';
 import {SessionStorage, SEARCH_PAGE_KEY} from '../models/SessionStorage.js';
 
 
-
 class SearchPage extends React.Component {
      constructor(props) {
          super(props);
@@ -111,10 +110,6 @@ class SearchPage extends React.Component {
         this.search(this.state.searchSettings, page)
     };
 
-    downloadAll = (format) => {
-        return this.predictionStore.getDownloadURL(format, this.state.searchSettings);
-    };
-
     setPredictionColor = (colorObject) => {
         this.setState({
             predictionColor: colorObject
@@ -135,7 +130,6 @@ class SearchPage extends React.Component {
         let searchOperations = {
             search: this.search,
             changePage: this.changePage,
-            downloadAll: this.downloadAll,
             setErrorMessage: this.setErrorMessage
         };
         let topPanel = <PageTitle>TF Binding Predictions</PageTitle>;

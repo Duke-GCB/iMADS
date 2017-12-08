@@ -103,12 +103,6 @@ class CustomPrediction {
         }
     }
 
-    getDownloadURL(format, searchSettings) {
-        this.setBuilderURL(undefined, undefined, searchSettings)
-        this.urlBuilder.appendParam('format',format);
-        return this.urlBuilder.url;
-    }
-
     makeLocalUrl(searchSettings) {
         let urlBuilder = new URLBuilder();
         urlBuilder.reset('');

@@ -1,9 +1,9 @@
 import {URL} from './AppSettings.js'
-import {isCustomList, CUSTOM_GENE_LIST} from './CustomList.js'
+import {isCustomList, CUSTOM_GENE_LIST, CUSTOM_RANGES_LIST} from './CustomList.js'
 import StreamValue from './StreamValue.js'
 import URLBuilder from './URLBuilder.js'
-
-const GENE_NAMES_WARNING_PREFIX = "Gene names not in our database";
+import {GeneNameColumnFormats, CustomRangeColumnFormats, COLUMN_FORMAT_NUMERIC_BINDING_SITES,
+    COLUMN_FORMAT_BINDING_SITES_LIST} from './ColumnFormats.js'
 
 class PredictionsStore {
     constructor(pageBatch, urlBuilder) {
@@ -128,12 +128,6 @@ class PredictionsStore {
         }
     }
 
-    getDownloadURL(format, searchSettings) {
-        this.setBuilderURL(undefined, undefined, searchSettings)
-        this.urlBuilder.appendParam('format',format);
-        return this.urlBuilder.url;
-    }
-
     makeLocalUrl(searchSettings) {
         let urlBuilder = new URLBuilder();
         urlBuilder.reset('');
@@ -154,6 +148,25 @@ class PredictionsStore {
 
     isGeneWarningMessage(message) {
         return message.startsWith(GENE_NAMES_WARNING_PREFIX);
+    }
+
+    getDownloadColumnFormats(searchSettings) {
+        if (searchSettings.geneList === CUSTOM_RANGES_LIST) {
+            return CustomRangeColumnFormats();
+        } else {
+            return GeneNameColumnFormats();
+        }
+    }
+
+    getDownloadURL(fieldSeparator, columnFormatName, searchSettings) {
+        var settings = Object.assign({}, searchSettings);
+        const includeAll = columnFormatName === COLUMN_FORMAT_NUMERIC_BINDING_SITES ? 'true' : '';
+        const bindingSiteList = columnFormatName === COLUMN_FORMAT_BINDING_SITES_LIST ? 'true' : '';
+        settings.all = includeAll;
+        this.setBuilderURL(undefined, undefined, settings);
+        this.urlBuilder.appendParam('format', fieldSeparator);
+        this.urlBuilder.appendParam('bindingSiteList', bindingSiteList);
+        return this.urlBuilder.url;
     }
 
 }
