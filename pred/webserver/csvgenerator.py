@@ -91,8 +91,15 @@ class BindingSiteListRowFormat(BaseRowFormat):
         :param args: SearchArgs: settings used to determine which RowFormat class to create
         """
         super(BindingSiteListRowFormat, self).__init__(args)
+        self.base_headers = ['Name', 'ID']
         self.dna_lookup = DNALookup(config, genome)
         self.extra_headers = ['Binding site location', 'Binding site score', 'DNA Sequence']
+
+    def make_base_values(self, prediction):
+        return [
+            prediction['commonName'],
+            prediction['name'],
+        ]
 
     def make_rows(self, prediction):
         """
@@ -148,6 +155,26 @@ class CustomRangesWithValuesRowFormat(CustomRangesRowFormat):
         return values + get_all_values(prediction, None)
 
 
+class CustomRangesBindingLSiteListRowFormat(BindingSiteListRowFormat):
+    """
+    Adds 3 columns to custom range values and repeats for each binding site in a prediction
+    """
+    def __init__(self, config, genome, args):
+        """
+        :param config: config.Config: system wide configuration
+        :param genome: str: name of the genome
+        :param args: SearchArgs: settings used to determine which RowFormat class to create
+        """
+        super(CustomRangesBindingLSiteListRowFormat, self).__init__(config, genome, args)
+        self.base_headers = ['Chromosome', 'Start', 'End']
+
+    def make_base_values(self, prediction):
+        return [
+            prediction['chrom'],
+            str(prediction['start']),
+            str(prediction['end']),
+        ]
+
 def make_row_format(config, genome, args):
     """
     Based on config, genome and args create a RowFormat object
@@ -157,7 +184,9 @@ def make_row_format(config, genome, args):
     :return: object with get_headers and make_rows methods
     """
     if args.is_custom_ranges_list():
-        if args.get_include_all():
+        if args.get_binding_site_list():
+            return CustomRangesBindingLSiteListRowFormat(config, genome, args)
+        elif args.get_include_all():
             return CustomRangesWithValuesRowFormat(args)
         else:
             return CustomRangesRowFormat(args)
