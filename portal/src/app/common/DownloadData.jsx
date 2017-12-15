@@ -1,6 +1,6 @@
 import React from 'react';
 import Popup from '../common/Popup.jsx';
-import InlineRadioButton from '../common/InlineRadioButton.jsx';
+import RadioButton from '../common/RadioButton.jsx';
 import {COLUMN_FORMAT_STANDARD} from '../models/ColumnFormats.js';
 
 export default class DownloadData extends React.Component {
@@ -59,7 +59,7 @@ export default class DownloadData extends React.Component {
         for (var key in columnFormats) {
             const columnFormat = columnFormats[key]
             columnFormatItems.push(
-                <InlineRadioButton
+                <RadioButton
                         name={key} label={columnFormat.label} value={key} key={key}
                         selectedValue={this.state.selectedColumnFormatName}
                         onChangeSelectedValue={this.onChangeSelectedColumnFormatName}
@@ -79,12 +79,12 @@ export default class DownloadData extends React.Component {
                 </div>
                 <div className="form-group">
                     <label>Field Separator</label>
-                    <InlineRadioButton
+                    <RadioButton
                         name="tsvValue" label="Tab Delimited" value="tsv"
                         isDisabled={disableFieldSeparator}
                         selectedValue={this.state.fieldSeparator} onChangeSelectedValue={this.onChangeFieldSeparator}
                     />
-                    <InlineRadioButton
+                    <RadioButton
                         name="csvValue" label="CSV (comma separated values)" value="csv"
                         isDisabled={disableFieldSeparator}
                         selectedValue={this.state.fieldSeparator} onChangeSelectedValue={this.onChangeFieldSeparator}
