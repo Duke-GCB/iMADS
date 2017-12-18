@@ -20,12 +20,18 @@ export default class ColorPicker extends React.Component {
     }
 
     render() {
-        let {label, color} = this.props;
-        return <div className="dropdown">
+        let {label, color, helpText, disabled} = this.props;
+        let buttonClassName = "ColorPicker_button dropdown-toggle ColorPicker_" + color;
+        if (disabled) {
+            return <div title={helpText}>
+                <label>{label}</label>
+                <button className={buttonClassName} disabled></button>
+            </div>
+        }
+        return <div className="dropdown" title={helpText}>
             <label>{label}</label>
-            <button className="ColorPicker_button dropdown-toggle"
+            <button className={buttonClassName}
                     data-toggle="dropdown"
-                    style={{backgroundColor: color}}
             ></button>
             <div className="ColorPicker_popup dropdown-menu">
                 <ColorPickerCell colorName="red" onClickCell={this.onClickCell} />

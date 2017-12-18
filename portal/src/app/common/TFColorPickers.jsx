@@ -19,12 +19,19 @@ export default class TFColorPickers extends React.Component {
         let {predictionColor, showTwoPickers} = this.props;
         if (showTwoPickers) {
             return <div>
-                <ColorPicker label="TF Color 1:"
+                <ColorPicker label="TF1-preferred:"
+                             helpText="Binding sites with higher specificity for TF1 compared to TF2"
                              color={predictionColor.color1}
                              setColor={this.setPredictionColor1} />
-                <ColorPicker label="TF Color 2:"
+                <ColorPicker label="TF2-preferred:"
+                             helpText="Binding sites with higher specificity for TF2 compared to TF1"
                              color={predictionColor.color2}
                              setColor={this.setPredictionColor2} />
+                <ColorPicker label="Same preference:"
+                             helpText="Binding sites with similar specificity for TF1 and TF2"
+                             color="gray"
+                             disabled={true}
+                />
                 </div>;
         } else {
             return <div>

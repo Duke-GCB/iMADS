@@ -82,6 +82,7 @@ class SearchArgs(object):
     PER_PAGE = 'perPage'
     MAX_PREDICTION_SORT = 'maxPredictionSort'
     FORMAT = 'format'
+    BINDING_SITE_LIST = 'bindingSiteList'
     INCLUDE_ALL = 'includeAll'
     CUSTOM_LIST_DATA = 'customListData'
     CUSTOM_LIST_FILTER = 'customListFilter'
@@ -144,6 +145,13 @@ class SearchArgs(object):
 
     def get_format(self):
         return self.args.get(self.FORMAT, 'json')
+
+    def get_binding_site_list(self):
+        """
+        Does the user want to see a binding site list instead of numeric columns
+        :return: boolean
+        """
+        return self.args.get(self.BINDING_SITE_LIST, '') == 'true'
 
     def get_include_all(self):
         return self.args.get(self.INCLUDE_ALL, '') == 'true'

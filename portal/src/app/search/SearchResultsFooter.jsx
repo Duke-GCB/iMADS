@@ -13,10 +13,6 @@ class SearchResultsFooter extends React.Component {
         };
     }
 
-    searchOperations() {
-        return this.props.searchOperations;
-    }
-
     componentWillUpdate() {
         if (this.scrollToTop) {
             let resultsGridContainer = document.getElementById('resultsGridContainer');
@@ -26,23 +22,9 @@ class SearchResultsFooter extends React.Component {
     }
 
     changePage = (page) => {
-        this.searchOperations().changePage(page);
+        let {searchOperations} = this.props;
+        searchOperations.changePage(page);
     };
-
-    downloadCsv = () => {
-        return this.searchOperations().downloadAll('csv');
-    };
-
-    downloadTabDelimited = () => {
-        return this.searchOperations().downloadAll('tsv');
-    };
-
-    downloadRawDataURL() {
-        if (this.searchOperations().downloadRawData) {
-            return this.searchOperations().downloadRawData();
-        }
-        return '';
-    }
 
     showGetLinkDialog = () => {
         this.setState({
@@ -58,21 +40,20 @@ class SearchResultsFooter extends React.Component {
     };
 
     render() {
-        let {searchSettings, searchResults, searchDataLoaded, predictionStore, page} = this.props;
+        let {searchSettings, searchResults, searchDataLoaded, dataStore, page} = this.props;
         let footer = <div></div>;
-        let {startPage, endPage} = predictionStore.pageBatch.getStartAndEndPages(page);
+        let {startPage, endPage} = dataStore.pageBatch.getStartAndEndPages(page);
         if (searchDataLoaded) {
             if (searchResults.length > 0) {
                 footer = <nav>
                     <PagingButtons startPage={startPage} currentPage={page} endPage={endPage}
                                    changePage={this.changePage}
-                                   pageBatch={predictionStore.pageBatch}
+                                   pageBatch={dataStore.pageBatch}
                     />
                     &nbsp;
                     <DownloadButton
-                        tabDelimitedURL={this.downloadTabDelimited()}
-                        csvDelimitedURL={this.downloadCsv()}
-                        rawDataURL={this.downloadRawDataURL()} />
+                        searchSettings={searchSettings}
+                        dataStore={dataStore} />
                     <button className="btn btn-default SearchResultsFooter_button" type="button"
                             onClick={this.showGetLinkDialog} >Share</button>
                     <GetLinkDialog isOpen={this.state.showGetUrlDialog}

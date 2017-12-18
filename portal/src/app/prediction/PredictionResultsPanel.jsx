@@ -3,7 +3,6 @@ import PredictionDetailsDialog from './PredictionDetailsDialog.jsx'
 import HeatMap from '../search/HeatMap.jsx'
 import SearchResultsFooter from '../search/SearchResultsFooter.jsx'
 import DataGrid from '../common/DataGrid.jsx'
-
 require('./PredictionResultsPanel.css')
 
 class PredictionResultsPanel extends React.Component {
@@ -62,7 +61,8 @@ class PredictionResultsPanel extends React.Component {
 
     render() {
         let {errorMessage, predictionSettings, searchResults, searchDataLoaded, loadingStatusLabel,
-            searchOperations, page, predictionStore, showBlankWhenEmpty, jobDates, coreRange} = this.props;
+            searchOperations, page, predictionStore, showBlankWhenEmpty, jobDates, coreRange,
+            customResultSearch} = this.props;
         let rangeType = false;
         let includeHeatMap = predictionSettings.all === true;
         let showPredictionDetails = Boolean(this.state.predictionData);
@@ -88,7 +88,7 @@ class PredictionResultsPanel extends React.Component {
                 searchDataLoaded={searchDataLoaded}
                 searchOperations={searchOperations}
                 page={page}
-                predictionStore={predictionStore}
+                dataStore={customResultSearch}
             />
             <PredictionDetailsDialog isOpen={showPredictionDetails}
                                      onRequestClose={this.hidePredictionDetails}

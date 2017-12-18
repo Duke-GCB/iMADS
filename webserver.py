@@ -13,11 +13,12 @@ from pred.config import parse_config, CONFIG_FILENAME
 from pred.webserver.dbdatasource import DataSources
 from pred.webserver.predictionsearch import get_predictions_with_guess, get_all_values
 from pred.webserver.customlist import save_custom_file
-from pred.webserver.dnasequence import lookup_dna_sequence
+from pred.webserver.dnasequence import lookup_dna_sequences_for_ranges
 from pred.webserver.sequencelist import SequenceList
 from pred.webserver.customjob import CustomJob, JobStatus
 from pred.webserver.customresult import CustomResultData
 from pred.webserver.errors import ClientException, ServerException, ErrorType
+from pred.webserver.csvgenerator import make_row_generator
 
 logging.basicConfig(stream=sys.stderr)
 app = Flask(__name__)
@@ -113,7 +114,7 @@ def prediction_search(genome):
         filename = make_download_filename(genome, args, response_format)
         content_disposition = 'attachment; filename="{}"'.format(filename)
         headers = {'Content-Disposition': content_disposition}
-        gen = make_predictions_csv_response(predictions, args)
+        gen = make_predictions_csv_response(g_config, genome, predictions, args)
         r = Response(gen, mimetype='application/octet-stream', headers=headers)
     else:
         raise ValueError("Unexpected format:{}".format(response_format))
@@ -142,7 +143,7 @@ def get_sequences(genome):
     json_data = request.get_json()
     ranges = json_data['ranges']
     try:
-        sequences = lookup_dna_sequence(g_config, genome, ranges)
+        sequences = lookup_dna_sequences_for_ranges(g_config, genome, ranges)
         return make_json_response({'sequences': sequences})
     except IOError as err:
         raise ValueError("Missing file for {}:{}.".format(genome, err))
@@ -425,41 +426,17 @@ def make_json_response(props, status_code=None):
     return make_response(blob, status_code)
 
 
-def make_predictions_csv_response(predictions, args):
-    up = args.get_upstream()
-    down = args.get_downstream()
-    size = up + down + 1
-    if args.is_custom_ranges_list():
-        size = None
-    separator = ','
-    if args.get_format() == 'tsv':
-        separator = '\t'
-    headers = ['Name', 'ID', 'Max', 'Chromosome', 'Start', 'End']
-    if args.is_custom_ranges_list():
-        headers = ['Chromosome', 'Start', 'End', 'Max']
-    if args.get_include_all():
-        if args.is_custom_ranges_list():
-            headers.append('Values')
-        else:
-            headers.extend([str(i) for i in range(-1*up, down+1)])
-    yield separator.join(headers) + '\n'
-    for prediction in predictions:
-        items = []
-        if args.is_custom_ranges_list():
-            items = [prediction['chrom'], str(prediction['start']), str(prediction['end']), str(prediction['max'])]
-        else:
-            start = prediction['start']
-            end = prediction['end']
-            items = [
-                prediction['commonName'],
-                prediction['name'],
-                str(prediction['max']),
-                prediction['chrom'],
-                str(start),
-                str(end)]
-        if args.get_include_all():
-            items.extend(get_all_values(prediction, size))
-        yield separator.join(items) + '\n'
+def make_predictions_csv_response(config, genome, predictions, args):
+    """
+    Create predictions csv/tsv response for the specified predictions using the settings in args.
+    :param config: config.Config: system wide configuration
+    :param genome: str: name of the genome
+    :param predictions: [dict]: list of prediction data rows (see PredictionSearch.get_predictions)
+    :param args: SearchArgs: settings used configure response generation
+    :return: generator that returns csv/tsv content
+    """
+    generator = make_row_generator(config, genome, args)
+    return generator.generate_rows(predictions)
 
 
 if __name__ == '__main__':

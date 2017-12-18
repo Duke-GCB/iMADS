@@ -129,7 +129,7 @@ class SearchResultsPanel extends React.Component {
                 searchDataLoaded={searchDataLoaded}
                 searchOperations={searchOperations}
                 page={page}
-                predictionStore={predictionStore}
+                dataStore={predictionStore}
             />
             <PredictionDialog isOpen={showPredictionDetails}
                               onRequestClose={this.hidePredictionDetails}

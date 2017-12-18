@@ -1,5 +1,6 @@
 import React from 'react';
 require('./DownloadButton.css');
+import DownloadData from '../common/DownloadData.jsx';
 
 class DownloadListItem extends React.Component {
     render() {
@@ -9,21 +10,39 @@ class DownloadListItem extends React.Component {
 }
 
 class DownloadButton extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            dialogVisible: false
+        }
+    }
+    openDialog = () => {
+      this.setState({
+          dialogVisible: true
+      })
+    };
+    closeDialog = () => {
+      this.setState({
+          dialogVisible: false
+      })
+    };
     render() {
-        let {tabDelimitedURL, csvDelimitedURL, rawDataURL} = this.props;
+        let {tabDelimitedURL, csvDelimitedURL, rawDataURL, dataStore, searchSettings} = this.props;
+        let {dialogVisible} = this.state;
         let downloadItems = [];
         if (rawDataURL) {
             downloadItems.push(<DownloadListItem key="rawData" url={rawDataURL} label="Raw Data" />);
         }
         downloadItems.push(<DownloadListItem key="tabDelim" url={tabDelimitedURL} label="Tab Delimited" />);
         downloadItems.push(<DownloadListItem key="csvDelim" url={csvDelimitedURL} label="CSV Format" />);
-        return <div className="dropup DownloadButton_div" >
-                        <button className="btn btn-default dropdown-toggle DownloadButton_button" type="button" id="dropdownMenu1"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"
+        return <div className="DownloadButton_div" >
+                        <button className="btn btn-default DownloadButton_button" type="button"
+                                id="dropdownMenu1" onClick={this.openDialog}
                         >Download All Data</button>
-                        <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            {downloadItems}
-                        </ul>
+                        <DownloadData searchSettings={searchSettings}
+                                      dataStore={dataStore}
+                                      isVisible={dialogVisible}
+                                      onClose={this.closeDialog} />
                     </div>
     }
 }

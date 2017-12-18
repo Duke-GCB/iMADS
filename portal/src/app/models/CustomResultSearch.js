@@ -1,5 +1,6 @@
 import URLBuilder from './URLBuilder.js';
 import {makeErrorObject} from './Errors.js';
+import {CustomDNAColumnFormats, COLUMN_FORMAT_NUMERIC_BINDING_SITES, COLUMN_FORMAT_RAW_DATA} from './ColumnFormats.js'
 
 const STATUS_MESSAGES = {
     'NEW': 'Queued',
@@ -218,18 +219,21 @@ class CustomResultSearch {
         }
     }
 
-    getDownloadURL(format, predictionSettings) {
-        let urlBuilder = new URLBuilder();
-        urlBuilder.reset('api/v1/custom_predictions/' + this.lastResultId + "/search");
-        urlBuilder.appendParam('maxPredictionSort', predictionSettings.maxPredictionSort);
-        urlBuilder.appendParam('all', predictionSettings.all);
-        urlBuilder.appendParam('format', format);
-        return urlBuilder.url;
+    getDownloadColumnFormats(searchSettings) {
+        return CustomDNAColumnFormats()
     }
 
-    getRawDownloadURL() {
+    getDownloadURL(fieldSeparator, columnFormatName, predictionSettings) {
         let urlBuilder = new URLBuilder();
-        urlBuilder.reset('api/v1/custom_predictions/' + this.lastResultId + "/data");
+        if (columnFormatName === COLUMN_FORMAT_RAW_DATA) {
+            urlBuilder.reset('api/v1/custom_predictions/' + this.lastResultId + "/data");
+        } else {
+            const includeAll = columnFormatName === COLUMN_FORMAT_NUMERIC_BINDING_SITES ? 'true' : '';
+            urlBuilder.reset('api/v1/custom_predictions/' + this.lastResultId + "/search");
+            urlBuilder.appendParam('maxPredictionSort', predictionSettings.maxPredictionSort);
+            urlBuilder.appendParam('all', includeAll);
+            urlBuilder.appendParam('format', fieldSeparator);
+        }
         return urlBuilder.url;
     }
 }

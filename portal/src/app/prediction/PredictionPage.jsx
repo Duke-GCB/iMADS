@@ -281,14 +281,6 @@ class PredictionPage extends React.Component {
         }
     };
 
-    downloadAll = (format) => {
-        return this.customResultSearch.getDownloadURL(format, this.state.predictionSettings);
-    };
-
-    downloadRawData = () => {
-        return this.customResultSearch.getRawDownloadURL();
-    };
-
     generatePredictionsForSequence = (seqId, model, title, previousSequenceId) => {
         var {predictionSettings} = this.state;
         this.setState({
@@ -359,8 +351,6 @@ class PredictionPage extends React.Component {
         let searchOperations = {
             search: this.search,
             changePage: this.changePage,
-            downloadAll: this.downloadAll,
-            downloadRawData: this.downloadRawData,
             setErrorMessage: this.setErrorMessage
         };
         let noSequences = this.state.customSequenceList.length == 0;
@@ -388,6 +378,7 @@ class PredictionPage extends React.Component {
                                                  hasSequences={this.state.predictionSettings.selectedSequence}
                                                  errorMessage={this.state.errorMessage}
                                                  predictionStore={this.predictionStore}
+                                                 customResultSearch={this.customResultSearch}
                                                  searchOperations={searchOperations}
                                                  predictionColor={predictionColor}
                                                  showBlankWhenEmpty={noSequences}
