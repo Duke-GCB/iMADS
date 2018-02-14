@@ -55,6 +55,7 @@ class CustomResultSearch {
             if (this.pageBatch.hasPage(page)) {
                 let predictions = this.pageBatch.getItems(page);
                 onSearchData(predictions, page, true, '');
+                this.currentRequest = {};
                 return;
             }
         }
@@ -93,8 +94,11 @@ class CustomResultSearch {
         urlBuilder.addToData('maxPredictionSort', this.currentRequest.predictionSettings.maxPredictionSort);
         urlBuilder.addToData('page', this.pageBatch.getBatchPageNum(pageNum));
         urlBuilder.addToData('per_page', this.pageBatch.getItemsPerBatch());
+        let batchPage = this.pageBatch.getBatchPageNum(pageNum)
         urlBuilder.fetch(function (data) {
-            let batchPage = this.pageBatch.getBatchPageNum(pageNum)
+            if (pageNum == -1) {
+                batchPage = data.page;
+            }
             this.pageBatch.setItems(batchPage, data.result, true);
             if (pageNum == -1) {
                 pageNum = this.pageBatch.getEndPage();
