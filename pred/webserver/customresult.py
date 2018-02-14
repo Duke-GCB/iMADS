@@ -3,8 +3,10 @@ Stores custom prediction/preference records.
 Part of the tables used for custom jobs.
 """
 import uuid
+import math
 from pred.queries.dbutil import update_database, read_database
 from pred.webserver.errors import ClientException, ErrorType
+from pred.queries.predictionqueryparts import begin_count, end_count
 
 SEQUENCE_NOT_FOUND = "Unable to find sequence for this name."
 
@@ -137,6 +139,37 @@ class CustomResultData(object):
                 'sequence': sequence
             })
         return result
+
+    @staticmethod
+    def determine_last_page(db, result_uuid, per_page):
+        """
+        Determine what the last page in for the specified result_uuid given per_page
+        :param db: database connection
+        :param result_uuid: str: uuid of the custom result to query
+        :param per_page: int: how many items are there per page
+        :return: int: which page is the last
+        """
+        query, params = CustomResultData.last_page_query_and_params(result_uuid)
+        rows = read_database(db, query, params)
+        first_row = rows[0]
+        items = float(first_row[0])
+        return int(math.ceil(items / per_page))
+
+    @staticmethod
+    def last_page_query_and_params(result_uuid):
+        """
+        Create a query for finding the number of items in result_uuid
+        :param result_uuid: str: uuid of the custom result to query
+        :return: (query, params): query to count items and params it requires
+        """
+        query, params = CustomResultData.get_prediction_query_and_params(result_uuid,
+                                                                         sort_max_value=None,
+                                                                         limit=None,
+                                                                         offset=None)
+        max_query = begin_count()
+        max_query.add(query, params)
+        max_query.add_part(end_count())
+        return max_query.sql, max_query.params
 
     @staticmethod
     def is_none_prediction_values(pred):
