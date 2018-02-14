@@ -3,6 +3,7 @@ from unittest import TestCase
 import pred.webserver.customresult
 from pred.webserver.customresult import CustomResultData
 from pred.webserver.errors import ClientException
+from mock import MagicMock, patch
 
 
 class TestCustomResultData(TestCase):
@@ -59,3 +60,27 @@ class TestCustomResultData(TestCase):
             self.assertEqual(['8B9836B5-8E3D-4346-AB12-69DD10313C77', 'ELK1'], self.query_params)
         finally:
             pred.webserver.customresult.read_database = sv_read_database
+
+    def test_last_page_query_and_params(self):
+        query, params = CustomResultData.last_page_query_and_params(result_uuid='123-456-789')
+        self.assertIn('select count(*)', query)
+        self.assertIn('from custom_result', query)
+        self.assertIn('custom_result.id = %s', query)
+        self.assertEqual(params, ['123-456-789'])
+
+    @patch('pred.webserver.customresult.read_database')
+    def test_determine_last_page(self, mock_read_database):
+        test_data = [
+            # (num_items, per_page, expected_last_page)
+            (0, 10, 0),
+            (1, 10, 1),
+            (10, 10, 1),
+            (11, 10, 2),
+            (22, 3, 8),
+        ]
+        for num_items, per_page, expected_last_page in test_data:
+            mock_read_database.return_value = [[num_items]]
+            last_page = CustomResultData.determine_last_page(db=None, result_uuid='123-456-780', per_page=per_page)
+            self.assertEqual(last_page, expected_last_page)
+
+

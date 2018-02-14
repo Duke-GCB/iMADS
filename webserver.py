@@ -11,7 +11,7 @@ from flask import Flask, request, render_template, jsonify, g, make_response, Re
 
 from pred.config import parse_config, CONFIG_FILENAME
 from pred.webserver.dbdatasource import DataSources
-from pred.webserver.predictionsearch import get_predictions_with_guess, get_all_values
+from pred.webserver.predictionsearch import get_predictions_with_guess, get_all_values, SearchArgs
 from pred.webserver.customlist import save_custom_file
 from pred.webserver.dnasequence import lookup_dna_sequences_for_ranges
 from pred.webserver.sequencelist import SequenceList
@@ -282,6 +282,7 @@ def search_custom_results(result_id):
     :return: json response with 'result' property containing an array of predictions
     """
     args = request.args
+    search_args = SearchArgs(g_config.binding_max_offset, args)
     format = args.get('format')
     sort_by_max = args.get('maxPredictionSort')
     if sort_by_max == 'false':
@@ -289,6 +290,8 @@ def search_custom_results(result_id):
     all_values = args.get('all')
     page = get_optional_int(args, 'page')
     per_page = get_optional_int(args, 'per_page')
+    if search_args.is_last_page():
+        page = CustomResultData.determine_last_page(get_db(), result_id, per_page)
     offset = None
     if page and per_page:
         offset = (page - 1) * per_page
@@ -302,6 +305,7 @@ def search_custom_results(result_id):
         return download_file_response(filename, make_download_custom_result(separator, all_values, predictions))
     else:
         return make_ok_json_response({
+            'page': page,
             'result': predictions})
 
 
