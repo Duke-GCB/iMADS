@@ -98,11 +98,6 @@ class AboutContent extends React.Component {
                 </ul>
             </div>
             <div>
-                <h5 className="AboutContent_group_label">CONTACT</h5>
-                <p  className="AboutContent_paragraph">If you have any questions, want to provide feedback, or report any bugs,
-                    please send us an email at <a href="mailto:imads@duke.edu">imads@duke.edu</a></p>
-            </div>
-            <div>
                 <h5 className="AboutContent_group_label">CITATION</h5>
                 <p  className="AboutContent_paragraph">“Integrative modeling of differential DNA-binding specificity among paralogous transcription factors”.
                     Ning Shen, Jingkang Zhao, Josh Schipper, Tristan Bepler, Dan Leehr, John Bradley, John Horton,
