@@ -34,7 +34,7 @@ class BaseRowFormat(object):
     """
     def __init__(self, args):
         self.args = args
-        self.base_headers = ['Name', 'ID', 'Max', 'Chromosome', 'Start', 'End']
+        self.base_headers = ['Name', 'ID', 'Genomic region coordinates', 'Maximum iMADS score']
         self.extra_headers = []
 
     def get_headers(self):
@@ -57,10 +57,8 @@ class BaseRowFormat(object):
         return [
             prediction['commonName'],
             prediction['name'],
+            '{}:{}-{}'.format(prediction['chrom'], str(start), str(end)),
             str(prediction['max']),
-            prediction['chrom'],
-            str(start),
-            str(end)
         ]
 
 
@@ -70,6 +68,7 @@ class NumericColumnRowFormat(BaseRowFormat):
     """
     def __init__(self, args):
         super(NumericColumnRowFormat, self).__init__(args)
+        self.base_headers = ['Name', 'ID', 'Genomic region coordinates']
         up = args.get_upstream()
         down = args.get_downstream()
         self.size = up + down + 1
@@ -93,7 +92,7 @@ class BindingSiteListRowFormat(BaseRowFormat):
         super(BindingSiteListRowFormat, self).__init__(args)
         self.base_headers = ['Name', 'ID']
         self.dna_lookup = DNALookup(config, genome)
-        self.extra_headers = ['Binding site location', 'Binding site score', 'DNA Sequence']
+        self.extra_headers = ['Binding site location', 'Binding site iMADS score', 'Binding site sequence']
 
     def make_base_values(self, prediction):
         return [
