@@ -189,7 +189,7 @@ class TestWithPostgres(unittest.TestCase):
         if not skip_postgres_tests():
             TestWithPostgres.config = parse_config_from_dict(CONFIG_DATA)
             TestWithPostgres.config.dbconfig.host = "localhost"
-            TestWithPostgres.config.dbconfig.dbname = 'predtest'
+            TestWithPostgres.config.dbconfig.dbname = 'pred'
             TestWithPostgres.config.dbconfig.user = 'pred_user'
             run_sql_command(TestWithPostgres.config)
 
