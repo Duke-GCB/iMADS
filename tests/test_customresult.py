@@ -83,4 +83,41 @@ class TestCustomResultData(TestCase):
             last_page = CustomResultData.determine_last_page(db=None, result_uuid='123-456-780', per_page=per_page)
             self.assertEqual(last_page, expected_last_page)
 
+    @patch('pred.webserver.customresult.read_database')
+    def test_bed_file_contents(self, mock_read_database):
+        mock_read_database.side_effect = [
+            [
+                # name   dna sequence  (custom_result_sequence_lookup query response data)
+                ('wild', 'attattattatt'),
+                ('normal', 'catcatcatcat')
+            ],
+            [
+                # name, start, stop, value (bed_file_contents query response data)
+                ('wild', 4, 8, 0.9),
+                ('normal', 7, 11, 0.4),
+            ]
+        ]
+
+        bed_contents = CustomResultData.bed_file_contents(db=None, result_id='123')
+        expected = """
+wild\t4\t8\t0.9\tttat
+normal\t7\t11\t0.4\tatca
+"""
+        self.assertEqual(bed_contents.strip(), expected.strip())
+
+    @patch('pred.webserver.customresult.read_database')
+    def test_custom_result_sequence_lookup(self, mock_read_database):
+        mock_read_database.return_value = [
+            ('wild', 'attattattatt'),
+            ('normal', 'catcatcatcat')
+        ]
+
+        sequence_lookup = CustomResultData.custom_result_sequence_lookup(db=None, result_id='456')
+
+        self.assertEqual(sequence_lookup, {'normal': 'catcatcatcat', 'wild': 'attattattatt'})
+        args, kwargs = mock_read_database.call_args
+        db, sql, params = args
+        self.assertEqual(params, ['456'])
+        self.assertIn('select sequence_list_item.name, sequence_list_item.sequence', sql)
+
 

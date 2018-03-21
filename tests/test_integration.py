@@ -189,7 +189,7 @@ class TestWithPostgres(unittest.TestCase):
         if not skip_postgres_tests():
             TestWithPostgres.config = parse_config_from_dict(CONFIG_DATA)
             TestWithPostgres.config.dbconfig.host = "localhost"
-            TestWithPostgres.config.dbconfig.dbname = 'pred'
+            TestWithPostgres.config.dbconfig.dbname = 'predtest'
             TestWithPostgres.config.dbconfig.user = 'pred_user'
             run_sql_command(TestWithPostgres.config)
 
@@ -459,7 +459,11 @@ AAACCCGGGG"""
         self.assertEqual(len(jobs), 0)
 
     def test_custom_job_normal_workflow(self):
-        FASTA_DATA1 = """>someseq\nAAACCCGGGGTT\n>someseq2\nAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTT"""
+        SHORT_SEQUENCE = 'AAACCCGGGGTT'
+        LONG_SEQUENCE = 'AAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTT' \
+                      'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        FASTA_DATA1 = '>someseq\n' + SHORT_SEQUENCE + '\n' \
+                      '>someseq2\n' + LONG_SEQUENCE
         db = create_db_connection(TestWithPostgres.config.dbconfig)
         # upload FASTA file
         sequence_list = SequenceList.create_with_content_and_title(db, FASTA_DATA1, "sometitle")
@@ -469,9 +473,9 @@ AAACCCGGGG"""
         CustomJob.set_job_running(db, job_uuid)
         # upload file
         BED_DATA = """
-someseq\t0\t10\t12.5
-someseq2\t20\t30\t4.5
-someseq2\t60\t75\t15.5
+someseq\t0\t10\t12.5\tAAACCCGGGG
+someseq2\t20\t30\t4.5\tGGTTAAACCC
+someseq2\t60\t75\t15.5\tAAAAAAAAAAAAAAA
             """.strip()
         result_uuid = CustomResultData.new_uuid()
         result = CustomResultData(db, result_uuid, job_uuid, model_name='E2f1', bed_data=BED_DATA)
@@ -485,12 +489,12 @@ someseq2\t60\t75\t15.5
         self.assertEqual('someseq', first['name'])
         self.assertEqual(12.5, float(first['max']))
         self.assertEqual([{u'start': 0, u'end': 10, u'value': 12.5}], first['values'])
-        self.assertEqual('AAACCCGGGGTT', first['sequence'])
+        self.assertEqual(SHORT_SEQUENCE, first['sequence'])
 
         second = predictions[1]
         self.assertEqual('someseq2', second['name'])
         self.assertEqual(15.5, float(second['max']))
-        self.assertEqual('AAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTTAAACCCGGGGTT', second['sequence'])
+        self.assertEqual(LONG_SEQUENCE, second['sequence'])
 
         predictions = CustomResultData.get_predictions(db, result_uuid, sort_max_value=True,
                                                        limit=None, offset=None)
