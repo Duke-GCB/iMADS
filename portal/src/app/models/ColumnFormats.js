@@ -8,7 +8,7 @@ export function GeneNameColumnFormats() {
         '(One line per region)';
     const numericBindingSitesLabel = 'Name, ID, Genomic region coordinates, iMADS scores for all positions in region ' +
         '(One line per region)';
-    const bindingSiteListLabel = 'Name, ID, Binding site location, Binding site iMADS score, Binding site sequence ' +
+    const bindingSiteListLabel = 'Name, ID, Binding site coordinates, Binding site iMADS score, Binding site sequence ' +
         '(One line per site)';
     const formats = {};
     formats[COLUMN_FORMAT_STANDARD] = { label: standardLabel };
