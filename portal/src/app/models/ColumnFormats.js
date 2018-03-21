@@ -21,7 +21,7 @@ export function CustomRangeColumnFormats() {
     const standardLabel = 'Genomic region coordinates, Maximum iMADS score (One line per region)';
     const numericBindingSitesLabel = 'Genomic region coordinates, iMADS scores for all positions in region (One line per region)';
     const bindingSiteListLabel = 'Genomic region coordinates, Binding site coordinates, ' +
-        'Binding site iMADS score, Binding site >sequence (One line per site)';
+        'Binding site iMADS score, Binding site sequence (One line per site)';
     const formats = {};
     formats[COLUMN_FORMAT_STANDARD] = { label: standardLabel };
     formats[COLUMN_FORMAT_NUMERIC_BINDING_SITES] = { label: numericBindingSitesLabel };
