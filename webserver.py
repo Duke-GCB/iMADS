@@ -326,9 +326,11 @@ def download_file_response(filename, gen):
 
 
 def make_download_custom_result(separator, include_all, predictions):
-    headers = ['Name', 'Sequence', 'Max']
-    if include_all:
-        headers.append('Values')
+    headers = ['Name', 'Sequence']
+    if not include_all:
+        headers.append('Maximum iMADS score')
+    else:
+        headers.append('iMADS scores for all positions')
     yield separator.join(headers) + '\n'
     for prediction in predictions:
         items = [

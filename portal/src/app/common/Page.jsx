@@ -10,10 +10,13 @@ require('./Page.css');
 export default class Page extends React.Component {
     render() {
         let {nav_path, children} = this.props;
+        const contactMessage = 'For questions, feedback, or bugs, ' +
+            'send an email to ';
         return <div className="Page_container" >
             <div className="Page_content">
                 <NavBar selected={nav_path} />
                 {children}
+                <ContactEmail message={contactMessage} email="imads@duke.edu" />
             </div>
         </div>;
     }
