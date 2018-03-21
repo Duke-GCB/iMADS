@@ -7,6 +7,7 @@ import math
 from pred.queries.dbutil import update_database, read_database
 from pred.webserver.errors import ClientException, ErrorType
 from pred.queries.predictionqueryparts import begin_count, end_count
+from pred.webserver.dnasequence import DNALookup
 
 SEQUENCE_NOT_FOUND = "Unable to find sequence for this name."
 
@@ -225,14 +226,43 @@ class CustomResultData(object):
 
     @staticmethod
     def bed_file_contents(db, result_id):
+        """
+        Returns bed file contents given a custom result id.
+        Bed file is just tsv with columns name, start, stop, value, dna sequence
+        :param db: Database Connection
+        :param result_id: uuid of the result we want to lookup
+        :return: str: bed file contents
+        """
+        sequence_lookup = CustomResultData.custom_result_sequence_lookup(db, result_id)
         select_sql = "select name, start, stop, value from custom_result_row " \
                      " where result_id = %s"
         result = ""
         for row in read_database(db, select_sql, [result_id]):
             name, start, stop, value = row
-            line = '\t'.join([name, str(start), str(stop), str(value)])
+            full_dna_sequence = sequence_lookup.get(name)
+            dna_sequence = full_dna_sequence[start:stop]
+            line = '\t'.join([name, str(start), str(stop), str(value), dna_sequence])
             result += line + '\n'
         return result
+
+    @staticmethod
+    def custom_result_sequence_lookup(db, result_id):
+        """
+        Returns name to DNA Sequence dictionary based on the sequence used in a custom result
+        :param db: Database Connection
+        :param result_id: uuid of the result we want to lookup
+        :return: dict: name -> DNA sequence(str)
+        """
+        select_sql = "select sequence_list_item.name, sequence_list_item.sequence " \
+                     "from custom_result " \
+                     "inner join job on job.id = job_id " \
+                     "inner join sequence_list_item on sequence_list_item.seq_id = job.seq_id " \
+                     "where custom_result.id = %s;"
+        name_to_dna_seq = {}
+        for row in read_database(db, select_sql, [result_id]):
+            name, sequence = row
+            name_to_dna_seq[name] = sequence
+        return name_to_dna_seq
 
     @staticmethod
     def delete_for_job(cur, job_id):
