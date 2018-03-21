@@ -57,7 +57,7 @@ class BaseRowFormat(object):
         return [
             prediction['commonName'],
             prediction['name'],
-            '{}:{}-{}'.format(prediction['chrom'], str(start), str(end)),
+            '{}:{}-{}'.format(prediction['chrom'], start, end),
             str(prediction['max']),
         ]
 
@@ -92,7 +92,7 @@ class BindingSiteListRowFormat(BaseRowFormat):
         super(BindingSiteListRowFormat, self).__init__(args)
         self.base_headers = ['Name', 'ID']
         self.dna_lookup = DNALookup(config, genome)
-        self.extra_headers = ['Binding site location', 'Binding site iMADS score', 'Binding site sequence']
+        self.extra_headers = ['Binding site coordinates', 'Binding site iMADS score', 'Binding site sequence']
 
     def make_base_values(self, prediction):
         return [
@@ -130,13 +130,11 @@ class CustomRangesRowFormat(BaseRowFormat):
     """
     def __init__(self, args):
         super(CustomRangesRowFormat, self).__init__(args)
-        self.base_headers = ['Chromosome', 'Start', 'End', 'Max']
+        self.base_headers = ['Genomic region coordinates', 'Maximum iMADS score']
 
     def make_base_values(self, prediction):
         return [
-            prediction['chrom'],
-            str(prediction['start']),
-            str(prediction['end']),
+            '{}:{}-{}'.format(prediction['chrom'], prediction['start'], prediction['end']),
             str(prediction['max'])
         ]
 
@@ -147,7 +145,7 @@ class CustomRangesWithValuesRowFormat(CustomRangesRowFormat):
     """
     def __init__(self, args):
         super(CustomRangesWithValuesRowFormat, self).__init__(args)
-        self.extra_headers = ['Values']
+        self.extra_headers = ['iMADS scores']
 
     def make_values(self, prediction):
         values = self.make_base_values(prediction)
@@ -165,13 +163,11 @@ class CustomRangesBindingLSiteListRowFormat(BindingSiteListRowFormat):
         :param args: SearchArgs: settings used to determine which RowFormat class to create
         """
         super(CustomRangesBindingLSiteListRowFormat, self).__init__(config, genome, args)
-        self.base_headers = ['Chromosome', 'Start', 'End']
+        self.base_headers = ['Genomic region coordinates']
 
     def make_base_values(self, prediction):
         return [
-            prediction['chrom'],
-            str(prediction['start']),
-            str(prediction['end']),
+            '{}:{}-{}'.format(prediction['chrom'], prediction['start'], prediction['end']),
         ]
 
 def make_row_format(config, genome, args):
