@@ -34,11 +34,11 @@ class RowGeneratorTests(TestCase):
         generator = make_row_generator(Mock(), Mock(), self.search_args)
         csv_lines = self.strip_list(generator.generate_rows(self.predictions))
         expected_data = [
-            'Name,ID,Max,Chromosome,Start,End',
-            'DDX11L1,uc001aaa.3; uc010nxq.1; uc010nxr.1,0.3301,chr1,11673,12073',
-            'WASH7P,uc009vjb.1,0.3603,chr1,29761,30161',
-            'LOC729737,uc021oeg.2,0.2582,chr1,140366,140766',
-            'JJ1924,jjbbjj.1,0,chr1,240366,240766'
+            'Name,ID,Genomic region coordinates,Maximum iMADS score',
+            'DDX11L1,uc001aaa.3; uc010nxq.1; uc010nxr.1,chr1:11673-12073,0.3301',
+            'WASH7P,uc009vjb.1,chr1:29761-30161,0.3603',
+            'LOC729737,uc021oeg.2,chr1:140366-140766,0.2582',
+            'JJ1924,jjbbjj.1,chr1:240366-240766,0'
         ]
         self.assertEqual(expected_data, csv_lines)
 
@@ -48,11 +48,11 @@ class RowGeneratorTests(TestCase):
         generator = make_row_generator(Mock(), Mock(), self.search_args)
         csv_lines = self.strip_list(generator.generate_rows(self.predictions))
         self.assertEqual(5, len(csv_lines))
-        self.assertStartsWith('Name,ID,Max,Chromosome,Start,End,-1000,-999,-998', csv_lines[0])
-        self.assertStartsWith('DDX11L1,uc001aaa.3; uc010nxq.1; uc010nxr.1,0.3301,chr1,11673,12073,', csv_lines[1])
-        self.assertStartsWith('WASH7P,uc009vjb.1,0.3603,chr1,29761,30161,0,0,', csv_lines[2])
-        self.assertStartsWith('LOC729737,uc021oeg.2,0.2582,chr1,140366,140766,0,0,', csv_lines[3])
-        self.assertStartsWith('JJ1924,jjbbjj.1,0,chr1,240366,240766,0,0,', csv_lines[4])
+        self.assertStartsWith('Name,ID,Genomic region coordinates,-1000,-999,-998', csv_lines[0])
+        self.assertStartsWith('DDX11L1,uc001aaa.3; uc010nxq.1; uc010nxr.1,chr1:11673-12073,0.3301,', csv_lines[1])
+        self.assertStartsWith('WASH7P,uc009vjb.1,chr1:29761-30161,0.3603,0,0,', csv_lines[2])
+        self.assertStartsWith('LOC729737,uc021oeg.2,chr1:140366-140766,0.2582,0,0,', csv_lines[3])
+        self.assertStartsWith('JJ1924,jjbbjj.1,chr1:240366-240766,0,0,0,', csv_lines[4])
 
     @patch('pred.webserver.csvgenerator.DNALookup')
     def test_make_predictions_csv_response_binding_site_list(self, mock_dna_lookup):
@@ -62,7 +62,7 @@ class RowGeneratorTests(TestCase):
         generator = make_row_generator(Mock(download_dir='/data'), 'hg38', self.search_args)
         csv_lines = self.strip_list(generator.generate_rows(self.predictions))
         self.assertEqual(6, len(csv_lines))
-        expected_header = 'Name,ID,Binding site location,Binding site score,DNA Sequence'
+        expected_header = 'Name,ID,Binding site coordinates,Binding site iMADS score,Binding site sequence'
         self.assertEqual(expected_header, csv_lines[0])
         dxx_line = 'DDX11L1,uc001aaa.3; uc010nxq.1; uc010nxr.1'
         self.assertEqual('{},chr1:11710-11730,0.3301,ACGGTTA'.format(dxx_line), csv_lines[1])
@@ -80,11 +80,11 @@ class RowGeneratorTests(TestCase):
         generator = make_row_generator(Mock(), Mock(), self.search_args)
         csv_lines = self.strip_list(generator.generate_rows(self.predictions))
         self.assertEqual(5, len(csv_lines))
-        self.assertEqual('Chromosome,Start,End,Max', csv_lines[0])
-        self.assertEqual('chr1,11673,12073,0.3301', csv_lines[1])
-        self.assertEqual('chr1,29761,30161,0.3603', csv_lines[2])
-        self.assertEqual('chr1,140366,140766,0.2582', csv_lines[3])
-        self.assertEqual('chr1,240366,240766,0', csv_lines[4])
+        self.assertEqual('Genomic region coordinates,Maximum iMADS score', csv_lines[0])
+        self.assertEqual('chr1:11673-12073,0.3301', csv_lines[1])
+        self.assertEqual('chr1:29761-30161,0.3603', csv_lines[2])
+        self.assertEqual('chr1:140366-140766,0.2582', csv_lines[3])
+        self.assertEqual('chr1:240366-240766,0', csv_lines[4])
 
     def test_make_predictions_csv_response_custom_range_list_include_all(self):
         self.search_args.args[SearchArgs.GENE_LIST] = CUSTOM_RANGES_LIST
@@ -93,11 +93,11 @@ class RowGeneratorTests(TestCase):
         generator = make_row_generator(Mock(), Mock(), self.search_args)
         csv_lines = self.strip_list(generator.generate_rows(self.predictions))
         self.assertEqual(5, len(csv_lines))
-        self.assertEqual('Chromosome,Start,End,Max,Values', csv_lines[0])
-        self.assertStartsWith('chr1,11673,12073,0.3301,0,0,', csv_lines[1])
-        self.assertStartsWith('chr1,29761,30161,0.3603,0,0,', csv_lines[2])
-        self.assertStartsWith('chr1,140366,140766,0.2582,0,0,', csv_lines[3])
-        self.assertStartsWith('chr1,240366,240766,0,0,', csv_lines[4])
+        self.assertEqual('Genomic region coordinates,Maximum iMADS score,iMADS scores', csv_lines[0])
+        self.assertStartsWith('chr1:11673-12073,0.3301,0,0,', csv_lines[1])
+        self.assertStartsWith('chr1:29761-30161,0.3603,0,0,', csv_lines[2])
+        self.assertStartsWith('chr1:140366-140766,0.2582,0,0,', csv_lines[3])
+        self.assertStartsWith('chr1:240366-240766,0,0,', csv_lines[4])
 
     @patch('pred.webserver.csvgenerator.DNALookup')
     def test_make_predictions_csv_response_custom_range_binding_site_list(self, mock_dna_lookup):
@@ -108,8 +108,8 @@ class RowGeneratorTests(TestCase):
         generator = make_row_generator(Mock(), Mock(), self.search_args)
         csv_lines = self.strip_list(generator.generate_rows(self.predictions))
         self.assertEqual(6, len(csv_lines))
-        self.assertEqual('Chromosome,Start,End,Binding site location,Binding site score,DNA Sequence', csv_lines[0])
-        self.assertEqual('chr1,11673,12073,chr1:11710-11730,0.3301,ACGGTTA', csv_lines[1])
-        self.assertEqual('chr1,11673,12073,chr1:11904-11924,0.2867,GGAAATT', csv_lines[2])
-        self.assertEqual('chr1,29761,30161,chr1:30018-30038,0.3603,TTAAGGG', csv_lines[3])
-        self.assertEqual('chr1,140366,140766,chr1:140628-140648,0.2582,ATATAT', csv_lines[4])
+        self.assertEqual('Genomic region coordinates,Binding site coordinates,Binding site iMADS score,Binding site sequence', csv_lines[0])
+        self.assertEqual('chr1:11673-12073,chr1:11710-11730,0.3301,ACGGTTA', csv_lines[1])
+        self.assertEqual('chr1:11673-12073,chr1:11904-11924,0.2867,GGAAATT', csv_lines[2])
+        self.assertEqual('chr1:29761-30161,chr1:30018-30038,0.3603,TTAAGGG', csv_lines[3])
+        self.assertEqual('chr1:140366-140766,chr1:140628-140648,0.2582,ATATAT', csv_lines[4])
