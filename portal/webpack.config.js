@@ -12,13 +12,19 @@ var config = {
       filename: 'bundle.js'
    },
    module : {
-      loaders : [
+      rules : [
          {
             test : /\.jsx?/,
             include : APP_DIR,
-            loader : 'babel'
+            use : [{
+               loader: 'babel-loader'
+            }]
          },
-         { test: /\.css$/, loader: "style-loader!css-loader" }
+         { test: /\.css$/, use: [{
+            loader: 'style-loader'
+         }, {
+            loader: 'css-loader'
+         }] }
       ]
    }
 };
