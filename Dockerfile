@@ -9,8 +9,6 @@ ADD ./third_party/linux.x86_64/bigBedToBed /usr/local/bin/bigBedToBed
 RUN ["chmod", "755", "/usr/local/bin/bigBedToBed"]
 
 # Install global dependencies
-RUN npm install webpack@4 -g
-RUN npm install webpack-cli
 RUN ["pip", "install", "gunicorn"]
 
 # Install project dependencies - dependency files are added independently so that
@@ -28,7 +26,8 @@ RUN npm install --only=dev
 
 # Now add the rest of the application source and run webpack
 ADD . ${MYDIR}
-RUN webpack
+CMD bash
+RUN ./node_modules/.bin/webpack
 
 WORKDIR ${MYDIR}
 CMD ["gunicorn", "--bind", "0.0.0.0:80", "--timeout", "180", "--log-level=debug", "webserver:app"]
