@@ -26,7 +26,8 @@ var config = {
             loader: 'css-loader'
          }] }
       ]
-   }
+   },
+   mode: 'production'
 };
 
 module.exports = config;
