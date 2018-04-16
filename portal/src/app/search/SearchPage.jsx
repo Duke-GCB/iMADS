@@ -14,6 +14,7 @@ import {fetchPredictionSettings} from '../models/PredictionSettings.js'
 import {ITEMS_PER_PAGE, NUM_PAGE_BUTTONS} from '../models/AppSettings.js'
 import {getPreferenceSettings, getCoreRange} from '../models/GenomeData.js';
 import {SessionStorage, SEARCH_PAGE_KEY} from '../models/SessionStorage.js';
+import {CUSTOM_RANGES_LIST} from '../models/CustomList.js';
 
 
 class SearchPage extends React.Component {
@@ -116,6 +117,13 @@ class SearchPage extends React.Component {
         })
     };
 
+    getSubTitle = (searchSettings) => {
+        if (searchSettings.geneList === CUSTOM_RANGES_LIST) {
+            return 'TF binding predictions for genomic regions';
+        }
+        return 'TF binding predictions for gene promoters';
+    };
+
     render () {
         let preferenceSettings = getPreferenceSettings(this.state.genomeData,
             this.state.searchSettings.genome,
@@ -132,7 +140,8 @@ class SearchPage extends React.Component {
             changePage: this.changePage,
             setErrorMessage: this.setErrorMessage
         };
-        let topPanel = <PageTitle>TF Binding Predictions</PageTitle>;
+        let subTitle = this.getSubTitle(this.state.searchSettings);
+        let topPanel = <PageTitle>{subTitle}</PageTitle>;
         let leftPanel = <SearchFilterPanel
                                         genomeData={this.state.genomeData}
                                         search={this.search}

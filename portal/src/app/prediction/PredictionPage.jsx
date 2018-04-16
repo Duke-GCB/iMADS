@@ -354,7 +354,7 @@ class PredictionPage extends React.Component {
             setErrorMessage: this.setErrorMessage
         };
         let noSequences = this.state.customSequenceList.length == 0;
-        let topPanel = <PageTitle>Custom DNA Predictions</PageTitle>;
+        let topPanel = <PageTitle>TF binding predictions for custom DNA sequences</PageTitle>;
         let leftPanel = <PredictionFilterPanel genomeData={this.state.genomeData}
                                                customSequenceList={this.state.customSequenceList}
                                                addCustomSeqenceList={this.addCustomSeqenceList}
