@@ -104,7 +104,7 @@ class AboutContent extends React.Component {
                     Ning Shen, Jingkang Zhao, Josh Schipper, Tristan Bepler, Dan Leehr, John Bradley, John Horton,
                     Hilmar Lapp, Raluca Gordan.
                 </p>
-                <i>Published Online: March 28, 2018.</i>&nbsp;
+                <i>Published in Cell Systems, Volume 6, Issue 4, 470-483.e8, 25 April 2018.</i>&nbsp;
                 <a href="https://doi.org/10.1016/j.cels.2018.02.009">https://doi.org/10.1016/j.cels.2018.02.009 </a>
 
             </div>
