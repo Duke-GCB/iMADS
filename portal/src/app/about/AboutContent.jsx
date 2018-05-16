@@ -99,9 +99,14 @@ class AboutContent extends React.Component {
             </div>
             <div>
                 <h5 className="AboutContent_group_label">CITATION</h5>
-                <p  className="AboutContent_paragraph">“Integrative modeling of differential DNA-binding specificity among paralogous transcription factors”.
+                <p  className="AboutContent_paragraph">
+                    “Divergence in DNA Specificity among Paralogous Transcription Factors Contributes to Their Differential <i>In Vivo</i> Binding”.
                     Ning Shen, Jingkang Zhao, Josh Schipper, Tristan Bepler, Dan Leehr, John Bradley, John Horton,
-                    Hilmar Lapp, Raluca Gordan. <i>Submitted</i>.</p>
+                    Hilmar Lapp, Raluca Gordan.
+                </p>
+                <i>Published in Cell Systems, Volume 6, Issue 4, 470-483.e8, 25 April 2018.</i>&nbsp;
+                <a href="https://doi.org/10.1016/j.cels.2018.02.009">https://doi.org/10.1016/j.cels.2018.02.009 </a>
+
             </div>
             </div>
         </div>;
