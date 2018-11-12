@@ -1,4 +1,4 @@
-ARG BASE_IMAGE
+ARG BASE_IMAGE=dukegcb/imads
 FROM ${BASE_IMAGE}
 LABEL maintainer="john.bradley@duke.edu"
 # apache2
