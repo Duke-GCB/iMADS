@@ -1,5 +1,6 @@
-FROM dukegcb/imads
-MAINTAINER john.bradley@duke.edu
+ARG BASE_IMAGE=dukegcb/imads
+FROM ${BASE_IMAGE}
+LABEL maintainer="john.bradley@duke.edu"
 # apache2
 RUN apt-get update \
   && apt-get install -y apache2 apache2-utils libapache2-mod-wsgi\
