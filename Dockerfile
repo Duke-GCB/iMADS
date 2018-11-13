@@ -27,7 +27,7 @@ RUN npm install --only=dev
 # Now add the rest of the application source and run webpack
 ADD . ${MYDIR}
 CMD bash
-RUN ./node_modules/.bin/webpack
+RUN ./node_modules/.bin/webpack -p
 
 WORKDIR ${MYDIR}
 CMD ["gunicorn", "--bind", "0.0.0.0:80", "--timeout", "180", "--log-level=debug", "webserver:app"]
