@@ -1,7 +1,7 @@
 FROM python:2.7.11
 EXPOSE 80
 ENV MYDIR /tfdnapredictions
-RUN curl -sL https://deb.nodesource.com/setup_7.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs
 
 # Install bigBedToBed
