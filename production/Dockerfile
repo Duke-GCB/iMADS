@@ -3,7 +3,7 @@ FROM ${BASE_IMAGE}
 LABEL maintainer="john.bradley@duke.edu"
 # apache2
 RUN apt-get update \
-  && apt-get install -y apache2 apache2-utils \
+  && apt-get install -y apache2 apache2-utils apache2-dev \
   && apt-get clean
 
 RUN ["pip", "install", "mod_wsgi"]
