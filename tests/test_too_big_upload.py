@@ -65,7 +65,7 @@ class TestTooBigCustomList(TestCase):
         self.assertEqual(400, cm.exception.status_code)
 
     def test_gene_list_good_size(self):
-        save_custom_file(db=FakeDB(), user_info=None, type=GENE_LIST_TYPE, content="WASH7P\ELK1\NETS2")
+        save_custom_file(db=FakeDB(), user_info=None, type=GENE_LIST_TYPE, content="WASH7P\nELK1\nNETS2")
 
 
 class TestTooBigCustomSequence(TestCase):

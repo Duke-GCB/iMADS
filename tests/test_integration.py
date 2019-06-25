@@ -1,6 +1,6 @@
 import unittest
 import os
-from StringIO import StringIO
+from io import StringIO
 from pred.config import parse_config_from_dict, DataType
 from load import run_sql_command
 from pred.load import loaddatabase

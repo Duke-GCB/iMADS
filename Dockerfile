@@ -1,4 +1,4 @@
-FROM python:2.7.11
+FROM python:3.6
 EXPOSE 80
 ENV MYDIR /tfdnapredictions
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -

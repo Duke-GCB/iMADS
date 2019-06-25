@@ -6,7 +6,7 @@ import uuid
 from pred.webserver.errors import ClientException, ErrorType, raise_on_too_big_uploaded_data
 from pred.queries.dbutil import update_database, read_database
 from Bio import SeqIO
-from StringIO import StringIO
+from io import StringIO
 
 class SequenceList(object):
     """
