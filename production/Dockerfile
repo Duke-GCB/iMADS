@@ -3,8 +3,10 @@ FROM ${BASE_IMAGE}
 LABEL maintainer="john.bradley@duke.edu"
 # apache2
 RUN apt-get update \
-  && apt-get install -y apache2 apache2-utils libapache2-mod-wsgi-py3\
+  && apt-get install -y apache2 apache2-utils \
   && apt-get clean
+
+RUN ["pip", "install", "mod_wsgi"]
 
 # Configure Apache
 ADD imads.conf /etc/apache2/sites-available/imads.conf
