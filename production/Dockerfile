@@ -1,10 +1,18 @@
 ARG BASE_IMAGE=dukegcb/imads
 FROM ${BASE_IMAGE}
 LABEL maintainer="john.bradley@duke.edu"
-# apache2
-RUN apt-get update \
-  && apt-get install -y apache2 apache2-utils libapache2-mod-wsgi\
-  && apt-get clean
+
+RUN apt-get update && apt-get install -y \
+  apache2 \
+  apache2-dev
+
+RUN pip install mod_wsgi==4.6.4
+
+# Since mod_wsgi is installed in python libs directory, this command
+# links it into apache for easier usage.
+RUN mod_wsgi-express install-module
+
+RUN ["pip", "install", "mod_wsgi"]
 
 # Configure Apache
 ADD imads.conf /etc/apache2/sites-available/imads.conf

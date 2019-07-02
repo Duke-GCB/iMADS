@@ -5,12 +5,12 @@ Command line utility to test out jobs portion of the API.
 from __future__ import print_function
 import sys
 import requests
-import base64
 from Bio import SeqIO
 from StringIO import StringIO
 import random
 from multiprocessing import Pool
 import time
+from pred.webserver import base64_string_decode, base64_string_encode
 
 BASE_URL = "http://localhost:5000/api/v1"
 
@@ -50,7 +50,7 @@ def get_sequence(job):
     r = requests.get(url)
     r.raise_for_status()
     data = r.json()['data']
-    return base64.b64decode(data)
+    return base64_string_decode(data)
 
 
 def save_custom_predictions(job, bed_file_data):
@@ -58,7 +58,7 @@ def save_custom_predictions(job, bed_file_data):
     r = requests.post(url, json={
         'job_id': job['id'],
         'model_name': job['model_name'],
-        'bed_data': base64.b64encode(bed_file_data),
+        'bed_data': base64_string_encode(bed_file_data),
     })
     r.raise_for_status()
 
@@ -125,10 +125,11 @@ def error_next_job():
         job = jobs[0]
     mark_job_error(job, "Processing failed with error DAN-8.")
 
+
 def create_job():
     # upload sequence
     url = make_url("sequences")
-    data = {'data': base64.b64encode('>myseq\nAACCGGTT'), 'title':'MySeq'}
+    data = {'data': base64_string_encode('>myseq\nAACCGGTT'), 'title':'MySeq'}
     r = requests.post(url, json=data)
     r.raise_for_status()
     sequence_id = r.json()['id']

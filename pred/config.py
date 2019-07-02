@@ -1,4 +1,4 @@
-from yaml import load
+import yaml
 import os
 
 DEFAULT_DB_HOST = "localhost"
@@ -39,7 +39,7 @@ class DataType(object):
 def parse_config(filename):
     config = None
     with open(filename) as data_file:
-        data = load(data_file)
+        data = yaml.safe_load(data_file)
         return parse_config_from_dict(data)
 
 

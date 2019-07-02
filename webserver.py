@@ -30,6 +30,24 @@ def log_info(message):
     print(message)
 
 
+def base64_string_decode(data):
+    """
+    Decodes a base64 encoded string into a string
+    :param data: str: string to decode
+    :return: str
+    """
+    return base64.b64decode(data).decode('utf-8')
+
+
+def base64_string_encode(data):
+    """
+    Encodes a string into it's base64 string representation
+    :param data: str: string to encode
+    :return: str
+    """
+    return base64.b64encode(data.encode('utf-8')).decode('utf-8')
+
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -160,7 +178,7 @@ def get_custom_sequences_data(sequence_id):
     seq.load(get_db())
     return make_json_response({
             "id": seq.seq_uuid,
-            "data": base64.b64encode(seq.content),
+            "data": base64_string_encode(seq.content),
             "created": seq.created
         })
 
@@ -168,7 +186,7 @@ def get_custom_sequences_data(sequence_id):
 @app.route('/api/v1/sequences', methods=['POST'])
 def post_custom_sequences():
     (data, title) = get_required_json_props(request, ["data", "title"])
-    decoded_data = base64.b64decode(data)
+    decoded_data = base64_string_decode(data)
     seq_uuid = SequenceList.create_with_content_and_title(get_db(), decoded_data, title)
     return make_ok_json_response({'id': seq_uuid})
 
@@ -262,7 +280,7 @@ def post_custom_result():
     required_prop_names = ["job_id", "model_name"]
     (job_id, model_name) = get_required_json_props(request, required_prop_names)
     bed_data = request.get_json().get('bed_data')
-    decoded_bed_data = base64.b64decode(bed_data)
+    decoded_bed_data = base64_string_decode(bed_data)
     result_uuid = CustomResultData.new_uuid()
     result_data = CustomResultData(get_db(), result_uuid, job_id, model_name, decoded_bed_data)
     result_data.save()

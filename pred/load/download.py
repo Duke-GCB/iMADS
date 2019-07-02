@@ -5,7 +5,7 @@ import os
 import re
 from ftplib import FTP
 import gzip
-from urlparse import urlparse
+from urllib.parse import urlparse
 import requests
 import subprocess
 import yaml
