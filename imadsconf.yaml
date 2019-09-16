@@ -465,7 +465,7 @@ genome_data:
   trackhub_url:
   - predictions: http://trackhub.genome.duke.edu/gordanlab/tf-dna-binding-predictions/hub.txt
   - preferences: http://trackhub.genome.duke.edu/gordanlab/tf-dna-preferences/hub.txt
-model_base_url: https://swift.oit.duke.edu/v1/AUTH_gcb/gordan_models
+model_base_url: https://zenodo.org/record/3405516/files
 model_tracks_url_list:
-- https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks-predictions.yaml
-- https://raw.githubusercontent.com/Duke-GCB/TrackHubGenerator/master/yaml/tracks/tracks-preferences.yaml
+- https://zenodo.org/record/3405516/files/tracks-predictions.yaml
+- https://zenodo.org/record/3405516/files/tracks-preferences.yaml
