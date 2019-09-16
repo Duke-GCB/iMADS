@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.6
+      - image: circleci/python:3.6.8
       - image: circleci/postgres:9.6.2
         environment:
           POSTGRES_USER: pred_user
@@ -17,7 +17,7 @@ jobs:
             source venv/bin/activate
             pip install -r requirements.txt
             pip install -r devRequirements.txt
-            curl -sL https://deb.nodesource.com/setup_8.x | sudo  sudo -E bash -
+            curl -sL https://deb.nodesource.com/setup_8.x | bash -
             sudo apt-get install -y nodejs
             cd portal
             npm install
