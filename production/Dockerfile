@@ -15,6 +15,7 @@ RUN mod_wsgi-express install-module
 RUN ["pip", "install", "mod_wsgi"]
 
 # Configure Apache
+RUN a2dissite 000-default # disable default apache logging config
 ADD imads.conf /etc/apache2/sites-available/imads.conf
 RUN a2enmod ssl
 RUN a2ensite imads
